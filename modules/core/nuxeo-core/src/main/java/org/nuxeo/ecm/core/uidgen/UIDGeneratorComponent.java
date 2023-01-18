@@ -22,15 +22,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
@@ -38,6 +37,8 @@ import org.nuxeo.runtime.model.Extension;
  * Service that writes MetaData.
  */
 public class UIDGeneratorComponent extends DefaultComponent implements UIDGeneratorService {
+
+    private static final Logger log = LogManager.getLogger(UIDGeneratorComponent.class);
 
     public static final String ID = "org.nuxeo.ecm.core.uidgen.UIDGeneratorService";
 
@@ -49,8 +50,6 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
      * Extension point is deprecated should be removed - preserved for now only for startup warnings.
      */
     public static final String EXTENSION_POINT_SEQUENCER_FACTORY = "sequencerFactory";
-
-    private static final Log log = LogFactory.getLog(UIDGeneratorComponent.class);
 
     protected final Map<String, UIDGenerator> generators = new HashMap<>();
 
@@ -79,11 +78,11 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
         super.registerExtension(extension);
         final String extPoint = extension.getExtensionPoint();
         if (UID_GENERATORS_EXTENSION_POINT.equals(extPoint)) {
-            log.info("register contributions for extension point: " + UID_GENERATORS_EXTENSION_POINT);
+            log.info("register contributions for extension point: {}", UID_GENERATORS_EXTENSION_POINT);
             final Object[] contribs = extension.getContributions();
             registerGenerators(extension, contribs);
         } else if (SEQUENCERS_EXTENSION_POINT.equals(extPoint)) {
-            log.info("register contributions for extension point: " + SEQUENCERS_EXTENSION_POINT);
+            log.info("register contributions for extension point: {}", SEQUENCERS_EXTENSION_POINT);
             final Object[] contribs = extension.getContributions();
             registerSequencers(extension, contribs);
             computeDefault();
@@ -93,7 +92,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
             addRuntimeMessage(Level.WARNING, msg, Source.EXTENSION, extension.getComponent().getName().getName());
             log.error(msg);
         } else {
-            log.warn("extension not handled: " + extPoint);
+            log.warn("extension not handled: {}", extPoint);
         }
     }
 
@@ -101,16 +100,16 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
     public void unregisterExtension(Extension extension) {
         final String extPoint = extension.getExtensionPoint();
         if (UID_GENERATORS_EXTENSION_POINT.equals(extPoint)) {
-            log.info("unregister contributions for extension point: " + UID_GENERATORS_EXTENSION_POINT);
+            log.info("unregister contributions for extension point: {}", UID_GENERATORS_EXTENSION_POINT);
             // final Object[] contribs = extension.getContributions();
             // unregisterGenerators(extension, contribs);
         } else if (SEQUENCERS_EXTENSION_POINT.equals(extPoint)) {
-            log.info("unregister contributions for extension point: " + SEQUENCERS_EXTENSION_POINT);
+            log.info("unregister contributions for extension point: {}", SEQUENCERS_EXTENSION_POINT);
             final Object[] contribs = extension.getContributions();
             unregisterSequencers(extension, contribs);
             computeDefault();
         } else {
-            log.warn("extension not handled: " + extPoint);
+            log.warn("extension not handled: {}", extPoint);
         }
         super.unregisterExtension(extension);
     }
@@ -146,10 +145,10 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
                     sequencerContribs.put(name, seqDescriptor);
 
                 } else {
-                    log.info(String.format("Sequencer %s is disabled.", name));
+                    log.info("Sequencer: {} is disabled.", name);
                 }
             } catch (Exception e) {
-                log.error("Unable to create UIDSequencer with name " + name, e);
+                log.error("Unable to create UIDSequencer with name: {}", name, e);
             }
         }
     }
@@ -182,7 +181,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
 
             final String[] propNames = generatorDescriptor.getPropertyNames();
             if (propNames.length == 0) {
-                log.error("no property name defined on generator " + generatorName);
+                log.error("no property name defined on generator: {}", generatorName);
             }
             // set the property name on generator
             generator.setPropertyNames(propNames);
@@ -191,7 +190,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
             final String[] docTypes = generatorDescriptor.getDocTypes();
             registerGeneratorForDocTypes(generator, docTypes);
 
-            log.info("registered UID generator: " + generatorName);
+            log.info("registered UID generator: {}", generatorName);
         }
     }
 
@@ -200,13 +199,12 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
      * document type it will be discarded (and replaced with the new generator).
      */
     private void registerGeneratorForDocTypes(final UIDGenerator generator, final String[] docTypes) {
-
         for (String docType : docTypes) {
             final UIDGenerator previous = generators.put(docType, generator);
             if (previous != null) {
-                log.info("Overwriting generator: " + previous.getClass() + " for docType: " + docType);
+                log.info("Overwriting generator: {} for docType: {}", previous.getClass(), docType);
             }
-            log.info("Registered generator: " + generator.getClass() + " for docType: " + docType);
+            log.info("Registered generator: {} for docType: {}", generator.getClass(), docType);
         }
     }
 
@@ -221,7 +219,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
         final UIDGenerator generator = generators.get(docTypeName);
 
         if (generator == null) {
-            log.debug("No UID Generator defined for doc type: " + docTypeName);
+            log.debug("No UID Generator defined for doc type: {}", docTypeName);
             return null;
         }
         // TODO maybe maintain an initialization state for generators

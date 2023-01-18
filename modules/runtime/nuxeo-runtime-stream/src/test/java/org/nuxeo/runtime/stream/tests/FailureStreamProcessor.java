@@ -21,8 +21,8 @@ package org.nuxeo.runtime.stream.tests;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -36,7 +36,7 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  */
 public class FailureStreamProcessor implements StreamProcessorTopology {
 
-    private static final Log log = LogFactory.getLog(FailureStreamProcessor.class);
+    private static final Logger log = LogManager.getLogger(FailureStreamProcessor.class);
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -53,7 +53,7 @@ public class FailureStreamProcessor implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            log.debug(metadata.name() + " got record: " + record);
+            log.debug("{} got record: {}", metadata.name(), record);
             throw new RuntimeException("Simulated failure for testing purpose");
         }
     }

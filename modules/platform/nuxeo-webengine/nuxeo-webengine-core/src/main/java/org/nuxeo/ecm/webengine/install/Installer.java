@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -44,7 +44,7 @@ import org.osgi.framework.Bundle;
 @XObject("install")
 public class Installer {
 
-    private static final Log log = LogFactory.getLog(Installer.class);
+    private static final Logger log = LogManager.getLogger(Installer.class);
 
     @XNode("@module")
     public String module;

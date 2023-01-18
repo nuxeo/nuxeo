@@ -30,8 +30,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
@@ -40,6 +40,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLo
  * @author M.-A. Darche
  */
 public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
+
+    private static final Logger log = LogManager.getLogger(ClearTrustAuthenticator.class);
 
     protected static final String CLEARTRUST_HEADER_UID = "REMOTE_USER";
 
@@ -52,8 +54,6 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
     protected String cleartrustLoginUrl = "";
 
     protected String cleartrustLogoutUrl = "";
-
-    private static final Log log = LogFactory.getLog(ClearTrustAuthenticator.class);
 
     @Override
     public List<String> getUnAuthenticatedURLPrefix() {
@@ -70,14 +70,14 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest request, HttpServletResponse response, String baseURL) {
         log.debug("handleLoginPrompt ...");
-        log.debug("handleLoginPrompt requestURL = " + request.getRequestURL());
+        log.debug("handleLoginPrompt requestURL: {}", request::getRequestURL);
         Cookie[] cookies = getCookies(request);
         displayRequestInformation(request);
         displayCookieInformation(cookies);
         String ctSession = getCookieValue(CLEARTRUST_COOKIE_SESSION, cookies);
         String ctSessionA = getCookieValue(CLEARTRUST_COOKIE_SESSION_A, cookies);
-        log.debug("ctSession = " + ctSession);
-        log.debug("ctSessionA = " + ctSessionA);
+        log.debug("ctSession: {}", ctSession);
+        log.debug("ctSessionA: {}", ctSessionA);
 
         boolean redirectToClearTrustLoginPage = false;
         if (ctSession == null) {
@@ -91,7 +91,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         }
 
         String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
-        log.debug("ctUid = [" + ctUid + "]");
+        log.debug("ctUid: {}", ctUid);
         if (ctUid == null) {
             redirectToClearTrustLoginPage = true;
         }
@@ -104,11 +104,11 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
                     // + LoginScreenHelper.getStartupPagePath();
                     loginUrl = baseURL + "login.jsp";
                 }
-                log.debug("Redirecting to loginUrl: " + loginUrl);
+                log.debug("Redirecting to loginUrl: {}" + loginUrl);
                 response.sendRedirect(loginUrl);
                 return true;
             } catch (IOException ex) {
-                log.error("Unable to redirect to ClearTrust login URL [" + loginUrl + "]:", ex);
+                log.error("Unable to redirect to ClearTrust login URL: {}", loginUrl, ex);
                 return false;
             }
         }
@@ -124,10 +124,10 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         displayCookieInformation(cookies);
 
         String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
-        log.debug("handleRetrieveIdentity ctUid = [" + ctUid + "]");
+        log.debug("handleRetrieveIdentity ctUid: {}", ctUid);
         String userName = ctUid;
         UserIdentificationInfo uui = new UserIdentificationInfo(userName);
-        log.debug("handleRetrieveIdentity going on with authenticated user = [" + userName + "]");
+        log.debug("handleRetrieveIdentity going on with authenticated user: {}", userName);
         return uui;
     }
 
@@ -151,12 +151,12 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         }
 
         try {
-            log.debug("Redirecting to logoutUrl = [" + cleartrustLogoutUrl + "] ...");
+            log.debug("Redirecting to logout URL: {}", cleartrustLogoutUrl);
             response.sendRedirect(cleartrustLogoutUrl);
             log.debug("handleLogout DONE!");
             return true;
         } catch (IOException e) {
-            log.error("Unable to redirect to the logout URL [" + cleartrustLogoutUrl + "] :", e);
+            log.error("Unable to redirect to the logout URL: {}", cleartrustLogoutUrl, e);
             return false;
         }
     }
@@ -180,7 +180,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
     }
 
     private void expireCookie(String cookieName, HttpServletRequest request, HttpServletResponse response) {
-        log.debug("expiring cookie [" + cookieName + "]  ...");
+        log.debug("expiring cookie: {}", cookieName);
         Cookie cookie = new Cookie(cookieName, "");
         // A zero value causes the cookie to be deleted
         cookie.setMaxAge(0);
@@ -191,9 +191,8 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
     protected void displayCookieInformation(Cookie[] cookies) {
         log.debug(">>>>>>>>>>>>> Here are the cookies: ");
         for (Cookie cookie : cookies) {
-            log.debug("displayCookieInformation cookie name: [" + cookie.getName() + "] path: [" + cookie.getPath()
-                    + "] domain: " + cookie.getDomain() + " max age: " + cookie.getMaxAge() + " value: ["
-                    + cookie.getValue() + "]");
+            log.debug("displayCookieInformation cookie name: {}, path: {}, domain: {}, max age: {}, value: {}",
+                    cookie::getName, cookie::getPath, cookie::getDomain, cookie::getMaxAge, cookie::getValue);
         }
     }
 
@@ -201,15 +200,15 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         log.debug(">>>>>>>>>>>>> Here is the request: ");
         for (Enumeration<String> headerNames = request.getHeaderNames(); headerNames.hasMoreElements();) {
             String headerName = (String) headerNames.nextElement();
-            log.debug("header " + headerName + " : [" + request.getHeader(headerName) + "]");
+            log.debug("header {} : {}", () -> headerName, () -> request.getHeader(headerName));
         }
         for (Enumeration<String> attributeNames = request.getAttributeNames(); attributeNames.hasMoreElements();) {
             String attributeName = (String) attributeNames.nextElement();
-            log.debug("attribute " + attributeName + " : [" + request.getAttribute(attributeName) + "]");
+            log.debug("attribute {} : {}", () -> attributeName, () -> request.getAttribute(attributeName));
         }
         for (Enumeration<String> parameterNames = request.getParameterNames(); parameterNames.hasMoreElements();) {
             String parameterName = (String) parameterNames.nextElement();
-            log.debug("parameter " + parameterName + " : [" + request.getParameter(parameterName) + "]");
+            log.debug("parameter {} : {}", () -> parameterName, () -> request.getParameter(parameterName));
         }
     }
 
@@ -218,15 +217,15 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         log.debug("initPlugin v 1.1");
         if (parameters.containsKey(ClearTrustParameters.COOKIE_DOMAIN)) {
             cookieDomain = parameters.get(ClearTrustParameters.COOKIE_DOMAIN);
-            log.debug("initPlugin cookieDomain = [" + cookieDomain + "]");
+            log.debug("initPlugin cookieDomain: {}", cookieDomain);
         }
         if (parameters.containsKey(ClearTrustParameters.CLEARTRUST_LOGIN_URL)) {
             cleartrustLoginUrl = parameters.get(ClearTrustParameters.CLEARTRUST_LOGIN_URL);
-            log.debug("initPlugin cleartrustLoginUrl = [" + cleartrustLoginUrl + "]");
+            log.debug("initPlugin cleartrustLoginUrl: {}", cleartrustLoginUrl);
         }
         if (parameters.containsKey(ClearTrustParameters.CLEARTRUST_LOGOUT_URL)) {
             cleartrustLogoutUrl = parameters.get(ClearTrustParameters.CLEARTRUST_LOGOUT_URL);
-            log.debug("initPlugin cleartrustLogoutUrl = [" + cleartrustLogoutUrl + "]");
+            log.debug("initPlugin cleartrustLogoutUrl: {}", cleartrustLogoutUrl);
         }
         log.debug("initPlugin DONE");
     }

@@ -30,8 +30,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 
@@ -40,9 +38,6 @@ import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
  * @author Olivier Grisel
  */
 public class DefaultPermissionProvider implements PermissionProviderLocal {
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(DefaultPermissionProvider.class);
 
     private final List<PermissionDescriptor> registeredPermissions = new LinkedList<>();
 

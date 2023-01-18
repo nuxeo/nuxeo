@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BlobHolderAdapterComponent extends DefaultComponent implements BlobHolderAdapterService {
 
-    private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
+    private static final Logger log = LogManager.getLogger(BlobHolderAdapterComponent.class);
 
     public static final String BLOBHOLDERFACTORY_EP = "BlobHolderFactory";
 
@@ -81,15 +81,15 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
             ExternalBlobAdapter adapter = desc.getAdapter();
             String prefix = desc.getPrefix();
             if (externalBlobAdapters.containsKey(prefix)) {
-                log.info(String.format("Overriding external blob adapter with prefix '%s'", prefix));
+                log.info("Overriding external blob adapter with prefix: '{}'", prefix);
                 externalBlobAdapters.remove(prefix);
             }
             adapter.setPrefix(desc.getPrefix());
             adapter.setProperties(desc.getProperties());
             externalBlobAdapters.put(desc.getPrefix(), adapter);
-            log.info(String.format("Registered external blob adapter with prefix '%s'", prefix));
+            log.info("Registered external blob adapter with prefix: '{}'", prefix);
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point: {}", extensionPoint);
         }
     }
 
@@ -100,8 +100,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
     /* for test */
 
     public static Set<String> getFactoryNames() {
-        return ((BlobHolderAdapterComponent) Framework.getService(
-                BlobHolderAdapterService.class)).factories.keySet();
+        return ((BlobHolderAdapterComponent) Framework.getService(BlobHolderAdapterService.class)).factories.keySet();
     }
 
     /* Service Interface */

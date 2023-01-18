@@ -25,8 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.runtime.api.Framework;
@@ -40,7 +40,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class AutomationScriptingComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(AutomationScriptingComponent.class);
+    private static final Logger log = LogManager.getLogger(AutomationScriptingComponent.class);
 
     protected static final String XP_OPERATION = "operation";
 
@@ -76,7 +76,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
         } else if (XP_CLASSFILTER.equals(extensionPoint)) {
             registerClassFilter((ClassFilterDescriptor) contribution);
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point: {}", extensionPoint);
         }
     }
 
@@ -87,7 +87,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
         } else if (XP_CLASSFILTER.equals(extensionPoint)) {
             unregisterClassFilter((ClassFilterDescriptor) contribution);
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point: {}", extensionPoint);
         }
     }
 

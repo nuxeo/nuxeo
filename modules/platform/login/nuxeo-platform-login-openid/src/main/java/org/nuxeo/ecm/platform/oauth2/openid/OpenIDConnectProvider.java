@@ -29,8 +29,8 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.EmailBasedUserResolver;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDConnectAuthenticator;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
@@ -62,7 +62,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
  */
 public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
-    protected static final Log log = LogFactory.getLog(OpenIDConnectProvider.class);
+    private static final Logger log = LogManager.getLogger(OpenIDConnectProvider.class);
 
     /** Global instance of the HTTP transport. */
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -151,8 +151,9 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
      */
     public boolean verifyStateToken(HttpServletRequest request) {
         return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME)
-                      .equals(request.getSession().getAttribute(
-                              OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
+                      .equals(request.getSession()
+                                     .getAttribute(
+                                             OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
     }
 
     public String getAuthenticationUrl(HttpServletRequest req, String requestedUrl) {
@@ -221,8 +222,8 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     public OpenIDUserInfo getUserInfo(String accessToken) {
         OpenIDUserInfo userInfo = null;
 
-        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(request -> request.setParser(new JsonObjectParser(
-                JSON_FACTORY)));
+        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(
+                request -> request.setParser(new JsonObjectParser(JSON_FACTORY)));
 
         GenericUrl url = new GenericUrl(userInfoURL);
         if (OpenIDConnectProviderDescriptor.URL_AUTHENTICATION_METHOD.equals(authenticationMethod)) {

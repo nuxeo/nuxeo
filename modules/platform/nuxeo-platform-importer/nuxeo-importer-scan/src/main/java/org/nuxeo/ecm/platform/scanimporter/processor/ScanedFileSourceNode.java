@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ScanedFileSourceNode extends FileSourceNode {
 
-    private static final Log log = LogFactory.getLog(ScanedFileSourceNode.class);
+    private static final Logger log = LogManager.getLogger(ScanedFileSourceNode.class);
 
     protected Map<String, Serializable> properties;
 
@@ -92,7 +92,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
                     if (bh != null) {
                         children.add(new ScanedFileSourceNode(child, bh));
                     } else {
-                        log.error(child.getAbsolutePath() + " can not be parsed ");
+                        log.error("{} can not be parsed ", child::getAbsolutePath);
                     }
                 } catch (IOException e) {
                     log.error("Error during properties parsing", e);

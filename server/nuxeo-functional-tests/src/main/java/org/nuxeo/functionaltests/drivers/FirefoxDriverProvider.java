@@ -25,8 +25,8 @@ package org.nuxeo.functionaltests.drivers;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -41,7 +41,7 @@ import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
  */
 public class FirefoxDriverProvider implements DriverProvider {
 
-    private static final Log log = LogFactory.getLog(FirefoxDriverProvider.class);
+    private static final Logger log = LogManager.getLogger(FirefoxDriverProvider.class);
 
     protected FirefoxDriver driver;
 
@@ -123,7 +123,7 @@ public class FirefoxDriverProvider implements DriverProvider {
             }
             File webdriverlogFile = File.createTempFile("webdriver", ".log", outputFolder);
             profile.setPreference("webdriver.log.file", webdriverlogFile.getAbsolutePath());
-            log.warn("Webdriver logs saved in " + webdriverlogFile);
+            log.warn("Webdriver logs saved in {}", webdriverlogFile);
         }
 
         return profile;

@@ -21,8 +21,8 @@ package org.nuxeo.lib.stream.computation;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * An abstract {@link Computation} that manages the metadata init.
@@ -34,7 +34,8 @@ import org.apache.commons.logging.LogFactory;
  * @since 9.3
  */
 public abstract class AbstractComputation implements Computation {
-    private static final Log log = LogFactory.getLog(AbstractComputation.class);
+
+    private static final Logger log = LogManager.getLogger(AbstractComputation.class);
 
     protected final ComputationMetadata metadata;
 
@@ -83,13 +84,13 @@ public abstract class AbstractComputation implements Computation {
 
     @Override
     public void processRetry(ComputationContext context, Throwable failure) {
-        log.warn(String.format("Computation: %s fails last record: %s, retrying ...", metadata.name(),
-                context.getLastOffset()), failure);
+        log.warn("Computation: {} fails last record: {}, retrying ...", metadata.name(), context.getLastOffset(),
+                failure);
     }
 
     @Override
     public void processFailure(ComputationContext context, Throwable failure) {
-        log.error(String.format("Computation: %s fails last record: %s, after retries.", metadata.name(),
-                context.getLastOffset()), failure);
+        log.error("Computation: {} fails last record: {}, after retries.", metadata.name(), context.getLastOffset(),
+                failure);
     }
 }

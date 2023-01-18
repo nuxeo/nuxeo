@@ -26,15 +26,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "message")
 public class MessageInfo {
 
-    static final Log log = LogFactory.getLog(MessageInfo.class);
+    private static final Logger log = LogManager.getLogger(MessageInfo.class);
 
     public MessageInfo() {
     }

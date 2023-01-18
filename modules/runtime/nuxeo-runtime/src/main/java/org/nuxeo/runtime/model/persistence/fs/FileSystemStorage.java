@@ -31,8 +31,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.runtime.model.persistence.Contribution;
@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
  */
 public class FileSystemStorage implements ContributionStorage {
 
-    public static final Log log = LogFactory.getLog(FileSystemStorage.class);
+    private static final Logger log = LogManager.getLogger(FileSystemStorage.class);
 
     protected static final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 

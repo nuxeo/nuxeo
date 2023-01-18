@@ -21,8 +21,8 @@ package org.nuxeo.ecm.automation.core.operations.notification;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MailBox {
 
-    private static final Log log = LogFactory.getLog(MailBox.class);
+    private static final Logger log = LogManager.getLogger(MailBox.class);
 
     private static final String USER_PREFIX = "user:";
 
@@ -117,8 +117,9 @@ public class MailBox {
                 }
             }
             if (!info.contains("@")) {
-                log.warn("Can't really resolve the mailbox defined, anyway added. Check if something bad configured: "
-                        + info);
+                log.warn(
+                        "Can't really resolve the mailbox defined, anyway added. Check if something bad configured: {}",
+                        info);
             }
             result.add(new MailBox(info, null, null));
 
@@ -155,7 +156,7 @@ public class MailBox {
         }
 
         if (!info.contains("@")) {
-            log.warn("Info given seems not well formed, please check (sent anyway): " + info);
+            log.warn("Info given seems not well formed, please check (sent anyway): {}", info);
         }
         // String is directly the email address
         address = info;

@@ -34,8 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonFactoryProvider;
 import org.nuxeo.ecm.core.io.registry.Reader;
@@ -58,7 +58,7 @@ import com.fasterxml.jackson.core.JsonParser;
 @Supports(APPLICATION_JSON)
 public class DocumentModelJsonReaderLegacy implements Reader<DocumentModel> {
 
-    private static final Log log = LogFactory.getLog(DocumentModelJsonReaderLegacy.class);
+    private static final Logger log = LogManager.getLogger(DocumentModelJsonReaderLegacy.class);
 
     public static final String CONF_DOCUMENT_JSON_LEGACY = "nuxeo.document.json.legacy";
 
@@ -139,7 +139,8 @@ public class DocumentModelJsonReaderLegacy implements Reader<DocumentModel> {
     }
 
     @Override
-    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in) throws IOException {
+    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in)
+            throws IOException {
         try {
             try (JsonParser parser = JsonFactoryProvider.get().createJsonParser(in)) {
                 return DocumentModel.class.cast(METHOD.invoke(null, parser, httpHeaders, request));

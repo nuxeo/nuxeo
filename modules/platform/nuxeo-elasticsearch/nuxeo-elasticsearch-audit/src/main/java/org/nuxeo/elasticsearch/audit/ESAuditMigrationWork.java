@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
@@ -44,7 +44,7 @@ public class ESAuditMigrationWork extends AbstractWork {
 
     private static final long serialVersionUID = 3764830939638449534L;
 
-    private static final Log log = LogFactory.getLog(ESAuditMigrationWork.class);
+    private static final Logger log = LogManager.getLogger(ESAuditMigrationWork.class);
 
     protected int batchSize;
 
@@ -86,20 +86,20 @@ public class ESAuditMigrationWork extends AbstractWork {
                                 pageIdxF, batchSize));
 
                 if (entries.size() == 0) {
-                    log.warn("Migration ending after " + nbEntriesMigrated + " entries");
+                    log.warn("Migration ending after {} entries", nbEntriesMigrated);
                     break;
                 }
                 setProgress(new Progress(nbEntriesMigrated, nbEntriesToMigrate));
                 destBackend.addLogEntries(entries);
                 pageIdx++;
                 nbEntriesMigrated += entries.size();
-                log.info("Migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
+                log.info("Migrated {} log entries on {}", nbEntriesMigrated, nbEntriesToMigrate);
                 double dt = (System.currentTimeMillis() - t0) / 1000.0;
                 if (dt != 0) {
-                    log.info("Migration speed: " + (nbEntriesMigrated / dt) + " entries/s");
+                    log.info("Migration speed: {} entries/s", nbEntriesMigrated / dt);
                 }
             }
-            log.info("Audit migration from SQL to Elasticsearch done: " + nbEntriesMigrated + " entries migrated");
+            log.info("Audit migration from SQL to Elasticsearch done: {} entries migrated", nbEntriesMigrated);
 
             // Log technical event in audit as a flag to know if the migration has been processed at application
             // startup

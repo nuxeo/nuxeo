@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.platform.audit.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated
 public class AuditEventLogger implements PostCommitFilteringEventListener {
 
-    private static final Log log = LogFactory.getLog(AuditEventLogger.class);
+    private static final Logger log = LogManager.getLogger(AuditEventLogger.class);
 
     @Override
     public boolean acceptEvent(Event event) {

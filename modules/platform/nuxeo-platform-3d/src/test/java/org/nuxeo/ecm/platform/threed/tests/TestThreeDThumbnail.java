@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -70,7 +70,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
 public class TestThreeDThumbnail {
 
-    private static final Log log = LogFactory.getLog(TestThreeDThumbnail.class);
+    private static final Logger log = LogManager.getLogger(TestThreeDThumbnail.class);
 
     @Inject
     protected CoreSession session;
@@ -106,10 +106,10 @@ public class TestThreeDThumbnail {
         // Thumbnail service should return the default picture thumbnail
         ThumbnailAdapter pictureThumbnail = threed.getAdapter(ThumbnailAdapter.class);
         if (threed.getProperty(RENDER_VIEWS_PROPERTY).size() == 0) {
-            log.warn(String.format("[NXP-21450] memory max: %dMB", Runtime.getRuntime().maxMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] memory total: %dMB", Runtime.getRuntime().totalMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] memory free: %dMB", Runtime.getRuntime().freeMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] duration: %dms", timeDelta));
+            log.warn("[NXP-21450] memory max: {}MB", Runtime.getRuntime().maxMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] memory total: {}MB", Runtime.getRuntime().totalMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] memory free: {}MB", Runtime.getRuntime().freeMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] duration: {}ms", timeDelta);
         }
         Collection<ThreeDRenderView> renderViews = threed.getAdapter(ThreeDDocument.class).getRenderViews();
         Blob pictureUsualThumbnail = renderViews.iterator().next().getContent();

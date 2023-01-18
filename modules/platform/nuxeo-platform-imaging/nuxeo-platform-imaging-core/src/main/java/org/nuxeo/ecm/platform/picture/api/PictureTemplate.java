@@ -19,9 +19,8 @@
 
 package org.nuxeo.ecm.platform.picture.api;
 
-import static org.apache.commons.logging.LogFactory.getLog;
-
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Object to store the definition of a picture template, to be used when computing views for a given image.
@@ -31,7 +30,7 @@ import org.apache.commons.logging.Log;
 @Deprecated
 public class PictureTemplate extends PictureConversion {
 
-    private static final Log log = getLog(PictureTemplate.class);
+    private static final Logger log = LogManager.getLogger(PictureTemplate.class);
 
     public PictureTemplate(String title, String description, String tag, Integer maxSize) {
         super(title, description, tag, maxSize);

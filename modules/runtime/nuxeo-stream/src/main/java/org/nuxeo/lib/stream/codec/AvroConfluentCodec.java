@@ -27,8 +27,8 @@ import org.apache.avro.Schema;
 import org.apache.avro.message.RawMessageDecoder;
 import org.apache.avro.message.RawMessageEncoder;
 import org.apache.avro.reflect.ReflectData;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
@@ -43,7 +43,8 @@ import io.confluent.kafka.serializers.KafkaAvroSerializer;
  * @since 10.3
  */
 public class AvroConfluentCodec<T> implements Codec<T> {
-    private static final Log log = LogFactory.getLog(AvroConfluentCodec.class);
+
+    private static final Logger log = LogManager.getLogger(AvroConfluentCodec.class);
 
     public static final String NAME = "avroConfluent";
 
@@ -132,10 +133,7 @@ public class AvroConfluentCodec<T> implements Codec<T> {
             }
             // the write schema is not found, we fallback to read schema
             // this enable to read message that have the same read schema even if we loose the schema registry
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Cannot retrieve write schema %d, fallback to read schema: %d for %s", id,
-                        schemaId, messageClass));
-            }
+            log.warn("Cannot retrieve write schema {}, fallback to read schema: {} for {}", id, schemaId, messageClass);
             writeSchema = schema;
         }
         RawMessageDecoder<T> decoder = new RawMessageDecoder<>(ReflectData.get(), writeSchema, schema);

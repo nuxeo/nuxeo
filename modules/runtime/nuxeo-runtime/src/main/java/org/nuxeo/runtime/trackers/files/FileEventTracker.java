@@ -23,8 +23,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
  */
 public class FileEventTracker extends DefaultComponent {
 
-    protected static final Log log = LogFactory.getLog(FileEventTracker.class);
+    private static final Logger log = LogManager.getLogger(FileEventTracker.class);
 
     protected static SafeFileDeleteStrategy deleteStrategy = new SafeFileDeleteStrategy();
 
@@ -67,8 +67,8 @@ public class FileEventTracker extends DefaultComponent {
             for (String path : protectedPaths) {
                 // do not delete files under the protected directories
                 if (fileToDelete.getPath().startsWith(path)) {
-                    log.warn("Protect file " + fileToDelete.getPath()
-                            + " from deletion : check usage of Framework.trackFile");
+                    log.warn("Protect file: {} from deletion : check usage of Framework.trackFile",
+                            fileToDelete::getPath);
                     return true;
                 }
             }

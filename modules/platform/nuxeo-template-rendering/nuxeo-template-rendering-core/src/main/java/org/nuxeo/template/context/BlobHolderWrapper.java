@@ -20,8 +20,6 @@ package org.nuxeo.template.context;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -38,8 +36,6 @@ public class BlobHolderWrapper {
     protected final BlobHolder bh;
 
     protected final DocumentModel doc;
-
-    protected static final Log log = LogFactory.getLog(BlobHolderWrapper.class);
 
     public BlobHolderWrapper(DocumentModel doc) {
         bh = doc.getAdapter(BlobHolder.class);

@@ -24,8 +24,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
@@ -36,6 +36,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
  * @since 5.4.2
  */
 public class TableUpgrader {
+
+    private static final Logger log = LogManager.getLogger(TableUpgrader.class);
 
     protected static class TableUpgrade {
         public final String tableKey;
@@ -61,8 +63,6 @@ public class TableUpgrader {
     private Connection connection;
 
     private JDBCLogger logger;
-
-    private static final Log log = LogFactory.getLog(TableUpgrader.class);
 
     public TableUpgrader(SQLInfo sqlInfo, Connection connection, JDBCLogger logger) {
         this.sqlInfo = sqlInfo;
@@ -112,7 +112,7 @@ public class TableUpgrader {
                 }
             }
             if (doUpgrade) {
-                log.info("Upgrading table: " + tableKey);
+                log.info("Upgrading table: {}", tableKey);
                 sqlInfo.executeSQLStatements(upgrade.sqlProcedure, ddlMode, connection, logger, ddlCollector);
             }
         }

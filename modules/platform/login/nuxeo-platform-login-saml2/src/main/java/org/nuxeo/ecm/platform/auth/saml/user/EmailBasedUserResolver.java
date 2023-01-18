@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class EmailBasedUserResolver extends AbstractUserResolver {
 
-    private static final Log log = LogFactory.getLog(EmailBasedUserResolver.class);
+    private static final Logger log = LogManager.getLogger(EmailBasedUserResolver.class);
 
     @Override
     public String findNuxeoUser(SAMLCredential credential) {
@@ -53,7 +53,7 @@ public class EmailBasedUserResolver extends AbstractUserResolver {
             return (String) user.getPropertyValue(userManager.getUserIdField());
 
         } catch (NuxeoException e) {
-            log.error("Error while search user in UserManager using email " + credential.getNameID().getValue(), e);
+            log.error("Error while search user in UserManager using email: {}", credential.getNameID().getValue(), e);
             return null;
         }
     }
@@ -64,7 +64,7 @@ public class EmailBasedUserResolver extends AbstractUserResolver {
             UserManager userManager = Framework.getService(UserManager.class);
             user.setPropertyValue(userManager.getUserEmailField(), credential.getNameID().getValue());
         } catch (NuxeoException e) {
-            log.error("Error while search user in UserManager using email " + credential.getNameID().getValue(), e);
+            log.error("Error while search user in UserManager using email: {}", credential.getNameID().getValue(), e);
             return null;
         }
         return user;

@@ -43,8 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -98,9 +98,9 @@ import com.sun.xml.xsom.parser.XSOMParser;
  */
 public class XSDLoader {
 
-    private static final String ATTR_CORE_EXTERNAL_REFERENCES = "resolver";
+    private static final Logger log = LogManager.getLogger(XSDLoader.class);
 
-    private static final Log log = LogFactory.getLog(XSDLoader.class);
+    private static final String ATTR_CORE_EXTERNAL_REFERENCES = "resolver";
 
     private static final String ANONYMOUS_TYPE_SUFFIX = "#anonymousType";
 
@@ -198,19 +198,19 @@ public class XSDLoader {
     protected static class SchemaErrorHandler implements ErrorHandler {
         @Override
         public void error(SAXParseException e) throws SAXException {
-            log.error("Error: " + e.getMessage());
+            log.error("Error: {}", e.getMessage());
             throw e;
         }
 
         @Override
         public void fatalError(SAXParseException e) throws SAXException {
-            log.error("FatalError: " + e.getMessage());
+            log.error("FatalError: {}", e.getMessage());
             throw e;
         }
 
         @Override
         public void warning(SAXParseException e) {
-            log.error("Warning: " + e.getMessage());
+            log.error("Warning: {}", e.getMessage());
         }
     }
 
@@ -340,7 +340,7 @@ public class XSDLoader {
                 // add the field to the schema
                 createField(ecmSchema, el, ecmType);
             } else {
-                log.warn("Failed to load field " + el.getName() + " : " + el.getType());
+                log.warn("Failed to load field {} : {}", el::getName, el::getType);
             }
         }
 
@@ -353,21 +353,21 @@ public class XSDLoader {
                 // add the field to the schema
                 createField(ecmSchema, att, ecmType, true);
             } else {
-                log.warn("Failed to load field from attribute " + att.getName() + " : " + att.getType());
+                log.warn("Failed to load field from attribute {} : {}", att::getName, att::getType);
             }
         }
 
         if (xsdElement != null) {
             Field singleComplexField = ecmSchema.getField(xsdElement);
             if (singleComplexField == null) {
-                log.warn("Unable to find element " + xsdElement + " to rebase schema " + name);
+                log.warn("Unable to find element {} to rebase schema {}", xsdElement, name);
             } else {
                 if (singleComplexField.getType().isComplexType()) {
                     ComplexType singleComplexFieldType = (ComplexType) singleComplexField.getType();
                     ecmSchema = new SchemaImpl(singleComplexFieldType, name, new Namespace(ns, prefix),
                             isVersionWritable);
                 } else {
-                    log.warn("can not rebase schema " + name + " on " + xsdElement + " that is not a complex type");
+                    log.warn("can not rebase schema {} on {} that is not a complex type", name, xsdElement);
                 }
             }
         }
@@ -398,7 +398,7 @@ public class XSDLoader {
         if (type.getTargetNamespace().equals(NS_XSD)) {
             ecmType = XSDTypes.getType(name); // find alias
             if (ecmType == null) {
-                log.warn("Cannot use unknown XSD type: " + name);
+                log.warn("Cannot use unknown XSD type: {}", name);
             }
             return ecmType;
         }
@@ -414,7 +414,7 @@ public class XSDLoader {
         if (ecmType != null) {
             schema.registerType(ecmType);
         } else {
-            log.warn("loadType for " + fieldName + " of " + type + " returns null");
+            log.warn("loadType for {} of {} returns null", fieldName, type);
         }
         return ecmType;
     }
@@ -610,9 +610,10 @@ public class XSDLoader {
                     simpleType.setResolver(resolver);
                     constraints.add(new ObjectResolverConstraint(resolver));
                 } else {
-                    log.info("type of " + fieldName + "|" + type.getName()
+                    log.info("type of {}|{}"
                             + " targets ObjectResolver namespace but has no matching resolver registered "
-                            + "(please contribute to component : org.nuxeo.ecm.core.schema.ObjectResolverService)");
+                            + "(please contribute to component : org.nuxeo.ecm.core.schema.ObjectResolverService)",
+                            fieldName, type.getName());
                 }
             }
 
@@ -761,14 +762,14 @@ public class XSDLoader {
     protected ListType createListType(Schema schema, String name, XSParticle particle) throws TypeBindingException {
         XSElementDecl element = particle.getTerm().asElementDecl();
         if (element == null) {
-            log.warn("Ignoring " + name + " unsupported list type");
+            log.warn("Ignoring {} unsupported list type", name);
             return null;
         }
         // type could be anonymous
         // concat list name to enforce inner element type unity across type
         Type type = loadType(schema, element.getType(), name + '#' + element.getName());
         if (type == null) {
-            log.warn("Unable to find type for " + element.getName());
+            log.warn("Unable to find type for {}", element.getName());
             return null;
         }
 

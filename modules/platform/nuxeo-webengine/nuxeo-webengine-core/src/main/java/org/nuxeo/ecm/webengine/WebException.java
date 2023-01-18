@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -43,7 +43,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 @Deprecated
 public class WebException extends WebApplicationException {
 
-    protected static final Log log = LogFactory.getLog(WebException.class);
+    private static final Logger log = LogManager.getLogger(WebException.class);
 
     private static final long serialVersionUID = 176876876786L;
 

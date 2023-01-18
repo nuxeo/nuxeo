@@ -21,8 +21,8 @@ package org.nuxeo.lib.stream.computation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * An abstract {@link Computation} that processes records by batch.
@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractBatchComputation extends AbstractComputation {
 
-    private static final Log log = LogFactory.getLog(AbstractBatchComputation.class);
+    private static final Logger log = LogManager.getLogger(AbstractBatchComputation.class);
 
     public static final String TIMER_BATCH = "batch";
 
@@ -129,18 +129,17 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
         if (removeLastRecordOnRetry) {
             // the batchProcess has failed, processRecord will be retried with the same record
             // but first we have to remove the record from the batch
-            batchRecords.remove(batchRecords.size() -1);
+            batchRecords.remove(batchRecords.size() - 1);
             removeLastRecordOnRetry = false;
         }
-        log.warn(String.format("Computation: %s fails to process batch of %d records, last record: %s, retrying ...",
-                metadata.name(), batchRecords.size(), context.getLastOffset()), failure);
+        log.warn("Computation: {} fails to process batch of {} records, last record: {}, retrying ...", metadata.name(),
+                batchRecords.size(), context.getLastOffset(), failure);
     }
 
     @Override
     public void processFailure(ComputationContext context, Throwable failure) {
-        log.error(String.format(
-                "Computation: %s fails to process batch of %d records after retries, last record: %s, policy: %s",
-                metadata.name(), batchRecords.size(), context.getLastOffset(), context.getPolicy()), failure);
+        log.error("Computation: {} fails to process batch of {} records after retries, last record: {}, policy: {}",
+                metadata.name(), batchRecords.size(), context.getLastOffset(), context.getPolicy(), failure);
         batchFailure(context, currentInputStream, batchRecords);
         batchRecords.clear();
         newBatch = true;

@@ -23,8 +23,8 @@ import static org.nuxeo.runtime.transaction.TransactionHelper.commitOrRollbackTr
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -42,7 +42,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 9.1
  */
 public class DocumentMessageConsumer extends AbstractConsumer<DocumentMessage> {
-    private static final Log log = LogFactory.getLog(DocumentMessageConsumer.class);
+
+    private static final Logger log = LogManager.getLogger(DocumentMessageConsumer.class);
 
     protected final String rootPath;
 

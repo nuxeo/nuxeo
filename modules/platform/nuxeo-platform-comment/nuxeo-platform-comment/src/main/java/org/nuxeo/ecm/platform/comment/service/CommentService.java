@@ -28,8 +28,8 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STAT
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_PROPERTY_TO_SECURED;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
@@ -46,14 +46,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class CommentService extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(CommentService.class);
+
     public static final String ID = "org.nuxeo.ecm.platform.comment.service.CommentService";
 
     /** @since 10.3 */
     public static final ComponentName NAME = new ComponentName(ID);
 
     public static final String VERSIONING_EXTENSION_POINT_RULES = "rules";
-
-    private static final Log log = LogFactory.getLog(CommentService.class);
 
     // @GuardedBy("this")
     protected volatile CommentManager commentManager;
@@ -64,9 +64,9 @@ public class CommentService extends DefaultComponent {
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("config".equals(extensionPoint)) {
             config = (CommentServiceConfig) contribution;
-            log.debug("registered service config: " + config);
+            log.debug("registered service config: {}", config);
         } else {
-            log.warn("unknown extension point: " + extensionPoint);
+            log.warn("unknown extension point: {}", extensionPoint);
         }
     }
 

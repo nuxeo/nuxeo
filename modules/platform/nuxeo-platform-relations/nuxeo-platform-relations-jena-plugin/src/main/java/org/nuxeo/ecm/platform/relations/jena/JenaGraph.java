@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.relations.api.Blank;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
@@ -87,7 +87,7 @@ public class JenaGraph implements Graph {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(JenaGraph.class);
+    private static final Logger log = LogManager.getLogger(JenaGraph.class);
 
     // keep model in a private field for memory graph (only useful for tests ;
     // not thread safe)
@@ -217,14 +217,14 @@ public class JenaGraph implements Graph {
                     // other models already exist => do not set parameters
                     // on driver.
                     if (databaseDoCompressUri != connection.getDriver().getDoCompressURI()) {
-                        log.warn(String.format("Cannot set databaseDoCompressUri attribute to %s "
-                                + "for model %s, other models already " + "exist with value %s", databaseDoCompressUri,
-                                name, connection.getDriver().getDoCompressURI()));
+                        log.warn(
+                                "Cannot set databaseDoCompressUri attribute to: {} for model: {}, other models already exist with value: {}",
+                                databaseDoCompressUri, name, connection.getDriver().getDoCompressURI());
                     }
                     if (databaseTransactionEnabled != connection.getDriver().getIsTransactionDb()) {
-                        log.warn(String.format("Cannot set databaseTransactionEnabled attribute to %s "
-                                + "for model %s, other models already " + "exist with value %s",
-                                databaseTransactionEnabled, name, connection.getDriver().getIsTransactionDb()));
+                        log.warn(
+                                "Cannot set databaseTransactionEnabled attribute to: {} for model: {}, other models already exist with value: {}",
+                                databaseTransactionEnabled, name, connection.getDriver().getIsTransactionDb());
                     }
                 } else {
                     if (databaseDoCompressUri) {
@@ -803,10 +803,10 @@ public class JenaGraph implements Graph {
             graphConnection = openGraph();
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
-            log.debug(String.format("Running query %s", queryString));
+            log.debug("Running query: {}", queryString);
             // XXX AT: ignore language for now
             if (language != null && !language.equals("sparql")) {
-                log.warn(String.format("Unknown language %s for query, using SPARQL", language));
+                log.warn("Unknown language: {} for query, using SPARQL", language);
             }
             Query query = QueryFactory.create(queryString);
             query.setBaseURI(baseURI);

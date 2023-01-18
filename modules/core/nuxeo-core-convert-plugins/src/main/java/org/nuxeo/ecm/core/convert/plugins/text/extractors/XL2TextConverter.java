@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -41,8 +39,6 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 public class XL2TextConverter implements Converter {
-
-    private static final Log log = LogFactory.getLog(XL2TextConverter.class);
 
     private static final String CELL_SEP = " ";
 

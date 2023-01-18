@@ -39,8 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -55,7 +55,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(NuxeoPrincipalImpl.class);
+    private static final Logger log = LogManager.getLogger(NuxeoPrincipalImpl.class);
 
     protected UserConfig config = UserConfig.DEFAULT;
 
@@ -329,8 +329,9 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                     } catch (DirectoryException de) {
                         if (virtualGroups.contains(groupName)) {
                             // do not fail while retrieving a virtual group
-                            log.warn("Failed to get group '" + groupName + "' due to '" + de.getMessage()
-                                    + "': permission resolution involving groups may not be correct");
+                            log.warn(
+                                    "Failed to get group: {} due to: {}: permission resolution involving groups may not be correct",
+                                    groupName, de.getMessage());
                             nxGroup = null;
                         } else {
                             throw de;
@@ -344,7 +345,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                     } else if (userManager != null) {
                         // XXX this should only happens in case of
                         // inconsistency in DB
-                        log.error("User " + getName() + " references the " + groupName + " group that does not exists");
+                        log.error("User: {} references the group: {} that does not exists", getName(), groupName);
                     }
                 } else {
                     groupsToProcess.addAll(nxGroup.getParentGroups());

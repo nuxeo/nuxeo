@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.picture;
 
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Helper to handle the UNDEFINED Exif data type.
@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ExifHelper {
 
-    public static final Log log = LogFactory.getLog(ExifHelper.class);
+    private static final Logger log = LogManager.getLogger(ExifHelper.class);
 
     // the ASCII data format
     public static final byte[] ASCII = { 65, 83, 67, 73, 73, 0, 0, 0 };

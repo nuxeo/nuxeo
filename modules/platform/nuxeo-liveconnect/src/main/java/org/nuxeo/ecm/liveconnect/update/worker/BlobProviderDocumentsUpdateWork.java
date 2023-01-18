@@ -22,8 +22,8 @@ package org.nuxeo.ecm.liveconnect.update.worker;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -33,9 +33,9 @@ import org.nuxeo.runtime.api.Framework;
 
 public class BlobProviderDocumentsUpdateWork extends AbstractWork {
 
-    private static final Log log = LogFactory.getLog(BlobProviderDocumentsUpdateWork.class);
-
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = LogManager.getLogger(BlobProviderDocumentsUpdateWork.class);
 
     protected static final String TITLE = "Live Connect Update Documents Work";
 
@@ -65,14 +65,16 @@ public class BlobProviderDocumentsUpdateWork extends AbstractWork {
 
     @Override
     public void work() {
-        BatchUpdateBlobProvider blobProvider = (BatchUpdateBlobProvider) Framework.getService(
-                BlobManager.class).getBlobProvider(providerName);
+        BatchUpdateBlobProvider blobProvider = (BatchUpdateBlobProvider) Framework.getService(BlobManager.class)
+                                                                                  .getBlobProvider(providerName);
         setStatus("Updating");
         if (session == null) {
             openSystemSession();
         }
-        final List<DocumentModel> results = docIds.stream().map(IdRef::new).map(session::getDocument)
-                .collect(Collectors.toList());
+        final List<DocumentModel> results = docIds.stream()
+                                                  .map(IdRef::new)
+                                                  .map(session::getDocument)
+                                                  .collect(Collectors.toList());
         log.trace("Updating");
         List<DocumentModel> changedDocuments = blobProvider.checkChangesAndUpdateBlob(results);
         if (changedDocuments != null) {

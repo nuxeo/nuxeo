@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class NotificationListenerVetoRegistry extends ContributionFragmentRegistry<NotificationListenerVetoDescriptor> {
 
-    private static final Log log = LogFactory.getLog(NotificationListenerVetoRegistry.class);
+    private static final Logger log = LogManager.getLogger(NotificationListenerVetoRegistry.class);
 
     private Map<String, NotificationListenerVeto> vetos;
 

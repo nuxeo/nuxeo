@@ -31,15 +31,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ActionRegistry implements Serializable {
 
-    private static final Log log = LogFactory.getLog(ActionRegistry.class);
+    private static final Logger log = LogManager.getLogger(ActionRegistry.class);
 
     private static final long serialVersionUID = 8425627293154848041L;
 
@@ -57,12 +57,10 @@ public class ActionRegistry implements Serializable {
 
     public synchronized void addAction(Action action) {
         String id = action.getId();
-        if (log.isDebugEnabled()) {
-            if (actions.containsKey(id)) {
-                log.debug("Overriding action: " + action);
-            } else {
-                log.debug("Registering action: " + action);
-            }
+        if (actions.containsKey(id)) {
+            log.debug("Overriding action: {}", action);
+        } else {
+            log.debug("Registering action: {}", action);
         }
         // add a default label if not set
         if (action.getLabel() == null) {
@@ -82,10 +80,7 @@ public class ActionRegistry implements Serializable {
     }
 
     public synchronized Action removeAction(String id) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unregistering action: " + id);
-        }
-
+        log.debug("Unregistering action: {}", id);
         Action action = actions.remove(id);
         if (action != null) {
             for (String category : action.getCategories()) {
@@ -169,10 +164,8 @@ public class ActionRegistry implements Serializable {
                 applied = true;
             }
             if (applied) {
-                log.warn(String.format(
-                        "Applied compatibility to action '%s', its configuration "
-                                + "should be reviewed: make sure the link references an " + "absolute path",
-                        action.getId()));
+                log.warn("Applied compatibility to action '{}', its configuration should be reviewed: "
+                        + "make sure the link references an absolute path", action::getId);
                 return true;
             }
         }

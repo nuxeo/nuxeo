@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated
 public class BlobListZipWork extends TransientStoreWork {
 
-    private static final Log log = LogFactory.getLog(BlobListZipWork.class);
+    private static final Logger log = LogManager.getLogger(BlobListZipWork.class);
 
     public static final String CATEGORY = "blobListZip";
 
@@ -124,9 +124,7 @@ public class BlobListZipWork extends TransientStoreWork {
         for (String docId : docIds) {
             DocumentRef docRef = new IdRef(docId);
             if (!session.exists(docRef)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cannot retrieve document '%s', probably deleted in the meanwhile", docId));
-                }
+                log.debug("Cannot retrieve document '{}', probably deleted in the meanwhile", docId);
                 continue;
             }
             DocumentModel doc = session.getDocument(docRef);
@@ -135,10 +133,7 @@ public class BlobListZipWork extends TransientStoreWork {
                 log.trace("Not able to resolve blob");
                 continue;
             } else if (!downloadService.checkPermission(doc, null, blob, "download", Collections.emptyMap())) {
-                if (log.isDebugEnabled()) {
-                    log.debug(
-                            String.format("Not allowed to bulk download blob for document %s", doc.getPathAsString()));
-                }
+                log.debug("Not allowed to bulk download blob for document {}", doc.getPathAsString());
                 continue;
             }
             blobList.add(blob);

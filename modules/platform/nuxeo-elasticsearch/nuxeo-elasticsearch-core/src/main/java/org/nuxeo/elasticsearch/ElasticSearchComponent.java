@@ -38,16 +38,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.opensearch.common.bytes.BytesReference;
-import org.opensearch.index.query.QueryBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ESClient;
@@ -76,6 +73,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.index.query.QueryBuilder;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -87,7 +86,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 public class ElasticSearchComponent extends DefaultComponent
         implements ElasticSearchAdmin, ElasticSearchIndexing, ElasticSearchService {
 
-    protected static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
+    private static final Logger log = LogManager.getLogger(ElasticSearchComponent.class);
 
     protected static final String EP_EMBEDDED_SERVER = "elasticSearchEmbeddedServer";
 
@@ -133,10 +132,10 @@ public class ElasticSearchComponent extends DefaultComponent
             ElasticSearchEmbeddedServerConfig serverContrib = (ElasticSearchEmbeddedServerConfig) contribution;
             if (serverContrib.isEnabled()) {
                 embeddedServerConfig = serverContrib;
-                log.info("Registering embedded server configuration: " + embeddedServerConfig + ", loaded from "
-                        + contributor.getName());
+                log.info("Registering embedded server configuration: {}, loaded from {}", embeddedServerConfig,
+                        contributor.getName());
             } else if (embeddedServerConfig != null) {
-                log.info("Disabling previous embedded server configuration, deactivated by " + contributor.getName());
+                log.info("Disabling previous embedded server configuration, deactivated by {}", contributor.getName());
                 embeddedServerConfig = null;
             }
             break;
@@ -153,9 +152,9 @@ public class ElasticSearchComponent extends DefaultComponent
                 } else {
                     indexConfig.put(idx.getName(), idx);
                 }
-                log.info("Registering index configuration: " + idx + ", loaded from " + contributor.getName());
+                log.info("Registering index configuration: {}, loaded from {}", idx, contributor.getName());
             } else if (previous != null) {
-                log.info("Disabling index configuration: " + previous + ", deactivated by " + contributor.getName());
+                log.info("Disabling index configuration: {}, deactivated by {}", previous, contributor.getName());
                 indexConfig.remove(idx.getName());
             }
             break;
@@ -164,7 +163,7 @@ public class ElasticSearchComponent extends DefaultComponent
             try {
                 jsonESDocumentWriter = writerDescriptor.getKlass().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                log.error("Cannot instantiate jsonESDocumentWriter from " + writerDescriptor.getKlass());
+                log.error("Cannot instantiate jsonESDocumentWriter from {}", writerDescriptor::getKlass);
                 throw new NuxeoException(e);
             }
             break;
@@ -216,7 +215,7 @@ public class ElasticSearchComponent extends DefaultComponent
             return;
         }
         for (String repositoryName : esa.getInitializedRepositories()) {
-            log.warn(String.format("Indexing repository: %s on startup", repositoryName));
+            log.warn("Indexing repository: {} on startup", repositoryName);
             runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document");
             try {
                 prepareWaitForIndexing().get(REINDEX_TIMEOUT, TimeUnit.SECONDS);
@@ -225,8 +224,8 @@ public class ElasticSearchComponent extends DefaultComponent
             } catch (ExecutionException e) {
                 log.error(e.getMessage(), e);
             } catch (TimeoutException e) {
-                log.warn(String.format("Indexation of repository %s not finished after %d s, continuing in background",
-                        repositoryName, REINDEX_TIMEOUT));
+                log.warn("Indexation of repository {} not finished after {}s, continuing in background", repositoryName,
+                        REINDEX_TIMEOUT);
             }
         }
     }
@@ -242,7 +241,7 @@ public class ElasticSearchComponent extends DefaultComponent
 
     void processStackedCommands() {
         if (!stackedCommands.isEmpty()) {
-            log.info(String.format("Processing %d indexing commands stacked during startup", stackedCommands.size()));
+            log.info("Processing {} indexing commands stacked during startup", stackedCommands.size());
             runIndexingWorker(stackedCommands);
             stackedCommands.clear();
             log.debug("Done");
@@ -425,17 +424,13 @@ public class ElasticSearchComponent extends DefaultComponent
             stackCommands(cmds);
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Process indexing commands: " + Arrays.toString(cmds.toArray()));
-        }
+        log.debug("Process indexing commands: {}", () -> Arrays.toString(cmds.toArray()));
         esi.indexNonRecursive(cmds);
     }
 
     protected void stackCommands(List<IndexingCommand> cmds) {
-        if (log.isDebugEnabled()) {
-            log.debug("Delaying indexing commands: Waiting for Index to be initialized."
-                    + Arrays.toString(cmds.toArray()));
-        }
+        log.debug("Delaying indexing commands: Waiting for Index to be initialized, commands: {}",
+                () -> Arrays.toString(cmds.toArray()));
         stackedCommands.addAll(cmds);
     }
 

@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.usermanager.providers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -37,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoGroupsPageProvider extends AbstractGroupsPageProvider<NuxeoGroup> {
 
     private static final long serialVersionUID = 1L;
-    private static final Log log = LogFactory.getLog(NuxeoGroupsPageProvider.class);
 
     @Override
     public List<NuxeoGroup> getCurrentPage() {

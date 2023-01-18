@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -45,7 +45,8 @@ import org.w3c.dom.Element;
 public class MetadataServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    protected static final Log log = LogFactory.getLog(MetadataServlet.class);
+
+    private static final Logger log = LogManager.getLogger(MetadataServlet.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -58,8 +59,8 @@ public class MetadataServlet extends HttpServlet {
         try {
             Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(descriptor);
             if (marshaller == null) {
-                log.error("Unable to marshall message, no marshaller registered for message object: "
-                        + descriptor.getElementQName());
+                log.error("Unable to marshall message, no marshaller registered for message object: {}",
+                        descriptor::getElementQName);
                 return;
             }
             Element dom = marshaller.marshall(descriptor);

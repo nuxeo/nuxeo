@@ -29,15 +29,15 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Environment {
 
-    private static final Log logger = LogFactory.getLog(Environment.class);
+    private static final Logger logger = LogManager.getLogger(Environment.class);
 
     /**
      * Constants that identifies possible hosts for the framework.
@@ -607,8 +607,8 @@ public class Environment {
         if (homeDir != null && !homeDir.isEmpty()) {
             setServerHome(new File(homeDir));
         } else {
-            logger.warn(String.format("Could not set the server home from %s or %s system properties, will use %s",
-                    NUXEO_HOME, NUXEO_HOME_DIR, home));
+            logger.warn("Could not set the server home from: {} or {} system properties, will use {}", NUXEO_HOME,
+                    NUXEO_HOME_DIR, home);
             setServerHome(home);
         }
         logger.debug(this);
@@ -719,7 +719,7 @@ public class Environment {
             getDistributionInfo();
         }
         return distributionVersion;
-     }
+    }
 
     /**
      * @return the build date of the Nuxeo distribution
@@ -738,7 +738,7 @@ public class Environment {
         try (InputStream in = new FileInputStream(propFile)) {
             distProps.load(in);
         } catch (IOException e) {
-            logger.warn("Cannot read distribution property file " + propFile + ": " + e.getMessage());
+            logger.warn("Cannot read distribution property file: {} / {}", propFile, e.getMessage());
             distributionVersion = "unknown";
             distributionDate = "unknown";
             return;

@@ -30,9 +30,10 @@ import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.osgi.BundleFile;
@@ -42,7 +43,6 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
-import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
@@ -51,6 +51,8 @@ import org.osgi.framework.FrameworkEvent;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FrameworkLoader {
+
+    private static final Logger log = LogManager.getLogger(FrameworkLoader.class);
 
     public static final String HOST_NAME = "org.nuxeo.app.host.name";
 
@@ -75,8 +77,6 @@ public class FrameworkLoader {
     public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
 
     public static final String ARGS = "org.nuxeo.app.args";
-
-    private static final Log log = LogFactory.getLog(FrameworkLoader.class);
 
     private static boolean isInitialized;
 
@@ -160,15 +160,8 @@ public class FrameworkLoader {
     }
 
     protected static void printDeploymentOrderInfo(List<File> files) {
-        if (log.isDebugEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            for (File file : files) {
-                if (file != null) {
-                    sb.append("\n\t").append(file.getPath());
-                }
-            }
-            log.debug("Deployment order: " + sb.toString());
-        }
+        log.debug(() -> "Deployment order:\n"
+                + files.stream().map(f -> "\t" + f.getPath()).collect(Collectors.joining("\n")));
     }
 
     protected static Attributes.Name SYMBOLIC_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
@@ -220,7 +213,7 @@ public class FrameworkLoader {
             try {
                 install(f);
             } catch (IOException | BundleException | RuntimeException e) {
-                log.error("Failed to install bundle: " + f, e);
+                log.error("Failed to install bundle: {}", f, e);
             }
         }
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, systemBundle, null));
@@ -378,8 +371,7 @@ public class FrameworkLoader {
     }
 
     protected static void printStartMessage() {
-        StringBuilder msg = getStartMessage();
-        log.info(msg);
+        log.info(FrameworkLoader::getStartMessage);
     }
 
     /**

@@ -29,8 +29,7 @@ import java.util.Objects;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogLag;
@@ -47,7 +46,8 @@ import org.nuxeo.lib.stream.log.Name;
  * @since 10.1
  */
 public class PositionCommand extends Command {
-    private static final Log log = LogFactory.getLog(PositionCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(PositionCommand.class);
 
     public static final Duration FIRST_READ_TIMEOUT = Duration.ofMillis(1000);
 
@@ -70,8 +70,8 @@ public class PositionCommand extends Command {
             Instant instant = Instant.parse(dateIso8601);
             return instant.toEpochMilli();
         } catch (DateTimeException e) {
-            log.error("Failed to read the timeout: " + e.getMessage());
-            log.error("The timestamp should be in ISO-8601 format, eg. " + Instant.now());
+            log.error("Failed to read the timeout: {}", e::getMessage);
+            log.error("The timestamp should be in ISO-8601 format, eg. {}", Instant::now);
         }
         return -1;
     }
@@ -177,8 +177,8 @@ public class PositionCommand extends Command {
             tailer.toEnd();
             tailer.commit();
         }
-        log.info(String.format("# Moved log %s, group: %s, from: %s to %s", labelFor(name, partition), group,
-                lag.lower(), lag.upper()));
+        log.info("# Moved log {}, group: {}, from: {} to {}", labelFor(name, partition), group, lag.lower(),
+                lag.upper());
         return true;
     }
 
@@ -212,7 +212,7 @@ public class PositionCommand extends Command {
         try (LogTailer<Externalizable> tailer = createTailer(manager, name, partition, group)) {
             tailer.reset();
         }
-        log.warn(String.format("# Reset log %s, group: %s, from: %s to 0", labelFor(name, partition), group, pos));
+        log.warn("# Reset log {}, group: {}, from: {} to 0", labelFor(name, partition), group, pos);
         return true;
     }
 
@@ -226,14 +226,12 @@ public class PositionCommand extends Command {
                 LogPartition logPartition = new LogPartition(name, part);
                 LogOffset logOffset = tailer.offsetForTimestamp(logPartition, timestamp);
                 if (logOffset == null) {
-                    log.error(String.format("# Could not find an offset for group: %s, partition: %s", group,
-                            logPartition));
+                    log.error("# Could not find an offset for group: {}, partition: {}", group, logPartition);
                     continue;
                 }
                 tailer.seek(logOffset);
                 movedOffset = true;
-                log.warn(String.format("# Set log %s, group: %s, to offset %s", labelFor(name, part), group,
-                        logOffset.offset()));
+                log.warn("# Set log {}, group: {}, to offset {}", labelFor(name, part), group, logOffset.offset());
             }
             if (movedOffset) {
                 tailer.commit();
@@ -245,8 +243,7 @@ public class PositionCommand extends Command {
     }
 
     protected boolean positionToWatermark(LogManager manager, Name group, Name name, int partition, long timestamp,
-            String codec)
-            throws InterruptedException {
+            String codec) throws InterruptedException {
         Name newGroup = Name.ofUrn("admin/tools");
         int size = manager.size(name);
         List<LogOffset> offsets = new ArrayList<>(size);
@@ -273,13 +270,13 @@ public class PositionCommand extends Command {
                 log.error("No offsets found because log is empty");
                 return false;
             }
-            log.error("Timestamp: " + timestamp + " is earlier as any records, resetting positions");
+            log.error("Timestamp: {} is earlier as any records, resetting positions", timestamp);
             return reset(manager, group, name, partition);
         }
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             offsets.stream().filter(Objects::nonNull).forEach(tailer::seek);
             tailer.commit();
-            offsets.stream().filter(Objects::nonNull).forEach(offset -> log.warn("# Moving consumer to: " + offset));
+            offsets.stream().filter(Objects::nonNull).forEach(offset -> log.warn("# Moving consumer to: {}", offset));
         }
         return true;
     }
@@ -309,8 +306,7 @@ public class PositionCommand extends Command {
         if (offset < pos) {
             goToStart = true;
         } else if (offset == pos) {
-            log.error(String.format("Current offset for group %s on %s is already %d", group, labelFor(name, partition),
-                    pos));
+            log.error("Current offset for group {} on {} is already {}", group, labelFor(name, partition), pos);
             return false;
         }
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, LogPartition.of(name, partition))) {
@@ -325,8 +321,7 @@ public class PositionCommand extends Command {
                 }
                 if (record.offset().offset() == offset) {
                     tailer.commit();
-                    log.warn(String.format("# Move group %s on %s from %d to %d", group, labelFor(name, partition), pos,
-                            offset));
+                    log.warn("# Move group {} on {} from {} to {}", group, labelFor(name, partition), pos, offset);
                     return true;
                 }
             }

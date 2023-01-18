@@ -26,8 +26,8 @@ import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFIL
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -57,7 +57,7 @@ import com.google.common.cache.CacheBuilder;
  */
 public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService {
 
-    private static final Log log = LogFactory.getLog(UserProfileServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(UserProfileServiceImpl.class);
 
     protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
 

@@ -28,8 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,8 +75,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.importer.stream:test-core-type-contrib.xml")
 public class TestDocumentImport {
-
-    protected static final Log log = LogFactory.getLog(TestDocumentImport.class);
 
     @Inject
     protected StreamService streamService;

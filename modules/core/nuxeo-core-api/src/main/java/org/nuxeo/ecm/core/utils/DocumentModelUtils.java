@@ -24,8 +24,8 @@ package org.nuxeo.ecm.core.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class DocumentModelUtils {
 
-    private static final Log log = LogFactory.getLog(DocumentModelUtils.class);
+    private static final Logger log = LogManager.getLogger(DocumentModelUtils.class);
 
     // Utility class.
     private DocumentModelUtils() {
@@ -82,10 +82,7 @@ public final class DocumentModelUtils {
             String fieldName = getFieldName(propertyName);
             return doc.getProperty(schemaName, fieldName);
         } catch (PropertyException e) {
-            log.warn("Error trying to get property " + propertyName + ". " + e.getMessage());
-            if (log.isDebugEnabled()) {
-                log.debug(e);
-            }
+            log.warn("Error trying to get property: {}. {}", propertyName, e.getMessage(), log.isDebugEnabled() ? e : null);
             return null;
         }
     }

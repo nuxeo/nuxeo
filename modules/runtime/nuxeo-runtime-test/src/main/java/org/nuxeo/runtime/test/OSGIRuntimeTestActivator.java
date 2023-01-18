@@ -23,15 +23,13 @@ package org.nuxeo.runtime.test;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiComponentLoader;
 import org.nuxeo.runtime.osgi.OSGiRuntimeActivator;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
-
 import org.osgi.framework.BundleContext;
 
 /**
@@ -39,7 +37,7 @@ import org.osgi.framework.BundleContext;
  */
 public class OSGIRuntimeTestActivator extends OSGiRuntimeActivator {
 
-    private static final Log log = LogFactory.getLog(OSGIRuntimeTestActivator.class);
+    private static final Logger log = LogManager.getLogger(OSGIRuntimeTestActivator.class);
 
     @Override
     public void start(BundleContext context) {

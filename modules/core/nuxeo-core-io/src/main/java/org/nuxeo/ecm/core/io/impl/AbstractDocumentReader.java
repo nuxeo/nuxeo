@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
  */
 public abstract class AbstractDocumentReader implements DocumentReader {
 
-    private static final Log log = LogFactory.getLog(AbstractDocumentReader.class);
+    private static final Logger log = LogManager.getLogger(AbstractDocumentReader.class);
 
     // this abstract method is needed
     @Override
@@ -52,18 +52,16 @@ public abstract class AbstractDocumentReader implements DocumentReader {
 
             /* NXP-1688 Rux: no ID, it should be a OS folder and not an exported one */
             if (doc.getId() != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Adding document to be transformed (path): " + doc.getPath());
-                }
+                log.debug("Adding document to be transformed (path): {}", doc::getPath);
                 docs.add(doc);
             } else {
-                log.warn("no ID for document, won't add " + doc);
+                log.warn("no ID for document, won't add: {}", doc);
             }
         }
         if (docs.isEmpty()) {
             return null;
         }
-        return docs.toArray(new ExportedDocument[docs.size()]);
+        return docs.toArray(ExportedDocument[]::new);
     }
 
 }

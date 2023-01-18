@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.webengine.ui.tree.document;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -34,8 +32,6 @@ import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
  */
 // FIXME: properly handle exceptions
 public class DocumentContentProvider implements ContentProvider {
-
-    private static final Log log = LogFactory.getLog(DocumentContentProvider.class);
 
     private static final long serialVersionUID = 1L;
 

@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -38,8 +36,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 8.4
  */
 public class ConvertToPDFPictureConverter implements Converter {
-
-    private static final Log log = LogFactory.getLog(ConvertToPDFPictureConverter.class);
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {

@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
-    private static final Log LOG = LogFactory.getLog(CUserServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(CUserServiceImpl.class);
 
     private static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
 
@@ -124,7 +124,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                     throw new CertException(userID + " already has a certificate");
                 }
 
-                LOG.info("Starting certificate generation for: " + userID);
+                log.info("Starting certificate generation for: {}", userID);
                 Map<String, Object> map = new HashMap<>();
                 map.put("userid", userID);
 
@@ -139,7 +139,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 certificate = session.createEntry(map);
                 return certificate;
             } catch (DirectoryException e) {
-                LOG.error(e);
+                log.error(e);
                 throw new CertException(e);
             }
         });

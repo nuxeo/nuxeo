@@ -30,8 +30,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.utils.TextTemplate;
@@ -56,15 +56,14 @@ import org.osgi.framework.Bundle;
  */
 public abstract class AbstractRuntimeService implements RuntimeService {
 
+    private static final Logger log = LogManager.getLogger(AbstractRuntimeService.class);
+
     /**
      * Property that controls whether or not to redirect JUL to JCL. By default is true (JUL will be redirected)
      */
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
 
     public static final String REDIRECT_JUL_THRESHOLD = "org.nuxeo.runtime.redirectJUL.threshold";
-
-    // package-private for subclass access without synthetic accessor
-    static final Log log = LogFactory.getLog(RuntimeService.class);
 
     protected boolean isStarted = false;
 
@@ -141,7 +140,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
         logConfig.configure();
 
-        log.info("Starting Nuxeo Runtime service " + getName() + "; version: " + getVersion());
+        log.info("Starting Nuxeo Runtime service: {}; version: {}", getName(), getVersion());
 
         Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
         try {
@@ -159,7 +158,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
         isShuttingDown = true;
         try {
-            log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
+            log.info("Stopping Nuxeo Runtime service: {}; version: {}", getName(), getVersion());
             Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
             try {
                 manager.shutdown();
@@ -363,7 +362,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         public void configure() {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
                 Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
-                JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
+                JavaUtilLoggingHelper.redirectToLog4j(threshold);
             }
         }
 

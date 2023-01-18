@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
@@ -55,9 +55,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ThumbnailAudioFactory implements ThumbnailFactory {
 
-    public static final String APIC = "APIC";
+    private static final Logger log = LogManager.getLogger(ThumbnailAudioFactory.class);
 
-    private static final Log log = LogFactory.getLog(ThumbnailAudioFactory.class);
+    public static final String APIC = "APIC";
 
     @Override
     public Blob getThumbnail(DocumentModel doc, CoreSession session) {

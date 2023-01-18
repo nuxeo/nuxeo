@@ -43,10 +43,10 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.directory.shared.ldap.codec.util.LdapURL;
 import org.apache.directory.shared.ldap.codec.util.LdapURLEncodingException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -84,7 +84,7 @@ import org.nuxeo.ecm.directory.ldap.filter.FilterExpressionCorrector.FilterJobs;
 @XObject(value = "ldapReference")
 public class LDAPReference extends AbstractReference implements Cloneable {
 
-    private static final Log log = LogFactory.getLog(LDAPReference.class);
+    private static final Logger log = LogManager.getLogger(LDAPReference.class);
 
     @XNodeList(value = "dynamicReference", type = LDAPDynamicReferenceDescriptor[].class, componentType = LDAPDynamicReferenceDescriptor.class)
     private LDAPDynamicReferenceDescriptor[] dynamicReferences;
@@ -154,11 +154,11 @@ public class LDAPReference extends AbstractReference implements Cloneable {
             // BBB: the field mapper has been explicitly used to specify the
             // staticAttributeId value as this was the case before the
             // introduction of the staticAttributeId dynamicAttributeId duality
-            log.warn(String.format(
+            log.warn(
                     "implicit static attribute definition through fieldMapping is deprecated, "
                             + "please update your setup with "
-                            + "<ldapReference field=\"%s\" directory=\"%s\" staticAttributeId=\"%s\">",
-                    fieldName, sourceDirectoryName, backendFieldId));
+                            + "<ldapReference field=\"{}\" directory=\"{}\" staticAttributeId=\"{}\">",
+                    fieldName, sourceDirectoryName, backendFieldId);
             return backendFieldId;
         }
     }
@@ -241,10 +241,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         LDAPDirectory ldapSourceDirectory = (LDAPDirectory) getSourceDirectory();
         String attributeId = getStaticAttributeId();
         if (attributeId == null) {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("trying to edit a non-static reference from %s in directory %s: ignoring",
-                        sourceId, ldapSourceDirectory.getName()));
-            }
+            log.trace("trying to edit a non-static reference from {} in directory {}: ignoring", sourceId,
+                    ldapSourceDirectory.getName());
             return;
         }
         try (LDAPSession targetSession = ldapTargetDirectory.getSession();
@@ -269,10 +267,10 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                         // can be forged client side (rdnAttribute = idAttribute and scope is onelevel)
                         ldapEntry = targetSession.getLdapEntry(targetId);
                         if (ldapEntry == null) {
-                            log.warn(String.format(
-                                    "entry '%s' in directory '%s' not found: could not add link from '%s' in directory '%s' for '%s'",
+                            log.warn(
+                                    "entry: {} in directory: {} not found: could not add link from: {} in directory: {} for: {}",
                                     targetId, ldapTargetDirectory.getName(), sourceId, ldapSourceDirectory.getName(),
-                                    this));
+                                    this);
                             continue;
                         }
                         String dn = ldapEntry.getNameInNamespace();
@@ -291,32 +289,30 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                         Attributes attrsToAdd = new BasicAttributes();
                         attrsToAdd.put(attrToAdd);
 
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "LDAPReference.addLinks(%s, [%s]): LDAP modifyAttributes dn='%s' "
-                                            + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
-                                    sourceId, StringUtils.join(targetIds, ", "), sourceDn, attrsToAdd, this));
-                        }
+                        log.debug(
+                                "LDAPReference.addLinks({}, [{}]): LDAP modifyAttributes dn='{}' "
+                                        + "mod_op='ADD_ATTRIBUTE' attrs='{}' [{}]",
+                                () -> sourceId, () -> StringUtils.join(targetIds, ", "), () -> sourceDn,
+                                () -> attrsToAdd, () -> this);
                         sourceSession.getContext().modifyAttributes(sourceDn, DirContext.ADD_ATTRIBUTE, attrsToAdd);
 
                         // robustly clean any existing empty marker now that we are sure that the list in not empty
                         if (storedAttr != null && storedAttr.contains(emptyRefMarker)) {
                             Attributes cleanAttrs = new BasicAttributes(attributeId, emptyRefMarker);
 
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "LDAPReference.addLinks(%s, [%s]): LDAP modifyAttributes dn='%s'"
-                                                + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
-                                        sourceId, StringUtils.join(targetIds, ", "), sourceDn, cleanAttrs, this));
-                            }
-                            sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE,
-                                    cleanAttrs);
+                            log.debug(
+                                    "LDAPReference.addLinks({}, [{}]): LDAP modifyAttributes dn='{}'"
+                                            + " mod_op='REMOVE_ATTRIBUTE' attrs='{}' [{}]",
+                                    () -> sourceId, () -> StringUtils.join(targetIds, ", "), () -> sourceDn,
+                                    () -> cleanAttrs, () -> this);
+                            sourceSession.getContext()
+                                         .modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE, cleanAttrs);
                         }
                     } catch (SchemaViolationException e) {
                         if (isDynamic()) {
                             // we are editing an entry that has no static part
-                            log.warn(String.format("cannot update dynamic reference in field %s for source %s",
-                                    getFieldName(), sourceId));
+                            log.warn("cannot update dynamic reference in field: {} for source: {}", getFieldName(),
+                                    sourceId);
                         } else {
                             // this is a real schema configuration problem,
                             // wrap up the exception
@@ -368,17 +364,15 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                     // implemented in an entry adaptor
                     DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
                     if (sourceEntry == null) {
-                        log.warn(String.format(
-                                "entry %s in directory %s not found: could not add link to %s in directory %s",
-                                sourceId, ldapSourceDirectory.getName(), targetId, ldapTargetDirectory.getName()));
+                        log.warn("entry: {} in directory: {} not found, could not add link to: {} in directory: {}",
+                                sourceId, ldapSourceDirectory.getName(), targetId, ldapTargetDirectory.getName());
                         continue;
                     }
                     if (BaseSession.isReadOnlyEntry(sourceEntry)) {
                         // skip this entry since it cannot be edited to add the
                         // reference to targetId
-                        log.warn(String.format(
-                                "entry %s in directory %s is readonly: could not add link to %s in directory %s",
-                                sourceId, ldapSourceDirectory.getName(), targetId, ldapTargetDirectory.getName()));
+                        log.warn("entry: {} in directory: {} is readonly, could not add link to: {} in directory: {}",
+                                sourceId, ldapSourceDirectory.getName(), targetId, ldapTargetDirectory.getName());
                         continue;
                     }
                     ldapEntry = sourceSession.getLdapEntry(sourceId);
@@ -392,33 +386,30 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                         // add the new dn
                         Attributes attrs = new BasicAttributes(attributeId, targetAttributeValue);
 
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "LDAPReference.addLinks([%s], %s): LDAP modifyAttributes dn='%s'"
-                                            + " mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
-                                    StringUtils.join(sourceIds, ", "), targetId, sourceDn, attrs, this));
-                        }
+                        log.debug(
+                                "LDAPReference.addLinks([{}], {}): LDAP modifyAttributes dn='{}'"
+                                        + " mod_op='ADD_ATTRIBUTE' attrs='{}' [{}]",
+                                () -> StringUtils.join(sourceIds, ", "), () -> targetId, () -> sourceDn, () -> attrs,
+                                () -> this);
                         sourceSession.getContext().modifyAttributes(sourceDn, DirContext.ADD_ATTRIBUTE, attrs);
 
                         // robustly clean any existing empty marker now that we
                         // are sure that the list in not empty
                         if (storedAttr.contains(emptyRefMarker)) {
                             Attributes cleanAttrs = new BasicAttributes(attributeId, emptyRefMarker);
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "LDAPReference.addLinks(%s, %s): LDAP modifyAttributes dn='%s'"
-                                                + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
-                                        StringUtils.join(sourceIds, ", "), targetId, sourceDn, cleanAttrs.toString(),
-                                        this));
-                            }
-                            sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE,
-                                    cleanAttrs);
+                            log.debug(
+                                    "LDAPReference.addLinks({}, {}): LDAP modifyAttributes dn='{}'"
+                                            + " mod_op='REMOVE_ATTRIBUTE' attrs='{}' [{}]",
+                                    () -> StringUtils.join(sourceIds, ", "), () -> targetId, () -> sourceDn,
+                                    () -> cleanAttrs, () -> this);
+                            sourceSession.getContext()
+                                         .modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE, cleanAttrs);
                         }
                     } catch (SchemaViolationException e) {
                         if (isDynamic()) {
                             // we are editing an entry that has no static part
-                            log.warn(String.format("cannot add dynamic reference in field %s for target %s",
-                                    getFieldName(), targetId));
+                            log.warn("cannot add dynamic reference in field: {} for target: {}", getFieldName(),
+                                    targetId);
                         } else {
                             // this is a real schema configuration problem,
                             // wrap the exception
@@ -492,15 +483,14 @@ public class LDAPReference extends AbstractReference implements Cloneable {
             String searchBaseDn = ldapSourceDirectory.getDescriptor().getSearchBaseDn();
             SearchControls sctls = ldapSourceDirectory.getSearchControls();
             try (LDAPSession sourceSession = ldapSourceDirectory.getSession()) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
-                                    + " filter='%s' args='%s' scope='%s' [%s]",
-                            targetId, searchBaseDn, filterExpr, StringUtils.join(filterArgs, ", "),
-                            sctls.getSearchScope(), this));
-                }
-                NamingEnumeration<SearchResult> results = sourceSession.getContext().search(searchBaseDn, filterExpr,
-                        filterArgs, sctls);
+                log.debug(
+                        "LDAPReference.getSourceIdsForTarget({}): LDAP search search base='{}'"
+                                + " filter='{}' args='{}' scope='{}' [{}]",
+                        () -> targetId, () -> searchBaseDn, () -> filterExpr, () -> StringUtils.join(filterArgs, ", "),
+                        sctls::getSearchScope, () -> this);
+                NamingEnumeration<SearchResult> results = sourceSession.getContext()
+                                                                       .search(searchBaseDn, filterExpr, filterArgs,
+                                                                               sctls);
 
                 try {
                     while (results.hasMore()) {
@@ -540,11 +530,9 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, fetchAllAttributes);
                 }
                 if (targetLdapEntry == null) {
-                    String msg = String.format(
-                            "Failed to perform inverse lookup on LDAPReference"
-                                    + " resolving field '%s' of '%s' to entries of '%s'"
-                                    + " using the dynamic content of attribute '%s':"
-                                    + " entry '%s' cannot be found in '%s'",
+                    String msg = String.format("Failed to perform inverse lookup on LDAPReference"
+                            + " resolving field '%s' of '%s' to entries of '%s'"
+                            + " using the dynamic content of attribute '%s':" + " entry '%s' cannot be found in '%s'",
                             fieldName, ldapSourceDirectory, targetDirectoryName, dynamicAttributeId, targetId,
                             targetDirectoryName);
                     throw new DirectoryException(msg);
@@ -559,14 +547,12 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                 sctls.setReturningAttributes(new String[] { sourceSession.idAttribute, dynamicAttributeId });
                 String filterExpr = String.format("%s=*", dynamicAttributeId);
 
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
-                                    + " filter='%s' scope='%s' [%s]",
-                            targetId, searchBaseDn, filterExpr, sctls.getSearchScope(), this));
-                }
-                NamingEnumeration<SearchResult> results = sourceSession.getContext().search(searchBaseDn, filterExpr,
-                        sctls);
+                log.debug(
+                        "LDAPReference.getSourceIdsForTarget({}): LDAP search search base='{}'"
+                                + " filter='{}' scope='{}' [{}]",
+                        targetId, searchBaseDn, filterExpr, sctls.getSearchScope(), this);
+                NamingEnumeration<SearchResult> results = sourceSession.getContext()
+                                                                       .search(searchBaseDn, filterExpr, sctls);
                 try {
                     while (results.hasMore()) {
                         // step #2.3: for each sourceId and each ldapUrl test
@@ -713,10 +699,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
 
                         if (!pseudoNormalizeDn(targetDn).endsWith(baseDn)) {
                             // optim: avoid network connections when obvious
-                            if (log.isTraceEnabled()) {
-                                log.trace(String.format("ignoring: dn='%s' (does not match '%s') for '%s'", targetDn,
-                                        baseDn, this));
-                            }
+                            log.trace("ignoring: dn: {}  (does not match: {}) for: {}", targetDn, baseDn, this);
                             continue;
                         }
                         // find the id of the referenced entry
@@ -733,9 +716,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                         } else {
                             id = getIdForDn(targetSession, targetDn);
                             if (id == null) {
-                                log.warn(String.format(
-                                        "ignoring target '%s' (missing attribute '%s') while resolving reference '%s'",
-                                        targetDn, targetSession.idAttribute, this));
+                                log.warn("ignoring target: {} (missing attribute: {}) while resolving reference: {}",
+                                        targetDn, targetSession.idAttribute, this);
                                 continue;
                             }
                         }
@@ -748,13 +730,9 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                             // this check can be very expensive on large groups
                             // and thus not enabled by default
                             if (!targetSession.hasEntry(id)) {
-                                if (log.isTraceEnabled()) {
-                                    log.trace(
-                                            String.format(
-                                                    "ignoring target '%s' when resolving '%s' (not part of target"
-                                                            + " directory by forced DN consistency check)",
-                                                    targetDn, this));
-                                }
+                                log.trace(
+                                        "ignoring target: {} when resolving: {} (not part of target directory by forced DN consistency check)",
+                                        targetDn, this);
                                 continue;
                             }
                         }
@@ -878,13 +856,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         String[] attributeIdsToCollect = { session.idAttribute };
         Attributes entry;
         try {
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPReference.getIdForDn(session, %s): LDAP get dn='%s'"
-                                + " attribute ids to collect='%s' [%s]",
-                        dn, dn, StringUtils.join(attributeIdsToCollect, ", "), this));
-            }
+            log.debug("LDAPReference.getIdForDn(session, {}): LDAP get dn='{}' attribute ids to collect='{}' [{}]",
+                    () -> dn, () -> dn, () -> StringUtils.join(attributeIdsToCollect, ", "), () -> this);
 
             Name name = new CompositeName().add(dn);
             entry = session.getContext().getAttributes(name, attributeIdsToCollect);
@@ -945,11 +918,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
             }
 
             // perform the request and collect the ids
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPReference.getLdapTargetIds(%s): LDAP search dn='%s' " + " filter='%s' scope='%s' [%s]",
-                        attributes, dn, dn, scts.getSearchScope(), this));
-            }
+            log.debug("LDAPReference.getLdapTargetIds({}): LDAP search dn='{}' filter='{}' scope='{}' [{}]", attributes,
+                    dn, dn, scts.getSearchScope(), this);
 
             Name name = new CompositeName().add(dn);
             NamingEnumeration<SearchResult> results = targetSession.getContext().search(name, filter, scts);
@@ -1039,30 +1009,25 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                     // use the empty ref marker to avoid empty attr
                     String emptyRefMarker = ldapSourceDirectory.getDescriptor().getEmptyRefMarker();
                     Attributes emptyAttribute = new BasicAttributes(attributeId, emptyRefMarker);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "LDAPReference.removeLinksForSource(%s): LDAP modifyAttributes key='%s' "
-                                        + " mod_op='REPLACE_ATTRIBUTE' attrs='%s' [%s]",
-                                sourceId, sourceDn, emptyAttribute, this));
-                    }
+                    log.debug(
+                            "LDAPReference.removeLinksForSource({}): LDAP modifyAttributes key='{}' "
+                                    + " mod_op='REPLACE_ATTRIBUTE' attrs='{}' [{}]",
+                            sourceId, sourceDn, emptyAttribute, this);
                     sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REPLACE_ATTRIBUTE, emptyAttribute);
                 } else if (attrToRemove.size() > 0) {
                     // remove the attribute managed by the current reference
                     Attributes attrsToRemove = new BasicAttributes();
                     attrsToRemove.put(attrToRemove);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "LDAPReference.removeLinksForSource(%s): LDAP modifyAttributes dn='%s' "
-                                        + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
-                                sourceId, sourceDn, attrsToRemove, this));
-                    }
+                    log.debug(
+                            "LDAPReference.removeLinksForSource({}): LDAP modifyAttributes dn='{}' "
+                                    + " mod_op='REMOVE_ATTRIBUTE' attrs='{}' [{}]",
+                            sourceId, sourceDn, attrsToRemove, this);
                     sourceSession.getContext().modifyAttributes(sourceDn, DirContext.REMOVE_ATTRIBUTE, attrsToRemove);
                 }
             } catch (SchemaViolationException e) {
                 if (isDynamic()) {
                     // we are editing an entry that has no static part
-                    log.warn(String.format("cannot remove dynamic reference in field %s for source %s", getFieldName(),
-                            sourceId));
+                    log.warn("cannot remove dynamic reference in field: {} for source: {}", getFieldName(), sourceId);
                 } else {
                     // this is a real schma configuration problem, wrapup the
                     // exception
@@ -1099,9 +1064,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                     if (targetLdapEntry == null) {
                         String rdnAttribute = ldapTargetDirectory.getDescriptor().getRdnAttribute();
                         if (!rdnAttribute.equals(targetSession.idAttribute)) {
-                            log.warn(String.format(
-                                    "cannot remove links to missing entry %s in directory %s for reference %s",
-                                    targetId, ldapTargetDirectory.getName(), this));
+                            log.warn("cannot remove links to missing entry: {} in directory: {} for reference: {}",
+                                    targetId, ldapTargetDirectory.getName(), this);
                             return;
                         }
                         // the entry might have already been deleted, try to
@@ -1131,14 +1095,13 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                 // find all source entries that point to the target key and
                 // clean
                 // those references
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "LDAPReference.removeLinksForTarget(%s): LDAP search baseDn='%s' "
-                                    + " filter='%s' scope='%s' [%s]",
-                            targetId, sourceSession.searchBaseDn, searchFilter, scts.getSearchScope(), this));
-                }
-                NamingEnumeration<SearchResult> results = sourceSession.getContext().search(sourceSession.searchBaseDn,
-                        searchFilter, scts);
+                log.debug(
+                        "LDAPReference.removeLinksForTarget({}): LDAP search baseDn='{}' "
+                                + " filter='{}' scope='{}' [{}]",
+                        targetId, sourceSession.searchBaseDn, searchFilter, scts.getSearchScope(), this);
+                NamingEnumeration<SearchResult> results = sourceSession.getContext()
+                                                                       .search(sourceSession.searchBaseDn, searchFilter,
+                                                                               scts);
                 String emptyRefMarker = ldapSourceDirectory.getDescriptor().getEmptyRefMarker();
                 Attributes emptyAttribute = new BasicAttributes(attributeId, emptyRefMarker);
 
@@ -1156,34 +1119,32 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                                 // since empty attribute are often not allowed
                                 // by
                                 // the server schema
-                                if (log.isDebugEnabled()) {
-                                    log.debug(String.format(
-                                            "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
-                                                    + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
-                                            targetId, result.getNameInNamespace(), attrs, this));
-                                }
-                                sourceSession.getContext().modifyAttributes(result.getNameInNamespace(),
-                                        DirContext.ADD_ATTRIBUTE, emptyAttribute);
+                                log.debug(
+                                        "LDAPReference.removeLinksForTarget({}): LDAP modifyAttributes key='{}' "
+                                                + "mod_op='ADD_ATTRIBUTE' attrs='{}' [{}]",
+                                        targetId, result.getNameInNamespace(), attrs, this);
+                                sourceSession.getContext()
+                                             .modifyAttributes(result.getNameInNamespace(), DirContext.ADD_ATTRIBUTE,
+                                                     emptyAttribute);
                             }
                             // remove the reference to the target key
                             attrs = new BasicAttributes();
                             attr = new BasicAttribute(attributeId);
                             attr.add(targetAttributeValue);
                             attrs.put(attr);
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
-                                                + "mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
-                                        targetId, result.getNameInNamespace(), attrs, this));
-                            }
-                            sourceSession.getContext().modifyAttributes(result.getNameInNamespace(),
-                                    DirContext.REMOVE_ATTRIBUTE, attrs);
+                            log.debug(
+                                    "LDAPReference.removeLinksForTarget({}): LDAP modifyAttributes key='{}' "
+                                            + "mod_op='REMOVE_ATTRIBUTE' attrs='{}' [{}]",
+                                    targetId, result.getNameInNamespace(), attrs, this);
+                            sourceSession.getContext()
+                                         .modifyAttributes(result.getNameInNamespace(), DirContext.REMOVE_ATTRIBUTE,
+                                                 attrs);
                         } catch (SchemaViolationException e) {
                             if (isDynamic()) {
                                 // we are editing an entry that has no static
                                 // part
-                                log.warn(String.format("cannot remove dynamic reference in field %s for target %s",
-                                        getFieldName(), targetId));
+                                log.warn("cannot remove dynamic reference in field: {} for target: {}", getFieldName(),
+                                        targetId);
                             } else {
                                 // this is a real schema configuration problem,
                                 // wrapup the exception

@@ -35,8 +35,8 @@ import javax.mail.MessagingException;
 import javax.mail.SendFailedException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mvel2.PropertyAccessException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NotificationEventListener implements PostCommitFilteringEventListener {
 
-    private static final Log log = LogFactory.getLog(NotificationEventListener.class);
+    private static final Logger log = LogManager.getLogger(NotificationEventListener.class);
 
     private static final String CHECK_READ_PERMISSION_PROPERTY = "notification.check.read.permission";
 
@@ -220,16 +220,15 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         }
         NuxeoPrincipal principal = getUserManager().getPrincipal(subscriptor);
         if (principal == null) {
-            log.error("No Nuxeo principal found for '" + subscriptor
-                    + "'. No notification will be sent to this user");
+            log.error("No Nuxeo principal found for: {}. No notification will be sent to this user", subscriptor);
             return;
         }
 
         if (Boolean.parseBoolean(Framework.getProperty(CHECK_READ_PERMISSION_PROPERTY))) {
-            if (!ctx.getCoreSession().hasPermission(principal, ctx.getSourceDocument().getRef(),
-                    SecurityConstants.READ)) {
-                log.debug("Notification will not be sent: + '" + subscriptor
-                        + "' do not have Read permission on document " + ctx.getSourceDocument().getId());
+            if (!ctx.getCoreSession()
+                    .hasPermission(principal, ctx.getSourceDocument().getRef(), SecurityConstants.READ)) {
+                log.debug("Notification will not be sent: {} do not have Read permission on document: {}", subscriptor,
+                        ctx.getSourceDocument().getId());
                 return;
             }
         }
@@ -289,16 +288,14 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
 
         if (isInterestedInNotification(notification)) {
             sendNotification(event, ctx);
-            if (log.isDebugEnabled()) {
-                log.debug("notification " + notification.getName() + " sent to " + notification.getSubject());
-            }
+            log.debug("notification: {} sent to: {}", notification::getName, notification::getSubject);
         }
     }
 
     public void sendNotification(Event event, DocumentEventContext ctx) {
 
         String eventId = event.getName();
-        log.debug("Received a message for notification sender with eventId : " + eventId);
+        log.debug("Received a message for notification sender with eventId: {}", eventId);
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
         String userDest = (String) eventInfo.get(NotificationConstants.DESTINATION_KEY);
@@ -307,12 +304,12 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         // send email
         NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(userDest);
         if (recepient == null) {
-            log.error("Couldn't find user: " + userDest + " to send her a mail.");
+            log.error("Couldn't find user: {} to send her a mail.", userDest);
             return;
         }
         String email = recepient.getEmail();
         if (email == null || "".equals(email)) {
-            log.error("No email found for user: " + userDest);
+            log.error("No email found for user: {}", userDest);
             return;
         }
 
@@ -324,10 +321,8 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             try {
                 mailTemplate = emailHelper.evaluateMvelExpresssion(notif.getTemplateExpr(), eventInfo);
             } catch (PropertyAccessException pae) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cannot evaluate mail template expression '" + notif.getTemplateExpr()
-                            + "' in that context " + eventInfo, pae);
-                }
+                log.debug("Cannot evaluate mail template expression: {} in that context: {}", notif.getTemplateExpr(),
+                        eventInfo, pae);
             }
         }
         // if there is no mailTemplate evaluated, use the defined one
@@ -335,9 +330,9 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             mailTemplate = notif.getTemplate();
         }
 
-        log.debug("email: " + email);
-        log.debug("mail template: " + mailTemplate);
-        log.debug("subject template: " + subjectTemplate);
+        log.debug("email: {}", email);
+        log.debug("mail template: {}", mailTemplate);
+        log.debug("subject template: {}", subjectTemplate);
 
         Map<String, Object> mail = new HashMap<>();
         mail.put("mail.to", email);
@@ -359,7 +354,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         // Transferring all data from event to email
         for (String key : eventInfo.keySet()) {
             mail.put(key, eventInfo.get(key) == null ? "" : eventInfo.get(key));
-            log.debug("Mail prop: " + key);
+            log.debug("Mail prop: {}", key);
         }
 
         mail.put(NotificationConstants.EVENT_ID_KEY, eventId);
@@ -371,8 +366,8 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             if ((e instanceof SendFailedException) && (e.getCause() instanceof SendFailedException)) {
                 cause = " - Cause: " + e.getCause().getMessage();
             }
-            log.warn("Failed to send notification email to '" + email + "': " + e.getClass().getName() + ": "
-                    + e.getMessage() + cause);
+            log.warn("Failed to send notification email to: {}: {}: {}", email, e.getClass().getName(),
+                    e.getMessage() + cause);
         }
     }
 
@@ -382,7 +377,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
     private void gatherConcernedUsersForDocument(CoreSession coreSession, DocumentModel doc, List<Notification> notifs,
             Map<Notification, List<String>> targetUsers) {
         if (doc != null && doc.getPath() != null && doc.getPath().segmentCount() > 1) {
-            log.debug("Searching document: " + doc.getName());
+            log.debug("Searching document: {}", doc::getName);
             getInterstedUsers(doc, notifs, targetUsers);
             if (doc.getParentRef() != null && coreSession.exists(doc.getParentRef())) {
                 DocumentModel parent = getDocumentParent(coreSession, doc);

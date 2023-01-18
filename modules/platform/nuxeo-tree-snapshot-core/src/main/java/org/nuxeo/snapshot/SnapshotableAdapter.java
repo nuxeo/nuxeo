@@ -26,8 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,7 +50,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(SnapshotableAdapter.class);
+    private static final Logger log = LogManager.getLogger(SnapshotableAdapter.class);
 
     protected DocumentModel doc;
 
@@ -290,10 +290,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(doc.getName())
-          .append(" -- ")
-          .append(doc.getVersionLabel())
-          .append("\n");
+        sb.append(doc.getName()).append(" -- ").append(doc.getVersionLabel()).append("\n");
 
         dump(1, sb);
 

@@ -37,8 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.BaseSession;
@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DialectSQLServer extends Dialect {
 
-    private static final Log log = LogFactory.getLog(DialectSQLServer.class);
+    private static final Logger log = LogManager.getLogger(DialectSQLServer.class);
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "english";
 
@@ -178,9 +178,7 @@ public class DialectSQLServer extends Dialect {
     protected void checkDatabaseConfiguration(Connection connection) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             String sql = "SELECT is_read_committed_snapshot_on FROM sys.databases WHERE name = db_name()";
-            if (log.isTraceEnabled()) {
-                log.trace("SQL: " + sql);
-            }
+            log.trace("SQL: {}", sql);
             try (ResultSet rs = stmt.executeQuery(sql)) {
                 if (!rs.next()) {
                     throw new SQLException("Cannot detect whether READ_COMMITTED_SNAPSHOT is on");
@@ -189,7 +187,8 @@ public class DialectSQLServer extends Dialect {
                 if (on != 1) {
                     // for directories we allow working without READ_COMMITTED_SNAPSHOT
                     if (!noRepositoryDescriptor) {
-                        throw new SQLException("Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
+                        throw new SQLException(
+                                "Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
                     }
                 }
             }

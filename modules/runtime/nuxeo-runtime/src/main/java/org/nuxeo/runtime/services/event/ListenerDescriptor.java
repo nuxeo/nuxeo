@@ -20,8 +20,8 @@ package org.nuxeo.runtime.services.event;
 
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -32,9 +32,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("listener")
 public class ListenerDescriptor {
 
-    private static final EventListener NULL_LISTENER = event -> {};
+    private static final Logger log = LogManager.getLogger(ListenerDescriptor.class);
 
-    private static final Log log = LogFactory.getLog(ListenerDescriptor.class);
+    private static final EventListener NULL_LISTENER = event -> {};
 
     @XNodeList(value = "topic", type = String[].class, componentType = String.class)
     String[] topics;

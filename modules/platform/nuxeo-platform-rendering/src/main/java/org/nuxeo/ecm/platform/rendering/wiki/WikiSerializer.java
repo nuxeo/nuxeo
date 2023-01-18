@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wikimodel.wem.WikiParserException;
 import org.wikimodel.wem.common.CommonWikiParser;
 
@@ -38,8 +36,6 @@ import org.wikimodel.wem.common.CommonWikiParser;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class WikiSerializer {
-
-    public static final Log log = LogFactory.getLog(WikiSerializer.class);
 
     protected final CommonWikiParser parser;
 

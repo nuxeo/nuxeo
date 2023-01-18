@@ -18,12 +18,6 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipeConsumer;
-import org.nuxeo.runtime.api.Framework;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +26,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipeConsumer;
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * Simple Queue based implementation that starts a dedicated thread to consume an in-memory message queue.
  *
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundle> {
 
-    protected static Log log = LogFactory.getLog(QueueBaseEventBundlePipe.class);
+    private static final Logger log = LogManager.getLogger(QueueBaseEventBundlePipe.class);
 
     protected ConcurrentLinkedQueue<EventBundle> queue;
 

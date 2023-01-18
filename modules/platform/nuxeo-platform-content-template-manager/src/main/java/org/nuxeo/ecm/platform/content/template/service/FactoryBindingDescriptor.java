@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -37,7 +37,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "factoryBinding")
 public class FactoryBindingDescriptor {
 
-    private static final Log log = LogFactory.getLog(FactoryBindingDescriptor.class);
+    private static final Logger log = LogManager.getLogger(FactoryBindingDescriptor.class);
 
     @XNode("@name")
     private String name;
@@ -146,9 +146,7 @@ public class FactoryBindingDescriptor {
     public void merge(FactoryBindingDescriptor src) {
         enabled = src.enabled;
         if (Boolean.TRUE.equals(src.getAppend())) {
-            if (log.isInfoEnabled()) {
-                log.info("FactoryBinding " + name + " is merging with " + src.getName());
-            }
+            log.info("FactoryBinding: {} is merging with: {}", name, src.getName());
         } else {
             // this needs to be overridden by src
             factoryName = src.getFactoryName();

@@ -28,8 +28,8 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 
 import com.microsoft.azure.storage.StorageErrorCode;
@@ -44,7 +44,7 @@ import com.microsoft.azure.storage.core.Base64;
  */
 public class AzureFileStorage implements FileStorage {
 
-    private static final Log log = LogFactory.getLog(AzureFileStorage.class);
+    private static final Logger log = LogManager.getLogger(AzureFileStorage.class);
 
     protected CloudBlobContainer container;
 
@@ -57,11 +57,8 @@ public class AzureFileStorage implements FileStorage {
 
     @Override
     public void storeFile(String digest, File file) throws IOException {
-        long t0 = 0;
-        if (log.isDebugEnabled()) {
-            t0 = System.currentTimeMillis();
-            log.debug("storing blob " + digest + " to Azure");
-        }
+        long t0 = System.currentTimeMillis();
+        log.debug("storing blob: {} to Azure", digest);
         CloudBlockBlob blob;
         try {
             blob = container.getBlockBlobReference(prefix + digest);
@@ -80,25 +77,19 @@ public class AzureFileStorage implements FileStorage {
         } catch (StorageException | URISyntaxException e) {
             throw new IOException(e);
         } finally {
-            if (log.isDebugEnabled()) {
-                long dtms = System.currentTimeMillis() - t0;
-                log.debug("stored blob " + digest + " to Azure in " + dtms + "ms");
-            }
+            log.debug("stored blob: {} to Azure in {}ms", () -> digest, () -> System.currentTimeMillis() - t0);
         }
     }
 
     @Override
     public boolean fetchFile(String digest, File file) throws IOException {
-        long t0 = 0;
-        if (log.isDebugEnabled()) {
-            t0 = System.currentTimeMillis();
-            log.debug("fetching blob " + digest + " from Azure");
-        }
+        long t0 = System.currentTimeMillis();
+        log.debug("fetching blob: {} from Azure", digest);
         try {
             CloudBlockBlob blob = container.getBlockBlobReference(prefix + digest);
             if (!(blob.exists() && isBlobDigestCorrect(digest, blob))) {
-                log.error("Invalid ETag in Azure, AzDigest=" + blob.getProperties().getContentMD5() + " digest="
-                        + digest);
+                log.error("Invalid ETag in Azure, AzDigest: {} digest: {}", () -> blob.getProperties().getContentMD5(),
+                        () -> digest);
                 return false;
             }
             try (OutputStream os = new FileOutputStream(file)) {
@@ -110,10 +101,7 @@ public class AzureFileStorage implements FileStorage {
         } catch (StorageException e) {
             return false;
         } finally {
-            if (log.isDebugEnabled()) {
-                long dtms = System.currentTimeMillis() - t0;
-                log.debug("fetched blob " + digest + " from Azure in " + dtms + "ms");
-            }
+            log.debug("fetched blob: {} from Azure in {}ms", () -> digest, () -> System.currentTimeMillis() - t0);
         }
     }
 

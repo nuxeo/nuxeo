@@ -38,8 +38,8 @@ import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 
 import groovy.lang.GroovyRuntimeException;
@@ -49,7 +49,7 @@ import groovy.lang.GroovyRuntimeException;
  */
 public class Scripting {
 
-    private static final Log log = LogFactory.getLog(Scripting.class);
+    private static final Logger log = LogManager.getLogger(Scripting.class);
 
     private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<>();
 
@@ -104,9 +104,7 @@ public class Scripting {
     }
 
     public Object runScript(ScriptFile script, Map<String, Object> args) throws ScriptException {
-        if (log.isDebugEnabled()) {
-            log.debug("## Running Script: " + script.getFile());
-        }
+        log.debug("## Running Script: {}", script::getFile);
         if ("groovy".equals(script.getExtension())) {
             try {
                 return loader.getGroovyScripting().eval(script.file, args);

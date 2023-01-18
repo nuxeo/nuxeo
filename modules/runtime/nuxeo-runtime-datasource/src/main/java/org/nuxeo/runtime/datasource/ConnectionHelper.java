@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ConnectionHelper {
 
-    private static final Log log = LogFactory.getLog(ConnectionHelper.class);
+    private static final Logger log = LogManager.getLogger(ConnectionHelper.class);
 
     /**
      * Tries to unwrap the connection to get the real physical one (returned by the original datasource).

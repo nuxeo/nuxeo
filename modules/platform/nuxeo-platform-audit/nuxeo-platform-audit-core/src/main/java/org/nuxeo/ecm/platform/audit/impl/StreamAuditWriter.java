@@ -22,14 +22,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -48,15 +47,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since 9.3
  */
 public class StreamAuditWriter implements StreamProcessorTopology {
-    private static final Log log = LogFactory.getLog(StreamAuditWriter.class);
+
+    private static final Logger log = LogManager.getLogger(StreamAuditWriter.class);
 
     public static final String COMPUTATION_NAME = "audit/writer";
 
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                       .addComputation(
-                               () -> new AuditLogWriterComputation(COMPUTATION_NAME),
+                       .addComputation(() -> new AuditLogWriterComputation(COMPUTATION_NAME),
                                Collections.singletonList("i1:" + STREAM_NAME))
                        .build();
     }
@@ -74,7 +73,7 @@ public class StreamAuditWriter implements StreamProcessorTopology {
                 try {
                     logEntries.add(getLogEntryFromJson(record.getData()));
                 } catch (NuxeoException e) {
-                    log.error("Discard invalid record: " + record, e);
+                    log.error("Discard invalid record: {}", record, e);
                 }
             }
             writeEntriesToAudit(logEntries);
@@ -89,9 +88,7 @@ public class StreamAuditWriter implements StreamProcessorTopology {
             if (logEntries.isEmpty()) {
                 return;
             }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Writing %d log entries to audit backend.", logEntries.size()));
-            }
+            log.debug("Writing {} log entries to audit backend.", logEntries::size);
             AuditLogger logger = Framework.getService(AuditLogger.class);
             logger.addLogEntries(logEntries);
         }

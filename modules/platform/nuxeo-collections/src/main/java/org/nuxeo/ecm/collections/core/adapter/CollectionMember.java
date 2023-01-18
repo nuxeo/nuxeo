@@ -21,8 +21,8 @@ package org.nuxeo.ecm.collections.core.adapter;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class CollectionMember {
 
-    private static final Log log = LogFactory.getLog(CollectionMember.class);
+    private static final Logger log = LogManager.getLogger(CollectionMember.class);
 
     protected DocumentModel document;
 
@@ -54,7 +54,8 @@ public class CollectionMember {
 
     public List<String> getCollectionIds() {
         @SuppressWarnings("unchecked")
-        List<String> collectionIds = (List<String>) document.getPropertyValue(CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME);
+        List<String> collectionIds = (List<String>) document.getPropertyValue(
+                CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME);
         return collectionIds;
     }
 
@@ -65,7 +66,7 @@ public class CollectionMember {
     public void removeFromCollection(final String documentId) {
         List<String> collectionIds = getCollectionIds();
         if (!collectionIds.remove(documentId)) {
-            log.warn(String.format("Element '%s' is not present in the specified collection.", documentId));
+            log.warn("Element '{}' is not present in the specified collection.", documentId);
         }
         setCollectionIds(collectionIds);
     }

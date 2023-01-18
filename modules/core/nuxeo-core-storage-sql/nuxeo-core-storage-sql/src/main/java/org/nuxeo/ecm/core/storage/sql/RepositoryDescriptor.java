@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
 @XObject(value = "repository", order = { "@name" })
 public class RepositoryDescriptor {
 
-    private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
+    private static final Logger log = LogManager.getLogger(RepositoryDescriptor.class);
 
     /** @deprecated since 11.1, was PostgreSQL-specific */
     @Deprecated

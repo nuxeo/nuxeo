@@ -23,8 +23,8 @@ package org.nuxeo.runtime.osgi;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.api.Framework;
@@ -41,7 +41,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  */
 public class OSGiRuntimeActivator implements BundleActivator {
 
-    private static final Log log = LogFactory.getLog(OSGiRuntimeActivator.class);
+    private static final Logger log = LogManager.getLogger(OSGiRuntimeActivator.class);
 
     private static OSGiRuntimeActivator instance;
 
@@ -133,8 +133,8 @@ public class OSGiRuntimeActivator implements BundleActivator {
     public Class<?> loadClass(String bundleName, String className) throws ReflectiveOperationException {
         Bundle bundle = getBundle(bundleName);
         if (bundle == null) {
-            throw new ClassNotFoundException("No bundle found with name: " + bundleName + ". Unable to load class "
-                    + className);
+            throw new ClassNotFoundException(
+                    "No bundle found with name: " + bundleName + ". Unable to load class " + className);
         }
         return bundle.loadClass(className);
     }

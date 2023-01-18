@@ -23,8 +23,8 @@ package org.nuxeo.ecm.platform.scanimporter.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -38,11 +38,11 @@ import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
 @XObject("mapping")
 public class ScanFileMappingDescriptor {
 
+    private static final Logger log = LogManager.getLogger(ScanFileMappingDescriptor.class);
+
     public static final String DEFAULT_CONTAINER_TYPE = "Folder";
 
     public static final String DEFAULT_LEAF_TYPE = "File";
-
-    private static final Log log = LogFactory.getLog(ScanFileMappingDescriptor.class);
 
     @XNode("targetContainerType")
     protected String targetContainerType = DEFAULT_CONTAINER_TYPE;
@@ -85,7 +85,7 @@ public class ScanFileMappingDescriptor {
             try {
                 leafTypeMapper = mapperClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                log.error("Unable to instanciate mapper class", e);
+                log.error("Unable to instantiate mapper class", e);
             }
         }
         return leafTypeMapper;

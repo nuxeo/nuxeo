@@ -51,8 +51,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Supported algorithms (name, keysize):
@@ -65,9 +65,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Crypto {
 
-    protected static final Pattern CRYPTO_PATTERN = Pattern.compile("\\{\\$(?<algo>.*)\\$(?<value>.+)\\}");
+    private static final Logger log = LogManager.getLogger(Crypto.class);
 
-    private static final Log log = LogFactory.getLog(Crypto.class);
+    protected static final Pattern CRYPTO_PATTERN = Pattern.compile("\\{\\$(?<algo>.*)\\$(?<value>.+)\\}");
 
     public static final String AES = "AES";
 
@@ -250,8 +250,8 @@ public class Crypto {
             decipher.init(Cipher.DECRYPT_MODE, getSecretKey(algorithm, secretKey));
             return decipher.doFinal(Base64.decodeBase64(matcher.group("value")));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            log.trace("Available algorithms: " + Security.getAlgorithms("Cipher"));
-            log.trace("Available security providers: " + Arrays.asList(Security.getProviders()));
+            log.trace("Available algorithms: {}", () -> Security.getAlgorithms("Cipher"));
+            log.trace("Available security providers: {}", () -> Arrays.asList(Security.getProviders()));
             log.debug(e, e);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IllegalArgumentException e) {
             log.debug(e, e);
@@ -379,7 +379,7 @@ public class Crypto {
             SecretKey key) throws GeneralSecurityException, IOException {
         KeyStore keystore = KeyStore.getInstance("JCEKS");
         if (!new File(keystorePath).exists()) {
-            log.info("Creating a new JCEKS keystore at " + keystorePath);
+            log.info("Creating a new JCEKS keystore at {}", keystorePath);
             keystore.load(null);
         } else {
             try (InputStream keystoreStream = new FileInputStream(keystorePath)) {

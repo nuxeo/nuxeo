@@ -51,12 +51,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpTrace;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -74,7 +74,7 @@ import com.thetransactioncompany.cors.Origin;
  */
 public class NuxeoCorsCsrfFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(NuxeoCorsCsrfFilter.class);
+    private static final Logger log = LogManager.getLogger(NuxeoCorsCsrfFilter.class);
 
     public static final String GET = HttpGet.METHOD_NAME;
 
@@ -212,9 +212,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
         String method = request.getMethod();
         URI sourceURI = getSourceURI(request);
         URI targetURI = getTargetURI(request);
-        if (log.isDebugEnabled()) {
-            log.debug("Method: " + method + ", source: " + sourceURI + ", target: " + targetURI);
-        }
+        log.debug("Method: {}, source: {}, target: {}", method, sourceURI, targetURI);
 
         boolean allow;
         if (isSafeMethod(method)) {
@@ -257,10 +255,9 @@ public class NuxeoCorsCsrfFilter implements Filter {
         }
 
         // disallowed cross-site request
-        String message = "CSRF check failure";
-        log.warn(message + ": source: " + sourceURI + " does not match target: " + targetURI
-                + " and not allowed by CORS config");
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, message);
+        log.warn("CSRF check failure: source: {} does not match target: {} and not allowed by CORS config", sourceURI,
+                targetURI);
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF check failure");
     }
 
     /**
@@ -328,10 +325,9 @@ public class NuxeoCorsCsrfFilter implements Filter {
         String token;
         if (session == null || (token = (String) session.getAttribute(CSRF_TOKEN_ATTRIBUTE)) == null) {
             log.debug("Error, no session or no CSRF token in session");
-            String message = "CSRF check failure";
-            log.warn(message + ": invalid token");
+            log.warn("CSRF check failure: invalid token");
             response.setHeader(CSRF_TOKEN_HEADER, CSRF_TOKEN_INVALID);
-            response.sendError(SC_FORBIDDEN, message);
+            response.sendError(SC_FORBIDDEN, "CSRF check failure");
             return true;
         }
         if (StringUtils.isEmpty(requestToken)) {
@@ -340,10 +336,9 @@ public class NuxeoCorsCsrfFilter implements Filter {
         }
         if (!token.equals(requestToken)) {
             log.debug("Error, CSRF token does not match");
-            String message = "CSRF check failure";
-            log.warn(message + ": invalid token");
+            log.warn("CSRF check failure: invalid token");
             response.setHeader(CSRF_TOKEN_HEADER, CSRF_TOKEN_INVALID);
-            response.sendError(SC_FORBIDDEN, message);
+            response.sendError(SC_FORBIDDEN, "CSRF check failure");
             return true;
         }
 

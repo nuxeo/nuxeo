@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -344,7 +344,7 @@ public interface WebContext extends Adaptable {
      *
      * @return a logger
      */
-    Log getLog();
+    Logger getLog();
 
     Resource newObject(String typeName, Object... args);
 

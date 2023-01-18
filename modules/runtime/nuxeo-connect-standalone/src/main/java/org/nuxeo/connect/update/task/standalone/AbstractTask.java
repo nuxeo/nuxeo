@@ -33,8 +33,8 @@ import java.util.Properties;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.connect.update.LocalPackage;
@@ -50,7 +50,7 @@ import org.nuxeo.connect.update.task.update.UpdateManager;
  */
 public abstract class AbstractTask implements Task {
 
-    static final Log log = LogFactory.getLog(AbstractTask.class);
+    private static final Logger log = LogManager.getLogger(AbstractTask.class);
 
     public static final String PKG_ID = "package.id";
 
@@ -293,8 +293,8 @@ public abstract class AbstractTask implements Task {
         LocalPackage oldpkg = service.getActivePackage(pkg.getName());
         if (oldpkg != null) {
             if (oldpkg.getPackageState() == PackageState.INSTALLING) {
-                status.addWarning("A package with the same name: " + oldpkg.getId()
-                        + " is being installing. Try again later.");
+                status.addWarning(
+                        "A package with the same name: " + oldpkg.getId() + " is being installing. Try again later.");
             } else {
                 status.addWarning("The package " + oldpkg.getId() + " will be uninstalled!");
             }

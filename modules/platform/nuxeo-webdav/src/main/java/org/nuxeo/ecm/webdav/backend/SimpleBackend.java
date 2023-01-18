@@ -33,8 +33,8 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class SimpleBackend extends AbstractCoreBackend {
 
-    private static final Log log = LogFactory.getLog(SimpleBackend.class);
+    private static final Logger log = LogManager.getLogger(SimpleBackend.class);
 
     public static final String SOURCE_EDIT_KEYWORD = "source-edit";
 
@@ -288,7 +288,7 @@ public class SimpleBackend extends AbstractCoreBackend {
                 Framework.getService(TrashService.class).trashDocuments(Arrays.asList(doc));
             }
         } else {
-            log.warn("Can't move document " + ref.toString() + " to trash. Document did not found.");
+            log.warn("Can't move document: {} to trash. Document did not found.", ref);
         }
     }
 

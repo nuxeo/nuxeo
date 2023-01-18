@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationExceptio
 @XObject("suggesterGroup")
 public class SuggesterGroupDescriptor implements Cloneable {
 
-    private static final Log log = LogFactory.getLog(SuggesterGroupDescriptor.class);
+    private static final Logger log = LogManager.getLogger(SuggesterGroupDescriptor.class);
 
     @XNode("@name")
     protected String name = "default";
@@ -53,7 +53,7 @@ public class SuggesterGroupDescriptor implements Cloneable {
             throw new RuntimeException("Cannot merge descriptor with name '" + name
                     + "' with another descriptor with different name " + newDescriptor.getName() + "'");
         }
-        log.info(String.format("Merging suggester group '%s'.", name));
+        log.info("Merging suggester group: {}", name);
         // merge the suggesterNames
         for (SuggesterGroupItemDescriptor newSuggesterGroupItem : newDescriptor.getSuggesters()) {
             String newSuggesterName = newSuggesterGroupItem.getName();
@@ -61,9 +61,8 @@ public class SuggesterGroupDescriptor implements Cloneable {
             if (newSuggesterGroupItem.isRemove()) {
                 boolean isSuggesterRemoved = remove(newSuggesterName);
                 if (!isSuggesterRemoved) {
-                    log.warn(String.format(
-                            "Cannot remove suggester '%s' because it does not exist in suggesterGroup '%s'.",
-                            newSuggesterName, name));
+                    log.warn("Cannot remove suggester: {} because it does not exist in suggesterGroup: {}",
+                            newSuggesterName, name);
                 }
             }
             // manage appendBefore, appendAfter or no particular attributes
@@ -122,7 +121,7 @@ public class SuggesterGroupDescriptor implements Cloneable {
             SuggesterGroupItemDescriptor suggesterGroupItem = suggestersIt.next();
             if (suggesterName.equals(suggesterGroupItem.getName())) {
                 suggestersIt.remove();
-                log.debug(String.format("Removed suggester '%s' from suggesterGroup '%s'.", suggesterName, name));
+                log.debug("Removed suggester: {} from suggesterGroup: {}", suggesterName, name);
                 return true;
             }
         }
@@ -204,24 +203,24 @@ public class SuggesterGroupDescriptor implements Cloneable {
             // suggester found, append new suggester before or after it
             int indexOfNewSuggester = before ? indexOfSuggester : indexOfSuggester + 1;
             suggesters.add(indexOfNewSuggester, newSuggester);
-            log.debug(String.format("Appended suggester '%s' %s suggester '%s' in suggesterGroup '%s'.",
-                    newSuggesterName, before ? "before" : "after", suggesterName, name));
+            log.debug("Appended suggester: {} {} suggester: {} in suggesterGroup: {}", newSuggesterName,
+                    before ? "before" : "after", suggesterName, name);
         } else {
             // suggester not found, append new suggester at the beginning or the
             // end of the suggesters list
             if (before) {
                 suggesters.add(0, newSuggester);
                 if (suggesterName != null) {
-                    log.warn(String.format(
-                            "Could not append suggester '%s' before suggester '%s' in suggesterGroup '%s' because '%s' does not exist in this suggesterGroup. Appended it before all suggesters.",
-                            newSuggesterName, suggesterName, name, suggesterName));
+                    log.warn(
+                            "Could not append suggester: {} before suggester: {} in suggesterGroup: {} because: {} does not exist in this suggesterGroup. Appended it before all suggesters.",
+                            newSuggesterName, suggesterName, name, suggesterName);
                 }
             } else {
                 suggesters.add(newSuggester);
                 if (suggesterName != null) {
-                    log.warn(String.format(
-                            "Could not append suggester '%s' after suggester '%s' in suggesterGroup '%s' because '%s' does not exist in this suggesterGroup. Appended it after all suggesters.",
-                            newSuggesterName, suggesterName, name, suggesterName));
+                    log.warn(
+                            "Could not append suggester: {} after suggester: {} in suggesterGroup: {} because: {} does not exist in this suggesterGroup. Appended it after all suggesters.",
+                            newSuggesterName, suggesterName, name, suggesterName);
                 }
             }
         }
@@ -235,8 +234,8 @@ public class SuggesterGroupDescriptor implements Cloneable {
      * @param newSuggesterName the new suggester name
      */
     protected void logExistingSuggesterName(String newSuggesterName) {
-        log.warn(String.format(
-                "Suggester '%s' already exists in suggesterGroup '%s'. Cannot have two occurrences of the same suggester, so won't append it.",
-                newSuggesterName, name));
+        log.warn(
+                "Suggester: {} already exists in suggesterGroup: {}. Cannot have two occurrences of the same suggester, so won't append it.",
+                newSuggesterName, name);
     }
 }

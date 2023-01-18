@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,6 @@ import org.nuxeo.ecm.directory.ldap.LDAPUrlDescriptor;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-
 
 /**
  * Test case to ensure LDAPServerDescriptor correctly handles entries returned from DNSService implementation
@@ -44,7 +43,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features(RuntimeFeature.class)
 public class LDAPServerDescriptorDNSTestCase {
 
-    private static final Log log = LogFactory.getLog(LDAPServerDescriptorDNSTestCase.class);
+    private static final Logger log = LogManager.getLogger(LDAPServerDescriptorDNSTestCase.class);
 
     private static final class MockDNSService implements DNSServiceResolver {
 
@@ -96,9 +95,7 @@ public class LDAPServerDescriptorDNSTestCase {
     @Test
     public void testLdapServerDnsParsing() {
         List<DNSServiceEntry> actual = dns.resolveLDAPDomainServers("nuxeo.org");
-        if (log.isDebugEnabled()) {
-            log.debug(actual);
-        }
+        log.debug("Actual servers: {}", actual);
 
         /*
          * Convert our discovered server list into URIs
@@ -115,9 +112,7 @@ public class LDAPServerDescriptorDNSTestCase {
 
         d.setLdapUrls(uris);
         String testA = d.getLdapUrls();
-        if (log.isDebugEnabled()) {
-            log.debug(testA);
-        }
+        log.debug("LDAP urls: {}", testA);
         assertEquals("ldap://localhost:389", testA);
 
         d = new MockLDAPServerDescriptor();
@@ -139,9 +134,7 @@ public class LDAPServerDescriptorDNSTestCase {
 
         for (int j = 0; j < 100; j++) {
             String urls = d.getLdapUrls();
-            if (log.isDebugEnabled()) {
-                log.debug(urls);
-            }
+            log.debug(urls);
             assertEquals("ldap://localhost:389 ldap://localhost:3268", urls);
         }
 

@@ -23,8 +23,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractPubSubBroker<T extends SerializableMessage> {
 
-    private static final Log log = LogFactory.getLog(AbstractPubSubBroker.class);
+    private static final Logger log = LogManager.getLogger(AbstractPubSubBroker.class);
 
     private static final String UTF_8 = "UTF-8";
 
@@ -90,9 +90,7 @@ public abstract class AbstractPubSubBroker<T extends SerializableMessage> {
      * Sends a message to other nodes.
      */
     public void sendMessage(T message) {
-        if (log.isTraceEnabled()) {
-            log.trace("Sending message: " + message);
-        }
+        log.trace("Sending message: {}", message);
         ByteArrayOutputStream baout = new ByteArrayOutputStream();
         try {
             baout.write(discriminatorBytes);
@@ -134,9 +132,7 @@ public abstract class AbstractPubSubBroker<T extends SerializableMessage> {
         if (message == null) {
             return;
         }
-        if (log.isTraceEnabled()) {
-            log.trace("Received message: " + message);
-        }
+        log.trace("Received message: {}", message);
         receivedMessage(message);
     }
 

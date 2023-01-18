@@ -61,8 +61,8 @@ import org.apache.chemistry.opencmis.server.support.query.QueryObject;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
 import org.apache.chemistry.opencmis.server.support.query.QueryUtilStrict;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -82,7 +82,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class CMISQLtoNXQL {
 
-    private static final Log log = LogFactory.getLog(CMISQLtoNXQL.class);
+    private static final Logger log = LogManager.getLogger(CMISQLtoNXQL.class);
 
     protected static final String CMIS_PREFIX = "cmis:";
 
@@ -307,8 +307,10 @@ public class CMISQLtoNXQL {
 
     public PartialList<Map<String, Serializable>> convertToCMIS(PartialList<Map<String, Serializable>> pl,
             NuxeoCmisService service) {
-        return pl.stream().map(map -> convertToCMISMap(map, realColumns, virtualColumns, service)).collect(
-                Collectors.collectingAndThen(Collectors.toList(), result -> new PartialList<>(result, pl.totalSize())));
+        return pl.stream()
+                 .map(map -> convertToCMISMap(map, realColumns, virtualColumns, service))
+                 .collect(Collectors.collectingAndThen(Collectors.toList(),
+                         result -> new PartialList<>(result, pl.totalSize())));
     }
 
     protected boolean isFacetsColumn(String name) {
@@ -753,8 +755,7 @@ public class CMISQLtoNXQL {
                     indexName += '_' + statement.substring(0, firstColumnIdx);
                     statement = statement.substring(firstColumnIdx + 1);
                 } else {
-                    log.warn(String.format("fail to microparse custom fulltext index:" + " fallback to '%s'",
-                            indexName));
+                    log.warn("fail to microparse custom fulltext index fallback to '{}'", indexName);
                 }
             }
             // CMIS syntax to NXQL syntax
@@ -1007,7 +1008,7 @@ public class CMISQLtoNXQL {
                     data = service.getObject(service.getNuxeoRepository().getId(), id, null, null, null, null, null,
                             null, null);
                 } catch (CmisRuntimeException e) {
-                    log.error("Cannot get document: " + id, e);
+                    log.error("Cannot get document: {}", id, e);
                 }
                 datas.put(qual, data);
             }

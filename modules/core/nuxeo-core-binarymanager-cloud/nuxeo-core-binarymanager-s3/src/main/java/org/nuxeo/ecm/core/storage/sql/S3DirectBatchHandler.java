@@ -42,11 +42,11 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HeaderElement;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHeaderValueParser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
@@ -86,7 +86,7 @@ import com.amazonaws.services.securitytoken.model.Credentials;
  */
 public class S3DirectBatchHandler extends AbstractBatchHandler {
 
-    private static final Log log = LogFactory.getLog(S3DirectBatchHandler.class);
+    private static final Logger log = LogManager.getLogger(S3DirectBatchHandler.class);
 
     // properties passed at initialization time from extension point
 
@@ -221,8 +221,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         amazonS3 = initializeS3Client(credentials);
 
         if (!isBlank(bucketPrefix) && !bucketPrefix.endsWith("/")) {
-            log.debug(String.format("%s %s S3 bucket prefix should end with '/': added automatically.",
-                    BUCKET_PREFIX_PROPERTY, bucketPrefix));
+            log.debug("{} {} S3 bucket prefix should end with '/': added automatically.", BUCKET_PREFIX_PROPERTY,
+                    bucketPrefix);
             bucketPrefix += "/";
         }
 

@@ -43,8 +43,8 @@ import java.util.function.BiFunction;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 
 /**
@@ -52,8 +52,8 @@ import org.nuxeo.common.Environment;
  * The cryptographic algorithms depend on:
  * <ul>
  * <li>Environment.SERVER_STATUS_KEY</li>
- * <li>Environment.CRYPT_KEYALIAS &amp;&amp; Environment.CRYPT_KEYSTORE_PATH || getProperty(Environment.JAVA_DEFAULT_KEYSTORE)
- * </li>
+ * <li>Environment.CRYPT_KEYALIAS &amp;&amp; Environment.CRYPT_KEYSTORE_PATH ||
+ * getProperty(Environment.JAVA_DEFAULT_KEYSTORE)</li>
  * <li>Environment.CRYPT_KEY</li>
  * </ul>
  * Changing one of those parameters will affect the ability to read encrypted values.
@@ -62,7 +62,8 @@ import org.nuxeo.common.Environment;
  * @since 7.4
  */
 public class CryptoProperties extends Properties {
-    private static final Log log = LogFactory.getLog(CryptoProperties.class);
+
+    private static final Logger log = LogManager.getLogger(CryptoProperties.class);
 
     private static final Crypto Crypto_NO_OP = Crypto.NoOp.NO_OP;
 
@@ -142,7 +143,7 @@ public class CryptoProperties extends Properties {
             secretKey = statusKey;
         }
         if (secretKey == null) {
-            log.warn("Missing " + Environment.SERVER_STATUS_KEY);
+            log.warn("Missing: {}", Environment.SERVER_STATUS_KEY);
             return Crypto_NO_OP;
         }
         return new Crypto(secretKey.getBytes());

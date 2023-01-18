@@ -49,6 +49,15 @@ import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
 import org.nuxeo.ecm.webdav.jaxrs.Util;
 import org.xml.sax.SAXException;
 
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webdav.EscapeUtils;
+import org.nuxeo.ecm.webdav.backend.Backend;
+import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
+import org.nuxeo.ecm.webdav.jaxrs.Util;
+
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.HRef;
 import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
@@ -64,7 +73,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
  */
 public class FolderResource extends ExistingResource {
 
-    private static final Log log = LogFactory.getLog(FolderResource.class);
+    private static final Logger log = LogManager.getLogger(FolderResource.class);
 
     public FolderResource(String path, DocumentModel doc, HttpServletRequest request, Backend backend) {
         super(path, doc, request, backend);

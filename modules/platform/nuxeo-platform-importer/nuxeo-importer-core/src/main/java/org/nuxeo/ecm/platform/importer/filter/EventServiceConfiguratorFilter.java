@@ -18,14 +18,14 @@
  */
 package org.nuxeo.ecm.platform.importer.filter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.runtime.api.Framework;
 
 public class EventServiceConfiguratorFilter implements ImporterFilter {
 
-    private static final Log log = LogFactory.getLog(EventServiceConfiguratorFilter.class);
+    private static final Logger log = LogManager.getLogger(EventServiceConfiguratorFilter.class);
 
     protected boolean blockSyncPostCommitProcessing = false;
 
@@ -47,7 +47,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     protected static final String INDEXING_LISTENER = "elasticSearchInlineListener";
 
     public EventServiceConfiguratorFilter(Boolean blockSyncPostCommitProcessing, Boolean blockAsyncProcessing,
-                                          Boolean blockMimeTypeDetection, Boolean blockIndexing, Boolean bulkMode) {
+            Boolean blockMimeTypeDetection, Boolean blockIndexing, Boolean bulkMode) {
         if (blockAsyncProcessing != null) {
             this.blockAsyncProcessing = blockAsyncProcessing;
         }
@@ -69,7 +69,8 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     public void handleBeforeImport() {
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         if (eventAdmin == null) {
-            log.error("EventServiceAdmin service was not found ... Possible that the import process will not proceed ok");
+            log.error(
+                    "EventServiceAdmin service was not found ... Possible that the import process will not proceed ok");
             return;
         }
         eventAdmin.setBulkModeEnabled(bulkMode);
@@ -112,6 +113,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     public String toString() {
         return String.format(
                 "blockSyncPostCommitProcessing set %b, blockAsyncProcessing set %b, blockMimeTypeDetection set %b, blockNotifications set %b, blockIndexing set %b, bulkMode set %b",
-                blockSyncPostCommitProcessing, blockAsyncProcessing, blockMimeTypeDetection, blockNotifications, blockIndexing, bulkMode);
+                blockSyncPostCommitProcessing, blockAsyncProcessing, blockMimeTypeDetection, blockNotifications,
+                blockIndexing, bulkMode);
     }
 }

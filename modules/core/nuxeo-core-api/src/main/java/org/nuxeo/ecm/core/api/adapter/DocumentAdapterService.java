@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -37,10 +37,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class DocumentAdapterService extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(DocumentAdapterService.class);
+
     public static final ComponentName NAME = new ComponentName(ComponentName.DEFAULT_TYPE,
             "org.nuxeo.ecm.core.api.DocumentAdapterService");
-
-    private static final Log log = LogFactory.getLog(DocumentAdapterService.class);
 
     /**
      * Document adapters
@@ -56,18 +56,18 @@ public class DocumentAdapterService extends DefaultComponent {
      */
     public DocumentAdapterDescriptor[] getAdapterDescriptors() {
         Collection<DocumentAdapterDescriptor> values = adapters.values();
-        return values.toArray(new DocumentAdapterDescriptor[values.size()]);
+        return values.toArray(DocumentAdapterDescriptor[]::new);
     }
 
     public void registerAdapterFactory(DocumentAdapterDescriptor dae) {
         adapters.put(dae.getInterface(), dae);
-        log.info("Registered document adapter factory " + dae);
+        log.info("Registered document adapter factory: {}", dae);
     }
 
     public void unregisterAdapterFactory(Class<?> itf) {
         DocumentAdapterDescriptor dae = adapters.remove(itf);
         if (dae != null) {
-            log.info("Unregistered document adapter factory: " + dae);
+            log.info("Unregistered document adapter factory: {}", dae);
         }
     }
 

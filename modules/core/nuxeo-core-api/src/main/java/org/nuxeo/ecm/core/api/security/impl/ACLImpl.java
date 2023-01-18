@@ -30,8 +30,8 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
@@ -49,7 +49,7 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
 
     private static final long serialVersionUID = 5332101749929771434L;
 
-    private static final Log log = LogFactory.getLog(ACLImpl.class);
+    private static final Logger log = LogManager.getLogger(ACLImpl.class);
 
     private final String name;
 
@@ -96,8 +96,8 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
                 if (log.isTraceEnabled()) {
                     throwable = new Throwable();
                 }
-                log.warn("Setting an ACL with at least one duplicate entry: " + ace + ", ACL entries: "
-                        + Arrays.toString(aces), throwable);
+                log.warn("Setting an ACL with at least one duplicate entry: {}, ACL entries: {}", ace,
+                        Arrays.toString(aces), throwable);
                 break;
             }
         }

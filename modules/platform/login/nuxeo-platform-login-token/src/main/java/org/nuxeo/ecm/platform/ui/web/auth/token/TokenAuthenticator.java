@@ -25,8 +25,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
@@ -45,9 +45,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TokenAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
 
-    public static final String ALLOW_ANONYMOUS_KEY = "allowAnonymous";
+    private static final Logger log = LogManager.getLogger(TokenAuthenticator.class);
 
-    private static final Log log = LogFactory.getLog(TokenAuthenticator.class);
+    public static final String ALLOW_ANONYMOUS_KEY = "allowAnonymous";
 
     protected static final String TOKEN_HEADER = "X-Authentication-Token";
 
@@ -67,14 +67,13 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthe
         String token = getTokenFromRequest(httpRequest);
 
         if (token == null) {
-            log.debug(String.format("Found no '%s' header in the request.", TOKEN_HEADER));
+            log.debug("Found no: {} header in the request.", TOKEN_HEADER);
             return null;
         }
 
         String userName = getUserByToken(token);
         if (userName == null) {
-            log.debug(String.format("No user bound to the token '%s' (maybe it has been revoked), returning null.",
-                    token));
+            log.debug("No user bound to the token: {} (maybe it has been revoked), returning null.", token);
             return null;
         }
         // Don't retrieve identity for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in

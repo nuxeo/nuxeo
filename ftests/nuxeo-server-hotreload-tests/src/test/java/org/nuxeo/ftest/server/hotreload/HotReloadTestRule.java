@@ -33,8 +33,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -58,9 +58,9 @@ import org.nuxeo.functionaltests.RestHelper;
  */
 public class HotReloadTestRule implements TestRule {
 
-    public static final String NUXEO_RELOAD_PATH = "/sdk/reload";
+    private static final Logger log = LogManager.getLogger(HotReloadTestRule.class);
 
-    private static final Log log = LogFactory.getLog(HotReloadTestRule.class);
+    public static final String NUXEO_RELOAD_PATH = "/sdk/reload";
 
     protected final static Function<URL, URI> URI_MAPPER = url -> {
         try {
@@ -136,8 +136,7 @@ public class HotReloadTestRule implements TestRule {
                 updateDevBundles(body);
             }
         } else {
-            log.info(String.format("No bundle to deploy for %s#%s at path=%s", className, methodName,
-                    relativeBundlePath));
+            log.info("No bundle to deploy for: {}#{} at path: {}", className, methodName, relativeBundlePath);
         }
     }
 

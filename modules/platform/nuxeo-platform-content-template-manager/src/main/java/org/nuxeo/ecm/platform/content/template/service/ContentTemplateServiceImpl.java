@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
@@ -34,6 +34,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class ContentTemplateServiceImpl extends DefaultComponent implements ContentTemplateService {
 
+    private static final Logger log = LogManager.getLogger(ContentTemplateServiceImpl.class);
+
     public static final String NAME = "org.nuxeo.ecm.platform.content.template.service.TemplateService";
 
     public static final String FACTORY_DECLARATION_EP = "factory";
@@ -41,8 +43,6 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
     public static final String FACTORY_BINDING_EP = "factoryBinding";
 
     public static final String POST_CONTENT_CREATION_HANDLERS_EP = "postContentCreationHandlers";
-
-    private static final Log log = LogFactory.getLog(ContentTemplateServiceImpl.class);
 
     private final Map<String, ContentFactoryDescriptor> factories = new HashMap<>();
 
@@ -81,8 +81,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
             if (factories.containsKey(descriptor.getFactoryName())) {
                 factoryBindings.addContribution(descriptor);
             } else {
-                log.error("Factory Binding" + descriptor.getName() + " can not be registered since Factory "
-                        + descriptor.getFactoryName() + " is not registered");
+                log.error("Factory Binding: {} can not be registered since Factory: {} is not registered",
+                        descriptor::getName, descriptor::getFactoryName);
             }
         } else if (POST_CONTENT_CREATION_HANDLERS_EP.equals(extensionPoint)) {
             PostContentCreationHandlerDescriptor descriptor = (PostContentCreationHandlerDescriptor) contribution;
@@ -136,13 +136,12 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
             boolean factoryOK = factory.initFactory(descriptor.getOptions(), descriptor.getRootAcl(),
                     descriptor.getTemplate());
             if (!factoryOK) {
-                log.error("Error while initializing instance of factory " + factoryDescriptor.getName());
+                log.error("Error while initializing instance of factory: {}", factoryDescriptor::getName);
                 return null;
             }
             return factory;
         } catch (ReflectiveOperationException e) {
-            log.error(
-                    "Error while creating instance of factory " + factoryDescriptor.getName() + " :" + e.getMessage());
+            log.error("Error while creating instance of factory: {} : {}", factoryDescriptor::getName, e::getMessage);
             return null;
         }
     }

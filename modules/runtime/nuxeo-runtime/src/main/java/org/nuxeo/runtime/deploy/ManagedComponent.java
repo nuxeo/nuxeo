@@ -24,8 +24,8 @@ package org.nuxeo.runtime.deploy;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class ManagedComponent extends DefaultComponent {
 
-    protected static final Log log = LogFactory.getLog(ManagedComponent.class);
+    private static final Logger log = LogManager.getLogger(ManagedComponent.class);
 
     protected Map<String, ContributionManager> contributionManagers;
 
@@ -63,8 +63,8 @@ public class ManagedComponent extends DefaultComponent {
                 if (mgr != null) {
                     mgr.registerContribution(c);
                 } else {
-                    log.warn("Unable to register contribution: " + c.getContributionId() + " for extension point "
-                            + c.getExtensionPoint() + ". No manager registered.");
+                    log.warn("Unable to register contribution: {} for extension point {}. No manager registered.",
+                            c::getContributionId, c::getExtensionPoint);
                 }
             } else {
                 registerContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
@@ -86,8 +86,8 @@ public class ManagedComponent extends DefaultComponent {
                 if (mgr != null) {
                     mgr.unregisterContribution(c);
                 } else {
-                    log.warn("Unable to unregister contribution: " + c.getContributionId() + " for extension point "
-                            + c.getExtensionPoint() + ". No manager registered.");
+                    log.warn("Unable to unregister contribution: {} for extension point {}. No manager registered.",
+                            c::getContributionId, c::getExtensionPoint);
                 }
             } else {
                 unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());

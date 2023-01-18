@@ -26,10 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.opensearch.common.bytes.BytesArray;
-import org.opensearch.search.lookup.SourceLookup;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,6 +41,8 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
+import org.opensearch.common.bytes.BytesArray;
+import org.opensearch.search.lookup.SourceLookup;
 
 /**
  * Read a DocumentModel from an ES Json export.
@@ -50,7 +50,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.5
  */
 public class JsonDocumentModelReader {
-    private static final Log log = LogFactory.getLog(JsonDocumentModelReader.class);
+
+    private static final Logger log = LogManager.getLogger(JsonDocumentModelReader.class);
 
     private final Map<String, Object> source;
 
@@ -124,9 +125,7 @@ public class JsonDocumentModelReader {
             try {
                 doc.setPropertyValue(prop, value);
             } catch (PropertyException e) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("fetchDocFromEs cannot set property %s to %s", prop, value));
-                }
+                log.debug("fetchDocFromEs cannot set property: {} to: {}", prop, value);
             }
         }
         doc.setIsImmutable(true);

@@ -21,8 +21,8 @@ package org.nuxeo.template.api.descriptor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -31,7 +31,7 @@ import org.nuxeo.template.api.context.ContextExtensionFactory;
 @XObject("contextFactory")
 public class ContextExtensionFactoryDescriptor {
 
-    protected static final Log log = LogFactory.getLog(ContextExtensionFactoryDescriptor.class);
+    private static final Logger log = LogManager.getLogger(ContextExtensionFactoryDescriptor.class);
 
     @XNode("@name")
     protected String name;
@@ -57,7 +57,7 @@ public class ContextExtensionFactoryDescriptor {
                 try {
                     factory = factoryClass.getDeclaredConstructor().newInstance();
                 } catch (ReflectiveOperationException e) {
-                    log.error("Unable to instanciate Processor", e);
+                    log.error("Unable to instantiate Processor", e);
                 }
             }
         }

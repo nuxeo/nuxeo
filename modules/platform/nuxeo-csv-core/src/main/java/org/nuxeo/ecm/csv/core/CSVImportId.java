@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 public class CSVImportId {
 
-    private static final Log log = LogFactory.getLog(CSVImportId.class);
+    private static final Logger log = LogManager.getLogger(CSVImportId.class);
 
     private CSVImportId() {
         // utility class
@@ -50,7 +50,7 @@ public class CSVImportId {
 
     protected static String computeDigest(Blob blob) {
         try (InputStream in = blob.getStream()) {
-            return DigestUtils.md5Hex(blob.getStream());
+            return DigestUtils.md5Hex(in);
         } catch (IOException e) {
             log.error(e, e);
             return "";

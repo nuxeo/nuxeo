@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 
 public class ThreadDeadlocksRunner {
 
-    protected Log log = LogFactory.getLog(ThreadDeadlocksRunner.class);
+    private static final Logger log = LogManager.getLogger(ThreadDeadlocksRunner.class);
 
     protected Object mgr = new Object();
 

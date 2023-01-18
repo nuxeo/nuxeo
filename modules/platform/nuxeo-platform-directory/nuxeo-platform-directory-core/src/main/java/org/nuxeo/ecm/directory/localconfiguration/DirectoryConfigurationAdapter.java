@@ -20,8 +20,8 @@ package org.nuxeo.ecm.directory.localconfiguration;
 
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FIELD;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -33,10 +33,10 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  * @author <a href="mailto:qlamerand@nuxeo.com">Benjamin JALON</a>
  * @since 5.4.2
  */
-public class DirectoryConfigurationAdapter extends AbstractLocalConfiguration<DirectoryConfiguration> implements
-        DirectoryConfiguration {
+public class DirectoryConfigurationAdapter extends AbstractLocalConfiguration<DirectoryConfiguration>
+        implements DirectoryConfiguration {
 
-    private static final Log log = LogFactory.getLog(DirectoryConfigurationAdapter.class);
+    private static final Logger log = LogManager.getLogger(DirectoryConfigurationAdapter.class);
 
     protected DocumentRef documentRef;
 

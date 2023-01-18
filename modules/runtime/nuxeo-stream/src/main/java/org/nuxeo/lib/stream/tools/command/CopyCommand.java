@@ -23,8 +23,7 @@ import java.time.Duration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -38,7 +37,8 @@ import org.nuxeo.lib.stream.log.Name;
  * @since 9.3
  */
 public class CopyCommand extends Command {
-    private static final Log log = LogFactory.getLog(CopyCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(CopyCommand.class);
 
     protected static final String NAME = "copy";
 
@@ -94,13 +94,13 @@ public class CopyCommand extends Command {
     }
 
     protected boolean copy(LogManager manager, Name src, String srcCodec, Name dest, String destCodec, Name group) {
-        log.info(String.format("# Copy %s to %s", src, dest));
+        log.info("# Copy {} to {}", src, dest);
         if (!manager.exists(src)) {
-            log.error("source log not found: " + src);
+            log.error("source log not found: {}", src);
             return false;
         }
         if (manager.exists(dest)) {
-            log.error("destination log already exists: " + dest);
+            log.error("destination log already exists: {}", dest);
             return false;
         }
         manager.createIfNotExists(dest, manager.size(src));

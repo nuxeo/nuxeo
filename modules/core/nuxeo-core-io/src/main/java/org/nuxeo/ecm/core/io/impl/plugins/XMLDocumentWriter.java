@@ -27,8 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -52,7 +52,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
  */
 public class XMLDocumentWriter extends AbstractDocumentWriter {
 
-    private static final Log log = LogFactory.getLog(XMLDocumentWriter.class);
+    private static final Logger log = LogManager.getLogger(XMLDocumentWriter.class);
 
     protected final OutputStream out;
 

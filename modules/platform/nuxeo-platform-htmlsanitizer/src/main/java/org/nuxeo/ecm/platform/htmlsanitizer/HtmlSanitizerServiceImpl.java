@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -42,7 +42,7 @@ import org.owasp.html.PolicyFactory;
  */
 public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSanitizerService {
 
-    private static final Log log = LogFactory.getLog(HtmlSanitizerServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(HtmlSanitizerServiceImpl.class);
 
     public static final String ANTISAMY_XP = "antisamy";
 
@@ -64,23 +64,23 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (ANTISAMY_XP.equals(extensionPoint)) {
             if (!(contribution instanceof HtmlSanitizerAntiSamyDescriptor)) {
-                log.error("Contribution " + contribution + " is not of type "
-                        + HtmlSanitizerAntiSamyDescriptor.class.getName());
+                log.error("Contribution: {} is not of type: {}", contribution,
+                        HtmlSanitizerAntiSamyDescriptor.class.getName());
                 return;
             }
             HtmlSanitizerAntiSamyDescriptor desc = (HtmlSanitizerAntiSamyDescriptor) contribution;
-            log.info("Registering AntiSamy policy: " + desc.policy);
+            log.info("Registering AntiSamy policy: {}", desc.policy);
             addAntiSamy(desc);
         } else if (SANITIZER_XP.equals(extensionPoint)) {
             if (!(contribution instanceof HtmlSanitizerDescriptor)) {
-                log.error("Contribution " + contribution + " is not of type " + HtmlSanitizerDescriptor.class.getName());
+                log.error("Contribution: {} is not of type: {}", contribution, HtmlSanitizerDescriptor.class.getName());
                 return;
             }
             HtmlSanitizerDescriptor desc = (HtmlSanitizerDescriptor) contribution;
-            log.info("Registering HTML sanitizer: " + desc);
+            log.info("Registering HTML sanitizer: {}", desc);
             addSanitizer(desc);
         } else {
-            log.error("Contribution extension point should be '" + SANITIZER_XP + "' but is: " + extensionPoint);
+            log.error("Contribution extension point should be: {} but is: {}", SANITIZER_XP, extensionPoint);
         }
     }
 
@@ -91,21 +91,21 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
                 return;
             }
             HtmlSanitizerAntiSamyDescriptor desc = (HtmlSanitizerAntiSamyDescriptor) contribution;
-            log.info("Unregistering AntiSamy policy: " + desc.policy);
+            log.info("Unregistering AntiSamy policy: {}", desc.policy);
             removeAntiSamy(desc);
         } else if (SANITIZER_XP.equals(extensionPoint)) {
             if (!(contribution instanceof HtmlSanitizerDescriptor)) {
                 return;
             }
             HtmlSanitizerDescriptor desc = (HtmlSanitizerDescriptor) contribution;
-            log.info("Unregistering HTML sanitizer: " + desc);
+            log.info("Unregistering HTML sanitizer: {}", desc);
             removeSanitizer(desc);
         }
     }
 
     protected void addAntiSamy(HtmlSanitizerAntiSamyDescriptor desc) {
         if (Thread.currentThread().getContextClassLoader().getResourceAsStream(desc.policy) == null) {
-            log.error("Cannot find AntiSamy policy: " + desc.policy);
+            log.error("Cannot find AntiSamy policy: {}", desc.policy);
             return;
         }
         allPolicies.add(desc);
@@ -144,7 +144,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
 
     protected void addSanitizer(HtmlSanitizerDescriptor desc) {
         if (desc.fields.isEmpty()) {
-            log.error("Sanitizer has no fields: " + desc);
+            log.error("Sanitizer has no fields: {}", desc);
             return;
         }
         allSanitizers.add(desc);
@@ -216,7 +216,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
                     continue;
                 }
                 if (!(value instanceof String)) {
-                    log.debug("Cannot sanitize non-string field: " + field);
+                    log.debug("Cannot sanitize non-string field: {}", field);
                     continue;
                 }
                 String info = "doc " + doc.getPathAsString() + " (" + doc.getId() + ") field " + field;

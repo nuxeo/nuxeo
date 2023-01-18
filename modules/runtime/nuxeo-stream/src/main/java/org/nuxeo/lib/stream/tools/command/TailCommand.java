@@ -26,8 +26,7 @@ import java.time.Duration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -41,7 +40,8 @@ import org.nuxeo.lib.stream.tools.renderer.Renderer;
  * @since 9.3
  */
 public class TailCommand extends Command {
-    private static final Log log = LogFactory.getLog(TailCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(TailCommand.class);
 
     protected static final String NAME = "tail";
 

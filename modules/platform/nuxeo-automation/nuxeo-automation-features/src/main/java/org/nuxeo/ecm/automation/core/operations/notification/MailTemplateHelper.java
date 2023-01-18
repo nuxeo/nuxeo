@@ -20,8 +20,8 @@ package org.nuxeo.ecm.automation.core.operations.notification;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.ec.notification.NotificationEventListener;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MailTemplateHelper {
 
-    protected static final Log log = LogFactory.getLog(MailTemplateHelper.class);
+    private static final Logger log = LogManager.getLogger(MailTemplateHelper.class);
 
     private MailTemplateHelper() {
     }

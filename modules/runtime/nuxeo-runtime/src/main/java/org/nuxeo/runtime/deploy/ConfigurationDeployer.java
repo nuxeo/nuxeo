@@ -29,8 +29,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.model.RuntimeContext;
 
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
  */
 public class ConfigurationDeployer implements FileChangeListener {
 
-    private static final Log log = LogFactory.getLog(ConfigurationDeployer.class);
+    private static final Logger log = LogManager.getLogger(ConfigurationDeployer.class);
 
     protected final Map<String, Entry> urls;
 

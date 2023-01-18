@@ -54,8 +54,8 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -83,11 +83,11 @@ import org.nuxeo.ecm.directory.PasswordHelper;
  */
 public class LDAPSession extends BaseSession {
 
+    private static final Logger log = LogManager.getLogger(LDAPSession.class);
+
     protected static final String MISSING_ID_LOWER_CASE = "lower";
 
     protected static final String MISSING_ID_UPPER_CASE = "upper";
-
-    private static final Log log = LogFactory.getLog(LDAPSession.class);
 
     // set to false for debugging
     private static final boolean HIDE_PASSWORD_IN_LOGS = true;
@@ -189,7 +189,7 @@ public class LDAPSession extends BaseSession {
                     referenceFieldList.add(fieldId);
                 } else if (LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY.equals(backendFieldId)) {
                     // ignore special DN field
-                    log.warn(String.format("field %s is mapped to read only DN field: ignored", fieldId));
+                    log.warn("field: {} is mapped to read only DN field: ignored", fieldId);
                 } else {
                     Object value = fieldMap.get(fieldId);
                     if ((value != null) && !value.equals("") && !Collections.emptyList().equals(value)) {
@@ -207,8 +207,8 @@ public class LDAPSession extends BaseSession {
                     logAttrs = attrs;
                 }
                 String idField = getIdField();
-                log.debug(String.format("LDAPSession.createEntry(%s=%s): LDAP bind dn='%s' attrs='%s' [%s]", idField,
-                        fieldMap.get(idField), dn, logAttrs, this));
+                log.debug("LDAPSession.createEntry({}={}): LDAP bind dn='{}' attrs='{}' [{}]", idField,
+                        fieldMap.get(idField), dn, logAttrs, this);
             }
             getContext().bind(dn, null, attrs);
 
@@ -258,7 +258,7 @@ public class LDAPSession extends BaseSession {
                     String backendField = getDirectory().getFieldMapper().getBackendField(f);
                     if (LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY.equals(backendField)) {
                         // skip special LDAP DN field that is readonly
-                        log.warn(String.format("field %s is mapped to read only DN field: ignored", f));
+                        log.warn("field: {} is mapped to read only DN field: ignored", f);
                         continue;
                     }
                     if (value == null || value.equals("")) {
@@ -285,19 +285,12 @@ public class LDAPSession extends BaseSession {
                     }
                 }
 
-                if (log.isDebugEnabled()) {
-                    log.debug(
-                            String.format(
-                                    "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
-                                            + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]",
-                                    docModel, dn, attrsToDel, this));
-                }
+                log.debug("LDAPSession.updateEntry({}): LDAP modifyAttributes dn='{}' "
+                        + "mod_op='REMOVE_ATTRIBUTE' attr='{}' [{}]", docModel, dn, attrsToDel, this);
                 getContext().modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
 
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
-                            + "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrs, this));
-                }
+                log.debug("LDAPSession.updateEntry({}): LDAP modifyAttributes dn='{}' "
+                        + "mod_op='REPLACE_ATTRIBUTE' attr='{}' [{}]", docModel, dn, attrs, this);
                 getContext().modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
             }
         } catch (NamingException e) {
@@ -311,10 +304,8 @@ public class LDAPSession extends BaseSession {
         try {
             SearchResult result = getLdapEntry(id, false);
 
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s' [%s]", id,
-                        result.getNameInNamespace(), this));
-            }
+            log.debug("LDAPSession.deleteEntry({}): LDAP destroySubcontext dn='{}' [{}]", id,
+                    result.getNameInNamespace(), this);
             getContext().destroySubcontext(result.getNameInNamespace());
         } catch (NamingException e) {
             handleException(e, "deleteEntry failed for: " + id);
@@ -337,7 +328,7 @@ public class LDAPSession extends BaseSession {
 
     protected SearchResult getLdapEntry(String id, boolean fetchAllAttributes) throws NamingException {
         if (StringUtils.isEmpty(id)) {
-            log.warn("The application should not " + "query for entries with an empty id " + "=> return no results");
+            log.warn("The application should not query for entries with an empty id => return no results");
             return null;
         }
         String filterExpr;
@@ -350,12 +341,8 @@ public class LDAPSession extends BaseSession {
         String[] filterArgs = { id };
         SearchControls scts = getDirectory().getSearchControls(fetchAllAttributes);
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
-                            + " args='%s' scope='%s' [%s]",
-                    id, fetchAllAttributes, searchBaseDn, filterExpr, id, scts.getSearchScope(), this));
-        }
+        log.debug("LDAPSession.getLdapEntry({}, {}): LDAP search base='{}' filter='{}'  args='{}' scope='{}' [{}]", id,
+                fetchAllAttributes, searchBaseDn, filterExpr, id, scts.getSearchScope(), this);
         NamingEnumeration<SearchResult> results;
         try {
             results = getContext().search(searchBaseDn, filterExpr, filterArgs, scts);
@@ -366,12 +353,12 @@ public class LDAPSession extends BaseSession {
             // To keep the application usable return no results instead of
             // crashing but log the error so that the AD admin
             // can fix the issue.
-            log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
+            log.error("Unexpected response from server while performing query: {}", nnfe.getMessage(), nnfe);
             return null;
         }
 
         if (!results.hasMore()) {
-            log.debug("Entry not found: " + id);
+            log.debug("Entry not found: {}", id);
             return null;
         }
         SearchResult result = results.next();
@@ -380,20 +367,16 @@ public class LDAPSession extends BaseSession {
             if (results.hasMore()) {
                 result = results.next();
                 String dn2 = result.getNameInNamespace();
-                String msg = String.format(
-                        "Unable to fetch entry for '%s': found more than one match," + " for instance: '%s' and '%s'",
-                        id, dn, dn2);
-                log.error(msg);
+                log.error("Unable to fetch entry for: {}: found more than one match, for instance: {} and {}", id, dn,
+                        dn2);
                 // ignore entries that are ambiguous while giving enough info
                 // in the logs to let the LDAP admin be able to fix the issue
                 return null;
             }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
-                                + " args='%s' scope='%s' => found: %s [%s]",
-                        id, fetchAllAttributes, searchBaseDn, filterExpr, id, scts.getSearchScope(), dn, this));
-            }
+            log.debug(
+                    "LDAPSession.getLdapEntry({}, {}): LDAP search base='{}' filter='{}' "
+                            + " args='{}' scope='{}' => found: {} [{}]",
+                    id, fetchAllAttributes, searchBaseDn, filterExpr, id, scts.getSearchScope(), dn, this);
         } catch (UnsupportedOperationException e) {
             // ignore unsupported operation thrown by the Apache DS server in
             // the tests in embedded mode
@@ -451,7 +434,7 @@ public class LDAPSession extends BaseSession {
             int index = 0;
             for (String fieldName : filter.keySet()) {
                 if (getDirectory().isReference(fieldName)) {
-                    log.warn(fieldName + " is a reference and will be ignored as a query criterion");
+                    log.warn("{} is a reference and will be ignored as a query criterion", fieldName);
                     continue;
                 }
 
@@ -504,11 +487,9 @@ public class LDAPSession extends BaseSession {
             String filterExpr = "(&" + getDirectory().getBaseFilter() + StringUtils.join(filters) + ')';
             SearchControls scts = getDirectory().getSearchControls(true);
 
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
-                        searchBaseDn, filterExpr, StringUtils.join(filterArgs, ","), scts.getSearchScope(), this));
-            }
+            log.debug("LDAPSession.query(...): LDAP search base='{}' filter='{}' args='{}' scope='{}' [{}]",
+                    () -> searchBaseDn, () -> filterExpr, () -> StringUtils.join(filterArgs, ","), scts::getSearchScope,
+                    () -> this);
             try {
                 NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filterExpr, filterArgs,
                         scts);
@@ -525,7 +506,7 @@ public class LDAPSession extends BaseSession {
                 // To keep the application usable return no results instead of
                 // crashing but log the error so that the AD admin
                 // can fix the issue.
-                log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
+                log.error("Unexpected response from server while performing query: {}", nnfe.getMessage(), nnfe);
                 return new DocumentModelListImpl();
             }
         } catch (LimitExceededException e) {
@@ -560,12 +541,8 @@ public class LDAPSession extends BaseSession {
         OrderByList orders = queryBuilder.orders();
         Map<String, String> orderBy = AbstractDirectory.makeOrderBy(orders);
         SearchControls scts = getDirectory().getSearchControls(true);
-
-        if (log.isDebugEnabled()) {
-            log.debug(
-                    String.format("LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
-                            searchBaseDn, filter, filterParams, scts.getSearchScope(), this));
-        }
+        log.debug("LDAPSession.query(...): LDAP search base='{}' filter='{}' args='{}' scope='{}' [{}]", searchBaseDn,
+                filter, filterParams, scts.getSearchScope(), this);
         try {
             NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filter, filterParams.toArray(),
                     scts);
@@ -585,7 +562,7 @@ public class LDAPSession extends BaseSession {
             // LDAP: error code 32 - 0000208D: NameErr: DSID-031522C9, problem 2001 (NO_OBJECT).
             // To keep the application usable return no results instead of crashing but log the error
             // so that the AD admin can fix the issue.
-            log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
+            log.error("Unexpected response from server while performing query: {}", nnfe.getMessage(), nnfe);
             return new DocumentModelListImpl();
         } catch (LimitExceededException e) {
             throw new org.nuxeo.ecm.directory.SizeLimitExceededException(e);
@@ -619,11 +596,8 @@ public class LDAPSession extends BaseSession {
         boolean order = !orders.isEmpty();
         SearchControls scts = order ? getDirectory().getSearchControls(true) : getDirectory().getIdSearchControls();
 
-        if (log.isDebugEnabled()) {
-            log.debug(
-                    String.format("LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
-                            searchBaseDn, filter, filterParams, scts.getSearchScope(), this));
-        }
+        log.debug("LDAPSession.query(...): LDAP search base='{}' filter='{}' args='{}' scope='{}' [{}]", searchBaseDn,
+                filter, filterParams, scts.getSearchScope(), this);
         try {
             NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filter, filterParams.toArray(),
                     scts);
@@ -641,7 +615,7 @@ public class LDAPSession extends BaseSession {
             // LDAP: error code 32 - 0000208D: NameErr: DSID-031522C9, problem 2001 (NO_OBJECT).
             // To keep the application usable return no results instead of crashing but log the error
             // so that the AD admin can fix the issue.
-            log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
+            log.error("Unexpected response from server while performing query: {}", nnfe.getMessage(), nnfe);
             return Collections.emptyList();
         } catch (LimitExceededException e) {
             throw new org.nuxeo.ecm.directory.SizeLimitExceededException(e);
@@ -709,9 +683,9 @@ public class LDAPSession extends BaseSession {
             try {
                 return Long.valueOf(trimmedValue);
             } catch (NumberFormatException e) {
-                log.error(String.format(
-                        "field %s of type %s has non-numeric value found on server: '%s' (ignoring and using default value instead)",
-                        fieldName, typeName, trimmedValue));
+                log.error(
+                        "field: {} of type: {} has non-numeric value found on server: {} (ignoring and using default value instead)",
+                        fieldName, typeName, trimmedValue);
                 return defaultValue;
             }
         } else if (type.isListType()) {
@@ -724,9 +698,9 @@ public class LDAPSession extends BaseSession {
                 }
                 return parsedItems;
             } catch (NamingException e) {
-                log.error(String.format(
-                        "field %s of type %s has non list value found on server: '%s' (ignoring and using default value instead)",
-                        fieldName, typeName, values != null ? values.toString() : trimmedValue));
+                log.error(
+                        "field: {} of type: {} has non list value found on server: {} (ignoring and using default value instead)",
+                        fieldName, typeName, values != null ? values.toString() : trimmedValue);
                 return defaultValue;
             } finally {
                 if (values != null) {
@@ -749,9 +723,9 @@ public class LDAPSession extends BaseSession {
                 cal.setTime(date);
                 return cal;
             } catch (ParseException e) {
-                log.error(String.format(
-                        "field %s of type %s has invalid value found on server: '%s' (ignoring and using default value instead)",
-                        fieldName, typeName, trimmedValue));
+                log.error(
+                        "field: {} of type: {} has invalid value found on server: {} (ignoring and using default value instead)",
+                        fieldName, typeName, trimmedValue);
                 return defaultValue;
             }
         } else if ("content".equals(typeName)) {
@@ -832,13 +806,14 @@ public class LDAPSession extends BaseSession {
                 throw e;
             }
             // mark the collect results as a truncated result list
-            log.debug("SizeLimitExceededException caught," + " return truncated results. Original message: "
-                    + e.getMessage() + " explanation: " + e.getExplanation());
+            log.debug(
+                    "SizeLimitExceededException caught, return truncated results. Original message: {} explanation: {}",
+                    e::getMessage, e::getExplanation);
             list.setTotalSize(-2);
         } finally {
             results.close();
         }
-        log.debug("LDAP search returned " + list.size() + " results");
+        log.debug("LDAP search returned: {} results", list::size);
         return list;
     }
 
@@ -969,7 +944,7 @@ public class LDAPSession extends BaseSession {
         InitialLdapContext authenticationDirContext = null;
         try {
             // creating a context does a bind
-            log.debug(String.format("LDAP bind dn='%s'", dn));
+            log.debug("LDAP bind dn='{}'", dn);
             authenticationDirContext = new InitialLdapContext(env, null);
             // force reconnection to prevent from using a previous connection
             // with an obsolete password (after an user has changed his
@@ -978,7 +953,7 @@ public class LDAPSession extends BaseSession {
             log.debug("Bind succeeded, authentication ok");
             return true;
         } catch (NamingException e) {
-            log.debug("Bind failed: " + e.getMessage());
+            log.debug("Bind failed: {}", e::getMessage);
             // authentication failed
             return false;
         } finally {
@@ -987,7 +962,7 @@ public class LDAPSession extends BaseSession {
                     authenticationDirContext.close();
                 }
             } catch (NamingException e) {
-                log.error("Error closing authentication context when biding dn " + dn, e);
+                log.error("Error closing authentication context when binding dn: {}", dn, e);
             }
         }
     }

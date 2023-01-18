@@ -20,8 +20,8 @@ package org.nuxeo.ecm.platform.routing.core.api.scripting;
 
 import java.util.Calendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
  */
 public class RoutingScriptingFunctions {
 
-    private Log log = LogFactory.getLog(RoutingScriptingFunctions.class);
+    private static final Logger log = LogManager.getLogger(RoutingScriptingFunctions.class);
 
     public static final String BINDING_KEY = "WorkflowFn";
 
@@ -81,13 +81,12 @@ public class RoutingScriptingFunctions {
         }
         Calendar lastExecutionTime = rule.getLastExecutionTime();
         if (lastExecutionTime == null) {
-            log.debug("Trying to evaluate timeSinceRuleHasBeenFalse() for the rule " + rule.getId()
-                    + " that hasn't been executed yet");
+            log.debug("Trying to evaluate timeSinceRuleHasBeenFalse() for the rule: {} that hasn't been executed yet",
+                    rule::getId);
             return -1L;
         }
         if (!rule.isExecuted()) {
-            log.debug("Rule " + rule.getId() + " was never executed. Use with " + BINDING_KEY
-                    + " ruleAlreadyExecuted().");
+            log.debug("Rule: {} was never executed. Use with {} ruleAlreadyExecuted().", rule.getId(), BINDING_KEY);
             return -1L;
         }
         return Calendar.getInstance().getTimeInMillis() - rule.getLastExecutionTime().getTimeInMillis();

@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Generic {@link BaseDirectoryDescriptor} registry holding registered descriptors and instantiated {@link Directory}
@@ -48,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DirectoryRegistry {
 
-    private static final Log log = LogFactory.getLog(DirectoryRegistry.class);
+    private static final Logger log = LogManager.getLogger(DirectoryRegistry.class);
 
     /** All descriptors registered. */
     // used under synchronization
@@ -65,17 +65,17 @@ public class DirectoryRegistry {
     public synchronized void addContribution(BaseDirectoryDescriptor contrib) {
         String id = contrib.name;
         if (id.contains("/") && log.isWarnEnabled()) {
-            log.warn("Directory " + id + " should not contain forward slashes in its name, as they are not supported."
-                    + " Operations with the REST API on this directory won't work.");
+            log.warn("Directory: {} should not contain forward slashes in its name, as they are not supported."
+                    + " Operations with the REST API on this directory won't work.", id);
         }
-        log.info("Registered directory" + (contrib.template ? " template" : "") + ": " + id);
+        log.info("Registered directory{}: {}", () -> contrib.template ? " template" : "", () -> id);
         allDescriptors.computeIfAbsent(id, k -> new ArrayList<>()).add(contrib);
         contributionChanged(contrib);
     }
 
     public synchronized void removeContribution(BaseDirectoryDescriptor contrib) {
         String id = contrib.name;
-        log.info("Unregistered directory" + (contrib.template ? " template" : "") + ": " + id);
+        log.info("Unregistered directory{}: {}", () -> contrib.template ? " template" : "", () -> id);
         allDescriptors.getOrDefault(id, Collections.emptyList()).remove(contrib);
         contributionChanged(contrib);
     }
@@ -130,7 +130,7 @@ public class DirectoryRegistry {
                     contrib.name = next.name;
                     contrib.merge(next);
                 } else {
-                    log.debug("Directory " + id + " extends non-existing directory template: " + extendz);
+                    log.debug("Directory: {} extends non-existing directory template: {}", id, extendz);
                     contrib = null;
                 }
             } else if (next.remove) {
@@ -141,7 +141,7 @@ public class DirectoryRegistry {
             } else if (contrib.getClass() == next.getClass()) {
                 contrib.merge(next);
             } else {
-                log.warn("Directory " + id + " redefined with different factory");
+                log.warn("Directory: {} redefined with different factory", id);
                 contrib = next.clone();
             }
         }
@@ -237,7 +237,7 @@ public class DirectoryRegistry {
         try {
             dir.shutdown();
         } catch (DirectoryException e) {
-            log.error("Error while shutting down directory:" + dir.getName(), e);
+            log.error("Error while shutting down directory: {}", dir.getName(), e);
         }
     }
 

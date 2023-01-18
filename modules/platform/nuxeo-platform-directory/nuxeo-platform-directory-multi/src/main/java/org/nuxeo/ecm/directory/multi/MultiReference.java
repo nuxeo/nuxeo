@@ -26,8 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryEntryNotFoundException;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class MultiReference extends AbstractReference implements Cloneable {
 
-    private static final Log log = LogFactory.getLog(MultiReference.class);
+    private static final Logger log = LogManager.getLogger(MultiReference.class);
 
     final MultiDirectory dir;
 

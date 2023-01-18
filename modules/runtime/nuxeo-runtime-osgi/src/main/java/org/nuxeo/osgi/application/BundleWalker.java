@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.osgi.BundleFile;
@@ -41,7 +41,7 @@ import org.osgi.framework.Constants;
  */
 public class BundleWalker extends FileWalker.Visitor {
 
-    private static final Log log = LogFactory.getLog(BundleWalker.class);
+    private static final Logger log = LogManager.getLogger(BundleWalker.class);
 
     public static final FileNamePattern[] DEFAULT_PATTERNS = { new FileNamePattern("*.jar"),
             new FileNamePattern("*.war"), new FileNamePattern("*.rar"), new FileNamePattern("*.sar"), // jboss sar

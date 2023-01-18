@@ -40,8 +40,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -75,7 +75,7 @@ import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
  */
 public class SQLSession extends BaseSession {
 
-    private static final Log log = LogFactory.getLog(SQLSession.class);
+    private static final Logger log = LogManager.getLogger(SQLSession.class);
 
     // set to false for debugging
     private static final boolean HIDE_PASSWORD_IN_LOGS = true;
@@ -447,7 +447,7 @@ public class SQLSession extends BaseSession {
             for (String columnName : filterMap.keySet()) {
 
                 if (getDirectory().isReference(columnName)) {
-                    log.warn(columnName + " is a reference and will be ignored" + " as a query criterion");
+                    log.warn("{} is a reference and will be ignored as a query criterion", columnName);
                     continue;
                 }
 
@@ -543,7 +543,7 @@ public class SQLSession extends BaseSession {
                 if (count > queryLimitSize) {
                     trucatedResults = true;
                     limit = queryLimitSize;
-                    log.error("Displayed results will be truncated because too many rows in result: " + count);
+                    log.error("Displayed results will be truncated because too many rows in result: {}", count);
                     // throw new SizeLimitExceededException("too many rows in result: " + count);
                 }
             }
@@ -1050,10 +1050,7 @@ public class SQLSession extends BaseSession {
             if (!StringUtils.isBlank(tenantId)) {
                 String entryTenantId = (String) docModel.getProperty(schemaName, TENANT_ID_FIELD);
                 if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Trying to update entry '%s' not part of current tenant '%s'",
-                                docModel.getId(), tenantId));
-                    }
+                    log.debug("Trying to update entry: {} not part of current tenant: {}", docModel.getId(), tenantId);
                     throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
                             "label.directory.error.multi.tenant.operationNotAllowed", null);
                 }

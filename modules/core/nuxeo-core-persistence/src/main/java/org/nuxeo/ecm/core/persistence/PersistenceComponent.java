@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.dialect.resolver.BasicDialectResolver;
 import org.hibernate.dialect.resolver.DialectFactory;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PersistenceComponent extends DefaultComponent
         implements HibernateConfigurator, PersistenceProviderFactory {
 
-    private static final Log log = LogFactory.getLog(PersistenceComponent.class);
+    private static final Logger log = LogManager.getLogger(PersistenceComponent.class);
 
     protected final Map<String, HibernateConfiguration> registry = new HashMap<>();
 

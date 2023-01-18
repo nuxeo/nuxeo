@@ -35,13 +35,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Represents a batch file backed by the {@link TransientStore}.
@@ -53,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BatchFileEntry {
 
-    protected static final Log log = LogFactory.getLog(BatchFileEntry.class);
+    private static final Logger log = LogManager.getLogger(BatchFileEntry.class);
 
     protected TransientStore transientStore;
 
@@ -209,9 +208,8 @@ public class BatchFileEntry {
                 int uploadedChunkCount = chunks.size();
                 int chunkCount = getChunkCount();
                 if (uploadedChunkCount != chunkCount) {
-                    log.warn(String.format(
-                            "Cannot get blob for file entry %s as there are only %d uploaded chunks out of %d.", key,
-                            uploadedChunkCount, chunkCount));
+                    log.warn("Cannot get blob for file entry: {} as there are only: {} uploaded chunks out of: {}.",
+                            key, uploadedChunkCount, chunkCount);
                     return null;
                 }
                 chunkedBlob = Blobs.createBlobWithExtension(null);
@@ -290,7 +288,7 @@ public class BatchFileEntry {
         if (tmpChunkedFilePath != null) {
             File tmpChunkedFile = new File(tmpChunkedFilePath);
             if (tmpChunkedFile.exists()) {
-                log.debug(String.format("Deleting temporary chunked file %s", tmpChunkedFilePath));
+                log.debug("Deleting temporary chunked file: {}", tmpChunkedFilePath);
                 tmpChunkedFile.delete();
             }
         }

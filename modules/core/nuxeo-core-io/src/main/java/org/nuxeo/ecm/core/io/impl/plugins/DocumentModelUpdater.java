@@ -23,8 +23,8 @@ package org.nuxeo.ecm.core.io.impl.plugins;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,7 +45,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 // modify core session to add a batch create method and use it
 public class DocumentModelUpdater extends AbstractDocumentModelWriter {
 
-    private static final Log log = LogFactory.getLog(DocumentModelUpdater.class);
+    private static final Logger log = LogManager.getLogger(DocumentModelUpdater.class);
 
     /**
      * @param session the session to the repository where to write
@@ -73,7 +73,7 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
         try {
             doc = session.getDocument(new IdRef(id));
         } catch (DocumentNotFoundException e) {
-            log.error("Cannot update document. No such document: " + id);
+            log.error("Cannot update document. No such document: {}", id);
             return null;
         }
 

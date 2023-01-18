@@ -51,8 +51,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.jwt.JWTService;
@@ -75,7 +75,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(NuxeoOAuth2Servlet.class);
+    private static final Logger log = LogManager.getLogger(NuxeoOAuth2Servlet.class);
 
     public static final String ENDPOINT_AUTH = "authorize";
 
@@ -420,7 +420,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void handleError(OAuth2Error error, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        log.warn(String.format("OAuth2 authorization request error: %s", error));
+        log.warn("OAuth2 authorization request error: {}", error);
         response.reset();
         response.setStatus(error.getStatusCode());
         request.setAttribute("error", error);
@@ -438,7 +438,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     }
 
     protected void handleJsonError(OAuth2Error error, HttpServletResponse response) throws IOException {
-        log.warn(String.format("OAuth2 token request error: %s", error));
+        log.warn("OAuth2 token request error: {}", error);
         response.setHeader("Content-Type", "application/json");
         response.setStatus(error.getStatusCode());
 

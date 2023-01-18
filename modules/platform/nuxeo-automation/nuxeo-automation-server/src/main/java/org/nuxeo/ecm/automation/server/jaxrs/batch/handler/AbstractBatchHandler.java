@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public abstract class AbstractBatchHandler implements BatchHandler {
 
-    private static final Log log = LogFactory.getLog(AbstractBatchHandler.class);
+    private static final Logger log = LogManager.getLogger(AbstractBatchHandler.class);
 
     // property passed at initialization time
     public static final String PROP_TRANSIENT_STORE_NAME = "transientStore";
@@ -110,7 +110,7 @@ public abstract class AbstractBatchHandler implements BatchHandler {
         }
 
         // That's the way of storing an empty entry
-        log.debug("Initializing batch with id: " + batchId);
+        log.debug("Initializing batch with id: {}", batchId);
         transientStore.setCompleted(batchId, false);
         transientStore.putParameter(batchId, BATCH_HANDLER_NAME, getName());
         Map<String, Serializable> parameters = new HashMap<>();

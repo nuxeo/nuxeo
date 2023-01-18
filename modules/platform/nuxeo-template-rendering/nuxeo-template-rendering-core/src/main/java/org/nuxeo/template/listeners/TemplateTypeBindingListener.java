@@ -21,8 +21,8 @@ package org.nuxeo.template.listeners;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -37,7 +37,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 public class TemplateTypeBindingListener implements PostCommitFilteringEventListener {
 
-    protected static Log log = LogFactory.getLog(TemplateTypeBindingListener.class);
+    private static final Logger log = LogManager.getLogger(TemplateTypeBindingListener.class);
 
     @Override
     public boolean acceptEvent(Event event) {
@@ -71,8 +71,8 @@ public class TemplateTypeBindingListener implements PostCommitFilteringEventList
                             continue;
                         }
                         if (targetDoc instanceof ShallowDocumentModel) {
-                            log.warn("Skip unconnected document with type " + targetDoc.getType() + " and path "
-                                    + targetDoc.getPathAsString());
+                            log.warn("Skip unconnected document with type: {} and path: {}", targetDoc::getType,
+                                    targetDoc::getPathAsString);
                             continue;
                         }
                         TemplateSourceDocument tmpl = targetDoc.getAdapter(TemplateSourceDocument.class);

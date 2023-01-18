@@ -27,8 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor;
 import org.nuxeo.ecm.platform.audit.service.management.AuditBulkerMBean;
@@ -47,7 +47,7 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
 @Deprecated
 public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
 
-    final Log log = LogFactory.getLog(DefaultAuditBulker.class);
+    private static final Logger log = LogManager.getLogger(DefaultAuditBulker.class);
 
     final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -118,9 +118,7 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
 
     @Override
     public void offer(LogEntry entry) {
-        if (log.isDebugEnabled()) {
-            log.debug("offered " + entry);
-        }
+        log.debug("offered: {}", entry);
         queue.add(entry);
         queuedCount.inc();
 
@@ -177,9 +175,7 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
                         continue;
                     }
                     int count = drain();
-                    if (log.isDebugEnabled()) {
-                        log.debug("flushed " + count + " events");
-                    }
+                    log.debug("flushed {} events", count);
                 } catch (InterruptedException cause) {
                     Thread.currentThread().interrupt();
                     return;

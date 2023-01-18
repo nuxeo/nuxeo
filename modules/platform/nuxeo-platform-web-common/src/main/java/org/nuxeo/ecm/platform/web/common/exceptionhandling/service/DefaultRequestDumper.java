@@ -24,15 +24,15 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author arussel
  */
 public class DefaultRequestDumper implements RequestDumper {
 
-    private static final Log log = LogFactory.getLog(DefaultRequestDumper.class);
+    private static final Logger log = LogManager.getLogger(DefaultRequestDumper.class);
 
     protected List<String> attributes = new ArrayList<>();
 
@@ -53,7 +53,7 @@ public class DefaultRequestDumper implements RequestDumper {
                 builder.append(obj.toString());
             } catch (RuntimeException exc) {
                 // avoid errors when printing the error dump
-                log.error("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE: " + name);
+                log.error("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE: {}", name);
                 builder.append("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE");
             }
             builder.append("\n");

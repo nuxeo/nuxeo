@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -45,7 +45,7 @@ import org.w3c.dom.DocumentFragment;
 @XObject("fragment")
 public class FragmentDescriptor {
 
-    private static final Log log = LogFactory.getLog(FragmentDescriptor.class);
+    private static final Logger log = LogManager.getLogger(FragmentDescriptor.class);
 
     /**
      * Marker used for better control on requirements. see "all" marker in FragmentRegistry

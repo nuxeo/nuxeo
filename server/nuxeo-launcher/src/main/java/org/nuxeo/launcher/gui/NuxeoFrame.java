@@ -20,7 +20,18 @@
 
 package org.nuxeo.launcher.gui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -34,10 +45,27 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.nuxeo.common.Environment;
 import org.nuxeo.log4j.Log4JHelper;
@@ -158,9 +186,9 @@ public class NuxeoFrame extends JFrame {
         errorMessageLabel.setText(NuxeoLauncherGUI.getMessage("error.occurred") + " <<" + e.getMessage() + ">>.");
     }
 
-    protected static final Log log = LogFactory.getLog(NuxeoFrame.class);
-
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = LogManager.getLogger(NuxeoFrame.class);
 
     protected static final int LOG_MAX_SIZE = 200000;
 
@@ -385,7 +413,7 @@ public class NuxeoFrame extends JFrame {
             if (comp instanceof JComponent) {
                 ((JComponent) comp).setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.red), ((JComponent) comp).getBorder()));
-                log.info(comp.getClass() + " size: " + comp.getSize());
+                log.info("{} size: {}", comp::getClass, comp::getSize);
             }
         }
     }

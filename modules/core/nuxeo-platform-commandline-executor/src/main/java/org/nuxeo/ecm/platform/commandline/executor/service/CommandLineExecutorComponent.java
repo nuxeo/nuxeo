@@ -26,9 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
@@ -51,6 +50,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class CommandLineExecutorComponent extends DefaultComponent implements CommandLineExecutorService {
 
+    private static final Logger log = LogManager.getLogger(CommandLineExecutorComponent.class);
+
     public static final String EP_ENV = "environment";
 
     public static final String EP_CMD = "command";
@@ -70,8 +71,6 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
     protected Map<String, CommandTester> testers = new HashMap<>();
 
     protected Map<String, Executor> executors = new HashMap<>();
-
-    private static final Log log = LogFactory.getLog(CommandLineExecutorComponent.class);
 
     // @since 11.5
     protected boolean useTimeout;
@@ -119,34 +118,34 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
             CommandLineDescriptor desc = (CommandLineDescriptor) contribution;
             String name = desc.getName();
 
-            log.debug("Registering command: " + name);
+            log.debug("Registering command: {}", name);
 
             if (!desc.isEnabled()) {
                 commandDescriptors.remove(name);
-                log.info("Command configured to not be enabled: " + name);
+                log.info("Command configured to not be enabled: {}", name);
                 return;
             }
 
             String testerName = desc.getTester();
             if (testerName == null) {
                 testerName = DEFAULT_TESTER;
-                log.debug("Using default tester for command: " + name);
+                log.debug("Using default tester for command: {}", name);
             }
 
             CommandTester tester = testers.get(testerName);
             boolean cmdAvailable = false;
             if (tester == null) {
-                log.error("Unable to find tester '" + testerName + "', command will not be available: " + name);
+                log.error("Unable to find tester: {}, command will not be available: {}", testerName, name);
             } else {
-                log.debug("Using tester '" + testerName + "' for command: " + name);
+                log.debug("Using tester: {} for command: {}", testerName, name);
                 CommandTestResult testResult = tester.test(desc);
                 cmdAvailable = testResult.succeed();
                 if (cmdAvailable) {
-                    log.info("Registered command: " + name);
+                    log.info("Registered command: {}", name);
                 } else {
                     desc.setInstallErrorMessage(testResult.getErrorMessage());
-                    log.warn("Command not available: " + name + " (" + desc.getInstallErrorMessage() + ". "
-                            + desc.getInstallationDirective() + ')');
+                    log.warn("Command not available: {} ({}. {})", () -> name, desc::getInstallErrorMessage,
+                            desc::getInstallationDirective);
                 }
                 if ("timeout".equals(name)) {
                     useTimeout = cmdAvailable;
@@ -187,8 +186,8 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
         CommandLineDescriptor cmdDesc = commandDescriptors.get(commandName);
         Executor executor = executors.get(cmdDesc.getExecutor());
-        EnvironmentDescriptor environment = new EnvironmentDescriptor().merge(env).merge(
-                envDescriptors.getOrDefault(commandName, envDescriptors.get(cmdDesc.getCommand())));
+        EnvironmentDescriptor environment = new EnvironmentDescriptor().merge(
+                env).merge(envDescriptors.getOrDefault(commandName, envDescriptors.get(cmdDesc.getCommand())));
         return executor.exec(cmdDesc, params, environment);
     }
 

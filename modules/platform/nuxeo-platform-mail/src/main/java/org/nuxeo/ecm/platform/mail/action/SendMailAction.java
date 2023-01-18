@@ -28,8 +28,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Action to answer the mail. It expects the text of the answer to be in the context under the "message" key.
@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SendMailAction implements MessageAction {
 
-    private static final Log log = LogFactory.getLog(SendMailAction.class);
+    private static final Logger log = LogManager.getLogger(SendMailAction.class);
 
     protected final Session session;
 
@@ -52,9 +52,7 @@ public class SendMailAction implements MessageAction {
     @Override
     public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
-        if (log.isDebugEnabled()) {
-            log.debug("Sending mail because of message: " + message.getSubject());
-        }
+        log.debug("Sending mail because of message: {}", message.getSubject());
         Message sentMessage = new MimeMessage(session);
         if (message.getReplyTo() == null || message.getReplyTo().length == 0) {
             return true;

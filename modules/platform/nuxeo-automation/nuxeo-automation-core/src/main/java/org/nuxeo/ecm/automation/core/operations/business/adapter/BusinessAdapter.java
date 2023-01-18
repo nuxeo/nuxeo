@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.business.adapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
@@ -35,8 +33,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ "type", "id" })
 public abstract class BusinessAdapter {
-
-    private static final Log log = LogFactory.getLog(BusinessAdapter.class);
 
     @JsonProperty("id")
     protected String id;

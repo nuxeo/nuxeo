@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.platform.importer.executor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public class DefaultImporterExecutor extends AbstractImporterExecutor {
 
-    private static final Log log = LogFactory.getLog(DefaultImporterExecutor.class);
+    private static final Logger log = LogManager.getLogger(DefaultImporterExecutor.class);
 
     protected GenericMultiThreadedImporter importer = null;
 
@@ -45,11 +45,11 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
     }
 
     public DefaultImporterExecutor(String repositoryName) {
-        this.repositoryName=repositoryName;
+        this.repositoryName = repositoryName;
     }
 
     @Override
-    protected Log getJavaLogger() {
+    protected Logger getJavaLogger() {
         return log;
     }
 
@@ -65,8 +65,8 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
 
     public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
             Integer nbTheards, Boolean interactive) {
-        importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize,
-                nbTheards, getLogger());
+        importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize, nbTheards,
+                getLogger());
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());
         importer.setTransactionTimeout(getTransactionTimeout());

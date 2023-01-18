@@ -19,15 +19,11 @@
  */
 package org.nuxeo.template.api.descriptor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("outputFormat")
 public class OutputFormatDescriptor {
-
-    protected static final Log log = LogFactory.getLog(OutputFormatDescriptor.class);
 
     @XNode("@id")
     protected String id;

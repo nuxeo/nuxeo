@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -42,10 +42,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.usermapper.extension.UserMapper;
 import org.nuxeo.usermapper.service.UserMapperService;
 
-public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin,
-        NuxeoAuthenticationPluginLogoutExtension {
+public class ShibbolethAuthenticationPlugin
+        implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
 
-    private static final Log log = LogFactory.getLog(ShibbolethAuthenticationPlugin.class);
+    private static final Logger log = LogManager.getLogger(ShibbolethAuthenticationPlugin.class);
 
     public static final String EXTERNAL_MAPPER_PARAM = "mapper";
 
@@ -75,8 +75,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
         try {
             httpResponse.sendRedirect(loginURL);
         } catch (IOException e) {
-            String errorMessage = String.format("Unable to handle Shibboleth login on %s", loginURL);
-            log.error(errorMessage, e);
+            log.error("Unable to handle Shibboleth login on: {}", loginURL, e);
             return false;
         }
         return true;
@@ -127,7 +126,8 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
             nativeObject.put("userId", userId);
             externalMapper.getOrCreateAndUpdateNuxeoPrincipal(nativeObject);
         } else {
-            try (Session userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName())) {
+            try (Session userDir = Framework.getService(DirectoryService.class)
+                                            .open(userManager.getUserDirectoryName())) {
                 Framework.doPrivileged(() -> {
                     DocumentModel entry = userDir.getEntry(userId);
                     if (entry == null) {

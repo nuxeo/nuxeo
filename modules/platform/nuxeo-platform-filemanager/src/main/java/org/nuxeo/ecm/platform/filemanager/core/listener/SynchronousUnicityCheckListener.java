@@ -24,8 +24,8 @@ package org.nuxeo.ecm.platform.filemanager.core.listener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class SynchronousUnicityCheckListener extends AbstractUnicityChecker implements EventListener {
 
-    private static final Log log = LogFactory.getLog(SynchronousUnicityCheckListener.class);
+    private static final Logger log = LogManager.getLogger(SynchronousUnicityCheckListener.class);
 
     @Override
     public void handleEvent(Event event) {

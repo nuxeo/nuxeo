@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -63,7 +63,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class VideoHelper {
 
-    public static final Log log = LogFactory.getLog(VideoHelper.class);
+    private static final Logger log = LogManager.getLogger(VideoHelper.class);
 
     public static final String MISSING_PREVIEW_PICTURE = "preview/missing-video-preview.jpeg";
 
@@ -146,8 +146,8 @@ public class VideoHelper {
             } catch (ConversionException e) {
                 // this can happen when if the codec is not supported or not
                 // readable by ffmpeg and is recoverable by using a dummy preview
-                log.warn(String.format("could not extract story board for document '%s' with video file '%s': %s",
-                        docModel.getTitle(), video.getFilename(), e.getMessage()));
+                log.warn("Could not extract story board for document: {} with video file: {}: {}", docModel::getTitle,
+                        video::getFilename, e::getMessage);
                 log.debug(e, e);
                 return;
             }
@@ -188,8 +188,8 @@ public class VideoHelper {
         } catch (ConversionException e) {
             // this can happen when if the codec is not supported or not
             // readable by ffmpeg and is recoverable by using a dummy preview
-            log.warn(String.format("could not extract screenshot from document '%s' with video file '%s': %s",
-                    docModel.getTitle(), video.getFilename(), e.getMessage()));
+            log.warn("Could not extract screenshot from document: {} with video file: {}: {}", docModel::getTitle,
+                    video::getFilename, e::getMessage);
             log.debug(e, e);
             return;
         }
@@ -201,7 +201,7 @@ public class VideoHelper {
                 picture.fillPictureViews(result.getBlob(), result.getBlob().getFilename(), docModel.getTitle(),
                         new ArrayList<>(templates), true);
             } catch (IOException e) {
-                log.warn("failed to video compute previews for " + docModel.getTitle() + ": " + e.getMessage());
+                log.warn("Failed to video compute previews for document: {}: {}", docModel::getTitle, e::getMessage);
             }
         }
 
@@ -275,10 +275,9 @@ public class VideoHelper {
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Commit and start transaction with timeout " + getTransactionTimeout() + "s");
-        }
-        TransactionHelper.startTransaction(getTransactionTimeout());
+        int transactionTimeout = getTransactionTimeout();
+        log.debug("Commit and start transaction with timeout: {}s", transactionTimeout);
+        TransactionHelper.startTransaction(transactionTimeout);
         // timeout of command line executions will be aligned with the transaction timeout
     }
 

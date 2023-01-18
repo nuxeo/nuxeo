@@ -22,8 +22,8 @@ package org.nuxeo.ecm.platform.scanimporter.listener;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
  */
 public class IngestionTrigger implements EventListener {
 
-    private static final Log log = LogFactory.getLog(IngestionTrigger.class);
+    private static final Logger log = LogManager.getLogger(IngestionTrigger.class);
 
     private static final ReentrantLock LOCK = new ReentrantLock();
 

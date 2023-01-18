@@ -52,8 +52,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
@@ -85,7 +85,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-backend-core-types-contrib.xml")
 public class TestSQLBackend extends SQLBackendTestCase {
 
-    private static final Log log = LogFactory.getLog(TestSQLBackend.class);
+    private static final Logger log = LogManager.getLogger(TestSQLBackend.class);;
 
     private static final int ITERATIONS = 5;
 
@@ -2973,7 +2973,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                     throw r2.throwable;
                 }
                 int count = r1.count + r2.count;
-                log.info("Parallel locks per second: " + count);
+                log.info("Parallel locks per second: {}", count);
             } // else timed out
         } finally {
             // error condition recovery

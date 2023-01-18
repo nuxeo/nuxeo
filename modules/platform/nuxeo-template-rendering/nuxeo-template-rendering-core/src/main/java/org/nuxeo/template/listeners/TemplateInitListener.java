@@ -26,8 +26,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -53,8 +51,6 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class TemplateInitListener implements EventListener {
-
-    private static final Log log = LogFactory.getLog(TemplateInitListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -117,7 +113,7 @@ public class TemplateInitListener implements EventListener {
                                 if (docCtx.getCoreSession().exists(templateRef)) {
                                     DocumentModel sourceTemplateDoc = docCtx.getCoreSession().getDocument(templateRef);
                                     if (!sourceTemplateDoc.isTrashed()) {
-					tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
+                                        tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
                                     }
                                 }
                             }

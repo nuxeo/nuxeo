@@ -29,8 +29,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.rtf.RTFEditorKit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Colored text pane. Allow to choose the style when appending some text.
@@ -42,7 +42,7 @@ public class ColoredTextPane extends JTextPane {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(ColoredTextPane.class);
+    private static final Logger log = LogManager.getLogger(ColoredTextPane.class);
 
     private SimpleAttributeSet style;
 

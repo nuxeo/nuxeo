@@ -19,12 +19,11 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
-import static org.apache.commons.logging.LogFactory.getLog;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -37,7 +36,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("renditionDefinitionProvider")
 public class RenditionDefinitionProviderDescriptor {
 
-    private static final Log log = getLog(RenditionDefinitionProviderDescriptor.class);
+    private static final Logger log = LogManager.getLogger(RenditionDefinitionProviderDescriptor.class);
 
     @XNode("@name")
     protected String name;
@@ -74,7 +73,7 @@ public class RenditionDefinitionProviderDescriptor {
             try {
                 provider = providerClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                log.error(String.format("Unable to instantiate RenditionDefinitionProvider for '%s'", getName()), e);
+                log.error("Unable to instantiate RenditionDefinitionProvider for: {}", getName(), e);
             }
         }
         return provider;

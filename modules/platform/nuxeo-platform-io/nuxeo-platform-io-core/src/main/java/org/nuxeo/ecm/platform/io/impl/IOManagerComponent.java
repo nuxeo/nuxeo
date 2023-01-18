@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.platform.io.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.descriptors.IOResourceAdapterDescriptor;
@@ -37,11 +37,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class IOManagerComponent extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(IOManagerComponent.class);
+
     public static final ComponentName NAME = new ComponentName(IOManagerComponent.class.getName());
 
     public static final String ADAPTERS_EP_NAME = "adapters";
-
-    private static final Log log = LogFactory.getLog(IOManagerComponent.class);
 
     private final IOManager service;
 
@@ -73,13 +73,13 @@ public class IOManagerComponent extends DefaultComponent {
             adapter.setProperties(desc.getProperties());
             IOResourceAdapter existing = service.getAdapter(name);
             if (existing != null) {
-                log.warn(String.format("Overriding IO Resource adapter definition %s", name));
+                log.warn("Overriding IO Resource adapter definition: {}", name);
                 service.removeAdapter(name);
             }
             service.addAdapter(name, adapter);
-            log.info(String.format("IO resource adapter %s registered", name));
+            log.info("IO resource adapter: {} registered", name);
         } else {
-            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
+            log.error("Unknown extension point: {}, can't register !", extensionPoint);
         }
     }
 
@@ -89,7 +89,7 @@ public class IOManagerComponent extends DefaultComponent {
             IOResourceAdapterDescriptor desc = (IOResourceAdapterDescriptor) contribution;
             service.removeAdapter(desc.getName());
         } else {
-            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
+            log.error("Unknown extension point: {}, can't unregister !", extensionPoint);
         }
     }
 

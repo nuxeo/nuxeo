@@ -63,8 +63,8 @@ import org.apache.chemistry.opencmis.server.support.query.QueryObject.JoinSpec;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
 import org.apache.chemistry.opencmis.server.support.query.QueryUtilStrict;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -98,7 +98,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class CMISQLQueryMaker implements QueryMaker {
 
-    private static final Log log = LogFactory.getLog(CMISQLQueryMaker.class);
+    private static final Logger log = LogManager.getLogger(CMISQLQueryMaker.class);
 
     public static final String TYPE = "CMISQL";
 
@@ -826,9 +826,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     public enum ClauseType {
-        JOIN,
-        WHERE,
-        ORDER_BY;
+        JOIN, WHERE, ORDER_BY;
     }
 
     /**
@@ -1155,10 +1153,10 @@ public class CMISQLQueryMaker implements QueryMaker {
                         // TODO constructing the DocumentModel (in
                         // NuxeoObjectData) is expensive, try to get value
                         // directly
-                        data = service.getObject(service.getNuxeoRepository().getId(), id, null, null,
-                                null, null, null, null, null);
+                        data = service.getObject(service.getNuxeoRepository().getId(), id, null, null, null, null, null,
+                                null, null);
                     } catch (CmisRuntimeException e) {
-                        log.error("Cannot get document: " + id, e);
+                        log.error("Cannot get document: {}", id, e);
                     }
                     datas.put(qual, data);
                 }
@@ -1222,8 +1220,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         throw new QueryParseException("No such fulltext index: " + requestedIndexName);
                     }
                 } else {
-                    log.warn(String.format("fail to microparse custom fulltext index:" + " fallback to '%s'",
-                            indexName));
+                    log.warn("fail to microparse custom fulltext index fallback to '{}'", indexName);
                 }
             }
             // CMIS syntax to our internal google-like internal syntax

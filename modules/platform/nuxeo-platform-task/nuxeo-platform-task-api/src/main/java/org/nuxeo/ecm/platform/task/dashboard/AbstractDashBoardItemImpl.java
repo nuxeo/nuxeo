@@ -23,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -42,8 +40,6 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
 
     private static final long serialVersionUID = 1L;
-
-    protected static Log log = LogFactory.getLog(AbstractDashBoardItemImpl.class);
 
     protected Locale locale;
 

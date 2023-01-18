@@ -25,8 +25,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -47,7 +47,7 @@ public abstract class AbstractProperty implements Property {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(AbstractProperty.class);
+    private static final Logger log = LogManager.getLogger(AbstractProperty.class);
 
     protected static final Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(-?\\d+)\\]" // index in brackets - could be -1 if element is new to list

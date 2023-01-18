@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -115,9 +115,9 @@ import com.google.inject.Binder;
         CoreBulkFeature.class })
 public class CoreFeature implements RunnerFeature {
 
-    protected ACP rootAcp;
+    private static final Logger log = LogManager.getLogger(CoreFeature.class);
 
-    private static final Log log = LogFactory.getLog(CoreFeature.class);
+    protected ACP rootAcp;
 
     protected StorageConfiguration storageConfiguration;
 

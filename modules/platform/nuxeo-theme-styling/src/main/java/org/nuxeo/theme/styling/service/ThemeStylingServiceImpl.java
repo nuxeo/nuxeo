@@ -29,8 +29,8 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
@@ -68,7 +68,7 @@ import org.nuxeo.theme.styling.service.registries.PageRegistry;
  */
 public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeStylingService {
 
-    private static final Log log = LogFactory.getLog(ThemeStylingServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(ThemeStylingServiceImpl.class);
 
     protected static final String WR_EX = "org.nuxeo.ecm.platform.WebResources";
 
@@ -90,14 +90,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof FlavorDescriptor) {
-            FlavorDescriptor flavor = (FlavorDescriptor) contribution;
-            log.info(String.format("Register flavor '%s'", flavor.getName()));
+        if (contribution instanceof FlavorDescriptor flavor) {
+            log.info("Register flavor: {}", flavor::getName);
             registerFlavor(flavor, contributor.getContext());
-            log.info(String.format("Done registering flavor '%s'", flavor.getName()));
-        } else if (contribution instanceof SimpleStyle) {
-            SimpleStyle style = (SimpleStyle) contribution;
-            log.info(String.format("Register style '%s'", style.getName()));
+            log.info("Done registering flavor: {}", flavor::getName);
+        } else if (contribution instanceof SimpleStyle style) {
+            log.info("Register style: {}", style::getName);
             ComponentName compName = contributor.getName();
             String message = String.format(
                     "Style '%s' on component %s should now be contributed to extension "
@@ -108,20 +106,18 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
             ResourceDescriptor resource = getResourceFromStyle(style);
             registerResource(resource, contributor.getContext());
-            log.info(String.format("Done registering style '%s'", style.getName()));
-        } else if (contribution instanceof PageDescriptor) {
-            PageDescriptor page = (PageDescriptor) contribution;
-            log.info(String.format("Register page '%s'", page.getName()));
+            log.info("Done registering style: {}", style::getName);
+        } else if (contribution instanceof PageDescriptor page) {
+            log.info("Register page: {}", page::getName);
             if (page.hasResources()) {
                 // automatically register a bundle for page resources
                 WebResourceManager wrm = Framework.getService(WebResourceManager.class);
                 wrm.registerResourceBundle(page.getComputedResourceBundle());
             }
             pageReg.addContribution(page);
-            log.info(String.format("Done registering page '%s'", page.getName()));
-        } else if (contribution instanceof ResourceDescriptor) {
-            ResourceDescriptor resource = (ResourceDescriptor) contribution;
-            log.info(String.format("Register resource '%s'", resource.getName()));
+            log.info("Done registering page: {}", page::getName);
+        } else if (contribution instanceof ResourceDescriptor resource) {
+            log.info("Register resource: {}", resource::getName);
             ComponentName compName = contributor.getName();
             String message = String.format(
                     "Resource '%s' on component %s should now be contributed to extension "
@@ -136,42 +132,36 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 resource.setUri("/" + path);
             }
             registerResource(resource, contributor.getContext());
-            log.info(String.format("Done registering resource '%s'", resource.getName()));
-        } else if (contribution instanceof NegotiationDescriptor) {
-            NegotiationDescriptor neg = (NegotiationDescriptor) contribution;
-            log.info(String.format("Register negotiation for '%s'", neg.getTarget()));
+            log.info("Done registering resource: {}", resource::getName);
+        } else if (contribution instanceof NegotiationDescriptor neg) {
+            log.info("Register negotiation for: {}", neg::getTarget);
             negReg.addContribution(neg);
-            log.info(String.format("Done registering negotiation for '%s'", neg.getTarget()));
+            log.info("Done registering negotiation for: {}", neg::getTarget);
         } else {
-            log.error(String.format("Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
-                    extensionPoint, contribution));
+            log.error("Unknown contribution to the theme styling service, extension point {}: {}", extensionPoint,
+                    contribution);
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof FlavorDescriptor) {
-            FlavorDescriptor flavor = (FlavorDescriptor) contribution;
+        if (contribution instanceof FlavorDescriptor flavor) {
             flavorReg.removeContribution(flavor);
-        } else if (contribution instanceof Resource) {
-            Resource resource = (Resource) contribution;
+        } else if (contribution instanceof Resource resource) {
             unregisterResource(resource);
-        } else if (contribution instanceof SimpleStyle) {
-            SimpleStyle style = (SimpleStyle) contribution;
+        } else if (contribution instanceof SimpleStyle style) {
             unregisterResource(getResourceFromStyle(style));
-        } else if (contribution instanceof PageDescriptor) {
-            PageDescriptor page = (PageDescriptor) contribution;
+        } else if (contribution instanceof PageDescriptor page) {
             if (page.hasResources()) {
                 WebResourceManager wrm = Framework.getService(WebResourceManager.class);
                 wrm.unregisterResourceBundle(page.getComputedResourceBundle());
             }
             pageReg.removeContribution(page);
-        } else if (contribution instanceof NegotiationDescriptor) {
-            NegotiationDescriptor neg = (NegotiationDescriptor) contribution;
+        } else if (contribution instanceof NegotiationDescriptor neg) {
             negReg.removeContribution(neg);
         } else {
-            log.error(String.format("Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
-                    extensionPoint, contribution));
+            log.error("Unknown contribution to the theme styling service, extension point {}: {}", extensionPoint,
+                    contribution);
         }
     }
 
@@ -183,7 +173,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 String src = myPreset.getSrc();
                 URL url = getUrlFromPath(src, extensionContext);
                 if (url == null) {
-                    log.error(String.format("Could not find resource at '%s'", src));
+                    log.error("Could not find resource: {}", src);
                 } else {
                     String content;
                     try {
@@ -203,7 +193,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 String src = var.getSrc();
                 URL url = getUrlFromPath(src, extensionContext);
                 if (url == null) {
-                    log.error(String.format("Could not find resource at '%s'", src));
+                    log.error("Could not find resource: {}", src);
                 } else {
                     String content;
                     try {
@@ -230,7 +220,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             if (!StringUtils.isBlank(extendsFlavorName)) {
                 if (flavors.contains(extendsFlavorName)) {
                     // cyclic dependency => abort
-                    log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
+                    log.error("Cyclic dependency detected in flavor: {} hierarchy", flavor::getName);
                     return presets;
                 } else {
                     // retrieve the extended presets
@@ -242,7 +232,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                             presets.addAll(0, parentPresets);
                         }
                     } else {
-                        log.warn("Extended flavor '" + extendsFlavorName + "' not found");
+                        log.warn("Extended flavor: {} not found", extendsFlavorName);
                     }
                 }
             }
@@ -336,7 +326,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 if (!StringUtils.isBlank(extendsFlavorName)) {
                     if (flavors.contains(extendsFlavorName)) {
                         // cyclic dependency => abort
-                        log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
+                        log.error("Cyclic dependency detected in flavor: {} hierarchy", flavor::getName);
                         return null;
                     } else {
                         // retrieved the extended logo
@@ -345,7 +335,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                         if (extendedFlavor != null) {
                             localLogo = computeLogo(extendedFlavor, flavors);
                         } else {
-                            log.warn("Extended flavor '" + extendsFlavorName + "' not found");
+                            log.warn("Extended flavor: {} not found", extendsFlavorName);
                         }
                     }
                 }
@@ -363,7 +353,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 if (!StringUtils.isBlank(extendsFlavorName)) {
                     if (flavors.contains(extendsFlavorName)) {
                         // cyclic dependency => abort
-                        log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
+                        log.error("Cyclic dependency detected in flavor: {} hierarchy", flavor::getName);
                         return null;
                     } else {
                         // retrieved the extended colors
@@ -372,7 +362,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                         if (extendedFlavor != null) {
                             localPalette = computePalettePreview(extendedFlavor, flavors);
                         } else {
-                            log.warn("Extended flavor '" + extendsFlavorName + "' not found");
+                            log.warn("Extended flavor: {} not found", extendsFlavorName);
                         }
                     }
                 }
@@ -390,7 +380,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 if (!StringUtils.isBlank(extendsFlavorName)) {
                     if (flavors.contains(extendsFlavorName)) {
                         // cyclic dependency => abort
-                        log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
+                        log.error("Cyclic dependency detected in flavor: {} hierarchy", flavor::getName);
                         return null;
                     } else {
                         // retrieved the extended icons
@@ -399,7 +389,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                         if (extendedFlavor != null) {
                             localIcons = computeIcons(extendedFlavor, flavors);
                         } else {
-                            log.warn("Extended flavor '" + extendsFlavorName + "' not found");
+                            log.warn("Extended flavor: {} not found", extendsFlavorName);
                         }
                     }
                 }
@@ -464,8 +454,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             for (FlavorPresets myPreset : presets) {
                 String content = myPreset.getContent();
                 if (content == null) {
-                    log.error("Null content for preset with source '" + myPreset.getSrc() + "' in flavor '" + flavorName
-                            + "'");
+                    log.error("Null content for preset with source: {} in flavor {}", myPreset.getSrc(), flavorName);
                 } else {
                     String cat = myPreset.getCategory();
                     Map<String, String> allEntries;
@@ -485,10 +474,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                             presetsByCat.put(cat, allEntries);
                         }
                     } catch (PaletteParseException e) {
-                        log.error(
-                                String.format("Could not parse palette for " + "preset with source '%s' in flavor '%s'",
-                                        myPreset.getSrc(), flavorName),
-                                e);
+                        log.error("Could not parse palette for preset with source: {} in flavor: {}", myPreset.getSrc(),
+                                flavorName, e);
                     }
                 }
             }

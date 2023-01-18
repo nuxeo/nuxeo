@@ -23,8 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class LockManagerService extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(LockManagerService.class);
+    private static final Logger log = LogManager.getLogger(LockManagerService.class);
 
     private static final String XP_LOCKMANAGER = "lockmanager";
 
@@ -109,12 +109,12 @@ public class LockManagerService extends DefaultComponent {
     }
 
     protected void addContribution(LockManagerDescriptor descriptor) {
-        log.info("Registered " + descriptor);
+        log.info("Registered: {}", descriptor);
         registry.addContribution(descriptor);
     }
 
     protected void removeContribution(LockManagerDescriptor descriptor) {
-        log.info("Unregistered " + descriptor);
+        log.info("Unregistered: {}", descriptor);
         registry.removeContribution(descriptor);
     }
 

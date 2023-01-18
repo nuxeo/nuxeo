@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 import javax.transaction.Synchronization;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -69,16 +69,16 @@ public class SQLDirectory extends AbstractDirectory {
                     return;
                 }
                 if (initContext != null) {
-                    log.warn("Closing a sql directory session for you " + session, initContext);
+                    log.warn("Closing a sql directory session for you {}", session, initContext);
                 } else {
-                    log.warn("Closing a sql directory session for you " + session);
+                    log.warn("Closing a sql directory session for you {}", session);
                 }
                 if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                    log.warn("Closing sql directory session outside a transaction" + session);
+                    log.warn("Closing sql directory session outside a transaction {}", session);
                 }
                 session.close();
             } catch (DirectoryException e) {
-                log.error("Cannot state on sql directory session before commit " + SQLDirectory.this, e);
+                log.error("Cannot state on sql directory session before commit {}", SQLDirectory.this, e);
             }
 
         }
@@ -95,7 +95,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     }
 
-    public static final Log log = LogFactory.getLog(SQLDirectory.class);
+    private static final Logger log = LogManager.getLogger(SQLDirectory.class);
 
     private final boolean nativeCase;
 

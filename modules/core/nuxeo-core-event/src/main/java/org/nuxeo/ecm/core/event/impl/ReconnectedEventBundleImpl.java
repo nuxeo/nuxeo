@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,6 +54,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Logger log = LogManager.getLogger(ReconnectedEventBundleImpl.class);
+
     protected EventBundle sourceEventBundle;
 
     /** Lister name or names. */
@@ -64,8 +66,6 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     protected transient NuxeoLoginContext loginCtx;
 
     protected transient CoreSession reconnectedCoreSession;
-
-    private static final Log log = LogFactory.getLog(ReconnectedEventBundleImpl.class);
 
     protected ReconnectedEventBundleImpl() {
     }
@@ -124,7 +124,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                                     newArg = new DeletedDocumentModel(oldDoc);
                                 }
                             } catch (DocumentNotFoundException e) {
-                                log.error("Can not refetch Doc with ref " + ref.toString(), e);
+                                log.error("Can not refetch Doc with ref: {}", ref, e);
                             }
                         }
                     }
@@ -151,12 +151,11 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                             if (session.exists(oldRef)) { // NOSONAR
                                 propValue = session.getDocument(oldRef);
                             } else {
-                                log.warn("Listener " + (listenerName == null ? "" : "'" + listenerName + "' ")
-                                        + "cannot refetch missing document: " + oldRef + " ("
-                                        + oldDoc.getPathAsString() + ")");
+                                log.warn("Listener: {} cannot refetch missing document: {} ({})", () -> listenerName,
+                                        () -> oldRef, oldDoc::getPathAsString);
                             }
                         } catch (DocumentNotFoundException e) {
-                            log.error("Can not refetch Doc with ref " + oldRef, e);
+                            log.error("Can not refetch Doc with ref: {}", oldRef, e);
                         }
                     }
                     // XXX treat here other cases !!!!

@@ -26,8 +26,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -36,8 +34,6 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
-
-    private static final Log log = LogFactory.getLog(BaseConverterTest.class);
 
     protected static BlobHolder getBlobFromPath(String path, String srcMT) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);

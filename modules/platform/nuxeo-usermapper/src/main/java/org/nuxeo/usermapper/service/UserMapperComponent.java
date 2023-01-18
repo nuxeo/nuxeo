@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -42,7 +42,7 @@ import org.nuxeo.usermapper.extension.UserMapper;
  */
 public class UserMapperComponent extends DefaultComponent implements UserMapperService {
 
-    protected static final Log log = LogFactory.getLog(UserMapperComponent.class);
+    private static final Logger log = LogManager.getLogger(UserMapperComponent.class);
 
     protected Map<String, UserMapper> mappers = new HashMap<>();
 
@@ -76,7 +76,7 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
             try {
                 mappers.put(desc.name, desc.getInstance());
             } catch (Exception e) {
-                log.error("Unable to register mapper " + desc.name, e);
+                log.error("Unable to register mapper: {}", desc.name, e);
             }
         }
     }

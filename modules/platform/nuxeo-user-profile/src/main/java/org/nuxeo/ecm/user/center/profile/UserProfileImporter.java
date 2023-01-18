@@ -38,8 +38,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,13 +61,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- *
  * @since 7.2
  */
-@Experimental(comment="https://jira.nuxeo.com/browse/NXP-12200")
+@Experimental(comment = "https://jira.nuxeo.com/browse/NXP-12200")
 public class UserProfileImporter {
 
-    private static final Log log = LogFactory.getLog(UserProfileImporter.class);
+    private static final Logger log = LogManager.getLogger(UserProfileImporter.class);
 
     public static final String CONTENT_FILED_TYPE_NAME = "content";
 
@@ -110,7 +109,7 @@ public class UserProfileImporter {
 
         try (InputStream is = getResourceAsStream(dataFileName)) {
             if (is == null) {
-                log.error("Error locating CSV data file: " + dataFileName);
+                log.error("Error locating CSV data file: {}", dataFileName);
                 return;
             }
 
@@ -138,12 +137,12 @@ public class UserProfileImporter {
 
     public void doImport(CoreSession session, CSVParser parser, UserProfileService userProfileService)
             throws IOException {
-        log.info(String.format("Importing CSV file: %s", dataFileName));
+        log.info("Importing CSV file: {}", dataFileName);
 
-        DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(
-                UserProfileConstants.USER_PROFILE_DOCTYPE);
+        DocumentType docType = Framework.getService(SchemaManager.class)
+                                        .getDocumentType(UserProfileConstants.USER_PROFILE_DOCTYPE);
         if (docType == null) {
-            log.error("The type " + UserProfileConstants.USER_PROFILE_DOCTYPE + " does not exist");
+            log.error("The type {} does not exist", UserProfileConstants.USER_PROFILE_DOCTYPE);
             return;
         }
 
@@ -193,7 +192,7 @@ public class UserProfileImporter {
             commitOrRollbackTransaction();
             startTransaction();
         }
-        log.info(String.format("Done importing %s entries from CSV file: %s", docsUpdatedCount, dataFileName));
+        log.info("Done importing {} entries from CSV file: {}", docsUpdatedCount, dataFileName);
     }
 
     /**
@@ -202,8 +201,7 @@ public class UserProfileImporter {
      * @return {@code true} if a document has been created or updated, {@code false} otherwise.
      */
     protected boolean importLine(CSVRecord record, final long lineNumber, Integer nameIndex, DocumentType docType,
-            CoreSession session, UserProfileService userProfileService, Map<String, Integer> headerValues)
-            {
+            CoreSession session, UserProfileService userProfileService, Map<String, Integer> headerValues) {
         final String name = record.get(nameIndex);
         if (StringUtils.isBlank(name)) {
             logImportError(lineNumber, "Missing 'name' value", "label.csv.importer.missingNameValue");
@@ -278,7 +276,8 @@ public class UserProfileImporter {
                                 /*
                                  * Complex list.
                                  */
-                                fieldValue = (Serializable) Arrays.asList(stringValue.split(config.getListSeparatorRegex()));
+                                fieldValue = (Serializable) Arrays.asList(
+                                        stringValue.split(config.getListSeparatorRegex()));
                             }
                         } else {
                             /*
@@ -306,12 +305,10 @@ public class UserProfileImporter {
                         }
                     }
                     return fieldValue;
-                } catch (ParseException pe) {
-                    logImportError(lineNumber, "Unable to convert field '%s' with value '%s'", headerValue, stringValue);
+                } catch (ParseException | NumberFormatException pe) {
+                    logImportError(lineNumber, "Unable to convert field '%s' with value '%s'", headerValue,
+                            stringValue);
                     log.debug(pe, pe);
-                } catch (NumberFormatException nfe) {
-                    logImportError(lineNumber, "Unable to convert field '%s' with value '%s'", headerValue, stringValue);
-                    log.debug(nfe, nfe);
                 }
             }
         } else {
@@ -380,13 +377,13 @@ public class UserProfileImporter {
     protected void logImportError(long lineNumber, String message, String... params) {
         String lineMessage = String.format("Line %d", lineNumber);
         String errorMessage = String.format(message, (Object[]) params);
-        log.error(String.format("%s: %s", lineMessage, errorMessage));
+        log.error("{}: {}", lineMessage, errorMessage);
     }
 
     protected void logImportInfo(long lineNumber, String message, String... params) {
         String lineMessage = String.format("Line %d", lineNumber);
         String infoMessage = String.format(message, (Object[]) params);
-        log.info(String.format("%s: %s", lineMessage, infoMessage));
+        log.info("{}: {}", lineMessage, infoMessage);
     }
 
     public static Throwable unwrapException(Throwable t) {

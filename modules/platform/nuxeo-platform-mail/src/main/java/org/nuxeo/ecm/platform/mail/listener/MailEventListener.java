@@ -27,8 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,13 +48,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class MailEventListener implements EventListener {
 
+    private static final Logger log = LogManager.getLogger(MailEventListener.class);
+
     public static final String EVENT_NAME = "MailReceivedEvent";
 
     public static final String PIPE_NAME = "nxmail";
 
     public static final String INBOX = "INBOX";
-
-    private static final Log log = LogFactory.getLog(MailEventListener.class);
 
     protected Lock lock = new ReentrantLock();
 

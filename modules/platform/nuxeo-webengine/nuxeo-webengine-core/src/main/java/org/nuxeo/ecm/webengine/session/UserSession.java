@@ -28,8 +28,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.RequestCleanupHandler;
 import org.nuxeo.ecm.platform.web.common.RequestContext;
 
@@ -44,8 +42,6 @@ import org.nuxeo.ecm.platform.web.common.RequestContext;
 public final class UserSession extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 260562970988817064L;
-
-    protected static final Log log = LogFactory.getLog(UserSession.class);
 
     protected Map<Class<?>, ComponentMap<?>> comps = new HashMap<>();
 

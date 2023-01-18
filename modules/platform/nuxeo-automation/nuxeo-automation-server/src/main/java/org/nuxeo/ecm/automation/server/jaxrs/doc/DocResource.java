@@ -39,8 +39,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
@@ -66,7 +66,7 @@ import org.nuxeo.runtime.api.Framework;
 @Produces("text/html;charset=UTF-8")
 public class DocResource extends AbstractResource<ResourceTypeImpl> {
 
-    private final Log log = LogFactory.getLog(DocResource.class);
+    private static final Logger log = LogManager.getLogger(DocResource.class);
 
     protected AutomationService service;
 

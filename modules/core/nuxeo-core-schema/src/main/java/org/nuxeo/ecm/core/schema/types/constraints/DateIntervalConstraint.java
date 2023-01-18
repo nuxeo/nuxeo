@@ -30,8 +30,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This constraint ensures a date is in an interval.
@@ -47,7 +47,7 @@ public class DateIntervalConstraint extends AbstractConstraint {
 
     private static final long serialVersionUID = 3630463971175189087L;
 
-    private static final Log log = LogFactory.getLog(DateIntervalConstraint.class);
+    private static final Logger log = LogManager.getLogger(DateIntervalConstraint.class);
 
     private static final String NAME = "DateIntervalConstraint";
 
@@ -89,12 +89,11 @@ public class DateIntervalConstraint extends AbstractConstraint {
         maxTime = ConstraintUtils.objectToTimeMillis(maxDate);
         this.includingMax = includingMax;
         if (minTime != null && maxTime != null && minTime > maxTime) {
-            log.warn("lower bound (" + minDate + ") is greater than upper bound (" + maxDate
-                    + "). No dates could be valid.");
+            log.warn("lower bound ({}) is greater than upper bound ({}). No dates could be valid.", minDate, maxDate);
         }
         if ((minTime == null && minDate != null) || (maxTime == null && maxDate != null)) {
-            log.warn("some bound was ignored due to invalid date format (supported format is "
-                    + ConstraintUtils.DATE_FORMAT + " (min = " + minDate + " - max = " + maxDate + ")");
+            log.warn("some bound was ignored due to invalid date format (supported format is {} (min = {} - max = {})",
+                    ConstraintUtils.DATE_FORMAT, minDate, maxDate);
         }
     }
 

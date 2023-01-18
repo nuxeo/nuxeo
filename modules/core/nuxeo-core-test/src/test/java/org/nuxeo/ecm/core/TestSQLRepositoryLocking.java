@@ -28,8 +28,8 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -50,8 +50,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestSQLRepositoryLocking {
-
-    protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
 
     @SuppressWarnings("deprecation")
     private static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;

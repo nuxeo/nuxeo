@@ -29,8 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,16 +38,17 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 
 /**
  * @since 7.2
  */
 public class JsonGraphRoute extends UnrestrictedSessionRunner {
+
+    private static final Logger log = LogManager.getLogger(JsonGraphRoute.class);
 
     public static Map<String, Object> getGraphElementsAsMap(GraphRoute route, Locale locale) {
         Map<String, Object> graph = new HashMap<>();
@@ -78,8 +79,6 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
             return label;
         }
     }
-
-    private static Log log = LogFactory.getLog(JsonGraphRoute.class);
 
     protected String docId;
 

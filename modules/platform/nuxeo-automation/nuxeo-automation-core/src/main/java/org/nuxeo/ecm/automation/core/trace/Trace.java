@@ -25,13 +25,13 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationType;
 
 /**
@@ -39,7 +39,7 @@ import org.nuxeo.ecm.automation.OperationType;
  */
 public class Trace {
 
-    private static final Log log = LogFactory.getLog(TracerFactory.class);
+    private static final Logger log = LogManager.getLogger(Trace.class);
 
     protected final Call parent;
 
@@ -213,6 +213,6 @@ public class Trace {
         } catch (IOException cause) {
             return "Cannot print automation trace of " + chain.getId();
         }
-        return new String(out.toByteArray(), Charset.forName("UTF-8"));
+        return out.toString(StandardCharsets.UTF_8);
     }
 }

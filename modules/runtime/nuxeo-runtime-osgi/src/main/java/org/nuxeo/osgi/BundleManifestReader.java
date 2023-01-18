@@ -30,8 +30,8 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.BundleException;
@@ -42,7 +42,7 @@ import org.osgi.framework.Constants;
  */
 public final class BundleManifestReader {
 
-    private static final Log log = LogFactory.getLog(BundleManifestReader.class);
+    private static final Logger log = LogManager.getLogger(BundleManifestReader.class);
 
     private static final Pattern PARAMS_PATTERN = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 

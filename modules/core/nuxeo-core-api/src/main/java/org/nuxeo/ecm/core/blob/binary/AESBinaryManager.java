@@ -50,8 +50,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -87,7 +87,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AESBinaryManager extends LocalBinaryManager {
 
-    private static final Log log = LogFactory.getLog(AESBinaryManager.class);
+    private static final Logger log = LogManager.getLogger(AESBinaryManager.class);
 
     protected static final byte[] FILE_MAGIC = new byte[] { 'N', 'U', 'X', 'E', 'O', 'C', 'R', 'Y', 'P', 'T' };
 
@@ -315,7 +315,7 @@ public class AESBinaryManager extends LocalBinaryManager {
     public Binary getBinary(String digest) {
         File file = getFileForDigest(digest, false);
         if (file == null) {
-            log.warn("Invalid digest format: " + digest);
+            log.warn("Invalid digest format: {}", digest);
             return null;
         }
         if (!file.exists()) {

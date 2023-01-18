@@ -41,8 +41,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -93,14 +93,14 @@ import org.nuxeo.runtime.services.event.EventService;
  */
 public class UserManagerImpl implements UserManager, MultiTenantUserManager, AdministratorGroupsProvider {
 
+    private static final Logger log = LogManager.getLogger(UserManagerImpl.class);
+
     private static final String VALIDATE_PASSWORD_PARAM = "nuxeo.usermanager.check.password";
 
     /** @since 11.1 */
     protected static final String SEARCH_ESCAPE_COMPAT_PARAM = "nuxeo.usermanager.search.escape.compat";
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
     public static final String USERMANAGER_TOPIC = "usermanager";
 
@@ -421,7 +421,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         // deal with anonymous user
         String anonymousUserId = getAnonymousUserId();
         if (username.equals(anonymousUserId)) {
-            log.warn(String.format("Trying to authenticate anonymous user (%s)", anonymousUserId));
+            log.warn("Trying to authenticate anonymous user: {}", anonymousUserId);
             return false;
         }
 
@@ -444,7 +444,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
         try (Session userDir = dirService.open(userDirName)) {
             if (!userDir.isAuthenticating()) {
-                log.error("Trying to authenticate against a non authenticating " + "directory: " + userDirName);
+                log.error("Trying to authenticate against a non authenticating directory: {}", userDirName);
                 return false;
             }
 
@@ -472,13 +472,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 entry.setProperty(schema, dir.getIdField(), username);
                 entry.setProperty(schema, dir.getPasswordField(), ha1);
                 dir.createEntry(entry);
-                log.debug("Created digest auth password for user:" + username);
+                log.debug("Created digest auth password for user: {}", username);
             } else {
                 String storedHa1 = (String) entry.getProperty(schema, dir.getPasswordField());
                 if (!ha1.equals(storedHa1)) {
                     entry.setProperty(schema, dir.getPasswordField(), ha1);
                     dir.updateEntry(entry);
-                    log.debug("Updated digest auth password for user:" + username);
+                    log.debug("Updated digest auth password for user: {}", username);
                 }
             }
         } catch (DirectoryException e) {
@@ -546,8 +546,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             try {
                 userEntry.setProperty(userSchemaName, prop.getKey(), prop.getValue());
             } catch (PropertyNotFoundException ce) {
-                log.error("Property: " + prop.getKey() + " does not exists. Check your " + "UserService configuration.",
-                        ce);
+                log.error("Property: {} does not exists. Check your UserService configuration.", prop.getKey(), ce);
             }
         }
         return userEntry;

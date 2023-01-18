@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -44,7 +44,7 @@ public class RemovedProperty extends AbstractProperty {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(RemovedProperty.class);
+    private static final Logger log = LogManager.getLogger(RemovedProperty.class);
 
     protected final String fieldName;
 

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.Element;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
  */
 public class ExtensibleDocumentWriter extends DocumentModelWriter {
 
-    protected static Log log = LogFactory.getLog(ExtensibleDocumentWriter.class);
+    private static final Logger log = LogManager.getLogger(ExtensibleDocumentWriter.class);
 
     public ExtensibleDocumentWriter(CoreSession session, String parentPath) {
         super(session, parentPath);
@@ -110,16 +110,13 @@ public class ExtensibleDocumentWriter extends DocumentModelWriter {
                     doc.putContextData(IMPORT_VERSION_DESCRIPTION, desc);
                 }
                 if (created != null) {
-                    doc.putContextData(IMPORT_VERSION_CREATED,
-                            (Serializable) new DateType().decode(created));
+                    doc.putContextData(IMPORT_VERSION_CREATED, (Serializable) new DateType().decode(created));
                 }
                 doc.setPathInfo(null, name);
                 ((DocumentModelImpl) doc).setIsVersion(true);
 
-                doc.putContextData(CoreSession.IMPORT_VERSION_MAJOR,
-                        doc.getPropertyValue("uid:major_version"));
-                doc.putContextData(CoreSession.IMPORT_VERSION_MINOR,
-                        doc.getPropertyValue("uid:minor_version"));
+                doc.putContextData(CoreSession.IMPORT_VERSION_MAJOR, doc.getPropertyValue("uid:major_version"));
+                doc.putContextData(CoreSession.IMPORT_VERSION_MINOR, doc.getPropertyValue("uid:minor_version"));
                 doc.putContextData(CoreSession.IMPORT_IS_VERSION, true);
             }
         }

@@ -28,8 +28,8 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 /**
@@ -37,7 +37,7 @@ import org.junit.Test;
  */
 public class AnnotationTest {
 
-    static final Log log = LogFactory.getLog(AnnotationTest.class);
+    private static final Logger log = LogManager.getLogger(AnnotationTest.class);
 
     @Test
     public void testAnnotations() {

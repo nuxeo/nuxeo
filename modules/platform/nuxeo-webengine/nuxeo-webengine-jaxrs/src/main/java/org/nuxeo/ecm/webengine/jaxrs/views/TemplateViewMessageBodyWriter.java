@@ -32,8 +32,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 
 /**
@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 @Produces("*/*")
 public class TemplateViewMessageBodyWriter implements MessageBodyWriter<TemplateView> {
 
-    private static final Log log = LogFactory.getLog(TemplateViewMessageBodyWriter.class);
+    private static final Logger log = LogManager.getLogger(TemplateViewMessageBodyWriter.class);
 
     // @ResourceContext private HttpServletRequest request;
 
@@ -53,7 +53,7 @@ public class TemplateViewMessageBodyWriter implements MessageBodyWriter<Template
         try {
             t.render(entityStream);
         } catch (RenderingException | IOException e) {
-            log.error("Failed to render view: " + t.getUrl(), e);
+            log.error("Failed to render view: {}", t.getUrl(), e);
             throw new IOException("Failed to render view: " + t.getUrl(), e);
         }
     }

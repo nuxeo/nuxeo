@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.api.Processor;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.runtime.api.Framework;
@@ -41,7 +41,7 @@ import ro.isdc.wro.util.provider.ConfigurableProviderSupport;
  */
 public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
 
-    private static final Log log = LogFactory.getLog(NuxeoConfigurableProvider.class);
+    private static final Logger log = LogManager.getLogger(NuxeoConfigurableProvider.class);
 
     public static final String PRE_TYPE = "wroPre";
 
@@ -70,7 +70,7 @@ public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
                 proc = (ResourcePreProcessor) klass.getDeclaredConstructor().newInstance();
                 map.put(p.getName(), proc);
             } catch (ReflectiveOperationException e) {
-                log.error("Caught error when instanciating resource pre processor", e);
+                log.error("Caught error when instantiating resource pre processor", e);
                 continue;
             }
         }
@@ -93,7 +93,7 @@ public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
                 proc = (ResourcePostProcessor) klass.getDeclaredConstructor().newInstance();
                 map.put(p.getName(), proc);
             } catch (ReflectiveOperationException e) {
-                log.error("Caught error when instanciating resource post processor", e);
+                log.error("Caught error when instantiating resource post processor", e);
                 continue;
             }
         }

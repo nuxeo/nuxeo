@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -64,6 +64,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class XMLImporterServiceImpl {
 
+    private static final Logger log = LogManager.getLogger(XMLImporterServiceImpl.class);
+
     protected static final String FILE_PROPERTY = "file";
 
     protected static final String CONTENT_PROPERTY = "content";
@@ -73,21 +75,19 @@ public class XMLImporterServiceImpl {
     protected static final String FILE_NAME_PROPERTY = "filename";
 
     private static final String MSG_NO_ELEMENT_FOUND = "**CREATION**\n"
-            + "No element \"%s\" found in %s, use the DOC_TYPE-INDEX value";
+            + "No element \"{}\" found in {}, use the DOC_TYPE-INDEX value";
 
     private static final String MSG_CREATION = "**CREATION**\n"
-            + "Try to create document in %s with name %s based on \"%s\" fragment " + "with the following conf: %s\n";
+            + "Try to create document in {} with name {} based on \"{}\" fragment with the following conf: {}\n";
 
     private static final String MSG_UPDATE = "**DOCUMENT UPDATE**\n"
-            + "Try to update document in %s with name %s based on \"%s\" fragment " + "with the following conf: %s\n";
+            + "Try to update document in {} with name {} based on \"{}\" fragment with the following conf: {}\n";
 
     private static final String MSG_UPDATE_PROPERTY_TRACE = "**PROPERTY UPDATE**\n"
-            + "Value found for %s in %s is \"%s\". With the following conf: %s";
+            + "Value found for {} in {} is \"{}\". With the following conf: {}";
 
     private static final String MSG_UPDATE_PROPERTY = "**PROPERTY UPDATE**\n"
-            + "Try to set value into %s property based on %s element on document \"%s\" (%s). Conf activated: %s";
-
-    public static final Log log = LogFactory.getLog(XMLImporterServiceImpl.class);
+            + "Try to set value into {} property based on {} element on document \"{}\" ({}). Conf activated: {}";
 
     public static final String XML_IMPORTER_INITIALIZATION = "org.nuxeo.xml.importer.initialization";
 
@@ -282,35 +282,24 @@ public class XMLImporterServiceImpl {
     protected void processDocAttributes(DocumentModel doc, Element el, AttributeConfigDescriptor conf) {
         String targetDocProperty = conf.getTargetDocProperty();
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(MSG_UPDATE_PROPERTY, targetDocProperty, el.getUniquePath(), doc.getPathAsString(),
-                    doc.getType(), conf.toString()));
-        }
+        log.debug(MSG_UPDATE_PROPERTY, targetDocProperty, el.getUniquePath(), doc.getPathAsString(), doc.getType(),
+                conf);
         Property property = doc.getProperty(targetDocProperty);
 
         if (property.isScalar()) {
             Object value = resolveAndEvaluateXmlNode(el, conf.getSingleXpath());
-            if (log.isTraceEnabled()) {
-                log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
-                        conf.toString()));
-            }
+            log.trace(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value, conf);
             property.setValue(value);
 
         } else if (property.isComplex()) {
 
             if (property instanceof BlobProperty) {
                 Object value = resolveBlob(el, conf, CONTENT_PROPERTY);
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
-                            conf.toString()));
-                }
+                log.trace(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value, conf);
                 property.setValue(value);
             } else {
                 Object value = resolveComplex(el, conf);
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
-                            conf.toString()));
-                }
+                log.trace(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value, conf);
                 property.setValue(value);
             }
 
@@ -333,7 +322,7 @@ public class XMLImporterServiceImpl {
                         newValues[len] = value;
                         property.setValue(newValues);
                     } else {
-                        log.error("Simple multi value property " + targetDocProperty + " is not an Array");
+                        log.error("Simple multi value property {} is not an Array", targetDocProperty);
                     }
                 }
             } else {
@@ -345,11 +334,7 @@ public class XMLImporterServiceImpl {
                 property.addValue(props);
                 value = (Serializable) props;
             }
-
-            if (log.isTraceEnabled()) {
-                log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
-                        conf.toString()));
-            }
+            log.trace(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value, conf);
         }
     }
 
@@ -406,8 +391,8 @@ public class XMLImporterServiceImpl {
                 String value = "";
                 for (Node node : nodes) {
                     if (!(node instanceof DefaultText)) {
-                        String msg = "Text selector must return a string (expr:\"%s\") element %s";
-                        log.error(String.format(msg, xpr, el.getStringValue()));
+                        log.error("Text selector must return a string (expr:\"{}\") element {}", xpr,
+                                el.getStringValue());
                         return value;
                     }
                     value += ((DefaultText) node).getText();
@@ -480,9 +465,7 @@ public class XMLImporterServiceImpl {
         Object nameOb = resolveName(el, conf.getName());
         String name = null;
         if (nameOb == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(MSG_NO_ELEMENT_FOUND, conf.getName(), el.getUniquePath()));
-            }
+            log.debug(MSG_NO_ELEMENT_FOUND, conf.getName(), el.getUniquePath());
             int idx = 1;
             for (int i = 0; i < docsStack.size(); i++) {
                 if (docsStack.get(i).getType().equals(conf.getDocType())) {
@@ -495,12 +478,10 @@ public class XMLImporterServiceImpl {
         }
         doc.setPathInfo(path, name);
 
-        if (log.isDebugEnabled()) {
-            if (conf.getUpdate()) {
-                log.debug(String.format(MSG_UPDATE, path, name, el.getUniquePath(), conf.toString()));
-            } else {
-                log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
-            }
+        if (conf.getUpdate()) {
+            log.debug(MSG_UPDATE, path, name, el.getUniquePath(), conf);
+        } else {
+            log.debug(MSG_CREATION, path, name, el.getUniquePath(), conf);
         }
 
         try {

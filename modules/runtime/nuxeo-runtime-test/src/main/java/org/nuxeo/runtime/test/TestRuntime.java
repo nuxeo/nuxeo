@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
@@ -39,7 +39,8 @@ import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestRuntime extends AbstractRuntimeService {
-    private static final Log log = LogFactory.getLog(TestRuntime.class);
+
+    private static final Logger log = LogManager.getLogger(TestRuntime.class);
 
     public static final String NAME = "Test Runtime";
 

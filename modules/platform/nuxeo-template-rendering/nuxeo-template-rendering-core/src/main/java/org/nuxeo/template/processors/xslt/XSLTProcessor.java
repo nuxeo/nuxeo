@@ -33,6 +33,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -44,6 +46,8 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
 public class XSLTProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
+
+    private static final Logger log = LogManager.getLogger(XSLTProcessor.class);
 
     @Override
     public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) {

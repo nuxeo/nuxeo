@@ -24,8 +24,8 @@ package org.nuxeo.ecm.platform.relations.adapters;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentModelResourceAdapter extends AbstractResourceAdapter implements Serializable {
 
-    private static final Log log = LogFactory.getLog(DocumentModelResourceAdapter.class);
+    private static final Logger log = LogManager.getLogger(DocumentModelResourceAdapter.class);
 
     private static final long serialVersionUID = -5307418102496342779L;
 
@@ -84,16 +84,14 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
                 if (session == null) {
                     // open one
                     session = CoreInstance.getCoreSession(repoName);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Opened a new session '%s' with id %s", repoName, session));
-                    }
+                    log.debug("Opened a new session: {} with id: {}", repoName, session);
                 }
                 if (!session.exists(ref)) {
                     return null;
                 }
                 object = session.getDocument(ref);
             } catch (DocumentNotFoundException e) {
-                log.warn("Cannot get resource: " + resource, e);
+                log.warn("Cannot get resource: {}", resource, e);
             }
         }
         return object;

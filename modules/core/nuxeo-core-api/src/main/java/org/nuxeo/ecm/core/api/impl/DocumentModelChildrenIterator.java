@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
@@ -37,8 +35,6 @@ import org.nuxeo.ecm.core.api.IdRef;
  */
 public class DocumentModelChildrenIterator implements DocumentModelIterator {
 
-    private static final Log log = LogFactory.getLog(DocumentModelChildrenIterator.class);
-
     private CoreSession session;
 
     private String type;
@@ -49,8 +45,7 @@ public class DocumentModelChildrenIterator implements DocumentModelIterator {
 
     private DocumentModel next;
 
-    public DocumentModelChildrenIterator(CoreSession session, DocumentRef parentRef, String type, Filter filter)
-            {
+    public DocumentModelChildrenIterator(CoreSession session, DocumentRef parentRef, String type, Filter filter) {
         this.session = session;
         this.type = type;
         this.filter = filter;

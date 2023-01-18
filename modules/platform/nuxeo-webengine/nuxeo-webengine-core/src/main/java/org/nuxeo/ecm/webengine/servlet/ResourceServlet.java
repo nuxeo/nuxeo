@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -46,9 +46,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ResourceServlet extends HttpServlet {
 
-    protected static final Log log = LogFactory.getLog(ResourceServlet.class);
-
     private static final long serialVersionUID = 6548084847887645044L;
+
+    private static final Logger log = LogManager.getLogger(ResourceServlet.class);
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -68,7 +68,7 @@ public class ResourceServlet extends HttpServlet {
             return;
         }
 
-        Module module = engine.getModule(moduleName, (WebContext)req.getAttribute(WebContext.class.getName()));
+        Module module = engine.getModule(moduleName, (WebContext) req.getAttribute(WebContext.class.getName()));
         if (module == null) {
             resp.sendError(404);
             return;
@@ -77,7 +77,7 @@ public class ResourceServlet extends HttpServlet {
         try {
             service(req, resp, module, "/resources" + path);
         } catch (IOException e) {
-            log.error("Unable to serve resource for " + path, e);
+            log.error("Unable to serve resource for: {}", path, e);
             resp.sendError(404);
         }
     }

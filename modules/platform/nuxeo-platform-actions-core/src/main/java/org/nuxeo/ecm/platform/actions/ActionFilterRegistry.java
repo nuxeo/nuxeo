@@ -27,15 +27,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ActionFilterRegistry implements Serializable {
 
-    private static final Log log = LogFactory.getLog(ActionFilterRegistry.class);
+    private static final Logger log = LogManager.getLogger(ActionFilterRegistry.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -47,21 +47,16 @@ public class ActionFilterRegistry implements Serializable {
 
     public synchronized void addFilter(ActionFilter filter) {
         String id = filter.getId();
-        if (log.isDebugEnabled()) {
-            if (filters.containsKey(id)) {
-                log.debug("Overriding action filter: " + id);
-            } else {
-                log.debug("Registering action filter: " + id);
-            }
+        if (filters.containsKey(id)) {
+            log.debug("Overriding action filter: {}", id);
+        } else {
+            log.debug("Registering action filter: {}", id);
         }
         filters.put(id, filter);
     }
 
     public synchronized ActionFilter removeFilter(String id) {
-        if (log.isDebugEnabled()) {
-            log.debug("Un-Registering action filter: " + id);
-        }
-
+        log.debug("Un-Registering action filter: {}", id);
         return filters.remove(id);
     }
 

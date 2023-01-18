@@ -21,8 +21,8 @@ package org.nuxeo.runtime.stream.tests;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -35,7 +35,8 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  * @since 9.3
  */
 public class MyStreamProcessor implements StreamProcessorTopology {
-    private static final Log log = LogFactory.getLog(MyStreamProcessor.class);
+
+    private static final Logger log = LogManager.getLogger(MyStreamProcessor.class);
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -53,7 +54,7 @@ public class MyStreamProcessor implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            log.debug(metadata.name() + " got record: " + record);
+            log.debug("{} got record: {}", metadata.name(), record);
             context.produceRecord("o1", record);
             context.askForCheckpoint();
         }

@@ -20,8 +20,8 @@ package org.nuxeo.ecm.platform.rendition.extension;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DefaultAutomationRenditionProvider implements RenditionProvider {
 
-    private static final Log log = LogFactory.getLog(DefaultAutomationRenditionProvider.class);
+    private static final Logger log = LogManager.getLogger(DefaultAutomationRenditionProvider.class);
 
     public static final String VARIANT_POLICY_USER = "user";
 
@@ -47,7 +47,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
 
         try {
             if (as.getOperation(chain) == null) {
-                log.error("Chain " + chain + " is not defined : rendition can not be used");
+                log.error("Chain: {} is not defined : rendition can not be used", chain);
                 return false;
             }
         } catch (Exception e) {

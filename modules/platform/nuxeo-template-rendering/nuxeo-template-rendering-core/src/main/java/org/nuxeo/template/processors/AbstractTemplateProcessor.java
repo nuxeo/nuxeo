@@ -22,9 +22,6 @@ package org.nuxeo.template.processors;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
@@ -40,11 +37,9 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
 
     protected static final int BUFFER_SIZE = 1024 * 64; // 64K
 
-    protected static final Log log = LogFactory.getLog(AbstractTemplateProcessor.class);
-
     protected File getWorkingDir() {
-        File workingDir = new File(Environment.getDefault().getTemp(), "NXTemplateProcessor"
-                + System.currentTimeMillis());
+        File workingDir = new File(Environment.getDefault().getTemp(),
+                "NXTemplateProcessor" + System.currentTimeMillis());
         if (workingDir.exists()) {
             FileUtils.deleteQuietly(workingDir);
         }

@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class OAuth2ServiceUserStore {
 
-    protected static final Log log = LogFactory.getLog(OAuth2ServiceUserStore.class);
+    private static final Logger log = LogManager.getLogger(OAuth2ServiceUserStore.class);
 
     public static final String DIRECTORY_NAME = "oauth2Tokens";
 

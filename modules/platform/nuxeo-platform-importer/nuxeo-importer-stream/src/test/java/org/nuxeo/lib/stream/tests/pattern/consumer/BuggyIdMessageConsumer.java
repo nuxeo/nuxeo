@@ -20,8 +20,8 @@ package org.nuxeo.lib.stream.tests.pattern.consumer;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.pattern.KeyValueMessage;
 import org.nuxeo.lib.stream.pattern.consumer.AbstractConsumer;
 
@@ -29,7 +29,8 @@ import org.nuxeo.lib.stream.pattern.consumer.AbstractConsumer;
  * @since 9.1
  */
 public class BuggyIdMessageConsumer extends AbstractConsumer<KeyValueMessage> {
-    private static final Log log = LogFactory.getLog(BuggyIdMessageConsumer.class);
+
+    private static final Logger log = LogManager.getLogger(BuggyIdMessageConsumer.class);
 
     protected long lastAccepted = -1;
 
@@ -44,7 +45,7 @@ public class BuggyIdMessageConsumer extends AbstractConsumer<KeyValueMessage> {
         if (getRandom100() < 1) {
             throw new BuggyException("Failure in begin");
         }
-        log.trace("begin " + getConsumerId());
+        log.trace("begin {}", getConsumerId());
 
     }
 
@@ -55,9 +56,7 @@ public class BuggyIdMessageConsumer extends AbstractConsumer<KeyValueMessage> {
         }
 
         long tmp = Long.valueOf(message.getId());
-        if (log.isTraceEnabled()) {
-            log.trace(getConsumerId() + " accept: " + tmp);
-        }
+        log.trace("{} accept: {}", getConsumerId(), tmp);
         // these assertions are not valid when tailing from multiple partitions
 
         // // ensure that message are always bigger than the last committed one
@@ -82,10 +81,7 @@ public class BuggyIdMessageConsumer extends AbstractConsumer<KeyValueMessage> {
             throw new BuggyException("Failure in commit");
         }
         lastCommitted = lastAccepted;
-        if (log.isTraceEnabled()) {
-            log.trace(getConsumerId() + " commit " + lastCommitted);
-        }
-
+        log.trace("{} commit: {}", getConsumerId(), lastCommitted);
     }
 
     @Override
@@ -94,9 +90,7 @@ public class BuggyIdMessageConsumer extends AbstractConsumer<KeyValueMessage> {
             throw new BuggyException("Failure in rollback");
         }
         lastAccepted = lastCommitted;
-        if (log.isTraceEnabled()) {
-            log.trace(getConsumerId() + " rollback to " + lastCommitted);
-        }
+        log.trace("{} rollback to: {}", getConsumerId(), lastCommitted);
     }
 
     protected int getRandom100() {

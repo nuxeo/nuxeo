@@ -20,8 +20,8 @@ package org.nuxeo.lib.stream.tools.renderer;
 
 import java.nio.file.Paths;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.FileAvroSchemaStore;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -30,7 +30,8 @@ import org.nuxeo.lib.stream.log.LogRecord;
  * @since 9.3
  */
 public class MarkdownRenderer extends Renderer {
-    private static final Log log = LogFactory.getLog(Renderer.class);
+
+    private static final Logger log = LogManager.getLogger(MarkdownRenderer.class);
 
     protected static final String MD_DATA = "```";
 
@@ -48,8 +49,8 @@ public class MarkdownRenderer extends Renderer {
     @Override
     public void accept(LogRecord<Record> record) {
         Record rec = record.message();
-        log.info(String.format("### %s: key: %s, wm: %s, len: %d, flag: %s", record.offset(), rec.getKey(),
-                watermarkString(rec.getWatermark()), rec.getData().length, rec.getFlags()));
+        log.info("### {}: key: {}, wm: {}, len: {}, flag: {}", record.offset(), rec.getKey(),
+                watermarkString(rec.getWatermark()), rec.getData().length, rec.getFlags());
         log.info(MD_DATA + tryToRenderAvroData(schemaStore, rec) + MD_DATA);
     }
 

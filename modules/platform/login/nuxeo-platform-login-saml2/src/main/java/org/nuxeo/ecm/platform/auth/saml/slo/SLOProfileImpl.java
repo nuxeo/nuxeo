@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.slo;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.auth.saml.AbstractSAMLProfile;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
@@ -26,7 +28,12 @@ import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.saml2.core.*;
+import org.opensaml.saml2.core.Issuer;
+import org.opensaml.saml2.core.LogoutRequest;
+import org.opensaml.saml2.core.LogoutResponse;
+import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml2.core.SessionIndex;
+import org.opensaml.saml2.core.StatusCode;
 import org.opensaml.saml2.metadata.SingleLogoutService;
 import org.opensaml.xml.encryption.DecryptionException;
 
@@ -36,6 +43,8 @@ import org.opensaml.xml.encryption.DecryptionException;
  * @since 6.0
  */
 public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
+
+    private static final Logger log = LogManager.getLogger(SLOProfileImpl.class);
 
     public SLOProfileImpl(SingleLogoutService slo) {
         super(slo);
@@ -47,7 +56,8 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
     }
 
     @Override
-    public LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException {
+    public LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential)
+            throws SAMLException {
 
         LogoutRequest request = build(LogoutRequest.DEFAULT_ELEMENT_NAME);
         request.setID(newUUID());
@@ -167,7 +177,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
         // Verify status
         String statusCode = response.getStatus().getStatusCode().getValue();
         if (!statusCode.equals(StatusCode.SUCCESS_URI) && !statusCode.equals(StatusCode.PARTIAL_LOGOUT_URI)) {
-            log.warn("Invalid status code " + statusCode + ": " + response.getStatus().getStatusMessage());
+            log.warn("Invalid status code: {}:{}", statusCode, response.getStatus().getStatusMessage());
         }
     }
 }

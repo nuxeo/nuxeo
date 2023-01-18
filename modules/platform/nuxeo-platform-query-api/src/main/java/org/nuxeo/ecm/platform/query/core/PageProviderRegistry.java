@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.query.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class PageProviderRegistry extends ContributionFragmentRegistry<PageProviderDefinition> {
 
-    private static final Log log = LogFactory.getLog(PageProviderRegistry.class);
+    private static final Logger log = LogManager.getLogger(PageProviderRegistry.class);
 
     protected Map<String, PageProviderDefinition> providers = new HashMap<>();
 
@@ -51,7 +51,7 @@ public class PageProviderRegistry extends ContributionFragmentRegistry<PageProvi
         }
         boolean enabled = desc.isEnabled();
         if (enabled) {
-            log.info("Registering page provider with name " + name);
+            log.info("Registering page provider with name: {}", name);
             providers.put(name, desc);
         } else {
             contributionRemoved(id, desc);
@@ -61,7 +61,7 @@ public class PageProviderRegistry extends ContributionFragmentRegistry<PageProvi
     @Override
     public void contributionRemoved(String id, PageProviderDefinition origContrib) {
         providers.remove(id);
-        log.info("Unregistering page provider with name " + id);
+        log.info("Unregistering page provider with name: {}", id);
     }
 
     @Override

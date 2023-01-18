@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 public class GroovyTypeLoader {
 
-    public static final Log log = LogFactory.getLog(GroovyTypeLoader.class);
+    private static final Logger log = LogManager.getLogger(GroovyTypeLoader.class);
 
     public static final String CRLF = System.getProperty("line.separator");
 

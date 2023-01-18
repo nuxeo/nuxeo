@@ -22,13 +22,12 @@ package org.nuxeo.ecm.platform.mimetype.detectors;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.nuxeo.runtime.api.Framework;
 
@@ -36,7 +35,7 @@ import net.sf.jmimemagic.MagicDetector;
 
 public class XlsMimetypeSniffer implements MagicDetector {
 
-    private static final Log log = LogFactory.getLog(XlsMimetypeSniffer.class);
+    private static final Logger log = LogManager.getLogger(XlsMimetypeSniffer.class);
 
     @Override
     public String getDisplayName() {
@@ -101,13 +100,8 @@ public class XlsMimetypeSniffer implements MagicDetector {
             if (workbook.getNumberOfSheets() != 0) {
                 mimetypes = getHandledTypes();
             }
-        } catch (FileNotFoundException e) {
+        } catch (IllegalArgumentException | IOException e) {
             // This is not an excel file
-            log.debug("MimeType detector : Not an excel file");
-        } catch (IOException e) {
-            // This is not an excel file
-            log.debug("MimeType detector : Not an excel file");
-        } catch (IllegalArgumentException e) {
             log.debug("MimeType detector : Not an excel file");
         }
 

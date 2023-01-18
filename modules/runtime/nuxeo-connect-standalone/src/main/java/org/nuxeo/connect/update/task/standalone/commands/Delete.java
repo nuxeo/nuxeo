@@ -22,9 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Element;
 import org.nuxeo.common.utils.FileRef;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
@@ -32,6 +29,7 @@ import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
 import org.nuxeo.connect.update.xml.XmlWriter;
+import org.w3c.dom.Element;
 
 /**
  * The delete command. This command takes 2 arguments: the file path to delete and an optional md5. If md5 is set then
@@ -42,8 +40,6 @@ import org.nuxeo.connect.update.xml.XmlWriter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Delete extends AbstractCommand {
-
-    protected static final Log log = LogFactory.getLog(Delete.class);
 
     public static final String ID = "delete";
 

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.automation.core.events;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class EventHandlerRegistry {
 
-    private static final Log log = LogFactory.getLog(OperationEventListener.class);
+    private static final Logger log = LogManager.getLogger(EventHandlerRegistry.class);
 
     protected final AutomationService svc;
 

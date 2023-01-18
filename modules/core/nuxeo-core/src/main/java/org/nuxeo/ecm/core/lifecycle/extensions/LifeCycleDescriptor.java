@@ -22,8 +22,8 @@ package org.nuxeo.ecm.core.lifecycle.extensions;
 
 import java.util.Collection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
@@ -41,15 +41,14 @@ import org.w3c.dom.Element;
 @XObject(value = "lifecycle", order = { "@name" })
 public class LifeCycleDescriptor {
 
-    private static final Log log = LogFactory.getLog(LifeCycleDescriptor.class);
+    private static final Logger log = LogManager.getLogger(LifeCycleDescriptor.class);
 
     @XNode("@name")
     private String name;
 
     @XNode("@lifecyclemanager")
     public void setLifeCycleManager(String lifeCycleManager) {
-        log.warn("Ignoring deprecated lifecyclemanager attribute '" + lifeCycleManager + "' for lifecycle '" + name
-                + "'");
+        log.warn("Ignoring deprecated lifecyclemanager attribute '{}' for lifecycle '{}'", lifeCycleManager, name);
     }
 
     @XNode("@initial")

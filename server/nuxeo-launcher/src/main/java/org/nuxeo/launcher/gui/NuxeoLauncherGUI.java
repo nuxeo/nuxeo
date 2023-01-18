@@ -41,8 +41,8 @@ import java.util.concurrent.Executors;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.NuxeoLauncherException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -59,7 +59,8 @@ import org.nuxeo.launcher.gui.logs.LogsSourceThread;
  * @see NuxeoLauncher
  */
 public class NuxeoLauncherGUI {
-    static final Log log = LogFactory.getLog(NuxeoLauncherGUI.class);
+
+    private static final Logger log = LogManager.getLogger(NuxeoLauncherGUI.class);
 
     protected static final long UPDATE_FREQUENCY = 3000;
 
@@ -274,7 +275,7 @@ public class NuxeoLauncherGUI {
         try {
             message = ResourceBundle.getBundle("i18n/messages").getString(key);
         } catch (MissingResourceException e) {
-            log.debug(getMessage("missing.translation") + key);
+            log.debug(() -> getMessage("missing.translation") + key);
             message = ResourceBundle.getBundle("i18n/messages", Locale.ENGLISH).getString(key);
         }
         return message;

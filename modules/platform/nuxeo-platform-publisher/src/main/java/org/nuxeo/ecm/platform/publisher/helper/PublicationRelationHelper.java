@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.publisher.helper;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -44,20 +44,19 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PublicationRelationHelper {
 
+    private static final Logger log = LogManager.getLogger(PublicationRelationHelper.class);
+
     public static final String PUBLICATION_GRAPH_NAME = "publication";
 
     public static final String PUBLICATION_TREE_NAMESPACE = "http://www.nuxeo.org/publication/tree/";
 
     public static final Resource PUBLISHED_BY = new ResourceImpl("http://www.nuxeo.org/publication/publishedBy");
 
-    private static Log log = LogFactory.getLog(PublicationRelationHelper.class);
-
     private PublicationRelationHelper() {
         // Helper class
     }
 
-    public static void addPublicationRelation(DocumentModel documentModel, PublicationTree publicationTree)
-            {
+    public static void addPublicationRelation(DocumentModel documentModel, PublicationTree publicationTree) {
         RelationManager rm = RelationHelper.getRelationManager();
         QNameResource docResource = RelationHelper.getDocumentResource(documentModel);
         QNameResource treeResource = new QNameResourceImpl(PUBLICATION_TREE_NAMESPACE, publicationTree.getConfigName());
@@ -81,8 +80,8 @@ public class PublicationRelationHelper {
     public static PublicationTree getPublicationTreeUsedForPublishing(DocumentModel documentModel,
             CoreSession coreSession) {
         if (!isPublished(documentModel)) {
-            throw new NuxeoException("The document " + documentModel.getPathAsString()
-                    + " is not a published document");
+            throw new NuxeoException(
+                    "The document " + documentModel.getPathAsString() + " is not a published document");
         }
         List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
         Statement statement = stmts.get(0);
@@ -96,7 +95,6 @@ public class PublicationRelationHelper {
             tree = publisherService.getPublicationTree(localName, coreSession, null);
         } else {
             log.error("Resource is not a QNameResource, check the namespace");
-
         }
         return tree;
     }

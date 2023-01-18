@@ -35,8 +35,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -61,7 +61,7 @@ import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
  */
 public class ModuleImpl implements Module {
 
-    private static final Log log = LogFactory.getLog(ModuleImpl.class);
+    private static final Logger log = LogManager.getLogger(ModuleImpl.class);
 
     protected final WebEngine engine;
 
@@ -310,12 +310,12 @@ public class ModuleImpl implements Module {
     }
 
     public void flushSkinCache() {
-        log.info("Flushing skin cache for module: " + getName());
+        log.info("Flushing skin cache for module: {}", this::getName);
         fileCache = new ConcurrentHashMap<>();
     }
 
     public void flushTypeCache() {
-        log.info("Flushing type cache for module: " + getName());
+        log.info("Flushing type cache for module: {}", this::getName);
         synchronized (typeLock) {
             // remove type cache files if any
             new DefaultTypeLoader(this, typeReg, configuration.directory).flushCache();
@@ -466,7 +466,7 @@ public class ModuleImpl implements Module {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Map<String, String> getMessages(String language) {
-        log.info("Loading i18n files for module " + configuration.name);
+        log.info("Loading i18n files for module: {}", configuration.name);
         File file = new File(configuration.directory,
                 new StringBuilder().append("/i18n/messages_").append(language).append(".properties").toString());
         InputStream in = null;

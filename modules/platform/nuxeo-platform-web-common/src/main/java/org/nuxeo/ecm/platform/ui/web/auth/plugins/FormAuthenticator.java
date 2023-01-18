@@ -45,15 +45,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
-    private static final Log log = LogFactory.getLog(FormAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(FormAuthenticator.class);
 
     protected String loginPage = "login.jsp";
 
@@ -123,7 +123,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         // Only accept POST requests
         String method = httpRequest.getMethod();
         if (!"POST".equals(method)) {
-            log.debug("Request method is " + method + ", only accepting POST");
+            log.debug("Request method: {}, only accepting POST", method);
             return null;
         }
         log.debug("Looking for user/password in the request");

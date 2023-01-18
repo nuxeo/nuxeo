@@ -55,15 +55,14 @@ import javax.mail.MessagingException;
 import javax.mail.Store;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.action.Visitor;
-import org.nuxeo.ecm.platform.mail.listener.MailEventListener;
 import org.nuxeo.ecm.platform.mail.service.MailService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.mail.MailSessionBuilder;
@@ -76,7 +75,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class MailCoreHelper {
 
-    private static final Log log = LogFactory.getLog(MailEventListener.class);
+    private static final Logger log = LogManager.getLogger(MailCoreHelper.class);
 
     public static final String PIPE_NAME = "nxmail";
 
@@ -116,7 +115,7 @@ public final class MailCoreHelper {
                 processingMailBoxes.remove(currentMailFolder.getId());
             }
         } else {
-            log.info("Mailbox " + currentMailFolder.getPathAsString() + " is already being processed");
+            log.info("Mailbox: {} is already being processed", currentMailFolder::getPathAsString);
         }
     }
 
@@ -205,7 +204,7 @@ public final class MailCoreHelper {
 
                 Message[] allMessages = rootFolder.getMessages(1, getMessageLimit(rootFolder));
                 // VDU
-                log.debug("nbr of messages in folder:" + allMessages.length);
+                log.debug("nbr of messages in folder: {}", allMessages.length);
 
                 FetchProfile fetchProfile = new FetchProfile();
                 fetchProfile.add(FetchProfile.Item.FLAGS);
@@ -261,12 +260,10 @@ public final class MailCoreHelper {
         int messageCount = mailbox.getMessageCount();
         int limit = Integer.parseInt(
                 Framework.getProperty(MESSAGE_LIMIT_OPTION, Integer.toString(DEFAULT_MESSAGE_LIMIT)));
-        if (log.isDebugEnabled()) {
-            log.debug("Mailbox: " + mailbox.getName() + " contains: " + messageCount + " messages, limit: " + limit);
-        }
+        log.debug("Mailbox: {} contains: {} messages, limit: {}", mailbox.getName(), messageCount, limit);
         if (messageCount > limit) {
-            log.warn("Too many messages in mailbox: " + mailbox.getName() + " limit to " + limit + " out of "
-                    + messageCount);
+            log.warn("Too many messages in mailbox: {} limit to: {} out of: {}", mailbox.getName(), limit,
+                    messageCount);
             return limit;
         }
         return messageCount;

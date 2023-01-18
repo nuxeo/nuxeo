@@ -40,6 +40,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -61,6 +63,8 @@ import com.unboundid.scim.sdk.Resources;
 @WebObject(type = "users")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class SCIMUserWebObject extends BaseUMObject {
+
+    private static final Logger log = LogManager.getLogger(SCIMUserWebObject.class);
 
     @Override
     protected String getPrefix() {

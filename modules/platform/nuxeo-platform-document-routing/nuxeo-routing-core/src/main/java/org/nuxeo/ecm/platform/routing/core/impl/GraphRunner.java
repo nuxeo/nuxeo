@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -63,7 +62,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(GraphRunner.class);
+    private static final Logger log = LogManager.getLogger(GraphRunner.class);
 
     /**
      * Maximum number of steps we do before deciding that this graph is looping.
@@ -130,7 +129,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             // don't delete (yet)
             if (task != null) {
                 Map<String, Serializable> eventProperties = new HashMap<>();
-                eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+                eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                        DocumentRoutingConstants.ROUTING_CATEGORY);
                 eventProperties.put("taskName", task.getName());
                 eventProperties.put("modelName", graph.getModelName());
                 eventProperties.put("action", status);
@@ -152,17 +152,19 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                     eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
                 }
 
-                DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+                DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
+                        task.getDocument());
                 envContext.setProperties(eventProperties);
                 EventProducer eventProducer = Framework.getService(EventProducer.class);
-                eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskEnded.name()));
+                eventProducer.fireEvent(
+                        envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskEnded.name()));
             }
         } else {
             // cancel any remaing tasks on this node
             node.cancelTasks();
         }
         if (node.hasOpenTasks()) {
-            log.info("Node " + node.getId() + "has open tasks, the workflow can not be resumed for now.");
+            log.info("Node: {} has open tasks, the workflow can not be resumed for now.", node::getId);
             // do nothing, the workflow is resumed only when all the tasks
             // created from
             // this node are processed
@@ -195,7 +197,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             }
             eventProperties.put("pendingNodes", (Serializable) pendingNodeNames);
         }
-        EventFirer.fireEvent(session, element, eventProperties, DocumentRoutingConstants.Events.beforeWorkflowCanceled.name());
+        EventFirer.fireEvent(session, element, eventProperties,
+                DocumentRoutingConstants.Events.beforeWorkflowCanceled.name());
 
         super.cancel(session, element);
         if (graph == null) {
@@ -231,7 +234,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             State jump = null;
             switch (node.getState()) {
             case READY:
-                log.debug("Doing node " + node);
+                log.debug("Doing node: {}", node);
                 if (node.isMerge()) {
                     jump = State.WAITING;
                 } else {
@@ -282,8 +285,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                 node.setState(State.READY);
                 if (node.isStop()) {
                     if (!pendingNodes.isEmpty()) {
-                        throw new DocumentRouteException(String.format("Route %s stopped with still pending nodes: %s",
-                                graph, pendingNodes));
+                        throw new DocumentRouteException(
+                                String.format("Route %s stopped with still pending nodes: %s", graph, pendingNodes));
                     }
                     done = true;
                 } else {
@@ -386,10 +389,10 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         // we may get several tasks if there's one per actor when the node
         // has the property
         // hasMultipleTasks set to true
-        List<Task> tasks = taskService.createTask(session, session.getPrincipal(), docs,
-                                                  node.getTaskDocType(), node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
-                                                  new ArrayList<>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate,
-                                                  taskVariables, null, node.getWorkflowContextualInfo(session, true));
+        List<Task> tasks = taskService.createTask(session, session.getPrincipal(), docs, node.getTaskDocType(),
+                node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
+                new ArrayList<>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate, taskVariables,
+                null, node.getWorkflowContextualInfo(session, true));
 
         // Audit task assignment
         for (Task task : tasks) {
@@ -412,10 +415,12 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                 eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
             }
 
-            DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+            DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
+                    task.getDocument());
             envContext.setProperties(eventProperties);
             EventProducer eventProducer = Framework.getService(EventProducer.class);
-            eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskCreated.name()));
+            eventProducer.fireEvent(
+                    envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskCreated.name()));
         }
 
         // routing.makeRoutingTasks(session, tasks);

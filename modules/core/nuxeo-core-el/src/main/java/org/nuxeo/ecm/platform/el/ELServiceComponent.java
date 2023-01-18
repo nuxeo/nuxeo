@@ -18,18 +18,17 @@
  */
 package org.nuxeo.ecm.platform.el;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.DefaultComponent;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.el.ELContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Implementation for the service providing access to EL-related functions.
@@ -38,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ELServiceComponent extends DefaultComponent implements ELService {
 
-    private static final Log log = LogFactory.getLog(ELServiceComponent.class);
+    private static final Logger log = LogManager.getLogger(ELServiceComponent.class);
 
     private static final String XP_EL_CONTEXT_FACTORY = "elContextFactory";
 
@@ -62,7 +61,7 @@ public class ELServiceComponent extends DefaultComponent implements ELService {
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_EL_CONTEXT_FACTORY.equals(extensionPoint)) {
             ELContextFactoryDescriptor desc = (ELContextFactoryDescriptor) contribution;
-            log.info("Registered ELContextFactory: " + desc.klass.getName());
+            log.info("Registered ELContextFactory: {}", desc.klass::getName);
             registerELContextFactoryDescriptor(desc);
         } else {
             throw new NuxeoException("Unknown extension point: " + extensionPoint);
@@ -73,7 +72,7 @@ public class ELServiceComponent extends DefaultComponent implements ELService {
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_EL_CONTEXT_FACTORY.equals(extensionPoint)) {
             ELContextFactoryDescriptor desc = (ELContextFactoryDescriptor) contribution;
-            log.info("Unregistered ELContextFactory: " + desc.klass.getName());
+            log.info("Unregistered ELContextFactory: {}", desc.klass::getName);
             unregisterELContextFactoryDescriptor(desc);
         } else {
             throw new NuxeoException("Unknown extension point: " + extensionPoint);

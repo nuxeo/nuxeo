@@ -19,8 +19,8 @@ import java.io.Serializable;
 
 import javax.management.MXBean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 @MXBean
@@ -28,9 +28,9 @@ public class WorkSchedulePath implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final transient ThreadLocal<Work> enteredLocal = new ThreadLocal<>();
+    public static final Logger log = LogManager.getLogger(WorkSchedulePath.class);
 
-    public static final Log log = LogFactory.getLog(WorkSchedulePath.class);
+    protected static final transient ThreadLocal<Work> enteredLocal = new ThreadLocal<>();
 
     protected static Boolean captureStack;
 

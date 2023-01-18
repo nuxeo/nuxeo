@@ -25,8 +25,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.CoreSessionProvider;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -38,8 +36,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements HttpSessionBindingListener {
-
-    private static final Log log = LogFactory.getLog(PerSessionCoreProvider.class);
 
     public static class Ref implements SessionRef {
         protected CoreSession session;

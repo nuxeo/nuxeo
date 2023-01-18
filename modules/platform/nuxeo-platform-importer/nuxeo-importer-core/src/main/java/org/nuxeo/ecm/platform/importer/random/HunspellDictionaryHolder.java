@@ -20,9 +20,6 @@
  */
 package org.nuxeo.ecm.platform.importer.random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,10 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * @author Thierry Delprat
  */
 public class HunspellDictionaryHolder implements DictionaryHolder {
+
+    private static final Logger log = LogManager.getLogger(HunspellDictionaryHolder.class);
 
     protected static final String DEFAULT_DIC = "fr_FR.dic";
 
@@ -48,8 +50,6 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
     protected int wordCount;
 
     protected String dicName = DEFAULT_DIC;
-
-    public static final Log log = LogFactory.getLog(HunspellDictionaryHolder.class);
 
     public HunspellDictionaryHolder(String lang) {
         if (lang != null) {
@@ -79,7 +79,7 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
     protected void loadDic() throws IOException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(dicName);
         if (url == null) {
-            log.error("not found: " + dicName);
+            log.error("not found: {}", dicName);
             return;
         }
         try (InputStream in = url.openStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {

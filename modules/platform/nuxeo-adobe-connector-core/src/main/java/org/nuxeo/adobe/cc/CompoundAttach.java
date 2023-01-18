@@ -22,8 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -39,8 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class CompoundAttach {
 
     public static final String ID = "CompoundDocument.Attach";
-
-    private static final Log log = LogFactory.getLog(CompoundAttach.class);
 
     public static final String COMPOUND_DOC_FACET = "CompoundDocument";
 

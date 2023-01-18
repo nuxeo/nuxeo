@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -73,9 +71,6 @@ import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
  */
 @Operation(id = SuggestUserEntries.ID, category = Constants.CAT_SERVICES, label = "Get user/group suggestion", description = "Get the user/group list of the running instance. This is returning a blob containing a serialized JSON array..", addToStudio = false)
 public class SuggestUserEntries {
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(SuggestUserEntries.class);
 
     public static final String ID = "UserGroup.Suggestion";
 
@@ -268,8 +263,8 @@ public class SuggestUserEntries {
             obj.put(MarshallingConstants.ENTITY_FIELD_NAME, NuxeoPrincipalJsonWriter.ENTITY_TYPE);
             obj.put(SuggestConstants.TYPE_KEY_NAME, SuggestConstants.USER_TYPE);
             obj.put(SuggestConstants.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
-            SuggestConstants.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField,
-                    hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
+            SuggestConstants.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField, hideFirstLabel,
+                    hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
             SuggestConstants.computeUserGroupIcon(obj, hideIcon);
             if (!StringUtils.isBlank(groupRestriction)) {
                 // We need to load all data about the user particularly its groups.
@@ -333,9 +328,9 @@ public class SuggestUserEntries {
     protected MultiExpression getUserSearchPredicate(String prefix) {
         String pattern = prefix.trim() + '%';
         List<Predicate> predicates = userManager.getUserSearchFields()
-                          .stream()
-                          .map(key -> Predicates.ilike(key, pattern))
-                          .collect(Collectors.toList());
+                                                .stream()
+                                                .map(key -> Predicates.ilike(key, pattern))
+                                                .collect(Collectors.toList());
         return new MultiExpression(Operator.OR, predicates);
     }
 

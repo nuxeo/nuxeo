@@ -39,8 +39,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
@@ -74,7 +74,7 @@ import com.mongodb.client.result.UpdateResult;
  */
 public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
 
-    private static final Log log = LogFactory.getLog(MongoDBKeyValueStore.class);
+    private static final Logger log = LogManager.getLogger(MongoDBKeyValueStore.class);
 
     public static final String KEYVALUE_CONNECTION_ID = "keyvalue";
 
@@ -133,9 +133,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
 
     @Override
     public void clear() {
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: CLEAR");
-        }
+        log.trace("MongoDB: CLEAR");
         coll.deleteMany(new Document());
     }
 
@@ -231,15 +229,11 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
         Bson filter = eq(ID_KEY, key);
         Document doc = coll.find(filter).first();
         if (doc == null) {
-            if (log.isTraceEnabled()) {
-                log.trace("MongoDB: GET " + key + " = null");
-            }
+            log.trace("MongoDB: GET {} = null", key);
             return null;
         }
         Object value = doc.get(VALUE_KEY);
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: GET " + key + " = " + value);
-        }
+        log.trace("MongoDB: GET {} = {}", key, value);
         return value;
     }
 
@@ -337,16 +331,12 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     protected void put(String key, Object value, long ttl) {
         Bson filter = eq(ID_KEY, key);
         if (value == null) {
-            if (log.isTraceEnabled()) {
-                log.trace("MongoDB: DEL " + key);
-            }
+            log.trace("MongoDB: DEL {}", key);
             coll.deleteOne(filter);
         } else {
             Document doc = new Document(VALUE_KEY, value);
             addTTL(doc, ttl);
-            if (log.isTraceEnabled()) {
-                log.trace("MongoDB: PUT " + key + " = " + value + (ttl == 0 ? "" : " (TTL " + ttl + ")"));
-            }
+            log.trace("MongoDB: PUT {} = {}{}", () -> key, () -> value, () -> ttl == 0 ? "" : " (TTL " + ttl + ")");
             try {
                 coll.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
             } catch (MongoWriteException e) {
@@ -374,9 +364,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
         } else {
             update = set(TTL_KEY, getDateFromTTL(ttl));
         }
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: SETTTL " + key + " = " + ttl);
-        }
+        log.trace("MongoDB: SETTTL {} = {}", key, ttl);
         UpdateResult res = coll.updateOne(filter, update);
         return res.getModifiedCount() == 1;
     }
@@ -397,48 +385,29 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             // check that document doesn't exist
             Document doc = coll.find(filter).first();
             boolean set = doc == null;
-            if (log.isTraceEnabled()) {
-                if (set) {
-                    log.trace("MongoDB: TEST " + key + " = null ? NOP");
-                } else {
-                    log.trace("MongoDB: TEST " + key + " = null ? FAILED");
-                }
-            }
+            log.trace("MongoDB: TEST {} = null ? {}", () -> key, () -> set ? "NOP" : "FAILED");
             return set;
         } else if (expected == null) {
             // set value if no document already exists: regular insert
             Document doc = new Document(ID_KEY, key).append(VALUE_KEY, value);
             addTTL(doc, ttl);
-            boolean set;
             try {
                 coll.insertOne(doc);
-                set = true;
+                log.trace("MongoDB: TEST {} = null ? SET {}", key, value);
+                return true;
             } catch (MongoWriteException e) {
                 if (ErrorCategory.fromErrorCode(e.getCode()) != ErrorCategory.DUPLICATE_KEY) {
                     throw e;
                 }
-                set = false;
+                log.trace("MongoDB: TEST {} = null ? FAILED", key);
+                return false;
             }
-            if (log.isTraceEnabled()) {
-                if (set) {
-                    log.trace("MongoDB: TEST " + key + " = null ? SET " + value);
-                } else {
-                    log.trace("MongoDB: TEST " + key + " = null ? FAILED");
-                }
-            }
-            return set;
         } else if (value == null) {
             // delete if previous value exists
             filter = and(filter, eq(VALUE_KEY, expected));
             DeleteResult res = coll.deleteOne(filter);
             boolean set = res.getDeletedCount() == 1;
-            if (log.isTraceEnabled()) {
-                if (set) {
-                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? DEL");
-                } else {
-                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? FAILED");
-                }
-            }
+            log.trace("MongoDB: TEST {} = {} ? {}", () -> key, () -> expected, () -> set ? "DEL" : "FAILED");
             return set;
         } else {
             // replace if previous value exists
@@ -447,13 +416,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             addTTL(doc, ttl);
             UpdateResult res = coll.replaceOne(filter, doc);
             boolean set = res.getModifiedCount() == 1;
-            if (log.isTraceEnabled()) {
-                if (set) {
-                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? SET " + value);
-                } else {
-                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? FAILED");
-                }
-            }
+            log.trace("MongoDB: TEST {} = {} ? {}", () -> key, () -> expected, () -> set ? "SET " + value : "FAILED");
             return set;
         }
     }

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -48,9 +48,9 @@ import org.nuxeo.ecm.platform.task.dashboard.DashBoardItemImpl;
         + "Task properties are serialized using JSON and returned in a Blob.", aliases = { "Workflow.GetTask" })
 public class GetUserTasks {
 
-    public static final String ID = "Task.GetAssigned";
+    private static final Logger log = LogManager.getLogger(GetUserTasks.class);
 
-    private static final Log log = LogFactory.getLog(Log.class);
+    public static final String ID = "Task.GetAssigned";
 
     @Context
     protected OperationContext ctx;
@@ -71,8 +71,8 @@ public class GetUserTasks {
         for (Task task : tasks) {
             DocumentModel doc = taskService.getTargetDocumentModel(task, repo);
             if (doc == null) {
-                log.warn(String.format("User '%s' has a task of type '%s' on an " + "unexisting or invisible document",
-                        ctx.getPrincipal().getName(), task.getName()));
+                log.warn("User: {} has a task of type: {} on an unexisting or invisible document",
+                        ctx.getPrincipal().getName(), task.getName());
                 continue;
             }
 

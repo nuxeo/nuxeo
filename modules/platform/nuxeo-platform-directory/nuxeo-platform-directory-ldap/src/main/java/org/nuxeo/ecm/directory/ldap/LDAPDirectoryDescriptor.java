@@ -28,8 +28,8 @@ import java.util.Map;
 import javax.naming.directory.SearchControls;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.directory.Reference;
 @XObject(value = "directory")
 public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
 
-    public static final Log log = LogFactory.getLog(LDAPDirectoryDescriptor.class);
+    private static final Logger log = LogManager.getLogger(LDAPDirectoryDescriptor.class);
 
     public static final int DEFAULT_SEARCH_SCOPE = SearchControls.ONELEVEL_SCOPE;
 
@@ -139,8 +139,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
     }
 
     @XNode("entryAdaptor")
-    public void setEntryAdaptor(EntryAdaptorDescriptor adaptorDescriptor)
-            throws ReflectiveOperationException {
+    public void setEntryAdaptor(EntryAdaptorDescriptor adaptorDescriptor) throws ReflectiveOperationException {
         entryAdaptor = adaptorDescriptor.adaptorClass.getDeclaredConstructor().newInstance();
         for (Map.Entry<String, String> paramEntry : adaptorDescriptor.parameters.entrySet()) {
             entryAdaptor.setParameter(paramEntry.getKey(), paramEntry.getValue());
@@ -307,7 +306,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
                 try {
                     exceptionProcessor = exceptionProcessorClass.getDeclaredConstructor().newInstance();
                 } catch (ReflectiveOperationException e) {
-                    log.error("Unable to instanciate custom Exception handler", e);
+                    log.error("Unable to instantiate custom Exception handler", e);
                     exceptionProcessor = new DefaultLdapExceptionProcessor();
                 }
             }

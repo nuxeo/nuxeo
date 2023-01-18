@@ -18,8 +18,6 @@
  */
 package org.nuxeo.functionaltests.pages.search;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,8 +27,6 @@ import org.openqa.selenium.support.FindBy;
  * @since 6.0
  */
 public class QuickSearchSubPage extends AbstractSearchSubPage {
-
-    protected static final Log log = LogFactory.getLog(QuickSearchSubPage.class);
 
     @Required
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_simple_search_layout:nxw_ecm_fulltext")

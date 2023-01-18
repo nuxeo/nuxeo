@@ -34,8 +34,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -59,8 +57,6 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "Document")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+esentity" })
 public class JSONDocumentObject extends DocumentObject {
-
-    protected static final Log log = LogFactory.getLog(JSONDocumentObject.class);
 
     private boolean isVersioning;
 

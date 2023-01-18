@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.web.common;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class ServletHelper {
 
-    private static final Log log = LogFactory.getLog(ServletHelper.class);
+    private static final Logger log = LogManager.getLogger(ServletHelper.class);
 
     public static final String TX_TIMEOUT_HEADER_KEY = "Nuxeo-Transaction-Timeout";
 
@@ -51,7 +51,7 @@ public class ServletHelper {
                 timeout = Integer.parseInt(header);
             } catch (NumberFormatException e) {
                 // bad header
-                log.warn("Invalid request transaction timeout: " + header);
+                log.warn("Invalid request transaction timeout: {}", header);
             }
         }
         return TransactionHelper.startTransaction(timeout);

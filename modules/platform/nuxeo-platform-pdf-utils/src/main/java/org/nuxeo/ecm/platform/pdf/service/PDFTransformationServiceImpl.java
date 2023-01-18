@@ -19,9 +19,13 @@
  */
 package org.nuxeo.ecm.platform.pdf.service;
 
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -40,20 +44,10 @@ import org.nuxeo.ecm.platform.pdf.PDFUtils;
 import org.nuxeo.ecm.platform.pdf.service.watermark.WatermarkProperties;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.util.Map;
-
 /**
  * @since 8.10
  */
-public class PDFTransformationServiceImpl extends DefaultComponent
-        implements PDFTransformationService {
-
-    protected static final Log log = LogFactory.getLog(PDFTransformationServiceImpl.class);
+public class PDFTransformationServiceImpl extends DefaultComponent implements PDFTransformationService {
 
     protected static final String MIME_TYPE = "application/pdf";
 
@@ -75,8 +69,7 @@ public class PDFTransformationServiceImpl extends DefaultComponent
         try (PDDocument pdfDoc = PDDocument.load(input.getStream())) {
 
             PDFont font = PDFUtils.getStandardType1Font(properties.getFontFamily());
-            float watermarkWidth = (float) (font.getStringWidth(text) * properties.getFontSize()
-                                / 1000f);
+            float watermarkWidth = (float) (font.getStringWidth(text) * properties.getFontSize() / 1000f);
             int[] rgb = PDFUtils.hex255ToRGB(properties.getHex255Color());
 
             for (PDPage page : pdfDoc.getDocumentCatalog().getPages()) {
@@ -84,18 +77,14 @@ public class PDFTransformationServiceImpl extends DefaultComponent
                 PDResources resources = page.getResources();
                 resources.put(transparentStateName, extendedGraphicsState);
 
-                try (PDPageContentStream contentStream =
-                             new PDPageContentStream(pdfDoc, page, true, true, true)) {
+                try (PDPageContentStream contentStream = new PDPageContentStream(pdfDoc, page, true, true, true)) {
                     contentStream.beginText();
                     contentStream.setFont(font, (float) properties.getFontSize());
                     contentStream.appendRawCommands("/TransparentState gs\n");
                     contentStream.setNonStrokingColor(rgb[0], rgb[1], rgb[2]);
-                    Point2D position = computeTranslationVector(
-                            pageSize.getWidth(),watermarkWidth,
-                            pageSize.getHeight(),properties.getFontSize(),properties);
-                    contentStream.setTextRotation(
-                            Math.toRadians(properties.getRotation()),
-                            position.getX(),
+                    Point2D position = computeTranslationVector(pageSize.getWidth(), watermarkWidth,
+                            pageSize.getHeight(), properties.getFontSize(), properties);
+                    contentStream.setTextRotation(Math.toRadians(properties.getRotation()), position.getX(),
                             position.getY());
                     contentStream.drawString(text);
                     contentStream.endText();
@@ -131,19 +120,14 @@ public class PDFTransformationServiceImpl extends DefaultComponent
                     contentStream.appendRawCommands("/TransparentState gs\n");
                     contentStream.endMarkedContentSequence();
 
-                    double watermarkWidth = ximage.getWidth()*properties.getScale();
-                    double watermarkHeight = ximage.getHeight()*properties.getScale();
+                    double watermarkWidth = ximage.getWidth() * properties.getScale();
+                    double watermarkHeight = ximage.getHeight() * properties.getScale();
 
-                    Point2D position = computeTranslationVector(
-                            pageSize.getWidth(),watermarkWidth,
-                            pageSize.getHeight(),watermarkHeight,properties);
+                    Point2D position = computeTranslationVector(pageSize.getWidth(), watermarkWidth,
+                            pageSize.getHeight(), watermarkHeight, properties);
 
-                    contentStream.drawImage(
-                            ximage,
-                            (float)position.getX(),
-                            (float)position.getY(),
-                            (float)watermarkWidth,
-                            (float)watermarkHeight);
+                    contentStream.drawImage(ximage, (float) position.getX(), (float) position.getY(),
+                            (float) watermarkWidth, (float) watermarkHeight);
                 }
             }
             return saveInTempFile(pdfDoc);
@@ -155,7 +139,7 @@ public class PDFTransformationServiceImpl extends DefaultComponent
     @Override
     public Blob overlayPDF(Blob input, Blob overlayBlob) {
         try (PDDocument pdfDoc = PDDocument.load(input.getStream());
-             PDDocument pdfOverlayDoc = PDDocument.load(overlayBlob.getStream())) {
+                PDDocument pdfOverlayDoc = PDDocument.load(overlayBlob.getStream())) {
             Overlay overlay = new Overlay();
             overlay.setInputPDF(pdfDoc);
             overlay.setAllPagesOverlayPDF(pdfOverlayDoc);
@@ -166,18 +150,14 @@ public class PDFTransformationServiceImpl extends DefaultComponent
         }
     }
 
-    public  Point2D computeTranslationVector(double pageWidth, double watermarkWidth,
-                                               double pageHeight, double watermarkHeight,
-                                               WatermarkProperties properties) {
+    public Point2D computeTranslationVector(double pageWidth, double watermarkWidth, double pageHeight,
+            double watermarkHeight, WatermarkProperties properties) {
         double xRotationOffset = 0;
         double yRotationOffset = 0;
 
         if (properties.getRotation() != 0) {
-            Rectangle2D rectangle2D =
-                    new Rectangle2D.Double(
-                            0, -watermarkHeight, watermarkWidth, watermarkHeight);
-            AffineTransform at = AffineTransform.getRotateInstance(
-                    -Math.toRadians(properties.getRotation()), 0, 0);
+            Rectangle2D rectangle2D = new Rectangle2D.Double(0, -watermarkHeight, watermarkWidth, watermarkHeight);
+            AffineTransform at = AffineTransform.getRotateInstance(-Math.toRadians(properties.getRotation()), 0, 0);
             Shape shape = at.createTransformedShape(rectangle2D);
             Rectangle2D rotated = shape.getBounds2D();
 
@@ -190,9 +170,9 @@ public class PDFTransformationServiceImpl extends DefaultComponent
 
             watermarkHeight = rotated.getHeight();
             if (!properties.isInvertY() || properties.isRelativeCoordinates()) {
-                yRotationOffset = rotated.getY()+rotated.getHeight();
+                yRotationOffset = rotated.getY() + rotated.getHeight();
             } else {
-                yRotationOffset = -(rotated.getY()+rotated.getHeight());
+                yRotationOffset = -(rotated.getY() + rotated.getHeight());
             }
         }
 
@@ -200,8 +180,8 @@ public class PDFTransformationServiceImpl extends DefaultComponent
         double yTranslation;
 
         if (properties.isRelativeCoordinates()) {
-            xTranslation = (pageWidth - watermarkWidth ) * properties.getxPosition() + xRotationOffset;
-            yTranslation = (pageHeight - watermarkHeight ) * properties.getyPosition() + yRotationOffset;
+            xTranslation = (pageWidth - watermarkWidth) * properties.getxPosition() + xRotationOffset;
+            yTranslation = (pageHeight - watermarkHeight) * properties.getyPosition() + yRotationOffset;
         } else {
             xTranslation = properties.getxPosition() + xRotationOffset;
             yTranslation = properties.getyPosition() + yRotationOffset;

@@ -26,8 +26,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wikimodel.wem.IWikiPrinter;
 
 /**
@@ -37,8 +35,6 @@ import org.wikimodel.wem.IWikiPrinter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class WikiWriter implements IWikiPrinter, WikiText {
-
-    protected static final Log log = LogFactory.getLog(WikiWriter.class);
 
     protected static final String LINE_SEP = System.getProperty("line.separator");
 

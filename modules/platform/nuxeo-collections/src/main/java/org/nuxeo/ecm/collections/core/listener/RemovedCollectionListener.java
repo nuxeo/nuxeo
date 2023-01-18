@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.collections.core.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RemovedCollectionListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(RemovedCollectionListener.class);
+    private static final Logger log = LogManager.getLogger(RemovedCollectionListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -54,10 +54,10 @@ public class RemovedCollectionListener implements EventListener {
         final boolean isCollectionMemberRemoved = collectionManager.isCollected(doc);
 
         if (isCollectionRemoved) {
-            log.trace(String.format("Collection %s removed", doc.getId()));
+            log.trace("Collection {} removed", doc::getId);
             collectionManager.processRemovedCollection(doc);
         } else if (isCollectionMemberRemoved) {
-            log.trace(String.format("CollectionMember %s removed", doc.getId()));
+            log.trace("CollectionMember {} removed", doc::getId);
             collectionManager.processRemovedCollectionMember(doc);
         }
     }

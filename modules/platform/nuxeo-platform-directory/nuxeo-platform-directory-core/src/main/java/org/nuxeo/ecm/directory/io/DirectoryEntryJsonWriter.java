@@ -34,8 +34,8 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -89,14 +89,14 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<DirectoryEntry> {
 
+    private static final Logger log = LogManager.getLogger(DirectoryEntryJsonWriter.class);
+
     public static final String ENTITY_TYPE = "directoryEntry";
 
     /** @since 11.1 */
     public static final String PARENT_FIELD_NAME = "parent";
 
     private static final String MESSAGES_BUNDLE = "messages";
-
-    private static final Log log = LogFactory.getLog(DirectoryEntryJsonWriter.class);
 
     @Inject
     private SchemaManager schemaManager;

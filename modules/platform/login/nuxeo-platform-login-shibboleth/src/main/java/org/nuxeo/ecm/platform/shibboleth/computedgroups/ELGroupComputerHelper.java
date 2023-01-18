@@ -22,8 +22,8 @@ package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 import javax.el.ELException;
 import javax.el.PropertyNotFoundException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
  */
 public class ELGroupComputerHelper {
 
-    private static final Log log = LogFactory.getLog(ELGroupComputerHelper.class);
+    private static final Logger log = LogManager.getLogger(ELGroupComputerHelper.class);
 
     protected static final ExpressionContext ec = new ExpressionContext();
 

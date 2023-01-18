@@ -37,8 +37,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 
@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.api.Blobs;
  */
 public class TransformMessageAction implements MessageAction {
 
-    private static final Log log = LogFactory.getLog(TransformMessageAction.class);
+    private static final Logger log = LogManager.getLogger(TransformMessageAction.class);
 
     protected final Map<String, Map<String, Object>> schemas = new HashMap<>();
 
@@ -77,9 +77,7 @@ public class TransformMessageAction implements MessageAction {
     @Override
     public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
-        if (log.isDebugEnabled()) {
-            log.debug("Transforming message" + message.getSubject());
-        }
+        log.debug("Transforming message: {}", message.getSubject());
         if (message.getFrom() != null && message.getFrom().length != 0) {
             List<String> contributors = new ArrayList<>();
             for (Address ad : message.getFrom()) {
@@ -128,7 +126,7 @@ public class TransformMessageAction implements MessageAction {
                 processMultipartMessage((MimeMultipart) part.getDataHandler().getContent());
                 continue;
             }
-            log.debug("processing single part message: " + part.getClass());
+            log.debug("processing single part message: {}", part::getClass);
             processSingleMessagePart(part);
         }
     }
@@ -138,7 +136,7 @@ public class TransformMessageAction implements MessageAction {
         String partFileName = getFileName(part);
 
         if (partFileName != null) {
-            log.debug("Add named attachment: " + partFileName);
+            log.debug("Add named attachment: {}", partFileName);
             setFile(partFileName, part.getInputStream());
             return;
         }
@@ -232,7 +230,7 @@ public class TransformMessageAction implements MessageAction {
     }
 
     private void setFile(String fileName, InputStream inputStream) throws IOException {
-        log.debug("* adding attachment: " + fileName);
+        log.debug("* adding attachment: {}", fileName);
         Map<String, Object> map = new HashMap<>();
         Blob fileBlob = Blobs.createBlob(inputStream);
         fileBlob.setFilename(fileName);
@@ -241,7 +239,7 @@ public class TransformMessageAction implements MessageAction {
     }
 
     private void addToTextMessage(String message, boolean isPlainText) {
-        log.debug("* adding text to message body: " + message);
+        log.debug("* adding text to message body: {}", message);
         // if(isPlainText){
         // message = "<pre>" + message + "</pre>";
         // }

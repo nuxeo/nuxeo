@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class OrphanVersionCleanupListener implements PostCommitEventListener {
 
-    private static final Log log = LogFactory.getLog(OrphanVersionCleanupListener.class);
+    private static final Logger log = LogManager.getLogger(OrphanVersionCleanupListener.class);
 
     public static final long DEFAULT_COMMIT_SIZE = 1000;
 
@@ -61,7 +61,7 @@ public class OrphanVersionCleanupListener implements PostCommitEventListener {
         }
         log.debug("Starting orphan versions cleanup");
         long n = coreService.cleanupOrphanVersions(getCommitSize());
-        log.debug("Number of orphan versions deleted: " + n);
+        log.debug("Number of orphan versions deleted: {}", n);
     }
 
 }

@@ -17,8 +17,8 @@
  */
 package org.nuxeo.ecm.user.invite;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.runtime.api.Framework;
@@ -28,6 +28,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 
 public class RegistrationRules {
+
+    private static final Logger log = LogManager.getLogger(RegistrationRules.class);
+
     public static final String FACET_REGISTRATION_CONFIGURATION = "RegistrationConfiguration";
 
     public static final String SCHEMA_REGISTRATION_RULES = "registrationconfiguration";
@@ -48,8 +51,6 @@ public class RegistrationRules {
 
     protected DocumentModel requestContainer;
 
-    private static final Log log = LogFactory.getLog(RegistrationRules.class);
-
     public RegistrationRules(DocumentModel requestContainer) {
         this.requestContainer = requestContainer;
     }
@@ -58,7 +59,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_ALLOW_USER_CREATION);
         } catch (PropertyException e) {
-            log.warn("Unable to fetch AllowUserCreation flag using default value: " + e.getMessage());
+            log.warn("Unable to fetch AllowUserCreation flag using default value: {}", e::getMessage);
             return true;
         }
     }
@@ -67,7 +68,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_ALLOW_DIRECT_VALIDATION);
         } catch (PropertyException e) {
-            log.warn("Unable to fetch AllowDirectValidation flag using default value: " + e.getMessage());
+            log.warn("Unable to fetch AllowDirectValidation flag using default value: {}", e::getMessage);
             return false;
         }
     }
@@ -76,7 +77,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_FORCE_RIGHT);
         } catch (PropertyException e) {
-            log.warn("Unable to fetch ForceRight flag using default value: " + e.getMessage());
+            log.warn("Unable to fetch ForceRight flag using default value: {}", e::getMessage);
             return false;
         }
     }
@@ -85,7 +86,7 @@ public class RegistrationRules {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_DISPLAY_LOCAL_TAB);
         } catch (PropertyException e) {
-            log.warn("Unable to fetch display local tab flag using default value: " + e.getMessage());
+            log.warn("Unable to fetch display local tab flag using default value: {}", e::getMessage);
             return true;
         }
     }

@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,7 +34,7 @@ public class CommandProcessorImpl implements CommandProcessor {
 
     final List<Command> commands = new ArrayList<>();
 
-    Log log;
+    Logger log;
 
     @Override
     public List<Command> getCommands() {
@@ -46,8 +46,8 @@ public class CommandProcessorImpl implements CommandProcessor {
     public void exec(CommandContext ctx) {
         try {
             for (Command cmd : commands) {
-                if (log != null && log.isDebugEnabled()) {
-                    log.debug("Executing: " + cmd.toString(ctx));
+                if (log != null) {
+                    log.debug("Executing: {}", () -> cmd.toString(ctx));
                 }
                 cmd.exec(ctx);
             }
@@ -59,7 +59,7 @@ public class CommandProcessorImpl implements CommandProcessor {
     }
 
     @Override
-    public void setLogger(Log log) {
+    public void setLogger(Logger log) {
         this.log = log;
     }
 

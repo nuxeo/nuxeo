@@ -19,11 +19,14 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
@@ -39,15 +42,12 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Clock;
 import org.openqa.selenium.support.ui.SystemClock;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 /**
  * Representation of a Archived versions sub tab page.
  */
 public class ArchivedVersionsSubPage extends DocumentBasePage {
 
-    private static final Log log = LogFactory.getLog(ArchivedVersionsSubPage.class);
+    private static final Logger log = LogManager.getLogger(ArchivedVersionsSubPage.class);
 
     private static final String DELETE_ACTION_ID = "CURRENT_VERSION_SELECTION_DELETE";
 

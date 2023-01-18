@@ -30,8 +30,8 @@ import javax.naming.spi.ObjectFactory;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
 
 /**
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
  */
 public class NuxeoTransactionManagerFactory implements ObjectFactory {
 
-    private static final Log log = LogFactory.getLog(NuxeoTransactionManagerFactory.class);
+    private static final Logger log = LogManager.getLogger(NuxeoTransactionManagerFactory.class);
 
     @Override
     public Object getObjectInstance(Object obj, Name objName, Context nameCtx, Hashtable<?, ?> env) {
@@ -59,7 +59,7 @@ public class NuxeoTransactionManagerFactory implements ObjectFactory {
             try {
                 BeanUtils.setProperty(config, name, value);
             } catch (ReflectiveOperationException e) {
-                log.error(String.format("NuxeoTransactionManagerFactory cannot set %s = %s", name, value));
+                log.error("NuxeoTransactionManagerFactory cannot set {} = {}", name, value);
             }
         }
         return NuxeoContainer.initTransactionManager(config);

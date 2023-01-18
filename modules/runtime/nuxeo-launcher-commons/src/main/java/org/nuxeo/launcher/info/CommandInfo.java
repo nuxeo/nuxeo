@@ -32,18 +32,18 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "command")
 /**
  * @since 5.6
  */
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name = "command")
 public class CommandInfo {
 
-    static final Log log = LogFactory.getLog(CommandInfo.class);
+    private static final Logger log = LogManager.getLogger(CommandInfo.class);
 
     public static final String CMD_UNKNOWN = "unknown";
 
@@ -160,8 +160,7 @@ public class CommandInfo {
             String[] ex = new String[] { "description" };
             String info = new ReflectionToStringBuilder(packageInfo, SHORT_PREFIX_STYLE).setExcludeFieldNames(ex)
                                                                                         .toString();
-            sb.append("\n\t")
-              .append(info);
+            sb.append("\n\t").append(info);
         }
         if (exitCode != 0 || debug) {
             if (exitCode != 0) {

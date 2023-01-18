@@ -42,11 +42,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
@@ -60,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AuthorizationRequest extends OAuth2Request {
 
-    private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
+    private static final Logger log = LogManager.getLogger(AuthorizationRequest.class);
 
     private static final RandomStringGenerator GENERATOR = new Builder().filteredBy(CharacterPredicates.LETTERS,
             CharacterPredicates.DIGITS).withinRange('0', 'z').build();
@@ -168,9 +168,9 @@ public class AuthorizationRequest extends OAuth2Request {
 
         String clientName = client.getName();
         if (StringUtils.isBlank(clientName)) {
-            log.error(String.format(
-                    "No name set for OAuth2 client %s. It is a required field, please make sure you update this OAuth2 client.",
-                    client));
+            log.error(
+                    "No name set for OAuth2 client: {}. It is a required field, please make sure you update this OAuth2 client.",
+                    client);
             // Here we are just checking that the client has a name since it is now a required field but it might be
             // empty for an old client.
             // Yet we don't return an error for backward compatibility since an empty name is not a security issue and
@@ -179,9 +179,9 @@ public class AuthorizationRequest extends OAuth2Request {
 
         List<String> clientRedirectURIs = client.getRedirectURIs();
         if (CollectionUtils.isEmpty(clientRedirectURIs)) {
-            log.error(String.format(
-                    "No redirect URI set for OAuth2 client %s, at least one is required. Please make sure you update this OAuth2 client.",
-                    client));
+            log.error(
+                    "No redirect URI set for OAuth2 client: {}, at least one is required. Please make sure you update this OAuth2 client.",
+                    client);
             // Checking that the client has at least one redirect URI since it is now a required field but it might be
             // empty for an old client.
             // In this case we return an error since we cannot trust the redirect_uri parameter for security reasons.
@@ -204,9 +204,9 @@ public class AuthorizationRequest extends OAuth2Request {
 
         // Check redirect URI validity
         if (!OAuth2Client.isRedirectURIValid(clientRedirectURI)) {
-            log.error(String.format(
-                    "The redirect URI %s set for OAuth2 client %s is invalid: it must not be empty and start with https for security reasons. Please make sure you update this OAuth2 client.",
-                    clientRedirectURI, client));
+            log.error(
+                    "The redirect URI: {} set for OAuth2 client: {} is invalid: it must not be empty and start with https for security reasons. Please make sure you update this OAuth2 client.",
+                    clientRedirectURI, client);
             return OAuth2Error.invalidRequest(String.format(
                     "Invalid redirect URI configured for the app: %s. It must not be empty and start with https for security reasons.",
                     clientRedirectURI));

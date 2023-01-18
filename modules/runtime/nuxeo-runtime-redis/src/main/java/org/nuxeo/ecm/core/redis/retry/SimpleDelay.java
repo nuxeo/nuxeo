@@ -18,9 +18,12 @@ package org.nuxeo.ecm.core.redis.retry;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SimpleDelay implements Retry.Policy {
+
+    private static final Logger log = LogManager.getLogger(SimpleDelay.class);
 
     protected final int base;
 
@@ -41,7 +44,7 @@ public class SimpleDelay implements Retry.Policy {
     @Override
     public void pause() {
         long computed = computeDelay();
-        LogFactory.getLog(SimpleDelay.class).warn("pausing for " + computed + " ms");
+        log.warn("pausing for {}ms", computed);
         try {
             Thread.sleep(computed);
         } catch (InterruptedException e) {

@@ -23,8 +23,8 @@ package org.nuxeo.elasticsearch.http.readonly.service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -36,10 +36,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class RequestFilterService extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(RequestFilterService.class);
+
     public static final ComponentName NAME = new ComponentName(ComponentName.DEFAULT_TYPE,
             "org.nuxeo.elasticsearch.http.readonly.RequestFilterService");
-
-    private static final Log log = LogFactory.getLog(RequestFilterService.class);
 
     protected static final String FILTER_EXT_POINT = "filters";
 
@@ -74,7 +74,7 @@ public class RequestFilterService extends DefaultComponent {
         if (FILTER_EXT_POINT.equals(extensionPoint)) {
             RequestFilterDescriptor des = (RequestFilterDescriptor) contribution;
             requestFilters.put(des.getIndex(), des.getFilterClass());
-            log.info("Registered filter: " + des.getFilterClass() + " for index " + des.getIndex());
+            log.info("Registered filter: {} for index: {}", des::getFilterClass, des::getIndex);
         }
     }
 
@@ -84,7 +84,7 @@ public class RequestFilterService extends DefaultComponent {
             RequestFilterDescriptor des = (RequestFilterDescriptor) contribution;
             Class<? extends SearchRequestFilter> filter = requestFilters.remove(des.getIndex());
             if (filter != null) {
-                log.info("Unregistered filter: " + filter + " for index " + des.getIndex());
+                log.info("Unregistered filter: {} for index: {}", () -> filter, des::getIndex);
             }
         }
     }

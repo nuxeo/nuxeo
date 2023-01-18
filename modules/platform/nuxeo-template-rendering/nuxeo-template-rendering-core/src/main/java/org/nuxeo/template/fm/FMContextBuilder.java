@@ -20,8 +20,6 @@ package org.nuxeo.template.fm;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -32,8 +30,6 @@ import org.nuxeo.template.context.AbstractContextBuilder;
 import freemarker.template.TemplateModelException;
 
 public class FMContextBuilder extends AbstractContextBuilder {
-
-    protected static final Log log = LogFactory.getLog(FMContextBuilder.class);
 
     protected DocumentWrapper nuxeoWrapper;
 

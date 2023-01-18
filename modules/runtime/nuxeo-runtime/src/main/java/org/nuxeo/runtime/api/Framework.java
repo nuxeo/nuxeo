@@ -34,8 +34,8 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.function.ThrowableRunnable;
@@ -67,7 +67,7 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
  */
 public final class Framework {
 
-    private static final Log log = LogFactory.getLog(Framework.class);
+    private static final Logger log = LogManager.getLogger(Framework.class);
 
     /**
      * Global dev property
@@ -300,10 +300,12 @@ public final class Framework {
      *
      * @since 11.1
      */
-    protected static <T, E extends Throwable> T loginAndDo(ThrowableSupplier<NuxeoLoginContext, LoginException> authSupplier,
-            ThrowableSupplier<T, E> supplier) throws E {
+    protected static <T, E extends Throwable> T loginAndDo(
+            ThrowableSupplier<NuxeoLoginContext, LoginException> authSupplier, ThrowableSupplier<T, E> supplier)
+            throws E {
         try {
-            try (@SuppressWarnings("unused") NuxeoLoginContext loginContext = authSupplier.get()) {
+            try (@SuppressWarnings("unused")
+            NuxeoLoginContext loginContext = authSupplier.get()) {
                 return supplier.get();
             }
         } catch (LoginException e) {

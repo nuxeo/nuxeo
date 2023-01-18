@@ -29,8 +29,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -57,7 +57,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
     private static final long serialVersionUID = 35041039370298705L;
 
-    private static final Log log = LogFactory.getLog(TokenAuthenticationServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(TokenAuthenticationServiceImpl.class);
 
     protected static final String DIRECTORY_NAME = "authTokens";
 
@@ -117,9 +117,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                 entry.setProperty(DIRECTORY_SCHEMA, CREATION_DATE_FIELD, creationDate);
                 session.createEntry(entry);
 
-                log.debug(String.format(
-                        "Generated unique token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
-                        userName, applicationName, deviceId));
+                log.debug(
+                        "Generated unique token for (userName, applicationName, deviceId) triplet: ('{}', '{}', '{}'), returning it.",
+                        userName, applicationName, deviceId);
                 return newToken;
 
             }
@@ -183,16 +183,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                                 userName, applicationName, deviceId));
                     }
                     // Return token
-                    log.debug(String.format(
-                            "Found token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
-                            userName, applicationName, deviceId));
+                    log.debug(
+                            "Found token for the (userName, applicationName, deviceId) triplet: ('{}', '{}', '{}'), returning it.",
+                            userName, applicationName, deviceId);
                     DocumentModel tokenModel = tokens.get(0);
                     return tokenModel.getId();
                 }
 
-                log.debug(String.format(
-                        "No token found for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning null.",
-                        userName, applicationName, deviceId));
+                log.debug(
+                        "No token found for the (userName, applicationName, deviceId) triplet: ('{}', '{}', '{}'), returning null.",
+                        userName, applicationName, deviceId);
                 return null;
             }
         });
@@ -204,10 +204,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 DocumentModel entry = session.getEntry(token);
                 if (entry == null) {
-                    log.debug(String.format("Found no user name bound to the token: '%s', returning null.", token));
+                    log.debug("Found no user name bound to the token: '{}', returning null.", token);
                     return null;
                 }
-                log.debug(String.format("Found a user name bound to the token: '%s', returning it.", token));
+                log.debug("Found a user name bound to the token: '{}', returning it.", token);
                 return (String) entry.getProperty(DIRECTORY_SCHEMA, USERNAME_FIELD);
 
             }
@@ -219,7 +219,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         Framework.doPrivileged(() -> {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 session.deleteEntry(token);
-                log.info(String.format("Deleted token: '%s' from the back-end.", token));
+                log.info("Deleted token: '{}' from the back-end.", token);
             }
         });
     }

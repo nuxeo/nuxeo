@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +49,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(SectionPublicationTree.class);
+    private static final Logger log = LogManager.getLogger(SectionPublicationTree.class);
 
     public static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
 
@@ -65,8 +65,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
         DocumentRef ref = new PathRef(rootPath);
         boolean exists = coreSession.exists(ref);
         if (!exists) {
-            log.debug("Root section " + rootPath + " doesn't exist. Check " + "publicationTreeConfig with name "
-                    + configName);
+            log.debug("Root section: {} doesn't exist. Check publicationTreeConfig with name: {}", rootPath,
+                    configName);
         }
         if (exists && coreSession.hasPermission(ref, SecurityConstants.READ)) {
             treeRoot = coreSession.getDocument(new PathRef(rootPath));
@@ -96,8 +96,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) {
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode,
                 params);
         PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
@@ -178,8 +177,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
     @Override
     public PublicationNode wrapToPublicationNode(DocumentModel documentModel) {
         if (!isPublicationNode(documentModel)) {
-            throw new NuxeoException("Document " + documentModel.getPathAsString()
-                    + " is not a valid publication node.");
+            throw new NuxeoException(
+                    "Document " + documentModel.getPathAsString() + " is not a valid publication node.");
         }
         return new CoreFolderPublicationNode(documentModel, this, factory);
     }

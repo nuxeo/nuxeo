@@ -33,8 +33,8 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DNSServiceResolverImpl implements DNSServiceResolver {
 
-    public static final Log log = LogFactory.getLog(DNSServiceResolverImpl.class);
+    private static final Logger log = LogManager.getLogger(DNSServiceResolverImpl.class);
 
     protected static DNSServiceResolver instance;
 
@@ -74,8 +74,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
         try {
             cacheExpiry = Integer.parseInt(Framework.getProperty(DNS_CACHE_EXPIRY, "10"));
         } catch (NumberFormatException e) {
-            log.warn("invalid value for property: " + DNS_CACHE_EXPIRY
-                    + ", falling back to default value of 10 minutes");
+            log.warn("invalid value for property: {}, falling back to default value of 10 minutes", DNS_CACHE_EXPIRY);
         }
         maxDelay = Duration.ofMinutes(cacheExpiry).toMillis();
 

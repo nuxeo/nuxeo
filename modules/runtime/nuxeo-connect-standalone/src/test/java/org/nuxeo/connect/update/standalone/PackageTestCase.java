@@ -38,8 +38,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -54,8 +52,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 public abstract class PackageTestCase {
-
-    protected static final Log log = LogFactory.getLog(PackageTestCase.class);
 
     public static final String TEST_PACKAGES_PREFIX = "packages/";
 

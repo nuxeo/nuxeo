@@ -23,8 +23,8 @@ import java.util.UUID;
 import javax.servlet.ServletRequest;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -61,7 +61,8 @@ import org.opensaml.xml.validation.ValidationException;
  * @since 6.0
  */
 public abstract class AbstractSAMLProfile {
-    protected final static Log log = LogFactory.getLog(AbstractSAMLProfile.class);
+
+    private static final Logger log = LogManager.getLogger(AbstractSAMLProfile.class);
 
     protected final XMLObjectBuilderFactory builderFactory;
 
@@ -103,7 +104,7 @@ public abstract class AbstractSAMLProfile {
             criteriaSet.add(new EntityIDCriteria(IDPEntityID));
             criteriaSet.add(new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, SAMLConstants.SAML20P_NS));
             criteriaSet.add(new UsageCriteria(UsageType.SIGNING));
-            log.debug("Verifying signature: " + signature);
+            log.debug("Verifying signature: {}", signature);
 
             if (!getTrustEngine().validate(signature, criteriaSet)) {
                 throw new SAMLException("Signature is not trusted or invalid");
@@ -134,7 +135,7 @@ public abstract class AbstractSAMLProfile {
             if (destination.equals(endpoint.getLocation())) {
             } else if (destination.equals(endpoint.getResponseLocation())) {
             } else {
-                log.debug("Intended destination " + destination + " doesn't match any of the endpoint URLs");
+                log.debug("Intended destination: {} doesn't match any of the endpoint URLs", destination);
                 throw new SAMLException(
                         "Intended destination " + destination + " doesn't match any of the endpoint URLs");
             }
@@ -148,7 +149,7 @@ public abstract class AbstractSAMLProfile {
             AssertionConsumerService assertionConsumerService = (AssertionConsumerService) endpoint;
             if (request.getAssertionConsumerServiceIndex() != null) {
                 if (!request.getAssertionConsumerServiceIndex().equals(assertionConsumerService.getIndex())) {
-                    log.info("SAML response was received at a different endpoint " + "index than was requested");
+                    log.info("SAML response was received at a different endpoint index than was requested");
                 }
             } else {
                 String requestedResponseURL = request.getAssertionConsumerServiceURL();
@@ -161,8 +162,8 @@ public abstract class AbstractSAMLProfile {
                         responseLocation = assertionConsumerService.getLocation();
                     }
                     if (!requestedResponseURL.equals(responseLocation)) {
-                        log.info("SAML response was received at a different endpoint URL " + responseLocation
-                                + " than was requested " + requestedResponseURL);
+                        log.info("SAML response was received at a different endpoint URL: {} than was requested: {}",
+                                responseLocation, requestedResponseURL);
                     }
                 }
                 /*
@@ -186,10 +187,10 @@ public abstract class AbstractSAMLProfile {
         DateTime notOnOrAfter = conditions.getNotOnOrAfter();
 
         if (notBefore != null && notBefore.minusMillis(getSkewTimeMillis()).isAfterNow()) {
-            log.debug("Current time: [" + now + "] NotBefore: [" + notBefore + "]");
+            log.debug("Current time: {}, NotBefore: {}", now, notBefore);
             throw new SAMLException("Conditions are not yet active");
         } else if (notOnOrAfter != null && notOnOrAfter.plusMillis(getSkewTimeMillis()).isBeforeNow()) {
-            log.debug("Current time: [" + now + "] NotOnOrAfter: [" + notOnOrAfter + "]");
+            log.debug("Current time: {}, NotOnOrAfter: {}", now, notOnOrAfter);
             throw new SAMLException("Conditions have expired");
         }
 

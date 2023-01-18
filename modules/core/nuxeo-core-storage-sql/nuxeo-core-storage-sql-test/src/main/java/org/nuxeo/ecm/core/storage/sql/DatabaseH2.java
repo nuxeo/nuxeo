@@ -24,8 +24,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 public class DatabaseH2 extends DatabaseHelper {
 
-    private static final Log log = LogFactory.getLog(DatabaseH2.class);
+    private static final Logger log = LogManager.getLogger(DatabaseH2.class);
 
     /**
      * This directory will be deleted and recreated.

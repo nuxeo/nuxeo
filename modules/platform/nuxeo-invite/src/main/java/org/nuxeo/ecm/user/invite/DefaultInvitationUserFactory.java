@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DefaultInvitationUserFactory implements InvitationUserFactory {
 
-    private static final Log log = LogFactory.getLog(DefaultInvitationUserFactory.class);
+    private static final Logger log = LogManager.getLogger(DefaultInvitationUserFactory.class);
 
     public static final String PASSWORD_KEY = "invitationPassword";
 
@@ -66,8 +66,7 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
 
             DocumentModel newUserDoc = userManager.getBareUserModel();
             newUserDoc.setPropertyValue(UserConfig.USERNAME_COLUMN, login);
-            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN,
-                    registrationDoc.getContextData(PASSWORD_KEY));
+            newUserDoc.setPropertyValue(UserConfig.PASSWORD_COLUMN, registrationDoc.getContextData(PASSWORD_KEY));
             newUserDoc.setPropertyValue(UserConfig.FIRSTNAME_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
             newUserDoc.setPropertyValue(UserConfig.LASTNAME_COLUMN,
@@ -82,7 +81,7 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
             userManager.createUser(newUserDoc);
             user = userManager.getPrincipal(login);
 
-            log.info("New user created:" + user.getName());
+            log.info("New user created: {}", user::getName);
         } else {
             if (!email.equals(user.getEmail())) {
                 throw new UserRegistrationException("This login is not available");

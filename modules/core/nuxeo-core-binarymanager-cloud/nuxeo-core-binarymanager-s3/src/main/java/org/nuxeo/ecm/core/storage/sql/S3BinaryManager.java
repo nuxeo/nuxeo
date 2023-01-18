@@ -45,8 +45,8 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
@@ -106,7 +106,7 @@ import com.amazonaws.services.s3.transfer.Upload;
  */
 public class S3BinaryManager extends AbstractCloudBinaryManager implements S3ManagedTransfer {
 
-    private static final Log log = LogFactory.getLog(S3BinaryManager.class);
+    private static final Logger log = LogManager.getLogger(S3BinaryManager.class);
 
     public static final String SYSTEM_PROPERTY_PREFIX = "nuxeo.s3storage";
 
@@ -223,9 +223,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
     protected void abortOldMultipartUploadsInternal() {
         int oneDay = 1000 * 60 * 60 * 24;
         try {
-            log.debug("Starting cleanup of old multipart uploads for bucket: " + bucketName);
+            log.debug("Starting cleanup of old multipart uploads for bucket: {}", bucketName);
             transferManager.abortMultipartUploads(bucketName, new Date(System.currentTimeMillis() - oneDay));
-            log.debug("Cleanup done for bucket: " + bucketName);
+            log.debug("Cleanup done for bucket: {}", bucketName);
         } catch (AmazonS3Exception e) {
             if (e.getStatusCode() == 400 || e.getStatusCode() == 404) {
                 log.error("Your cloud provider does not support aborting old uploads");
@@ -280,8 +280,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         }
 
         if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith(DELIMITER)) {
-            log.debug(String.format("%s %s S3 bucket prefix should end with '/' : added automatically.",
-                    BUCKET_PREFIX_PROPERTY, bucketNamePrefix));
+            log.debug("{} {} S3 bucket prefix should end with '/' : added automatically.", BUCKET_PREFIX_PROPERTY,
+                    bucketNamePrefix);
             bucketNamePrefix += DELIMITER;
         }
         if (isNotBlank(namespace)) {
@@ -614,17 +614,12 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         String sourceBucketName = sourceBlobProvider.bucketName;
         String sourceKey = sourceBlobProvider.bucketNamePrefix + digest;
         String key = bucketNamePrefix + digest;
-        long t0 = 0;
-        if (log.isDebugEnabled()) {
-            t0 = System.currentTimeMillis();
-            log.debug("copying blob " + sourceKey + " to " + key);
-        }
+        long t0 = System.currentTimeMillis();
+        log.debug("copying blob: {} to {}", sourceKey, key);
 
         try {
             amazonS3.getObjectMetadata(bucketName, key);
-            if (log.isDebugEnabled()) {
-                log.debug("blob " + key + " is already in S3");
-            }
+            log.debug("blob: {} is already in S3", key);
             return digest;
         } catch (AmazonServiceException e) {
             if (!isMissingKey(e)) {
@@ -655,10 +650,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
             }
             Copy copy = transferManager.copy(copyObjectRequest);
             waitForCopyCompletion(copy);
-            if (log.isDebugEnabled()) {
-                long dtms = System.currentTimeMillis() - t0;
-                log.debug("copied blob " + sourceKey + " to " + key + " in " + dtms + "ms");
-            }
+            log.debug("copied blob {} to {} in {}ms", () -> sourceKey, () -> key,
+                    () -> System.currentTimeMillis() - t0);
             return digest;
         } catch (AmazonServiceException e) {
             String message = "S3 copy not supported from s3://" + sourceBucketName + "/" + sourceKey + " to s3://"
@@ -683,17 +676,12 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
 
         @Override
         public void storeFile(String digest, File file) throws IOException {
-            long t0 = 0;
-            if (log.isDebugEnabled()) {
-                t0 = System.currentTimeMillis();
-                log.debug("storing blob " + digest + " to S3");
-            }
+            long t0 = System.currentTimeMillis();
+            log.debug("storing blob: {} to S3", digest);
             String key = bucketNamePrefix + digest;
             try {
                 amazonS3.getObjectMetadata(bucketName, key);
-                if (log.isDebugEnabled()) {
-                    log.debug("blob " + digest + " is already in S3");
-                }
+                log.debug("blob: {} is already in S3", digest);
             } catch (AmazonClientException e) {
                 if (!isMissingKey(e)) {
                     throw new IOException(e);
@@ -725,21 +713,15 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                     Thread.currentThread().interrupt();
                     throw new NuxeoException(ee);
                 } finally {
-                    if (log.isDebugEnabled()) {
-                        long dtms = System.currentTimeMillis() - t0;
-                        log.debug("stored blob " + digest + " to S3 in " + dtms + "ms");
-                    }
+                    log.debug("stored blob: {} to S3 in {}ms", () -> digest, () -> System.currentTimeMillis() - t0);
                 }
             }
         }
 
         @Override
         public boolean fetchFile(String digest, File file) throws IOException {
-            long t0 = 0;
-            if (log.isDebugEnabled()) {
-                t0 = System.currentTimeMillis();
-                log.debug("fetching blob " + digest + " from S3");
-            }
+            long t0 = System.currentTimeMillis();
+            log.debug("fetching blob: {} from S3", digest);
             try {
                 Download download = transferManager.download(
                         new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
@@ -754,12 +736,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 Thread.currentThread().interrupt();
                 throw new NuxeoException(e);
             } finally {
-                if (log.isDebugEnabled()) {
-                    long dtms = System.currentTimeMillis() - t0;
-                    log.debug("fetched blob " + digest + " from S3 in " + dtms + "ms");
-                }
+                log.debug("fetched blob: {} from S3 in {}ms", () -> digest, () -> System.currentTimeMillis() - t0);
             }
-
         }
     }
 

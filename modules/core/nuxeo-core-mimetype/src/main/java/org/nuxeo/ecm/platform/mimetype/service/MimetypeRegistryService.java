@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
@@ -67,6 +67,8 @@ import net.sf.jmimemagic.MagicParseException;
  */
 public class MimetypeRegistryService extends DefaultComponent implements MimetypeRegistry {
 
+    private static final Logger log = LogManager.getLogger(MimetypeRegistryService.class);
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService");
 
@@ -76,8 +78,6 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     public static final String TMP_EXTENSION = "tmp";
 
     public static final String MSOFFICE_TMP_PREFIX = "~$";
-
-    private static final Log log = LogFactory.getLog(MimetypeRegistryService.class);
 
     protected Map<String, MimetypeEntry> mimetypeByNormalisedRegistry;
 
@@ -135,7 +135,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     public void registerMimetype(MimetypeEntry mimetype) {
-        log.debug("Registering mimetype: " + mimetype.getNormalized());
+        log.debug("Registering mimetype: {}", mimetype::getNormalized);
         mimetypeByNormalisedRegistry.put(mimetype.getNormalized(), mimetype);
         for (String extension : mimetype.getExtensions()) {
             mimetypeByExtensionRegistry.put(extension, mimetype);
@@ -143,7 +143,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     public void registerFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Registering file extension: " + extensionDescriptor.getName());
+        log.debug("Registering file extension: {}", extensionDescriptor::getName);
         extensionRegistry.put(extensionDescriptor.getName(), extensionDescriptor);
     }
 
@@ -165,7 +165,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     public void unregisterMimetype(String mimetypeName) {
-        log.debug("Unregistering mimetype: " + mimetypeName);
+        log.debug("Unregistering mimetype: {}", mimetypeName);
         MimetypeEntry mimetype = mimetypeByNormalisedRegistry.get(mimetypeName);
         if (mimetype == null) {
             return;
@@ -178,7 +178,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     public void unregisterFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Unregistering file extension: " + extensionDescriptor.getName());
+        log.debug("Unregistering file extension: {}", extensionDescriptor::getName);
         extensionRegistry.remove(extensionDescriptor.getName());
     }
 

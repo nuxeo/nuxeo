@@ -24,8 +24,8 @@ import static org.nuxeo.ecm.core.api.versioning.VersioningService.DISABLE_AUTO_C
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_STORYBOARD_FACET;
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -46,7 +46,7 @@ public class VideoInfoWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(VideoInfoWork.class);
+    private static final Logger log = LogManager.getLogger(VideoInfoWork.class);
 
     public static final String CATEGORY_VIDEO_INFO = "videoInfo";
 
@@ -89,13 +89,13 @@ public class VideoInfoWork extends AbstractWork {
             // schedule storyboard work
             WorkManager workManager = Framework.getService(WorkManager.class);
             VideoStoryboardWork work = new VideoStoryboardWork(doc.getRepositoryName(), doc.getId());
-            log.debug(String.format("Scheduling work: storyboard of Video document %s.", doc));
+            log.debug("Scheduling work storyboard of Video document: {}.", doc);
             workManager.schedule(work, true);
         }
 
         // schedule conversion work
         VideoService videoService = Framework.getService(VideoService.class);
-        log.debug(String.format("Launching automatic conversions of Video document %s.", doc));
+        log.debug("Launching automatic conversions of Video document: {}.", doc);
         videoService.launchAutomaticConversions(doc, true);
 
         setStatus("Done");
@@ -110,9 +110,9 @@ public class VideoInfoWork extends AbstractWork {
 
         BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
         Blob video = blobHolder.getBlob();
-        log.debug(String.format("Updating video info of document %s.", doc));
+        log.debug("Updating video info of document: {}.", doc);
         VideoHelper.updateVideoInfo(doc, video);
-        log.debug(String.format("End updating video info of document %s.", doc));
+        log.debug("End updating video info of document {}.", doc);
 
         // save document
         if (doc.isVersion()) {

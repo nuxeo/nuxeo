@@ -23,8 +23,8 @@ package org.nuxeo.ecm.platform.ec.notification.email.templates;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 
 import freemarker.cache.URLTemplateLoader;
@@ -34,11 +34,11 @@ import freemarker.cache.URLTemplateLoader;
  */
 public class NuxeoTemplatesLoader extends URLTemplateLoader {
 
-    private static final Log log = LogFactory.getLog(NuxeoTemplatesLoader.class);
+    private static final Logger log = LogManager.getLogger(NuxeoTemplatesLoader.class);
 
     @Override
     protected URL getURL(String name) {
-        log.debug("Searching for template with name: " + name);
+        log.debug("Searching for template with name: {}", name);
         return NotificationServiceHelper.getNotificationService().getTemplateURL(name);
     }
 

@@ -32,8 +32,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -84,8 +82,6 @@ public class TestODTProcessingWithConverter {
     private DocumentModel templateDoc;
 
     private DocumentModel testDoc;
-
-    private static final Log log = LogFactory.getLog(TestODTProcessingWithConverter.class);
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
 

@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class QueryMakerServiceImpl extends DefaultComponent implements QueryMakerService {
 
-    private static final Log log = LogFactory.getLog(QueryMakerServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(QueryMakerServiceImpl.class);
 
     public static final String XP = "queryMaker";
 
@@ -60,9 +60,9 @@ public class QueryMakerServiceImpl extends DefaultComponent implements QueryMake
     @Override
     public void registerQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
-            log.info(String.format("Registering QueryMaker '%s': %s", descriptor.name, descriptor.queryMaker.getName()));
+            log.info("Registering QueryMaker '{}': {}", descriptor.name, descriptor.queryMaker.getName());
         } else {
-            log.info(String.format("Disabling QueryMaker '%s'", descriptor.name));
+            log.info("Disabling QueryMaker '{}'", descriptor.name);
         }
         descriptors.add(descriptor);
         queryMakers = null;
@@ -71,10 +71,9 @@ public class QueryMakerServiceImpl extends DefaultComponent implements QueryMake
     @Override
     public void unregisterQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
-            log.info(String.format("Unregistering QueryMaker '%s': %s", descriptor.name,
-                    descriptor.queryMaker.getName()));
+            log.info("Unregistering QueryMaker '{}': {}", descriptor.name, descriptor.queryMaker.getName());
         } else {
-            log.info(String.format("Unregistering disabled QueryMaker '%s'", descriptor.name));
+            log.info("Unregistering disabled QueryMaker '{}'", descriptor.name);
         }
         descriptors.remove(descriptor);
         queryMakers = null;

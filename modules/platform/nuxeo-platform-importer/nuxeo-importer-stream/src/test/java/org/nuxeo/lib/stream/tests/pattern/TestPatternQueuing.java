@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,7 +42,8 @@ import org.nuxeo.lib.stream.pattern.consumer.ConsumerStatus;
 import org.nuxeo.lib.stream.tests.pattern.consumer.IdMessageFactory;
 
 public abstract class TestPatternQueuing {
-    protected static final Log log = LogFactory.getLog(TestPatternQueuing.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(TestPatternQueuing.class);
 
     protected Name logName = Name.ofUrn("logName");
 

@@ -25,8 +25,8 @@ package org.nuxeo.ecm.platform.userworkspace.core.service;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionLocationService;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -43,9 +43,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
-    public static final String NAME = "org.nuxeo.ecm.platform.userworkspace.UserWorkspaceService";
+    private static final Logger log = LogManager.getLogger(UserWorkspaceServiceImplComponent.class);
 
-    private static final Log log = LogFactory.getLog(UserWorkspaceService.class);
+    public static final String NAME = "org.nuxeo.ecm.platform.userworkspace.UserWorkspaceService";
 
     protected Deque<UserWorkspaceDescriptor> descriptors = new LinkedList<>();
 
@@ -65,11 +65,9 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == UserWorkspaceServiceImplComponent.class) {
             return adapter.cast(this);
-        }
-        else if (adapter == UserWorkspaceService.class) {
+        } else if (adapter == UserWorkspaceService.class) {
             return adapter.cast(getUserWorkspaceService());
-        }
-        else if (adapter == CollectionLocationService.class) {
+        } else if (adapter == CollectionLocationService.class) {
             return adapter.cast(getUserWorkspaceService());
         }
         return null;

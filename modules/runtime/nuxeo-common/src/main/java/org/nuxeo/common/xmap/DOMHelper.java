@@ -29,8 +29,8 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  */
 public final class DOMHelper {
 
-    private static final Log log = LogFactory.getLog(DOMHelper.class);
+    private static final Logger log = LogManager.getLogger(DOMHelper.class);
 
     // Utility class.
     private DOMHelper() {
@@ -238,11 +238,7 @@ public final class DOMHelper {
                 el.appendChild(node.removeChild(node.getFirstChild()));
             }
 
-        } catch (ParserConfigurationException e) {
-            log.error(e, e);
-        } catch (SAXException e) {
-            log.error(e, e);
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             log.error(e, e);
         }
     }

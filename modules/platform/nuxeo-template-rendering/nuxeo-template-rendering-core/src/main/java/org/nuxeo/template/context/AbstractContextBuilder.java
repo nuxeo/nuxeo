@@ -21,8 +21,6 @@ package org.nuxeo.template.context;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
@@ -31,8 +29,6 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.context.DocumentWrapper;
 
 public abstract class AbstractContextBuilder {
-
-    protected static final Log log = LogFactory.getLog(AbstractContextBuilder.class);
 
     public static final String[] RESERVED_VAR_NAMES = { "doc", "document", "blobHolder", "username", "principal",
             "templateName" };

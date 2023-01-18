@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated
 public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
-    private static final Log log = LogFactory.getLog(ZipCachableBlobHolder.class);
+    private static final Logger log = LogManager.getLogger(ZipCachableBlobHolder.class);
 
     protected Blob zipBlob;
 

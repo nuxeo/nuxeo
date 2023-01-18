@@ -34,7 +34,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageDependency;
@@ -51,6 +52,8 @@ import org.xml.sax.SAXException;
 @XmlType(propOrder = { "id", "state", "version", "name", "type", "targetPlatforms", "vendor", "supportsHotReload",
         "provides", "dependencies", "conflicts", "title", "description", "licenseType", "licenseUrl", "templates" })
 public class PackageInfo {
+
+    private static final Logger log = LogManager.getLogger(PackageInfo.class);
 
     public String name;
 
@@ -137,7 +140,7 @@ public class PackageInfo {
 
             }
         } catch (PackageException | ParserConfigurationException | SAXException | IOException e) {
-            LogFactory.getLog(PackageInfo.class).warn("Could not parse install file for " + pkg.getName(), e);
+            log.warn("Could not parse install file for {}", pkg.getName(), e);
         }
         return templatesFound;
     }

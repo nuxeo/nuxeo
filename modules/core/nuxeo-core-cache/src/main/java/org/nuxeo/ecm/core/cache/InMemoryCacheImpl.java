@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -40,7 +40,7 @@ import com.google.common.cache.CacheBuilder;
  */
 public class InMemoryCacheImpl extends AbstractCache {
 
-    private static final Log log = LogFactory.getLog(InMemoryCacheImpl.class);
+    private static final Logger log = LogManager.getLogger(InMemoryCacheImpl.class);
 
     protected final Cache<String, Serializable> cache;
 
@@ -82,7 +82,7 @@ public class InMemoryCacheImpl extends AbstractCache {
         if (key != null) {
             cache.invalidate(key);
         } else {
-            log.warn(String.format("Can't invalidate a null key for the cache '%s'!", name));
+            log.warn("Can't invalidate a null key for the cache: {}!", name);
         }
     }
 
@@ -106,7 +106,7 @@ public class InMemoryCacheImpl extends AbstractCache {
         if (key != null && value != null) {
             cache.put(key, value);
         } else {
-            log.warn(String.format("Can't put a null key nor a null value in the cache '%s'!", name));
+            log.warn("Can't put a null key nor a null value in the cache: {}!", name);
         }
     }
 

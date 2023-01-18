@@ -32,8 +32,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
@@ -55,7 +55,7 @@ import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
  */
 public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
-    private static final Log log = LogFactory.getLog(AzureBinaryManager.class);
+    private static final Logger log = LogManager.getLogger(AzureBinaryManager.class);
 
     private static final String STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=%s;" + "AccountName=%s;"
             + "AccountKey=%s";
@@ -166,7 +166,7 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
         try {
             container.getBlockBlobReference(prefix + digest).delete();
         } catch (StorageException | URISyntaxException e) {
-            log.error("Unable to remove binary " + digest, e);
+            log.error("Unable to remove binary: {}", digest, e);
         }
     }
 

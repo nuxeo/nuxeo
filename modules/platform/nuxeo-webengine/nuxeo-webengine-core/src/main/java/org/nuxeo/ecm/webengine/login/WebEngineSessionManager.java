@@ -25,8 +25,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -35,8 +33,6 @@ public class WebEngineSessionManager extends DefaultSessionManager {
 
     // TODO work on skin request to avoid hardcoding paths
     private static final String RESOURCES_PATH = VirtualHostHelper.getContextPathProperty() + "/site/files/";
-
-    private static final Log log = LogFactory.getLog(WebEngineSessionManager.class);
 
     @Override
     public boolean canBypassRequest(ServletRequest request) {

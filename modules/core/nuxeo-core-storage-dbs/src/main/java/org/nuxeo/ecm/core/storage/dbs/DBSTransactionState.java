@@ -69,8 +69,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.BatchFinderWork;
 import org.nuxeo.ecm.core.BatchProcessorWork;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -125,7 +125,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DBSTransactionState implements LockManager, AutoCloseable {
 
-    private static final Log log = LogFactory.getLog(DBSTransactionState.class);
+    private static final Logger log = LogManager.getLogger(DBSTransactionState.class);
 
     private static final String KEY_UNDOLOG_CREATE = "__UNDOLOG_CREATE__\0\0";
 
@@ -285,9 +285,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
         for (String id : ids) {
             DBSDocumentState docState = transientStates.get(id);
             if (docState == null) {
-                if (log.isTraceEnabled()) {
-                    log.trace("Cannot fetch document with id: " + id, new Throwable("debug stack trace"));
-                }
+                log.trace("Cannot fetch document with id: {}", id, new Throwable("debug stack trace"));
                 continue;
             }
             docStates.add(docState);
@@ -1107,7 +1105,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
     protected void updateProxy(DBSDocumentState target, String proxyId) {
         DBSDocumentState proxy = getStateForUpdate(proxyId);
         if (proxy == null) {
-            log.debug("Proxy " + proxyId + " concurrently deleted");
+            log.debug("Proxy: {} concurrently deleted", proxyId);
             return;
         }
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
@@ -1322,7 +1320,8 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             boolean updateSimpleText = docsWithDirtyStrings.contains(id);
             boolean updateBinaryText = okToDownloadBlob && docsWithDirtyBinaries.contains(id);
             if (updateSimpleText || updateBinaryText) {
-                Work work = new FulltextExtractorWork(repository.getName(), id, updateSimpleText, updateBinaryText, true);
+                Work work = new FulltextExtractorWork(repository.getName(), id, updateSimpleText, updateBinaryText,
+                        true);
                 works.add(work);
             }
         }

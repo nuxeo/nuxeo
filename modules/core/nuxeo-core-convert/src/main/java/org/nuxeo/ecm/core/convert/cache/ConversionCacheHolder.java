@@ -32,8 +32,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -46,11 +46,11 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
  */
 public class ConversionCacheHolder {
 
+    private static final Logger log = LogManager.getLogger(ConversionCacheHolder.class);
+
     protected static final Map<String, ConversionCacheEntry> cache = new HashMap<>();
 
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
-
-    private static final Log log = LogFactory.getLog(ConversionCacheHolder.class);
 
     public static final int NB_SUB_PATH_PART = 5;
 

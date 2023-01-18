@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -38,8 +36,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("converter")
 public class ConverterDescriptor {
-
-    protected final Log log = LogFactory.getLog(ConverterDescriptor.class);
 
     public static final String CUSTOM_CONVERTER_TYPE = "Custom";
 
@@ -77,7 +73,8 @@ public class ConverterDescriptor {
     protected List<String> subConverters = new ArrayList<>();
 
     /**
-     * Returns whether the conversion should be bypassed if the input blob mime type equals the converter destination mime type.
+     * Returns whether the conversion should be bypassed if the input blob mime type equals the converter destination
+     * mime type.
      *
      * @since 11.1
      */

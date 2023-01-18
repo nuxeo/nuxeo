@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -41,8 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 @XObject(value = "directory")
 public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
 
-    protected static final Log log = LogFactory.getLog(CoreDirectoryDescriptor.class);
-
     public static final String DEFAULT_CREATE_PATH = "/";
 
     public static final boolean DEFAULT_CAN_CREATE_ROOT_FOLDER = true;
@@ -58,7 +54,6 @@ public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
 
         @XNode("@granted")
         public boolean granted = false;
-
 
         @Override
         public ACLDescriptor clone() {

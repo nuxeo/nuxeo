@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -47,8 +45,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 public class DirectoryProjection {
 
     public static final String ID = "Directory.Projection";
-
-    private static final Log log = LogFactory.getLog(DirectoryProjection.class);
 
     @Context
     protected OperationContext ctx;

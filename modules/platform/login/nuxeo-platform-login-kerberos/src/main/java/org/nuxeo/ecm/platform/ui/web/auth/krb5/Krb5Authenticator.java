@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
@@ -49,9 +49,9 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
  */
 public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 
-    private static final String CONTEXT_ATTRIBUTE = "Krb5Authenticator_context";
+    private static final Logger log = LogManager.getLogger(Krb5Authenticator.class);
 
-    private static final Log logger = LogFactory.getLog(Krb5Authenticator.class);
+    private static final String CONTEXT_ATTRIBUTE = "Krb5Authenticator_context";
 
     private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
@@ -76,7 +76,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest req, HttpServletResponse res, String baseURL) {
 
-        logger.debug("Sending login prompt...");
+        log.debug("Sending login prompt...");
         if (res.getHeader(WWW_AUTHENTICATE) == null) {
             res.setHeader(WWW_AUTHENTICATE, NEGOTIATE);
         }
@@ -94,7 +94,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
             res.flushBuffer();
 
         } catch (IOException e) {
-            logger.warn("Cannot flush response", e);
+            log.warn("Cannot flush response", e);
         }
         return true;
     }
@@ -107,8 +107,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
         }
 
         if (!authorization.startsWith(NEGOTIATE)) {
-            logger.warn(
-                    "Received invalid Authorization header (expected: Negotiate then SPNEGO blob): " + authorization);
+            log.warn("Received invalid Authorization header (expected: Negotiate then SPNEGO blob): {}", authorization);
             // ignore invalid authorization headers.
             return null;
         }
@@ -143,7 +142,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 
         } catch (GSSException ge) {
             req.getSession().removeAttribute(CONTEXT_ATTRIBUTE);
-            logger.error("Cannot accept provided security token", ge);
+            log.error("Cannot accept provided security token", ge);
             return null;
         }
 
@@ -157,12 +156,12 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
             // note: we assume that all configuration is done in loginconfig, so there are NO parameters here
             loginContext.login();
             serverCredential = Subject.doAs(loginContext.getSubject(), getServerCredential);
-            logger.debug("Successfully initialized Kerberos auth module");
+            log.debug("Successfully initialized Kerberos auth module");
         } catch (LoginException le) {
-            logger.warn("Cannot create LoginContext, disabling Kerberos module", le);
+            log.warn("Cannot create LoginContext, disabling Kerberos module", le);
             this.disabled = true;
         } catch (PrivilegedActionException pae) {
-            logger.warn("Cannot get server credentials, disabling Kerberos module", pae);
+            log.warn("Cannot get server credentials, disabling Kerberos module", pae);
             this.disabled = true;
         }
 

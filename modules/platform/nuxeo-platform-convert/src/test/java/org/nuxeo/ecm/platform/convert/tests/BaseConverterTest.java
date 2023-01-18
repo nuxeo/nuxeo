@@ -28,8 +28,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -65,8 +63,6 @@ public abstract class BaseConverterTest {
 
     @Inject
     protected CoreSession session;
-
-    protected static final Log log = LogFactory.getLog(BaseConverterTest.class);
 
     @Before
     public void setUp() throws Exception {

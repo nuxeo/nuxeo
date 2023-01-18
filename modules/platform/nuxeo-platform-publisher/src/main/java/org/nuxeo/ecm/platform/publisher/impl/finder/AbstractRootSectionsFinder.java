@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -46,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunner implements RootSectionFinder {
 
+    private static final Logger log = LogManager.getLogger(AbstractRootSectionsFinder.class);
+
     public static final String SCHEMA_PUBLISHING = "publishing";
 
     public static final String SECTIONS_PROPERTY_NAME = "publish:sections";
@@ -63,8 +65,6 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     protected DocumentModelList accessibleSectionRoots;
 
     protected DocumentModel currentDocument;
-
-    protected static final Log log = LogFactory.getLog(AbstractRootSectionsFinder.class);
 
     protected abstract void computeUserSectionRoots(DocumentModel currentDoc);
 
@@ -91,8 +91,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     @Override
-    public DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc, boolean addDefaultSectionRoots)
-            {
+    public DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc, boolean addDefaultSectionRoots) {
         if ((currentDocument == null) || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
             computeUserSectionRoots(currentDoc);
         }
@@ -114,8 +113,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     @Override
-    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads, boolean addDefaultSectionRoots)
-            {
+    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads, boolean addDefaultSectionRoots) {
         if (unrestrictedDefaultSectionRoot == null) {
             computeUserSectionRoots(null);
         }
@@ -136,8 +134,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         return getDefaultSectionRoots(onlyHeads, false);
     }
 
-    protected DocumentModelList getFiltredSectionRoots(List<String> rootPaths, boolean onlyHeads)
-            {
+    protected DocumentModelList getFiltredSectionRoots(List<String> rootPaths, boolean onlyHeads) {
         List<DocumentRef> filtredDocRef = new ArrayList<>();
         List<DocumentRef> trashedDocRef = new ArrayList<>();
 
@@ -148,8 +145,8 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
             } else {
                 DocumentModelList accessibleSections = userSession.query(buildQuery(rootPath));
                 for (DocumentModel section : accessibleSections) {
-                    if (onlyHeads
-                            && ((filtredDocRef.contains(section.getParentRef())) || (trashedDocRef.contains(section.getParentRef())))) {
+                    if (onlyHeads && ((filtredDocRef.contains(section.getParentRef()))
+                            || (trashedDocRef.contains(section.getParentRef())))) {
                         trashedDocRef.add(section.getRef());
                     } else {
                         filtredDocRef.add(section.getRef());
@@ -157,7 +154,8 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
                 }
             }
         }
-        DocumentModelList documents = userSession.getDocuments(filtredDocRef.toArray(new DocumentRef[filtredDocRef.size()]));
+        DocumentModelList documents = userSession.getDocuments(
+                filtredDocRef.toArray(new DocumentRef[filtredDocRef.size()]));
         return filterDocuments(documents);
     }
 
@@ -188,8 +186,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         return sectionRoots;
     }
 
-    protected DocumentModelList getSectionRootsFromWorkspaceConfig(DocumentModel workspace, CoreSession session)
-            {
+    protected DocumentModelList getSectionRootsFromWorkspaceConfig(DocumentModel workspace, CoreSession session) {
 
         DocumentModelList selectedSections = new DocumentModelListImpl();
 
@@ -208,8 +205,8 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
                         DocumentModel sectionToAdd = session.getDocument(new IdRef(currentSectionId));
                         selectedSections.add(sectionToAdd);
                     } catch (DocumentNotFoundException e) {
-                        log.warn("Section with ID=" + currentSectionId + " not found for document with ID="
-                                + workspace.getId());
+                        log.warn("Section with ID: {} not found for document with ID: {}", currentSectionId,
+                                workspace.getId());
                     }
                 }
             }

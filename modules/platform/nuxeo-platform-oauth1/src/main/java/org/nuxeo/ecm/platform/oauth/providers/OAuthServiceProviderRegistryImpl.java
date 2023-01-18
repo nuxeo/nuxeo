@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class OAuthServiceProviderRegistryImpl extends DefaultComponent implements OAuthServiceProviderRegistry {
 
-    protected static final Log log = LogFactory.getLog(OAuthServiceProviderRegistryImpl.class);
+    private static final Logger log = LogManager.getLogger(OAuthServiceProviderRegistryImpl.class);
 
     public static final String DIRECTORY_NAME = "oauthServiceProviders";
 
@@ -86,7 +86,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     protected DocumentModel getBestEntry(DocumentModelList entries, String gadgetUri, String serviceName)
             throws PropertyException {
         if (entries.size() > 1) {
-            log.warn("Found several entries for gadgetUri=" + gadgetUri + " and serviceName=" + serviceName);
+            log.warn("Found several entries for gadgetUri: {} and serviceName: {}", gadgetUri, serviceName);
         }
         if (serviceName == null || serviceName.trim().isEmpty()) {
             for (DocumentModel entry : entries) {
@@ -110,8 +110,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         return entries.get(0);
     }
 
-    protected NuxeoOAuthServiceProvider getEntry(String gadgetUri, String serviceName, Set<String> ftFilter)
-            {
+    protected NuxeoOAuthServiceProvider getEntry(String gadgetUri, String serviceName, Set<String> ftFilter) {
 
         String id = mkStringIdx(gadgetUri, serviceName);
         if (inMemoryProviders.containsKey(id)) {
@@ -199,7 +198,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
                 session.deleteEntry(providerId);
             }
         } catch (DirectoryException e) {
-            log.error("Unable to delete provider " + providerId, e);
+            log.error("Unable to delete provider: {}", providerId, e);
         }
     }
 

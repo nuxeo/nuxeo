@@ -26,9 +26,6 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * An iterator over a tree of documents
  * <p>
@@ -39,8 +36,6 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DocumentTreeIterator implements Iterator<DocumentModel> {
-
-    private static final Log log = LogFactory.getLog(DocumentTreeIterator.class);
 
     /**
      * The document manager session.

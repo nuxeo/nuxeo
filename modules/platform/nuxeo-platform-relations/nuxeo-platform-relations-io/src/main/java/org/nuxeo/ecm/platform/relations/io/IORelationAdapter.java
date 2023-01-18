@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -67,7 +67,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class IORelationAdapter extends AbstractIOResourceAdapter {
 
-    private static final Log log = LogFactory.getLog(IORelationAdapter.class);
+    private static final Logger log = LogManager.getLogger(IORelationAdapter.class);
 
     private static final long serialVersionUID = -3661302796286246086L;
 
@@ -113,7 +113,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             }
         }
         if (this.properties == null || getStringProperty(IORelationAdapterProperties.GRAPH) == null) {
-            log.warn("No graph name given for relations adapter, " + "no IO will be performed with this adapter");
+            log.warn("No graph name given for relations adapter, no IO will be performed with this adapter");
         }
     }
 
@@ -242,7 +242,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         RelationManager relManager = getRelationManager();
         Graph graph = relManager.getGraphByName(graphName);
         if (graph == null) {
-            log.error("Cannot resolve graph " + graphName);
+            log.error("Cannot resolve graph: {}", graphName);
             return null;
         }
         Map<DocumentRef, Set<Resource>> docResources = new HashMap<>();
@@ -363,7 +363,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         RelationManager relManager = getRelationManager();
         Graph graph = relManager.getGraphByName(graphName);
         if (graph == null) {
-            log.error("Cannot find graph with name " + graphName);
+            log.error("Cannot find graph with name: {}", graphName);
             return;
         }
         graph.add(relResources.getStatements());

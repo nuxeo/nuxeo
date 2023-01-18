@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
-    public static final Log log = LogFactory.getLog(DocumentMetadataGroupComputer.class);
+    private static final Logger log = LogManager.getLogger(DocumentMetadataGroupComputer.class);
 
     private String groupPattern;
 
@@ -81,7 +81,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
         for (String value : runner.result) {
             groupId = getGroupIdFromValue(value);
-            log.debug("Virtual Group Id found: " + groupId);
+            log.debug("Virtual Group Id found: {}", groupId);
             groupIds.add(groupId);
         }
         return groupIds;

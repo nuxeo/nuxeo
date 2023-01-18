@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.lock.LockManager;
@@ -42,9 +40,6 @@ import redis.clients.jedis.Jedis;
  * @since 6.0
  */
 public class RedisLockManager implements LockManager {
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(RedisLockManager.class);
 
     protected final String redisNamespace;
 

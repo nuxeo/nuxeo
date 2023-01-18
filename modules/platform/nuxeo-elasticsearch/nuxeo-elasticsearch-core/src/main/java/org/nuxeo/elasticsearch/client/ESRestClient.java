@@ -27,10 +27,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.elasticsearch.api.ESClient;
 import org.opensearch.OpenSearchStatusException;
 import org.opensearch.action.bulk.BulkItemResponse;
 import org.opensearch.action.bulk.BulkProcessor;
@@ -59,9 +62,6 @@ import org.opensearch.cluster.health.ClusterHealthStatus;
 import org.opensearch.common.xcontent.XContentHelper;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.rest.RestStatus;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.elasticsearch.api.ESClient;
 
 import io.opencensus.common.Scope;
 import io.opencensus.trace.AttributeValue;
@@ -74,8 +74,9 @@ import net.jodah.failsafe.RetryPolicy;
  * @since 9.3
  */
 public class ESRestClient implements ESClient {
+
     // TODO: add security sanitizer to make sure all parameters used to build requests are clean
-    private static final Log log = LogFactory.getLog(ESRestClient.class);
+    private static final Logger log = LogManager.getLogger(ESRestClient.class);
 
     // @since 11.5
     public static final String LONG_TIMEOUT = "120s";
@@ -109,10 +110,10 @@ public class ESRestClient implements ESClient {
         }
         switch (healthStatus) {
         case GREEN:
-            log.info("Elasticsearch Cluster ready: " + response);
+            log.info("Elasticsearch Cluster ready: {}", response);
             return true;
         case YELLOW:
-            log.warn("Elasticsearch Cluster ready but not GREEN: " + response);
+            log.warn("Elasticsearch Cluster ready but not GREEN: {}", response);
             return false;
         default:
             String error = "Elasticsearch Cluster health status: " + healthStatus + ", not Yellow after "
@@ -130,8 +131,8 @@ public class ESRestClient implements ESClient {
         Response response = performRequestWithTracing(
                 new Request("GET", String.format("/_cluster/health/%s", getIndexesAsString(indexNames))));
         try (InputStream is = response.getEntity().getContent()) {
-                Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
-                return ClusterHealthStatus.fromString((String) map.get("status"));
+            Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
+            return ClusterHealthStatus.fromString((String) map.get("status"));
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -168,8 +169,7 @@ public class ESRestClient implements ESClient {
     @Override
     public boolean mappingExists(String indexName, String type) {
         // HEAD is not supported anymore since elastic 7.x
-        Response response = performRequestWithTracing(
-                new Request("GET", String.format("/%s/_mapping", indexName)));
+        Response response = performRequestWithTracing(new Request("GET", String.format("/%s/_mapping", indexName)));
         switch (response.getStatusLine().getStatusCode()) {
         case HttpStatus.SC_OK:
             return true;
@@ -184,8 +184,8 @@ public class ESRestClient implements ESClient {
     public void deleteIndex(String indexName, int timeoutSecond) {
         Response response;
         try {
-            response = lowLevelClient.performRequest(
-                    new Request("DELETE", String.format("/%s?master_timeout=%ds&timeout=%ds", indexName, timeoutSecond, timeoutSecond)));
+            response = lowLevelClient.performRequest(new Request("DELETE",
+                    String.format("/%s?master_timeout=%ds&timeout=%ds", indexName, timeoutSecond, timeoutSecond)));
         } catch (IOException e) {
             if (e.getMessage() != null && e.getMessage().contains("illegal_argument_exception")) {
                 // when trying to delete an alias, throws the same exception than the transport client
@@ -201,7 +201,8 @@ public class ESRestClient implements ESClient {
 
     @Override
     public void createIndex(String indexName, String jsonSettings) {
-        Request request = new Request("PUT", "/" + indexName + "?master_timeout=" + LONG_TIMEOUT + "&timeout=" + LONG_TIMEOUT);
+        Request request = new Request("PUT",
+                "/" + indexName + "?master_timeout=" + LONG_TIMEOUT + "&timeout=" + LONG_TIMEOUT);
         // since elastic 7 REST API needs an additional level
         request.setJsonEntity("{\"settings\": " + jsonSettings + "}");
         Response response = performRequestWithTracing(request);
@@ -343,15 +344,15 @@ public class ESRestClient implements ESClient {
                                               .retryOn(TooManyRequestsRetryableException.class);
         AtomicReference<BulkResponse> response = new AtomicReference<>();
         Failsafe.with(policy)
-                .onRetry(failure -> log.warn("Retrying bulk index ... " + request.getDescription()))
-                .onRetriesExceeded(failure -> log.warn(
-                        "Give up bulk index after " + policy.getMaxRetries() + " retries: " + request.getDescription()))
+                .onRetry(failure -> log.warn("Retrying bulk index ... {}", request.getDescription()))
+                .onRetriesExceeded(failure -> log.warn("Give up bulk index after {} retries: {}", policy::getMaxRetries,
+                        request::getDescription))
                 .run(() -> response.set(doBulk(request)));
         return response.get();
     }
 
     protected BulkResponse doBulk(BulkRequest request) throws TooManyRequestsRetryableException {
-         try (Scope ignored = getScopedSpan("elastic/_bulk", "actions: " + request.numberOfActions())) {
+        try (Scope ignored = getScopedSpan("elastic/_bulk", "actions: " + request.numberOfActions())) {
             if (BulkShardRequest.DEFAULT_TIMEOUT == request.timeout()) {
                 // use a longer timeout than the default one
                 request.timeout(LONG_TIMEOUT);
@@ -361,7 +362,7 @@ public class ESRestClient implements ESClient {
                 for (BulkItemResponse item : response.getItems()) {
                     if (item.isFailed() && RestStatus.TOO_MANY_REQUESTS == item.getFailure().getStatus()) {
                         // Since Elastic 7.0 transient circuit breaker exceptions return 429
-                        log.warn("Detecting overloaded Elastic bulk response: " + item.getFailureMessage());
+                        log.warn("Detecting overloaded Elastic bulk response: {}", item::getFailureMessage);
                         throw new TooManyRequestsRetryableException(item.getFailureMessage());
                     }
                 }
@@ -369,19 +370,19 @@ public class ESRestClient implements ESClient {
             return response;
         } catch (ResponseException e) {
             if (e.getResponse().getStatusLine().getStatusCode() == RestStatus.TOO_MANY_REQUESTS.getStatus()) {
-                log.warn("Detecting overloaded Elastic response: " + e.getResponse().getStatusLine());
+                log.warn("Detecting overloaded Elastic response: {}", e.getResponse().getStatusLine());
                 throw new TooManyRequestsRetryableException(e.getResponse().getStatusLine().toString());
             }
             throw new NuxeoException(e);
-         } catch (OpenSearchStatusException e) {
-             if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
-                 log.warn("Detecting overloaded Elastic bulk response: " + e.getMessage());
-                 throw new TooManyRequestsRetryableException(e.getMessage());
-             }
-             throw new NuxeoException(e);
+        } catch (OpenSearchStatusException e) {
+            if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
+                log.warn("Detecting overloaded Elastic bulk response: {}", e.getMessage());
+                throw new TooManyRequestsRetryableException(e.getMessage());
+            }
+            throw new NuxeoException(e);
         } catch (SocketTimeoutException e) {
-             log.warn("Elastic timeout, might be overloaded", e);
-             throw new TooManyRequestsRetryableException(e.getMessage());
+            log.warn("Elastic timeout, might be overloaded", e);
+            throw new TooManyRequestsRetryableException(e.getMessage());
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -440,9 +441,9 @@ public class ESRestClient implements ESClient {
                                               .retryOn(TooManyRequestsRetryableException.class);
         AtomicReference<IndexResponse> response = new AtomicReference<>();
         Failsafe.with(policy)
-                .onRetry(failure -> log.warn("Retrying index ... " + request.getDescription()))
-                .onRetriesExceeded(failure -> log.warn(
-                        "Give up index after " + policy.getMaxRetries() + " retries: " + request.getDescription()))
+                .onRetry(failure -> log.warn("Retrying index ... {}", request::getDescription))
+                .onRetriesExceeded(failure -> log.warn("Give up index after {} retries: {}", policy::getMaxRetries,
+                        request::getDescription))
                 .run(() -> response.set(doIndex(request)));
         return response.get();
     }
@@ -458,7 +459,7 @@ public class ESRestClient implements ESClient {
             if (RestStatus.CONFLICT.equals(e.status())) {
                 throw new ConcurrentUpdateException(e);
             } else if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
-                log.warn("Detecting overloaded Elastic index response: " + e.getMessage());
+                log.warn("Detecting overloaded Elastic index response: {}", e.getMessage());
                 throw new TooManyRequestsRetryableException(e.getMessage());
             }
             throw new NuxeoException(e);
@@ -482,16 +483,12 @@ public class ESRestClient implements ESClient {
     @Override
     public ClearScrollResponse clearScroll(ClearScrollRequest request) {
         try {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Clearing scroll ids: %s", Arrays.toString(request.getScrollIds().toArray())));
-            }
+            log.debug("Clearing scroll ids: {}", () -> Arrays.toString(request.getScrollIds().toArray()));
             return client.clearScroll(request, RequestOptions.DEFAULT);
         } catch (OpenSearchStatusException e) {
             if (RestStatus.NOT_FOUND.equals(e.status())) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Scroll ids not found, they have certainly been already closed: %s",
-                            Arrays.toString(request.getScrollIds().toArray())));
-                }
+                log.debug("Scroll ids not found, they have certainly been already closed: {}",
+                        () -> Arrays.toString(request.getScrollIds().toArray()));
                 return new ClearScrollResponse(true, 0);
             }
             throw new NuxeoException(e);
@@ -512,7 +509,7 @@ public class ESRestClient implements ESClient {
             try {
                 lowLevelClient.close();
             } catch (IOException e) {
-                log.warn("Fail to close the OpenSearch low level RestClient: " + e.getMessage(), e);
+                log.warn("Fail to close the OpenSearch low level RestClient: {}", e.getMessage(), e);
             }
             lowLevelClient = null;
         }

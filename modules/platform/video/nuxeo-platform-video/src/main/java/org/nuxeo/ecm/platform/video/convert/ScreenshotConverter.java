@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -48,8 +46,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author ogrisel
  */
 public class ScreenshotConverter implements Converter {
-
-    public static final Log log = LogFactory.getLog(ScreenshotConverter.class);
 
     public static final String FFMPEG_SCREENSHOT_COMMAND = "ffmpeg-screenshot";
 

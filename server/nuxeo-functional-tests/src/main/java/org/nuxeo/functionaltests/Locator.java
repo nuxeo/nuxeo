@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -48,6 +50,8 @@ import com.google.common.base.Function;
  * @since 5.9.2
  */
 public class Locator {
+
+    private static final Logger log = LogManager.getLogger(Locator.class);
 
     // Timeout for waitUntilURLDifferentFrom in seconds
     public static final int URLCHANGE_MAX_WAIT = 30;
@@ -110,7 +114,7 @@ public class Locator {
                     // Try to wait until the element is enabled.
                     waitUntilEnabled(element, waitUntilEnabledTimeout);
                 } catch (StaleElementReferenceException sere) {
-                    AbstractTest.log.debug("StaleElementReferenceException: " + sere.getMessage());
+                    log.debug("StaleElementReferenceException: {}", sere::getMessage);
                     return null;
                 }
                 return element;
@@ -549,8 +553,8 @@ public class Locator {
                 String currentUrl = d.getCurrentUrl();
                 boolean result = !(currentUrl.contains(refurl) ^ contain);
                 if (!result) {
-                    AbstractTest.log.debug("currentUrl is : " + currentUrl);
-                    AbstractTest.log.debug((contain ? "It should contains : " : "It should not contains : ") + refurl);
+                    log.debug("currentUrl is: {}", currentUrl);
+                    log.debug("It should {}contains: {}", contain ? "" : "not ", refurl);
                 }
                 return result;
             }
@@ -566,20 +570,20 @@ public class Locator {
      */
     public static void waitUntilURLDifferentFrom(String url) {
         final String refurl = url;
-        AbstractTest.log.debug("Watch URL: " + refurl);
+        log.debug("Watch URL: {}", refurl);
         ExpectedCondition<Boolean> urlchanged = d -> {
             if (d == null) {
                 return false;
             }
 
             String currentUrl = d.getCurrentUrl();
-            AbstractTest.log.debug("currentUrl is still: " + currentUrl);
+            log.debug("currentUrl is still: {}", currentUrl);
             return !currentUrl.equals(refurl);
         };
         WebDriverWait wait = new WebDriverWait(AbstractTest.driver, URLCHANGE_MAX_WAIT);
         wait.until(urlchanged);
         if (AbstractTest.driver.getCurrentUrl().equals(refurl)) {
-            AbstractTest.log.warn("Page change failed");
+            log.warn("Page change failed");
         }
     }
 
@@ -642,7 +646,7 @@ public class Locator {
             return true;
         } catch (WebDriverException e) {
             if (e.getMessage().contains("Element is not clickable at point")) {
-                AbstractTest.log.debug("Element is not clickable yet");
+                log.debug("Element is not clickable yet");
                 return false;
             }
             throw e;

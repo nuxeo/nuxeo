@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.platform.comment.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -39,8 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractCommentListener {
 
-    private static final Log log = LogFactory.getLog(AbstractCommentListener.class);
-
     public void handleEvent(EventBundle events) {
         if (events.containsEventName(DocumentEventTypes.DOCUMENT_REMOVED)) {
             for (Event event : events) {
@@ -52,14 +48,12 @@ public abstract class AbstractCommentListener {
     public void handleEvent(Event event) {
         if (DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())) {
             EventContext ctx = event.getContext();
-            if (ctx instanceof DocumentEventContext) {
-                DocumentEventContext docCtx = (DocumentEventContext) ctx;
+            if (ctx instanceof DocumentEventContext docCtx) {
                 DocumentModel doc = docCtx.getSourceDocument();
                 CoreSession coreSession = docCtx.getCoreSession();
                 CommentServiceConfig config = CommentServiceHelper.getCommentService().getConfig();
                 RelationManager relationManager = Framework.getService(RelationManager.class);
                 doProcess(coreSession, relationManager, config, doc);
-                return;
             }
         }
     }

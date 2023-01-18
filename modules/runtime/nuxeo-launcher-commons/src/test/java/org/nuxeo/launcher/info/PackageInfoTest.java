@@ -29,8 +29,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -41,14 +41,12 @@ import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.Version;
 
-//import org.json.XML;
-
 /**
  * @since 5.7
  */
 public class PackageInfoTest {
 
-    static final Log log = LogFactory.getLog(PackageInfoTest.class);
+    private static final Logger log = LogManager.getLogger(PackageInfoTest.class);
 
     private PackageInfo packageInfo1;
 

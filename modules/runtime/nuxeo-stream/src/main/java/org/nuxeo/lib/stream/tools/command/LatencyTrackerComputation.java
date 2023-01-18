@@ -23,8 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -41,7 +40,8 @@ import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
  * @since 10.1
  */
 public class LatencyTrackerComputation extends AbstractComputation {
-    private static final Log log = LogFactory.getLog(LatencyTrackerComputation.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(LatencyTrackerComputation.class);
 
     protected static final String OUTPUT_STREAM = "o1";
 
@@ -77,9 +77,8 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     @Override
     public void init(ComputationContext context) {
-        log.info(String.format("Tracking %d streams: %s, count: %d, interval: %dms", logNames.size(),
-                Arrays.toString(logNames.toArray()), count,
-                intervalMs));
+        log.info("Tracking {} streams: {}, count: {}, interval: {}ms", logNames::size,
+                () -> Arrays.toString(logNames.toArray()), () -> count, () -> intervalMs);
         context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
     }
 
@@ -87,13 +86,13 @@ public class LatencyTrackerComputation extends AbstractComputation {
     public void processTimer(ComputationContext context, String key, long timestamp) {
         if (remaining == 0) {
             if (verbose) {
-                log.info("Exiting after " + count + " captures");
+                log.info("Exiting after {} captures", context);
             }
             context.askForTermination();
             return;
         }
         if (verbose) {
-            log.info(String.format("Tracking latency %d/%d", count - remaining, count));
+            log.info("Tracking latency {}/{}", count - remaining, count);
         }
         List<LogPartitionGroup> toRemove = new ArrayList<>();
         for (LogPartitionGroup logGroup : getLogGroup()) {
@@ -106,7 +105,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
             } catch (Exception e) {
                 if (e.getCause() instanceof ClassNotFoundException || e.getCause() instanceof ClassCastException
                         || e instanceof IllegalStateException || e instanceof IllegalArgumentException) {
-                    log.warn("log does not contains computation Record, removing partition: " + logGroup);
+                    log.warn("log does not contains computation Record, removing partition: {}", logGroup);
                     toRemove.add(logGroup);
                     continue;
                 }
@@ -134,7 +133,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
                 }
             });
             if (verbose) {
-                log.info("Update list of consumers: " + Arrays.toString(logGroups.toArray()));
+                log.info("Update list of consumers: {}", () -> Arrays.toString(logGroups.toArray()));
             }
         }
         return logGroups;
@@ -159,7 +158,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
             byte[] recordValue = encodeLatency(latency);
             Record record = new Record(recordKey, recordValue, recordWatermark);
             if (verbose) {
-                log.info("out: " + record);
+                log.info("out: {}", record);
             }
             context.produceRecord(OUTPUT_STREAM, record);
             context.setSourceLowWatermark(recordWatermark);
@@ -186,7 +185,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-        log.error("Receiving a record is not expected: " + record);
+        log.error("Receiving a record is not expected: {}", record);
     }
 
 }

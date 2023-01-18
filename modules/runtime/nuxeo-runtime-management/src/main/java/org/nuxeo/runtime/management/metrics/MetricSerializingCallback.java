@@ -21,8 +21,8 @@ package org.nuxeo.runtime.management.metrics;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javasimon.CallbackSkeleton;
 import org.javasimon.Counter;
 import org.javasimon.Sample;
@@ -30,7 +30,7 @@ import org.javasimon.Split;
 
 public class MetricSerializingCallback extends CallbackSkeleton {
 
-    protected static final Log log = LogFactory.getLog(MetricSerializingCallback.class);
+    private static final Logger log = LogManager.getLogger(MetricSerializingCallback.class);
 
     protected final MetricSerializer serializer;
 
@@ -52,7 +52,7 @@ public class MetricSerializingCallback extends CallbackSkeleton {
         try {
             serializer.toStream(sample);
         } catch (IOException e) {
-            log.info("not streamed " + sample, e);
+            log.info("not streamed: {}", sample, e);
         }
     }
 

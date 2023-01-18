@@ -42,8 +42,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -87,6 +87,8 @@ import com.google.common.collect.ImmutableMap;
  * Base functions for all pages.
  */
 public abstract class AbstractTest {
+
+    private static final Logger log = LogManager.getLogger(AbstractTest.class);
 
     /**
      * @since 5.9.2
@@ -183,8 +185,6 @@ public abstract class AbstractTest {
      */
     @Deprecated
     public static final String SYSPROP_CHROME_DRIVER_PATH = ChromeDriverProvider.SYSPROP_CHROME_DRIVER_PATH;
-
-    static final Log log = LogFactory.getLog(AbstractTest.class);
 
     public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
                                                  .replaceAll("/$", "");
@@ -289,7 +289,7 @@ public abstract class AbstractTest {
             proxyManager.stopProxy();
             proxyManager = null;
         } catch (Exception e) {
-            log.error("Could not stop proxy: " + e.getMessage());
+            log.error("Could not stop proxy: {}", e.getMessage());
         }
     }
 

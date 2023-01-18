@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
-    private static final Log log = LogFactory.getLog(ProxyAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(ProxyAuthenticator.class);
 
     private static final String HEADER_NAME_KEY = "ssoHeaderName";
 
@@ -88,7 +88,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
             Matcher matcher = usernamePartRemovalPattern.matcher(userName);
             // Remove all instance of regexp from username string
             userName = matcher.replaceAll("");
-            log.debug(String.format("userName changed from '%s' to '%s'", tmpUsername, userName));
+            log.debug("userName changed from: {} to: {}", tmpUsername, userName);
         }
 
         String credentialFieldName = Framework.getRuntime().getProperty(HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME);
@@ -101,21 +101,21 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
                 queryFilters.put(credentialFieldName, userName);
                 DocumentModelList result = userDir.query(queryFilters);
                 if (result.isEmpty()) {
-                    log.error(String.format("could not find any user with %s='%s' in directory %s", credentialFieldName,
-                            userName, directoryName));
+                    log.error("could not find any user with {}={} in directory: {}", credentialFieldName, userName,
+                            directoryName);
                     return null;
                 }
                 if (result.size() > 1) {
-                    log.error(String.format("found more than one entry for  %s='%s' in directory %s",
-                            credentialFieldName, userName, directoryName));
+                    log.error("found more than one entry for {}={} in directory: {}", credentialFieldName, userName,
+                            directoryName);
                     return null;
                 }
                 // use the ID of the found user entry as new identification for
                 // the principal
                 userName = result.get(0).getId();
             } catch (DirectoryException e) {
-                log.error(String.format("could not retrieve user entry with %s='%s':  %s", credentialFieldName,
-                        userName, e.getMessage()), e);
+                log.error("could not retrieve user entry with {}={}: {}", credentialFieldName, userName, e.getMessage(),
+                        e);
                 return null;
             }
         }
@@ -158,7 +158,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         }
         if (parameters.containsKey(USERNAME_REMOVE_EXPRESSION)) {
             regexp = parameters.get(USERNAME_REMOVE_EXPRESSION);
-            log.debug(String.format("Will remove all instances of '%s' from userName string.", regexp));
+            log.debug("Will remove all instances of: {} from userName string.", regexp);
             usernamePartRemovalPattern = Pattern.compile(regexp);
         }
     }

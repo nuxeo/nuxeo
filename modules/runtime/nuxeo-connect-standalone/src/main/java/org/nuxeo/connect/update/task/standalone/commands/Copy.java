@@ -28,8 +28,8 @@ import java.io.RandomAccessFile;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileMatcher;
 import org.nuxeo.common.utils.FileRef;
@@ -60,7 +60,7 @@ import org.w3c.dom.Element;
  */
 public class Copy extends AbstractCommand {
 
-    protected static final Log log = LogFactory.getLog(Copy.class);
+    private static final Logger log = LogManager.getLogger(Copy.class);
 
     public static final String ID = "copy";
 
@@ -127,7 +127,7 @@ public class Copy extends AbstractCommand {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
-            log.warn("Can't copy " + file + " . File missing.");
+            log.warn("Can't copy a non existing file: {}", file);
             return null;
         }
         return doCopy(task, prefs, file, tofile, overwrite);
@@ -158,9 +158,9 @@ public class Copy extends AbstractCommand {
             FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
             boolean isVersionnedJarFile = filenameMatcher.match(fileToCopy.getName());
             if (isVersionnedJarFile) {
-                log.warn(String.format(
-                        "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
-                        fileToCopy.getName()));
+                log.warn(
+                        "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. ({})",
+                        fileToCopy.getName());
             }
             if (isVersionnedJarFile && (overwriteIfNewerVersion || upgradeOnly)) {
                 // Compare source and destination versions set in filename
@@ -197,8 +197,8 @@ public class Copy extends AbstractCommand {
                     } else if (fileToCopyVersion.isSnapshot() && fileToCopyVersion.equals(dstVersion)) {
                         doOverwrite = true;
                     } else if (!doOverwrite) {
-                        log.info("Ignore " + fileToCopy + " because not newer than " + dstVersion
-                                + " and 'overwrite' is set to false.");
+                        log.info("Ignore: {} because not newer than: {} and 'overwrite' is set to false.", fileToCopy,
+                                dstVersion);
                         return null;
                     }
                 }

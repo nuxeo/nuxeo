@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,7 +44,7 @@ import org.nuxeo.ecm.platform.test.TranslationMessagesDiffer;
 @RunWith(Parameterized.class)
 public class TestExtMessages extends AbstractTranslationTestCase {
 
-    private static final Log log = LogFactory.getLog(TestExtMessages.class);
+    private static final Logger log = LogManager.getLogger(TestExtMessages.class);
 
     private String ext;
 
@@ -104,11 +104,8 @@ public class TestExtMessages extends AbstractTranslationTestCase {
         TranslationMessagesDiffer diff = new TranslationMessagesDiffer(p1, p2);
         List<String> missing = diff.getMissingDestKeys();
         if (missing.size() > 0) {
-            log.warn(String.format("%s missing translation keys in file at '%s' compared to '%s'.", missing.size(),
-                    path2, path1));
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Missing keys: '%s'", missing));
-            }
+            log.warn("{} missing translation keys in file at '{}' compared to '{}'.", missing.size(), path2, path1);
+            log.debug("Missing keys: {}", missing);
         }
     }
 

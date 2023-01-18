@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class SQLRepositoryCompatService extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(SQLRepositoryCompatService.class);
+    private static final Logger log = LogManager.getLogger(SQLRepositoryCompatService.class);
 
     private static final String XP_REPOSITORY = "repository";
 
@@ -55,9 +55,9 @@ public class SQLRepositoryCompatService extends DefaultComponent {
     }
 
     protected void addContribution(RepositoryDescriptor cdesc) {
-        log.warn("Using old-style extension point" + " org.nuxeo.ecm.core.repository.RepositoryService"
-                + " for repository \"" + cdesc.name
-                + "\", use org.nuxeo.ecm.core.storage.sql.RepositoryService instead");
+        log.warn(
+                "Using old-style extension point org.nuxeo.ecm.core.repository.RepositoryService for repository: {}, use org.nuxeo.ecm.core.storage.sql.RepositoryService instead",
+                cdesc.name);
         RepositoryDescriptor descriptor = getRepositoryDescriptor(cdesc);
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         sqlRepositoryService.addContribution(descriptor);

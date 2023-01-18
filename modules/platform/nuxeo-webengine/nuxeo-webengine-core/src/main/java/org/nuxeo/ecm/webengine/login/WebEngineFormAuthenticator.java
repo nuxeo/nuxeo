@@ -29,15 +29,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, LoginResponseHandler {
 
-    private static final Log log = LogFactory.getLog(WebEngineFormAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(WebEngineFormAuthenticator.class);
 
     protected String usernameKey = "username";
 
@@ -79,7 +79,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         // Only accept POST requests
         String method = httpRequest.getMethod();
         if (!"POST".equals(method)) {
-            log.debug("Request method is " + method + ", only accepting POST");
+            log.debug("Request method is {}, only accepting POST", method);
             return null;
         }
         if (!isLoginRequest(httpRequest)) {

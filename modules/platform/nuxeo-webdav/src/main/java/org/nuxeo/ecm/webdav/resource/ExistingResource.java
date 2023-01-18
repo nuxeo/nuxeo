@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static javax.ws.rs.core.Response.Status.OK;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -43,6 +43,26 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.webdav.EscapeUtils;
+import org.nuxeo.ecm.webdav.backend.Backend;
+import org.nuxeo.ecm.webdav.backend.BackendHelper;
+import org.nuxeo.ecm.webdav.jaxrs.Win32CreationTime;
+import org.nuxeo.ecm.webdav.jaxrs.Win32FileAttributes;
+import org.nuxeo.ecm.webdav.jaxrs.Win32LastAccessTime;
+import org.nuxeo.ecm.webdav.jaxrs.Win32LastModifiedTime;
 
 import net.java.dev.webdav.jaxrs.methods.COPY;
 import net.java.dev.webdav.jaxrs.methods.LOCK;
@@ -65,30 +85,12 @@ import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.webdav.EscapeUtils;
-import org.nuxeo.ecm.webdav.backend.Backend;
-import org.nuxeo.ecm.webdav.backend.BackendHelper;
-import org.nuxeo.ecm.webdav.jaxrs.Win32CreationTime;
-import org.nuxeo.ecm.webdav.jaxrs.Win32FileAttributes;
-import org.nuxeo.ecm.webdav.jaxrs.Win32LastAccessTime;
-import org.nuxeo.ecm.webdav.jaxrs.Win32LastModifiedTime;
-
 /**
  * An existing resource corresponds to an existing object (folder or file) in the repository.
  */
 public class ExistingResource extends AbstractResource {
+
+    private static final Logger log = LogManager.getLogger(ExistingResource.class);
 
     public static final String READONLY_TOKEN = "readonly";
 
@@ -97,8 +99,6 @@ public class ExistingResource extends AbstractResource {
     public static final String DC_CREATED = "dc:created";
 
     public static final Duration RECENTLY_CREATED_DELTA = Duration.ofMinutes(1);
-
-    private static final Log log = LogFactory.getLog(ExistingResource.class);
 
     protected DocumentModel doc;
 
@@ -153,7 +153,7 @@ public class ExistingResource extends AbstractResource {
             backend.saveChanges();
             return Response.status(204).build();
         } catch (DocumentSecurityException e) {
-            log.error("Can't remove item: " + doc.getPathAsString() + e.getMessage());
+            log.error("Can't remove item: {} - {}", doc::getPathAsString, e::getMessage);
             log.debug(e);
             return Response.status(FORBIDDEN).build();
         }
@@ -213,7 +213,7 @@ public class ExistingResource extends AbstractResource {
         String davDestPath = destPath;
         Backend destinationBackend = BackendHelper.getBackend(davDestPath, request);
         destPath = destinationBackend.parseLocation(destPath).toString();
-        log.debug("to " + davDestPath);
+        log.debug("to: {}", davDestPath);
 
         // Remove dest if it exists and the Overwrite header is set to "T".
         int status = 201;
@@ -273,10 +273,11 @@ public class ExistingResource extends AbstractResource {
         // Fake proppatch response
         @SuppressWarnings("deprecation")
         final net.java.dev.webdav.jaxrs.xml.elements.Response response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                new HRef(uriInfo.getRequestUri()), null, null, null, new PropStat(new Prop(new Win32CreationTime()),
-                        new Status(OK)), new PropStat(new Prop(new Win32FileAttributes()), new Status(OK)),
-                new PropStat(new Prop(new Win32LastAccessTime()), new Status(OK)), new PropStat(new Prop(
-                        new Win32LastModifiedTime()), new Status(OK)));
+                new HRef(uriInfo.getRequestUri()), null, null, null,
+                new PropStat(new Prop(new Win32CreationTime()), new Status(OK)),
+                new PropStat(new Prop(new Win32FileAttributes()), new Status(OK)),
+                new PropStat(new Prop(new Win32LastAccessTime()), new Status(OK)),
+                new PropStat(new Prop(new Win32LastModifiedTime()), new Status(OK)));
 
         return Response.status(207).entity(new MultiStatus(response)).build();
     }
@@ -386,7 +387,7 @@ public class ExistingResource extends AbstractResource {
             property = doc.getPropertyValue(name);
         } catch (PropertyNotFoundException e) {
             property = null;
-            log.debug("Can't get property " + name + " from document " + doc.getId());
+            log.debug("Can't get property: {} from document: {}", name, doc.getId());
         }
 
         if (property != null) {

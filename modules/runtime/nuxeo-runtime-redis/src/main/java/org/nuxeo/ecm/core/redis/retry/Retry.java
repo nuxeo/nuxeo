@@ -15,12 +15,12 @@
  */
 package org.nuxeo.ecm.core.redis.retry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Retry {
 
-    private static final Log log = LogFactory.getLog(Retry.class);
+    private static final Logger log = LogManager.getLogger(Retry.class);
 
     public interface Block<T> {
         T retry() throws FailException, ContinueException;
@@ -63,14 +63,10 @@ public class Retry {
             try {
                 return block.retry();
             } catch (ContinueException error) {
-                if (log.isDebugEnabled()) {
-                    log.debug("An error occurred during redis script execution with policy=" + policy, error);
-                }
+                log.debug("An error occurred during redis script execution with policy: {}", policy, error);
                 causes.addSuppressed(error.getCause());
             } catch (FailException error) {
-                if (log.isDebugEnabled()) {
-                    log.debug("An error occurred during redis script execution with policy=" + policy, error);
-                }
+                log.debug("An error occurred during redis script execution with policy: {}", policy, error);
                 causes.addSuppressed(error.getCause());
                 throw causes;
             }

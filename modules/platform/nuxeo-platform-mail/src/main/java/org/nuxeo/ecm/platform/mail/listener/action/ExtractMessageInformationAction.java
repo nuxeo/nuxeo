@@ -55,8 +55,8 @@ import javax.mail.internet.MimePart;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
@@ -73,7 +73,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ExtractMessageInformationAction extends AbstractMailAction {
 
-    private static final Log log = LogFactory.getLog(ExtractMessageInformationAction.class);
+    private static final Logger log = LogManager.getLogger(ExtractMessageInformationAction.class);
 
     public static final String DEFAULT_BINARY_MIMETYPE = "application/octet-stream*";
 
@@ -91,9 +91,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
         try {
             Message originalMessage = context.getMessage();
-            if (log.isDebugEnabled()) {
-                log.debug("Transforming message, original subject: " + originalMessage.getSubject());
-            }
+            log.debug("Transforming message, original subject: {}", originalMessage.getSubject());
 
             // fully load the message before trying to parse to
             // override most of server bugs, see
@@ -101,9 +99,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             Message message;
             if (originalMessage instanceof MimeMessage && copyMessage) {
                 message = new MimeMessage((MimeMessage) originalMessage);
-                if (log.isDebugEnabled()) {
-                    log.debug("Transforming message after full load: " + message.getSubject());
-                }
+                log.debug("Transforming message after full load: {}", message.getSubject());
             } else {
                 // stuck with the original one
                 message = originalMessage;
@@ -391,14 +387,14 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
         if (!"".equals(charset)) {
             charset = charset.replaceAll("\"", "");
         }
-        log.debug("Content type: " + contType + "; charset: " + charset);
+        log.debug("Content type: {}; charset: {}", contType, charset);
         if (charset.equalsIgnoreCase(ISO88591)) {
             // see
             // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#character1
             // for more details see http://en.wikipedia.org/wiki/ISO_8859-1
             // section "ISO-8859-1 and Windows-1252 confusion"
             charset = WINDOWS1252;
-            log.debug("Using replacing charset: " + charset);
+            log.debug("Using replacing charset: {}", charset);
         }
 
         try (InputStream is = MimeUtility.decode(part.getInputStream(), encoding)) {

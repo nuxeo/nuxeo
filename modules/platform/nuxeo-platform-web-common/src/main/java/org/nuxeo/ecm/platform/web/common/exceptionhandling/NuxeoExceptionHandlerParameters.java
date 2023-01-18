@@ -23,7 +23,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingListener;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener;
@@ -41,7 +42,7 @@ public class NuxeoExceptionHandlerParameters {
 
     protected RequestDumper requestDumper = new NullRequestDumper();
 
-    protected Log errorLog;
+    protected Logger errorLog;
 
     protected List<ErrorHandler> handlers = Collections.emptyList();
 
@@ -71,12 +72,12 @@ public class NuxeoExceptionHandlerParameters {
         this.listener = listener;
     }
 
-    public Log getLogger() {
+    public Logger getLogger() {
         return errorLog;
     }
 
     public void setLoggerName(String loggerName) {
-        errorLog = StringUtils.isBlank(loggerName) ? null : LogFactory.getLog(loggerName);
+        errorLog = StringUtils.isBlank(loggerName) ? null : LogManager.getLogger(loggerName);
     }
 
     public List<ErrorHandler> getHandlers() {

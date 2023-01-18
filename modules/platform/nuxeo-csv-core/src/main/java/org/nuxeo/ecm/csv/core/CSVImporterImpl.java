@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
  */
 public class CSVImporterImpl implements CSVImporter {
 
-    private static final Log log = LogFactory.getLog(CSVImporterImpl.class);
+    private static final Logger log = LogManager.getLogger(CSVImporterImpl.class);
 
     @Override
     @Deprecated

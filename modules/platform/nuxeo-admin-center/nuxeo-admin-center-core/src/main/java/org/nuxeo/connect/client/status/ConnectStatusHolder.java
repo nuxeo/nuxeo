@@ -21,8 +21,8 @@ package org.nuxeo.connect.client.status;
 
 import java.util.Calendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.connector.CanNotReachConnectServer;
 import org.nuxeo.connect.connector.ConnectClientVersionMismatchError;
 import org.nuxeo.connect.connector.ConnectSecurityError;
@@ -36,11 +36,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ConnectStatusHolder {
 
+    private static final Logger log = LogManager.getLogger(ConnectStatusHolder.class);
+
     protected static ConnectStatusHolder instance;
 
     protected SubscriptionStatusWrapper instanceStatus;
-
-    protected static final Log log = LogFactory.getLog(ConnectStatusHolder.class);
 
     protected static final int REFRESH_PERIOD_MINUTES = 10;
 

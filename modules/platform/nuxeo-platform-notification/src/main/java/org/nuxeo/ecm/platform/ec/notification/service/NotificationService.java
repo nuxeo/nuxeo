@@ -33,8 +33,8 @@ import java.util.Set;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -74,10 +74,10 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class NotificationService extends DefaultComponent implements NotificationManager {
 
+    private static final Logger log = LogManager.getLogger(NotificationService.class);
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.ec.notification.service.NotificationService");
-
-    private static final Log log = LogFactory.getLog(NotificationService.class);
 
     /** @deprecated since 10.2, seems unused */
     @Deprecated
@@ -441,7 +441,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
             try {
                 emailHelper.sendmail(infoMap);
             } catch (MessagingException e) {
-                log.debug("Failed to send notification email " + e);
+                log.debug("Failed to send notification email: {}", e::toString);
             }
         }
     }
@@ -496,8 +496,10 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 + NXQL.escapeString(prefixedPrincipalName);
 
         return CoreInstance.doPrivileged(repositoryName,
-                (CoreSession s) -> s.query(nxql).stream().map(NotificationService::detachDocumentModel).collect(
-                        toList()));
+                (CoreSession s) -> s.query(nxql)
+                                    .stream()
+                                    .map(NotificationService::detachDocumentModel)
+                                    .collect(toList()));
     }
 
     protected static DocumentModel detachDocumentModel(DocumentModel doc) {

@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -36,6 +36,8 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
  * @author Mariana Cedica
  */
 public class DocumentModelStatusPersister implements AdministrativeStatusPersister {
+
+    private static final Logger log = LogManager.getLogger(DocumentModelStatusPersister.class);
 
     public static final String ADMINISTRATIVE_INFO_CONTAINER = "administrative-infos";
 
@@ -52,8 +54,6 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
     public static final String SERVICE_PROPERTY = "status:serviceId";
 
     public static final String LOGIN_PROPERTY = "status:userLogin";
-
-    private static final Log log = LogFactory.getLog(DocumentModelStatusPersister.class);
 
     private class StatusSaver extends DocumentStoreSessionRunner {
 
@@ -96,8 +96,8 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         protected DocumentModel doGetOrCreateDoc(AdministrativeStatus status) {
             DocumentModel administrativeContainer = doGetOrCreateContainer();
 
-            DocumentRef statusDocRef = new PathRef(administrativeContainer.getPathAsString() + "/"
-                    + getAdministrativeStatusDocName(status));
+            DocumentRef statusDocRef = new PathRef(
+                    administrativeContainer.getPathAsString() + "/" + getAdministrativeStatusDocName(status));
 
             DocumentModel doc;
             boolean create = false;
@@ -232,7 +232,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         if (fetcher.statuses.size() == 1) {
             return fetcher.statuses.get(0);
         } else {
-            log.warn("Unable to fetch status for service " + serviceIdentifier + " in instance " + instanceId);
+            log.warn("Unable to fetch status for service: {} in instance: {}", serviceIdentifier, instanceId);
             return null;
         }
     }

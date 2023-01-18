@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.lock.LockManager;
@@ -50,7 +50,7 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
  */
 public class DBSCachingRepository implements DBSRepository {
 
-    private static final Log log = LogFactory.getLog(DBSCachingRepository.class);
+    private static final Logger log = LogManager.getLogger(DBSCachingRepository.class);
 
     protected static final String METRIC_CACHE_NAME = "nuxeo.repositories.repository.cache";
 
@@ -83,9 +83,7 @@ public class DBSCachingRepository implements DBSRepository {
             cache = newCache(true);
             childCache = newChildCache(true);
         }
-        if (log.isInfoEnabled()) {
-            log.info(String.format("DBS cache activated on '%s' repository", getName()));
-        }
+        log.info("DBS cache activated on '{}' repository", this::getName);
         invalidationsPropagator = initInvalidationsPropagator();
         clusterInvalidator = initClusterInvalidator(descriptor);
     }
@@ -187,9 +185,7 @@ public class DBSCachingRepository implements DBSRepository {
             childCache.invalidateAll();
         }
         removeCacheMetrics();
-        if (log.isInfoEnabled()) {
-            log.info(String.format("DBS cache deactivated on '%s' repository", getName()));
-        }
+        log.info("DBS cache deactivated on '{}' repository", this::getName);
     }
 
     @Override

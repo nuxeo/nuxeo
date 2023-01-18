@@ -32,8 +32,8 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -72,7 +72,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MarshallerInspector implements Comparable<MarshallerInspector> {
 
-    private static final Log log = LogFactory.getLog(MarshallerInspector.class);
+    private static final Logger log = LogManager.getLogger(MarshallerInspector.class);
 
     private Class<?> clazz;
 
@@ -155,14 +155,14 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
                     MediaType mediaType = MediaType.valueOf(mimetype);
                     this.supports.add(mediaType);
                 } catch (IllegalArgumentException e) {
-                    log.warn("In marshaller class " + clazz.getName() + ", the declared mediatype " + mimetype
-                            + " cannot be parsed as a mimetype");
+                    log.warn("In marshaller class: {}, the declared mediatype: {} cannot be parsed as a mimetype",
+                            clazz::getName, () -> mimetype);
                 }
             }
         }
         if (this.supports.isEmpty()) {
-            log.warn("The marshaller " + clazz.getName()
-                    + " does not support any mimetype. You can add some using annotation @Supports");
+            log.warn("The marshaller: {} does not support any mimetype. You can add some using annotation @Supports",
+                    clazz::getName);
         }
         // loads the marshalled type and generic type
         loadMarshalledType(clazz);
@@ -170,8 +170,9 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
         loadInjections(clazz);
         // warn if several context found
         if (contextFields.size() > 1) {
-            log.warn("The marshaller " + clazz.getName()
-                    + " has more than one context injected property. You probably should use a context from a parent class.");
+            log.warn(
+                    "The marshaller: {} has more than one context injected property. You probably should use a context from a parent class.",
+                    clazz::getName);
         }
         if (instantiation == Instantiations.SINGLETON) {
             singleton = getNewInstance(null, true); // the context is empty since it's not required at this place (no
@@ -542,7 +543,5 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
         MarshallerInspector other = (MarshallerInspector) obj;
         return clazz.equals(other.clazz);
     }
-
-
 
 }

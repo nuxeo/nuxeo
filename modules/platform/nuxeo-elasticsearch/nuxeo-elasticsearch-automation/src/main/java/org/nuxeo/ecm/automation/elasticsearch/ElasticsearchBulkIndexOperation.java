@@ -24,8 +24,8 @@ import static org.nuxeo.elasticsearch.bulk.IndexAction.INDEX_UPDATE_ALIAS_PARAM;
 import java.io.IOException;
 import java.util.Collections;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -47,7 +47,8 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
  */
 @Operation(id = ElasticsearchBulkIndexOperation.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "10.3", description = "Enable to index Nuxeo documents using the Bulk Service.", addToStudio = false)
 public class ElasticsearchBulkIndexOperation {
-    private static final Log log = LogFactory.getLog(ElasticsearchBulkIndexOperation.class);
+
+    private static final Logger log = LogManager.getLogger(ElasticsearchBulkIndexOperation.class);
 
     public static final String ID = "Elasticsearch.BulkIndex";
 
@@ -68,8 +69,8 @@ public class ElasticsearchBulkIndexOperation {
         checkAccess();
         esa.initRepositoryIndexWithAliases(session.getRepositoryName());
         String commandId = submitBulkCommand("SELECT ecm:uuid FROM Document", true);
-        log.warn(String.format("Submitted index command: %s to index the entire %s repository.", commandId,
-                session.getRepositoryName()));
+        log.warn("Submitted index command: {} to index the entire {} repository.", commandId,
+                session.getRepositoryName());
         return Blobs.createJSONBlobFromValue(Collections.singletonMap("commandId", commandId));
     }
 

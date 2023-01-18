@@ -28,8 +28,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -48,7 +48,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  */
 public abstract class Wizard extends DefaultObject {
 
-    private static final Log log = LogFactory.getLog(Wizard.class);
+    private static final Logger log = LogManager.getLogger(Wizard.class);
 
     public static final String[] EMPTY = new String[0];
 
@@ -192,7 +192,7 @@ public abstract class Wizard extends DefaultObject {
 
     protected Object handleError(Throwable e) {
         // set the error and redisplay the current page
-        log.error("Processing failed in wizard page: " + session.getPage().getId(), e);
+        log.error("Processing failed in wizard page: {}", session.getPage().getId(), e);
         session.setError(new ValidationException("Processing failed: " + e.getMessage(), e));
         return redirect(getPath());
     }

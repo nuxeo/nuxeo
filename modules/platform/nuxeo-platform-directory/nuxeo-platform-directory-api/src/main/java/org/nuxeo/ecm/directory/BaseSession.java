@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -63,6 +63,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class BaseSession implements Session, EntrySource {
 
+    private static final Logger log = LogManager.getLogger(BaseSession.class);
+
     protected static final String POWER_USERS_GROUP = "powerusers";
 
     protected static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
@@ -70,8 +72,6 @@ public abstract class BaseSession implements Session, EntrySource {
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
 
     protected static final String TENANT_ID_FIELD = "tenantId";
-
-    private final static Log log = LogFactory.getLog(BaseSession.class);
 
     protected final Directory directory;
 
@@ -183,9 +183,7 @@ public abstract class BaseSession implements Session, EntrySource {
      */
     public boolean hasPermission(String permission) {
         if (permission.equals(SecurityConstants.WRITE) && isReadOnly()) {
-            if (log.isTraceEnabled()) {
-                log.trace("Directory is read-only");
-            }
+            log.trace("Directory is read-only");
             return false;
         }
         NuxeoPrincipal user = NuxeoPrincipal.getCurrent();
@@ -208,9 +206,7 @@ public abstract class BaseSession implements Session, EntrySource {
                 return true;
             }
             // Deny in all other cases
-            if (log.isTraceEnabled()) {
-                log.trace("User " + user + " does not have " + permission + " permission");
-            }
+            log.trace("User: {} does not have {} permission", user, permission);
             return false;
         }
 
@@ -224,8 +220,8 @@ public abstract class BaseSession implements Session, EntrySource {
                 allowed = hasPermission(SecurityConstants.WRITE, username, groups);
             }
         }
-        if (!allowed && log.isTraceEnabled()) {
-            log.trace("User " + user + " does not have " + permission + " permission");
+        if (!allowed) {
+            log.trace("User: {} does not have {} permission", user, permission);
         }
         return allowed;
     }
@@ -421,10 +417,9 @@ public abstract class BaseSession implements Session, EntrySource {
         for (Reference reference : getDirectory().getReferences()) {
             String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
             if (getDirectory().getReferences(reference.getFieldName()).size() > 1) {
-                if (log.isWarnEnabled()) {
-                    log.warn("Directory " + directoryName + " cannot create field " + reference.getFieldName()
-                            + " for entry " + entry + ": this field is associated with more than one reference");
-                }
+                log.warn(
+                        "Directory: {} cannot create field: {} for entry: {}: this field is associated with more than one reference",
+                        directory, reference.getFieldName(), entry);
                 continue;
             }
 
@@ -457,11 +452,9 @@ public abstract class BaseSession implements Session, EntrySource {
             List<Reference> references = directory.getReferences(referenceFieldName);
             if (references.size() > 1) {
                 // not supported
-                if (log.isWarnEnabled()) {
-                    log.warn("Directory " + getDirectory().getName() + " cannot update field " + referenceFieldName
-                            + " for entry " + docModel.getId()
-                            + ": this field is associated with more than one reference");
-                }
+                log.warn(
+                        "Directory: {} cannot update field: {} for entry: {}: this field is associated with more than one reference",
+                        getDirectory().getName(), referenceFieldName, docModel.getId());
             } else {
                 Reference reference = references.get(0);
                 List<String> targetIds = toStringList(docModel.getProperty(schemaName, referenceFieldName));
@@ -529,10 +522,7 @@ public abstract class BaseSession implements Session, EntrySource {
                 DocumentModel entry = getEntry(entryId);
                 String entryTenantId = (String) entry.getProperty(schemaName, TENANT_ID_FIELD);
                 if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'", entryId,
-                                tenantId));
-                    }
+                    log.debug("Trying to delete entry: {} not part of current tenant: {}", entryId, tenantId);
                     return false;
                 }
             }

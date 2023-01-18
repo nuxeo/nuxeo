@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DigestComputer implements EventListener {
 
-    private static final Log log = LogFactory.getLog(DigestComputer.class);
+    private static final Logger log = LogManager.getLogger(DigestComputer.class);
 
     private void addDigestToDocument(DocumentModel doc) {
         FileManager fm = Framework.getService(FileManager.class);
@@ -54,7 +54,7 @@ public class DigestComputer implements EventListener {
             try {
                 blobProp = doc.getProperty(xpathField);
             } catch (PropertyException e) {
-                log.debug("Property " + xpathField + " not found on doc, skipping");
+                log.debug("Property: {} not found on doc, skipping", xpathField);
             }
             if (blobProp != null && !blobProp.isPhantom() && blobProp.isDirty()) {
                 try {

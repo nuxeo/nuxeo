@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public abstract class AbstractUserMapper implements UserMapper {
 
-    protected static final Log log = LogFactory.getLog(AbstractUserMapper.class);
+    private static final Logger log = LogManager.getLogger(AbstractUserMapper.class);
 
     public AbstractUserMapper() {
     }
@@ -84,7 +84,7 @@ public abstract class AbstractUserMapper implements UserMapper {
             if (searchAttributes.size() > 0) {
                 DocumentModelList userDocs = userManager.searchUsers(searchAttributes, Collections.<String> emptySet());
                 if (userDocs.size() > 1) {
-                    log.warn("Can not map user with filter " + searchAttributes.toString() + " : too many results");
+                    log.warn("Can not map user with filter: {} : too many results", searchAttributes);
                 }
                 if (userDocs.size() == 1) {
                     userModel = userDocs.get(0);

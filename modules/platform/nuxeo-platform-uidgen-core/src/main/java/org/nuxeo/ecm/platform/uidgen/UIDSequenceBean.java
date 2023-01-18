@@ -27,8 +27,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * UID entity - keeps last indexes of all generated UIDs.
@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
 @Table(name = "NXP_UIDSEQ")
 public class UIDSequenceBean {
 
-    public static final Log log = LogFactory.getLog(UIDSequenceBean.class);
+    private static final Logger log = LogManager.getLogger(UIDSequenceBean.class);
 
     @Id
     @Column(name = "SEQ_ID", nullable = false)
@@ -96,7 +96,7 @@ public class UIDSequenceBean {
 
     public int nextIndex() {
         index += 1;
-        log.debug("updated to " + this);
+        log.debug("updated to: {}", this);
         return index;
     }
 

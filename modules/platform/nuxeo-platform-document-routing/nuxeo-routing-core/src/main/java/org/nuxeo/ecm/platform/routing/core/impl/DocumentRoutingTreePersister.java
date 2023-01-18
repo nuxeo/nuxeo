@@ -22,9 +22,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -51,9 +52,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
-    private static final String DC_TITLE = "dc:title";
+    private static final Logger log = LogManager.getLogger(DocumentRoutingTreePersister.class);
 
-    protected static final Log log = LogFactory.getLog(DocumentRoutingTreePersister.class);
+    private static final String DC_TITLE = "dc:title";
 
     @Override
     public DocumentModel getParentFolderForDocumentRouteInstance(DocumentModel document, CoreSession session) {
@@ -106,8 +107,8 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
      * Finds the first domain by name, and creates under it the root container for the structure containing the route
      * instances.
      */
-    protected DocumentModel createDocumentRoutesStructure(String routeStructureDocType, String id, CoreSession session)
-            {
+    protected DocumentModel createDocumentRoutesStructure(String routeStructureDocType, String id,
+            CoreSession session) {
         DocumentModel root = session.createDocumentModel(session.getRootDocument().getPathAsString(), id,
                 routeStructureDocType);
         root.setPropertyValue(DC_TITLE, routeStructureDocType);
@@ -123,8 +124,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
      * Create the rootModels under to root document. Grant READ to everyone on the root models ; workflow availability
      * is specified on each route
      */
-    protected DocumentModel createModelsRoutesStructure(String routeStructureDocType, String id, CoreSession session)
-            {
+    protected DocumentModel createModelsRoutesStructure(String routeStructureDocType, String id, CoreSession session) {
         DocumentModel rootModels = session.createDocumentModel("/", id, routeStructureDocType);
         rootModels.setPropertyValue(DC_TITLE, routeStructureDocType);
         rootModels = session.createDocument(rootModels);
@@ -155,12 +155,10 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             return null;
         }
         if (res.size() > 1) {
-            if (log.isWarnEnabled()) {
-                log.warn("More han one DocumentRouteInstanceRoot found:");
-                for (DocumentModel model : res) {
-                    log.warn(" - " + model.getName() + ", " + model.getPathAsString());
-                }
-            }
+            log.warn(() -> "More han one DocumentRouteInstanceRoot found:\n"
+                    + res.stream()
+                         .map(d -> String.format("  - %s, %s", d.getName(), d.getPathAsString()))
+                         .collect(Collectors.joining("\n")));
         }
         return res.get(0);
     }
@@ -176,8 +174,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         return "(COPY) " + instance.getPropertyValue("dc:title");
     }
 
-    protected DocumentModel undoReadOnlySecurityPolicy(DocumentModel instance, CoreSession session)
-            {
+    protected DocumentModel undoReadOnlySecurityPolicy(DocumentModel instance, CoreSession session) {
         UndoReadOnlySecurityPolicy runner = new UndoReadOnlySecurityPolicy(session, instance.getRef());
         runner.runUnrestricted();
         return session.getDocument(runner.getInstanceRef());

@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -38,7 +38,7 @@ public abstract class BatchFinderWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(BatchFinderWork.class);
+    private static final Logger log = LogManager.getLogger(BatchFinderWork.class);
 
     protected static final int SCROLL_KEEPALIVE_SECONDS = 60;
 
@@ -65,9 +65,8 @@ public abstract class BatchFinderWork extends AbstractWork {
     @Override
     public void work() {
         int batchSize = getBatchSize();
-        if (log.isDebugEnabled()) {
-            log.debug(getTitle() + ": Starting batch find for query: " + nxql + " with batch size: " + batchSize);
-        }
+        log.debug("{}: Starting batch find for query: {} with batch size: {}", this::getTitle, () -> nxql,
+                () -> batchSize);
         openSystemSession();
         setProgress(Progress.PROGRESS_INDETERMINATE);
         setStatus("Searching");
@@ -90,10 +89,10 @@ public abstract class BatchFinderWork extends AbstractWork {
             TransactionHelper.startTransaction();
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug(getTitle() + ": Submitted " + documentCount + " documents in " + batchCount
-                    + " batch processor workers");
-        }
+        var documentCountF = documentCount;
+        var batchCountF = batchCount;
+        log.debug("{}: Submitted {} documents in {} batch processor workers", this::getTitle, () -> documentCountF,
+                () -> batchCountF);
         setProgress(new Progress(documentCount, documentCount));
         setStatus("Done");
     }

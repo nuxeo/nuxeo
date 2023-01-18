@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
  */
 public class JDBCLogger {
 
-    public static final Log log = LogFactory.getLog(JDBCLogger.class);
+    private static final Logger log = LogManager.getLogger(JDBCLogger.class);
 
     public static final int DEBUG_MAX_STRING = 100;
 

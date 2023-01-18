@@ -18,30 +18,35 @@
  */
 package org.nuxeo.elasticsearch.core;
 
+import static org.nuxeo.runtime.RuntimeMessage.Level.WARNING;
+import static org.nuxeo.runtime.RuntimeMessage.Source.CODE;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.BindException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
+import org.nuxeo.runtime.RuntimeMessage;
+import org.nuxeo.runtime.api.Framework;
 import org.opensearch.analysis.common.CommonAnalysisPlugin;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.node.Node;
 import org.opensearch.node.NodeValidationException;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.transport.Netty4Plugin;
-import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 9.3
  */
 public class ElasticSearchEmbeddedNode implements Closeable {
-    private static final Log log = LogFactory.getLog(ElasticSearchEmbeddedNode.class);
+
+    private static final Logger log = LogManager.getLogger(ElasticSearchEmbeddedNode.class);
 
     private static final int DEFAULT_RETRY = 3;
 
@@ -58,8 +63,12 @@ public class ElasticSearchEmbeddedNode implements Closeable {
     public void start() {
         log.info("Starting embedded (in JVM) Elasticsearch");
         if (Framework.isInitialized() && !Framework.isTestModeSet()) {
-            log.warn("Elasticsearch embedded configuration is ONLY for testing"
-                    + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
+            String message = "Elasticsearch embedded configuration is ONLY for testing purpose. "
+                    + "You need to create a dedicated Elasticsearch cluster for production.";
+            log.warn(message);
+            Framework.getRuntime()
+                     .getMessageHandler()
+                     .addMessage(new RuntimeMessage(WARNING, message, CODE, getClass().getSimpleName()));
         }
         Settings.Builder buidler = Settings.builder();
         buidler.put("network.host", config.getNetworkHost())
@@ -79,7 +88,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
             buidler.put("index.store.type", config.getIndexStorageType());
         }
         Settings settings = buidler.build();
-        log.debug("Using settings: " + settings.toDelimitedString(','));
+        log.debug("Using settings: {}", () -> settings.toDelimitedString(','));
 
         Collection<Class<? extends Plugin>> plugins = new HashSet<>();
         plugins.add(Netty4Plugin.class);
@@ -95,8 +104,8 @@ public class ElasticSearchEmbeddedNode implements Closeable {
             Throwable cause = ExceptionUtils.getRootCause(e);
             if (cause != null && cause instanceof BindException) {
                 retry--;
-                log.error(String.format("Cannot bind local Elasticsearch on port %s, from %s, retry countdown: %d",
-                        config.getHttpPort(), config.getDataPath(), retry));
+                log.error("Cannot bind local Elasticsearch on port: {}, from: {}, retry countdown: {}",
+                        config.getHttpPort(), config.getDataPath(), retry);
                 try {
                     node.close();
                     Thread.sleep(5000);
@@ -125,7 +134,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
         if (node != null) {
             log.info("Closing embedded (in JVM) Elasticsearch");
             node.close();
-            log.info("Node closed: " + node.isClosed());
+            log.info("Node closed: {}", node::isClosed);
         }
         node = null;
     }

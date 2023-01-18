@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycleTypesDescriptor> {
 
-    private static final Log log = LogFactory.getLog(LifeCycleTypeRegistry.class);
+    private static final Logger log = LogManager.getLogger(LifeCycleTypeRegistry.class);
 
     /** Type name -&gt; life cycle name. */
     protected Map<String, String> typesMapping = new HashMap<>();
@@ -53,8 +53,9 @@ public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycl
     }
 
     @Override
-    public void contributionUpdated(String id, LifeCycleTypesDescriptor contrib, LifeCycleTypesDescriptor newOrigContrib) {
-        log.info("Registering lifecycle types mapping: " + contrib.getDocumentType() + "-" + contrib.getLifeCycleName());
+    public void contributionUpdated(String id, LifeCycleTypesDescriptor contrib,
+            LifeCycleTypesDescriptor newOrigContrib) {
+        log.info("Registering lifecycle types mapping: {}-{}", contrib::getDocumentType, contrib::getLifeCycleName);
         typesMapping.put(contrib.getDocumentType(), contrib.getLifeCycleName());
         String transitionArray = contrib.getNoRecursionForTransitions();
         List<String> transitions = new ArrayList<>();

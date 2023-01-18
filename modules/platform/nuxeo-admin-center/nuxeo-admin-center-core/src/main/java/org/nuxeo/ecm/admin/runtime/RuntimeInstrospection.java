@@ -31,8 +31,8 @@ import java.util.PropertyResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
@@ -51,7 +51,7 @@ import org.osgi.framework.Bundle;
  */
 public class RuntimeInstrospection {
 
-    protected static final Log log = LogFactory.getLog(RuntimeInstrospection.class);
+    private static final Logger log = LogManager.getLogger(RuntimeInstrospection.class);
 
     protected static SimplifiedServerInfo info;
 

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Properties implementation detecting duplicate keys, that does *not* handle properly removal of items.
@@ -36,7 +36,7 @@ public class TranslationProperties extends Properties {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(TranslationProperties.class);
+    private static final Logger log = LogManager.getLogger(TranslationProperties.class);
 
     protected Properties duplicates;
 
@@ -67,9 +67,7 @@ public class TranslationProperties extends Properties {
                 values.add(get(key));
             }
             values.add(value);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Detected duplicate key '%s', values=%s", key, values));
-            }
+            log.debug("Detected duplicate key: {}, values: {}", key, values);
         }
         return super.put(key, value);
     }

@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -56,7 +56,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7792388601558509103L;
 
-    private static final Log log = LogFactory.getLog(TokenAuthenticationServlet.class);
+    private static final Logger log = LogManager.getLogger(TokenAuthenticationServlet.class);
 
     public static final String TOKEN_AUTH_PLUGIN_NAME = "TOKEN_AUTH";
 

@@ -32,8 +32,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -62,13 +62,13 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "EasyShare")
 public class EasyShare extends ModuleRoot {
 
+    private static final Logger log = LogManager.getLogger(EasyShare.class);
+
     private static final String DEFAULT_PAGE_INDEX = "0";
 
     private static final Long PAGE_SIZE = 20L;
 
     private static final String SHARE_DOC_TYPE = "EasyShareFolder";
-
-    protected final Log log = LogFactory.getLog(EasyShare.class);
 
     @GET
     public Object doGet() {
@@ -170,7 +170,7 @@ public class EasyShare extends ModuleRoot {
         Date today = new Date();
         Date expired = docShare.getProperty("dc:expired").getValue(Date.class);
         if (expired == null) {
-            log.error("Invalid null dc:expired for share: " + docShare.getTitle() + " (" + docShare.getId() + ")");
+            log.error("Invalid null dc:expired for share: {} ({})", docShare::getName, docShare::getId);
             // consider the share as expired
             return false;
         }

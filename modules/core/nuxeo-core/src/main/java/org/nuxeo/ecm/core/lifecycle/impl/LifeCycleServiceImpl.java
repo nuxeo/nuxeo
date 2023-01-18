@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -49,9 +49,9 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleService {
 
-    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.lifecycle.LifeCycleService");
+    private static final Logger log = LogManager.getLogger(LifeCycleServiceImpl.class);
 
-    private static final Log log = LogFactory.getLog(LifeCycleServiceImpl.class);
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.lifecycle.LifeCycleService");
 
     protected LifeCycleRegistry lifeCycles = new LifeCycleRegistry();
 
@@ -159,9 +159,10 @@ public class LifeCycleServiceImpl extends DefaultComponent implements LifeCycleS
                     LifeCycleDescriptor desc = (LifeCycleDescriptor) contribution;
                     lifeCycles.addContribution(desc);
                     // look for delete state to warn about usage
-                    if (!"default".equals(desc.getName())
-                            && desc.getStates().stream().map(LifeCycleState::getName).anyMatch(
-                                    isEqual(DELETED_STATE))) {
+                    if (!"default".equals(desc.getName()) && desc.getStates()
+                                                                 .stream()
+                                                                 .map(LifeCycleState::getName)
+                                                                 .anyMatch(isEqual(DELETED_STATE))) {
                         log.warn("The 'deleted' state is deprecated and shouldn't be use anymore."
                                 + " Please consider removing it from you life cycle policy and use trash service instead.");
                     }

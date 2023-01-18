@@ -28,8 +28,8 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
@@ -70,6 +70,8 @@ import org.nuxeo.runtime.test.runner.RandomBug;
 @Deprecated
 public class NXRuntimeTestCase extends RuntimeHarnessImpl {
 
+    private static final Logger log = LogManager.getLogger(NXRuntimeTestCase.class);
+
     protected Mockery jmcontext = new JUnit4Mockery();
 
     static {
@@ -78,8 +80,6 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
         // where slf4j to jul, and jcl over slf4j is deployed
         System.setProperty(AbstractRuntimeService.REDIRECT_JUL, "false");
     }
-
-    private static final Log log = LogFactory.getLog(NXRuntimeTestCase.class);
 
     protected boolean restart = false;
 
@@ -173,7 +173,7 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
         wipeRuntime();
         if (workingDir != null && !restart) {
             if (workingDir.exists() && !FileUtils.deleteQuietly(workingDir)) {
-                log.warn("Cannot delete " + workingDir);
+                log.warn("Cannot delete: {}", workingDir);
             }
             workingDir = null;
         }
@@ -213,11 +213,11 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
 
     protected void deployContrib(URL url) {
         assertEquals(runtime, Framework.getRuntime());
-        log.info("Deploying contribution from " + url.toString());
+        log.info("Deploying contribution from: {}", url);
         try {
             runtime.getContext().deploy(url);
         } catch (Exception e) {
-            fail("Failed to deploy contrib " + url.toString());
+            fail("Failed to deploy contrib " + url);
         }
     }
 
@@ -271,7 +271,7 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
                         }
                     }
                     if (!isTestVersion) {
-                        log.info("Resolved " + bundle + " as " + url.toString());
+                        log.info("Resolved: {} as {}", bundle, url);
                         return url;
                     }
                 }

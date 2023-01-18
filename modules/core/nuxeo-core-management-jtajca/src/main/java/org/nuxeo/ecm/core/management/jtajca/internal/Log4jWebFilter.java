@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 /**
@@ -39,7 +39,7 @@ import org.apache.logging.log4j.ThreadContext;
  */
 public class Log4jWebFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(Log4jWebFilter.class);
+    private static final Logger log = LogManager.getLogger(Log4jWebFilter.class);
 
     protected FilterConfig config;
 
@@ -54,8 +54,8 @@ public class Log4jWebFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         try {
             putProperty(request, "RemoteAddr");
             putProperty(request, "PathInfo");

@@ -44,8 +44,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.nuxeo.common.utils.TextTemplate;
@@ -93,7 +93,7 @@ import com.mongodb.client.model.Sorts;
  */
 public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBackend {
 
-    private static final Log log = LogFactory.getLog(MongoDBAuditBackend.class);
+    private static final Logger log = LogManager.getLogger(MongoDBAuditBackend.class);
 
     public static final String AUDIT_DATABASE_ID = "audit";
 
@@ -345,10 +345,8 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         for (int i = 0; i < entries.size(); i++) {
             LogEntry entry = entries.get(i);
             entry.setId(block.get(i));
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Indexing log entry Id: %s, with logDate : %s, for docUUID: %s ",
-                        Long.valueOf(entry.getId()), entry.getLogDate(), entry.getDocUUID()));
-            }
+            log.debug("Indexing log entry Id: {}, with logDate : {}, for docUUID: {}", entry.getId(),
+                    entry.getLogDate(), entry.getDocUUID());
             documents.add(MongoDBAuditEntryWriter.asDocument(entry));
         }
         collection.insertMany(documents);
@@ -376,15 +374,11 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     }
 
     private void logRequest(Bson filter, Bson orderBy) {
-        if (log.isDebugEnabled()) {
-            log.debug("MongoDB: FILTER " + filter + (orderBy == null ? "" : " ORDER BY " + orderBy));
-        }
+        log.debug("MongoDB: FILTER {}{}", () -> filter, () -> orderBy == null ? "" : " ORDER BY " + orderBy);
     }
 
     private void logRequest(Bson filter, int pageNb, int pageSize) {
-        if (log.isDebugEnabled()) {
-            log.debug("MongoDB: FILTER " + filter + " OFFSET " + pageNb + " LIMIT " + pageSize);
-        }
+        log.debug("MongoDB: FILTER {} OFFSET {} LIMIT {}", filter, pageNb, pageSize);
     }
 
     @Override

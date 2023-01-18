@@ -21,8 +21,8 @@ package org.nuxeo.ecm.automation.task.event;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TaskEndedEventListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(TaskEndedEventListener.class);
+    private static final Logger log = LogManager.getLogger(TaskEndedEventListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -77,7 +77,7 @@ public class TaskEndedEventListener implements EventListener {
                 try {
                     os.run(ctx, chain);
                 } catch (InvalidChainException e) {
-                    log.error("Unknown chain: " + chain);
+                    log.error("Unknown chain: {}", chain);
                 }
             } catch (OperationException t) {
                 log.error(t, t);

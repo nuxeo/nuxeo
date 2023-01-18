@@ -21,8 +21,9 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -38,7 +39,7 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(DocumentRouteImpl.class);
+    private static final Logger log = LogManager.getLogger(DocumentRouteImpl.class);
 
     public DocumentRouteImpl(DocumentModel doc, ElementRunner runner) {
         super(doc, runner);
@@ -64,11 +65,13 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
 
         // Add common info about workflow
         if (this instanceof GraphRoute) {
-            eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES, (Serializable) ((GraphRoute) this).getVariables());
+            eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES,
+                    (Serializable) ((GraphRoute) this).getVariables());
         }
         eventProperties.put("modelId", getModelId());
         eventProperties.put("modelName", getModelName());
-        EventFirer.fireEvent(session, this, eventProperties, DocumentRoutingConstants.Events.afterWorkflowFinish.name());
+        EventFirer.fireEvent(session, this, eventProperties,
+                DocumentRoutingConstants.Events.afterWorkflowFinish.name());
     }
 
     @Override
@@ -105,7 +108,7 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
                 DocumentModel doc = session.getDocument(new IdRef(attachDocumentID));
                 AuditEventFirer.fireEvent(session, this, null, "auditLogRoute", doc);
             } catch (DocumentNotFoundException e) {
-                log.error(String.format("Unable to fetch document with id '%s': %s", attachDocumentID, e.getMessage()));
+                log.error("Unable to fetch document with id: {}: {}", attachDocumentID, e.getMessage());
                 log.debug(e, e);
             }
         }

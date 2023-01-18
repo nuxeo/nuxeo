@@ -27,8 +27,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.blob.BlobInfo;
@@ -41,7 +41,8 @@ import org.nuxeo.lib.stream.pattern.producer.AbstractProducer;
  * @since 9.1
  */
 public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMessage> {
-    private static final Log log = LogFactory.getLog(RandomDocumentMessageProducer.class);
+
+    private static final Logger log = LogManager.getLogger(RandomDocumentMessageProducer.class);
 
     protected final long nbDocuments;
 
@@ -117,7 +118,7 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
             }
         }
         this.blobInfoFetcher = blobInfoFetcher;
-        log.info("RandomDocumentMessageProducer created, nbDocuments: " + nbDocuments);
+        log.info("RandomDocumentMessageProducer created, nbDocuments: {}", nbDocuments);
     }
 
     public RandomDocumentMessageProducer setMaxFoldersPerFolder(int max) {

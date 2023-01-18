@@ -36,9 +36,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -59,8 +58,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class WorkflowRequestJsonReader extends EntityJsonReader<WorkflowRequest> {
-
-    protected static final Log log = LogFactory.getLog(WorkflowRequestJsonReader.class);
 
     public static final String ENTITY_TYPE = "workflow";
 

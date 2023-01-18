@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -55,8 +53,6 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class XDocReportProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
-
-    protected static final Log log = LogFactory.getLog(XDocReportProcessor.class);
 
     public static final String TEMPLATE_TYPE = "XDocReport";
 
@@ -115,8 +111,9 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
         // load the template
         IXDocReport report;
         try {
-            report = XDocReportRegistry.getRegistry().loadReport(sourceTemplateBlob.getStream(),
-                    TemplateEngineKind.Freemarker, false);
+            report = XDocReportRegistry.getRegistry()
+                                       .loadReport(sourceTemplateBlob.getStream(), TemplateEngineKind.Freemarker,
+                                               false);
         } catch (XDocReportException e) {
             throw new IOException(e);
         }

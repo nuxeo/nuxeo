@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
 import org.nuxeo.runtime.api.Framework;
 
@@ -35,7 +35,7 @@ import net.sf.jmimemagic.MagicDetector;
 
 public class PptMimetypeSniffer implements MagicDetector {
 
-    private static final Log log = LogFactory.getLog(PptMimetypeSniffer.class);
+    private static final Logger log = LogManager.getLogger(PptMimetypeSniffer.class);
 
     @Override
     public String getDisplayName() {

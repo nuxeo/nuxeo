@@ -27,13 +27,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 public class DatabaseDB2 extends DatabaseHelper {
 
-    private static final Log log = LogFactory.getLog(DatabaseDB2.class);
+    private static final Logger log = LogManager.getLogger(DatabaseDB2.class);
 
     private static final String DEF_SERVER = "localhost";
 
@@ -94,7 +94,7 @@ public class DatabaseDB2 extends DatabaseHelper {
             }
             for (String sequenceName : sequenceNames) {
                 String sql = String.format("DROP SEQUENCE \"%s\"", sequenceName);
-                log.trace("SQL: " + sql);
+                log.trace("SQL: {}", sql);
                 st.execute(sql);
             }
         }

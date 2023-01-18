@@ -39,8 +39,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -63,8 +61,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 8.4
  */
 public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService {
-
-    protected static final Log log = LogFactory.getLog(ThreeDServiceImpl.class);
 
     public static final String RENDER_VIEWS_EP = "renderViews";
 
@@ -186,13 +182,15 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
                 lods.stream().map(AutomaticLOD::getMaxPoly).map(String::valueOf).collect(Collectors.joining(" ")));
 
         params.put(COORDS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getAzimuth() + "," + renderView.getZenith()).collect(
-                        Collectors.joining(" ")));
+                renderViews.stream()
+                           .map(renderView -> renderView.getAzimuth() + "," + renderView.getZenith())
+                           .collect(Collectors.joining(" ")));
 
         // dimensions
         params.put(DIMENSIONS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getWidth() + "x" + renderView.getHeight()).collect(
-                        Collectors.joining(" ")));
+                renderViews.stream()
+                           .map(renderView -> renderView.getWidth() + "x" + renderView.getHeight())
+                           .collect(Collectors.joining(" ")));
 
         return cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
     }

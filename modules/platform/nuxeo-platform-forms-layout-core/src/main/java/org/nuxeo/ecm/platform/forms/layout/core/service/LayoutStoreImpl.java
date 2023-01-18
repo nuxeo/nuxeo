@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -60,7 +60,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
-    private static final Log log = LogFactory.getLog(LayoutStoreImpl.class);
+    private static final Logger log = LogManager.getLogger(LayoutStoreImpl.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -111,7 +111,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget type '%s': no category found", desc.getName()));
+                log.error("Cannot register widget type: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     registerWidgetType(cat, desc.getWidgetTypeDefinition());
@@ -121,7 +121,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             LayoutTypeDescriptor desc = (LayoutTypeDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout type '%s': no category found", desc.getName()));
+                log.error("Cannot register layout type: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     registerLayoutType(cat, desc.getLayoutTypeDefinition());
@@ -131,7 +131,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             LayoutDescriptor desc = (LayoutDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout '%s': no category found", desc.getName()));
+                log.error("Cannot register layout: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     registerLayout(cat, desc.getLayoutDefinition());
@@ -141,7 +141,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             WidgetDescriptor desc = (WidgetDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget '%s': no category found", desc.getName()));
+                log.error("Cannot register widget: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     registerWidget(cat, desc.getWidgetDefinition());
@@ -151,7 +151,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             LayoutConverterDescriptor desc = (LayoutConverterDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout converter '%s': no category found", desc.getName()));
+                log.error("Cannot register layout converter: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     registerLayoutConverter(cat, desc);
@@ -161,14 +161,14 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             WidgetConverterDescriptor desc = (WidgetConverterDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget converter '%s': no category found", desc.getName()));
+                log.error("Cannot register widget converter: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     registerWidgetConverter(cat, desc);
                 }
             }
         } else {
-            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
+            log.error("Unknown extension point: {}, can't register !", extensionPoint);
         }
     }
 
@@ -178,7 +178,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister widget type '%s': no category found", desc.getName()));
+                log.error("Cannot unregister widget type: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     unregisterWidgetType(cat, desc.getWidgetTypeDefinition());
@@ -188,7 +188,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             LayoutTypeDescriptor desc = (LayoutTypeDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister layout type '%s': no category found", desc.getName()));
+                log.error("Cannot unregister layout type: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     unregisterLayoutType(cat, desc.getLayoutTypeDefinition());
@@ -198,7 +198,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             LayoutDescriptor desc = (LayoutDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister layout '%s': no category found", desc.getName()));
+                log.error("Cannot unregister layout: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     unregisterLayout(cat, desc.getLayoutDefinition());
@@ -208,7 +208,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             WidgetDescriptor desc = (WidgetDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot unregister widget '%s': no category found", desc.getName()));
+                log.error("Cannot unregister widget: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     unregisterWidget(cat, desc.getWidgetDefinition());
@@ -218,7 +218,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             LayoutConverterDescriptor desc = (LayoutConverterDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register layout converter '%s': no category found", desc.getName()));
+                log.error("Cannot register layout converter: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     unregisterLayoutConverter(cat, desc);
@@ -228,14 +228,14 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             WidgetConverterDescriptor desc = (WidgetConverterDescriptor) contribution;
             String[] categories = desc.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format("Cannot register widget converter '%s': no category found", desc.getName()));
+                log.error("Cannot register widget converter: {}, no category found", desc::getName);
             } else {
                 for (String cat : categories) {
                     unregisterWidgetConverter(cat, desc);
                 }
             }
         } else {
-            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
+            log.error("Unknown extension point: {}, can't unregister !", extensionPoint);
         }
     }
 
@@ -272,7 +272,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
         // override only if handler class was resolved correctly
         if (widgetTypesByCat.containsKey(name) || widgetTypeDefsByCat.containsKey(name)) {
-            log.warn(String.format("Overriding definition for widget type %s", name));
+            log.warn("Overriding definition for widget type: {}", name);
             widgetTypesByCat.remove(name);
             widgetTypeDefsByCat.remove(name);
         }
@@ -290,7 +290,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             widgetTypeDefsByCat.put(category, defReg);
         }
         defReg.addContribution(desc);
-        log.info(String.format("Registered widget type '%s' for category '%s' ", name, category));
+        log.info("Registered widget type: {} for category: {}", name, category);
     }
 
     @Override
@@ -303,7 +303,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             WidgetType widgetType = new WidgetTypeImpl(name, null, null);
             typeReg.removeContribution(widgetType);
             defReg.removeContribution(desc);
-            log.info(String.format("Unregistered widget type '%s' for category '%s' ", name, category));
+            log.info("Unregistered widget type: {} for category: {}", name, category);
         }
     }
 
@@ -317,7 +317,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             layoutTypeDefsByCat.put(category, reg);
         }
         reg.addContribution(layoutTypeDef);
-        log.info(String.format("Registered layout type '%s' for category '%s' ", layoutTypeDef.getName(), category));
+        log.info("Registered layout type: {} for category: {}", layoutTypeDef.getName(), category);
     }
 
     @Override
@@ -325,8 +325,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
         if (reg != null) {
             reg.removeContribution(layoutTypeDef);
-            log.info(String.format("Unregistered layout type '%s' for category '%s' ", layoutTypeDef.getName(),
-                    category));
+            log.info("Unregistered layout type: {} for category: {}", layoutTypeDef.getName(), category);
         }
     }
 
@@ -340,7 +339,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             layoutsByCat.put(category, reg);
         }
         reg.addContribution(layoutDef);
-        log.info(String.format("Registered layout '%s' for category '%s' ", layoutDef.getName(), category));
+        log.info("Registered layout: {} for category: {}", layoutDef.getName(), category);
     }
 
     @Override
@@ -348,7 +347,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         LayoutDefinitionRegistry reg = layoutsByCat.get(category);
         if (reg != null) {
             reg.removeContribution(layoutDef);
-            log.info(String.format("Unregistered layout '%s' for category '%s' ", layoutDef.getName(), category));
+            log.info("Unregistered layout: {} for category: {}", layoutDef.getName(), category);
         }
     }
 
@@ -362,7 +361,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             widgetsByCat.put(category, reg);
         }
         reg.addContribution(widgetDef);
-        log.info(String.format("Registered widget '%s' for category '%s' ", widgetDef.getName(), category));
+        log.info("Registered widget: {} for category: {}", widgetDef.getName(), category);
     }
 
     @Override
@@ -370,7 +369,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         WidgetDefinitionRegistry reg = widgetsByCat.get(category);
         if (reg != null) {
             reg.removeContribution(widgetDef);
-            log.info(String.format("Unregistered widget '%s' for category '%s' ", widgetDef.getName(), category));
+            log.info("Unregistered widget: {} for category: {}", widgetDef.getName(), category);
         }
     }
 
@@ -383,16 +382,14 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             layoutConvertersByCat.put(category, reg);
         }
         reg.addContribution(layoutConverter);
-        log.info(String.format("Registered layout converter '%s' for category '%s' ", layoutConverter.getName(),
-                category));
+        log.info("Registered layout converter: {} for category: {}", layoutConverter.getName(), category);
     }
 
     public void unregisterLayoutConverter(String category, LayoutConverterDescriptor layoutConverter) {
         LayoutConverterRegistry reg = layoutConvertersByCat.get(category);
         if (reg != null) {
             reg.removeContribution(layoutConverter);
-            log.info(String.format("Unregistered layout converter '%s' for category '%s' ", layoutConverter.getName(),
-                    category));
+            log.info("Unregistered layout converter: {} for category: {}", layoutConverter.getName(), category);
         }
     }
 
@@ -403,16 +400,14 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
             widgetConvertersByCat.put(category, reg);
         }
         reg.addContribution(widgetConverter);
-        log.info(String.format("Registered widget converter '%s' for category '%s' ", widgetConverter.getName(),
-                category));
+        log.info("Registered widget converter: {} for category: {}", widgetConverter.getName(), category);
     }
 
     public void unregisterWidgetConverter(String category, WidgetConverterDescriptor widgetConverter) {
         WidgetConverterRegistry reg = widgetConvertersByCat.get(category);
         if (reg != null) {
             reg.removeContribution(widgetConverter);
-            log.info(String.format("Unregistered widget converter '%s' for category '%s' ", widgetConverter.getName(),
-                    category));
+            log.info("Unregistered widget converter: {} for category: {}", widgetConverter.getName(), category);
         }
     }
 
@@ -517,13 +512,11 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
                     res.add(converter);
                     orderedConverterNames.add(desc.getName());
                 } catch (ReflectiveOperationException e) {
-                    log.error("Caught error when instantiating " + "layout definition converter", e);
+                    log.error("Caught error when instantiating layout definition converter", e);
                 }
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Ordered layout converters for category '%s': %s", category, orderedConverterNames));
-        }
+        log.debug("Ordered layout converters for category {}: {}", category, orderedConverterNames);
         return res;
     }
 
@@ -546,13 +539,11 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
                     res.add(converter);
                     orderedConverterNames.add(desc.getName());
                 } catch (ReflectiveOperationException e) {
-                    log.error("Caught error when instantiating " + "widget definition converter", e);
+                    log.error("Caught error when instantiating widget definition converter", e);
                 }
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Ordered widget converters for category '%s': %s", category, orderedConverterNames));
-        }
+        log.debug("Ordered widget converters for category {}: {}", category, orderedConverterNames);
         return res;
     }
 

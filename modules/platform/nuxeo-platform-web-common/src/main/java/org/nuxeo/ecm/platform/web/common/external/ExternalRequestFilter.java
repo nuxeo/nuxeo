@@ -34,8 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ExternalRequestFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(ExternalRequestFilter.class);
+    private static final Logger log = LogManager.getLogger(ExternalRequestFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -76,7 +76,7 @@ public class ExternalRequestFilter implements Filter {
                     try {
                         requestedUrl = URLDecoder.decode(requestedUrl, "UTF-8");
                     } catch (UnsupportedEncodingException e) {
-                        log.error("Unable to get the requestedUrl parameter" + e);
+                        log.error("Unable to get the requestedUrl parameter: {}", e.toString());
                     }
                 }
 

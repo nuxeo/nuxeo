@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -54,6 +54,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Operation(id = CreatePicture.ID, category = Constants.CAT_SERVICES, label = "Create Picture", description = "Create a Picture document in the input folder. You can initialize the document properties using the 'properties' parameter. The properties are specified as <i>key=value</i> pairs separated by a new line. The key <i>originalPicture</i> is used to reference the JSON representation of the Blob for the original picture. The <i>pictureTemplates</i> parameter can be used to define the size of the different views to be generated, each line must be a JSONObject { title=\"title\", description=\"description\", maxsize=maxsize}. Returns the created document.")
 public class CreatePicture {
 
+    private static final Logger log = LogManager.getLogger(CreatePicture.class);
+
     public static final String ID = "Picture.Create";
 
     public static final String PICTURE_FIELD = "originalPicture";
@@ -69,8 +71,6 @@ public class CreatePicture {
 
     @Param(name = "pictureTemplates", required = false)
     protected Properties pictureTemplates;
-
-    protected static final Log log = LogFactory.getLog(CreatePicture.class);
 
     protected ArrayList<Map<String, Object>> computePictureTemplates() {
         if (pictureTemplates == null || pictureTemplates.size() == 0) {

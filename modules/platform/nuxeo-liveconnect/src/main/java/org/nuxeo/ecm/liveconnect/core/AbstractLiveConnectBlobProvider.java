@@ -31,8 +31,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -71,7 +71,7 @@ import com.google.common.base.Splitter;
 public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServiceProvider> extends AbstractBlobProvider
         implements LiveConnectBlobProvider<O>, BatchUpdateBlobProvider, DocumentBlobProvider {
 
-    private static final Log log = LogFactory.getLog(AbstractLiveConnectBlobProvider.class);
+    private static final Logger log = LogManager.getLogger(AbstractLiveConnectBlobProvider.class);
 
     private static final String FILE_CACHE_PREFIX = "liveconnect_file_";
 
@@ -138,14 +138,12 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
                 LiveConnectFile file = retrieveFile(fileInfo);
                 putFileInCache(file);
                 if (hasChanged(blob, file)) {
-                    if (log.isTraceEnabled()) {
-                        log.trace("Updating blob=" + blob.key);
-                    }
+                    log.trace("Updating blob: {}", blob.key);
                     doc.setPropertyValue("content", toBlob(file));
                     changedDocuments.add(doc);
                 }
             } catch (IOException e) {
-                log.error("Could not update document=" + fileInfo, e);
+                log.error("Could not update document: {}", fileInfo, e);
             }
 
         }
@@ -211,7 +209,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
             file = getFile(fileInfo);
         } catch (IOException e) {
             // we don't want to crash everything if the remote file cannot be accessed
-            log.error("Failed to access file: " + fileInfo, e);
+            log.error("Failed to access file: {}", fileInfo, e);
             file = new ErrorLiveConnectFile(fileInfo);
         }
         return toBlob(file);
@@ -362,7 +360,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         try {
             return new URI(link);
         } catch (URISyntaxException e) {
-            log.error("Invalid URI: " + link, e);
+            log.error("Invalid URI: {}", link, e);
             return null;
         }
     }

@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public abstract class AbstractLongRunningListener implements PostCommitFilteringEventListener {
 
-    protected static final Log log = LogFactory.getLog(AbstractLongRunningListener.class);
+    private static final Logger log = LogManager.getLogger(AbstractLongRunningListener.class);
 
     @Override
     public void handleEvent(EventBundle events) {

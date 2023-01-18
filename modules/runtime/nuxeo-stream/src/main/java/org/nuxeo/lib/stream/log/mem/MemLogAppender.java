@@ -23,8 +23,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogOffset;
@@ -40,7 +40,7 @@ import org.nuxeo.lib.stream.log.mem.MemLogPartition.OffsetTracker;
  */
 public class MemLogAppender<M extends Externalizable> implements CloseableLogAppender<M> {
 
-    private static final Log log = LogFactory.getLog(MemLogAppender.class);
+    private static final Logger log = LogManager.getLogger(MemLogAppender.class);
 
     protected static final String NOCODEC_TAG = "nocodec";
 
@@ -58,9 +58,7 @@ public class MemLogAppender<M extends Externalizable> implements CloseableLogApp
         this.codec = codec;
 
         memLog = memLogs.getLog(name);
-        if (log.isDebugEnabled()) {
-            log.debug("Opening: " + toString());
-        }
+        log.debug("Opening: {}", this);
     }
 
     @Override
@@ -102,9 +100,7 @@ public class MemLogAppender<M extends Externalizable> implements CloseableLogApp
         }
         long offset = memLog.getPartition(partition).append(tag, bytes);
         LogOffset ret = new LogOffsetImpl(name, partition, offset);
-        if (log.isDebugEnabled()) {
-            log.debug("append to %s, value: %s".formatted(ret, message));
-        }
+        log.debug("append to {}, value: {}", ret, message);
         return ret;
     }
 
@@ -134,7 +130,7 @@ public class MemLogAppender<M extends Externalizable> implements CloseableLogApp
 
     @Override
     public void close() {
-        log.debug("Closing: " + toString());
+        log.debug("Closing: {}", this);
         closed = true;
     }
 

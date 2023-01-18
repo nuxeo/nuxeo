@@ -18,8 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner.web;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.runner.Description;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runner.manipulation.NoTestsRemainException;
@@ -34,7 +34,7 @@ import com.google.inject.Scopes;
 
 public class WebDriverFeature implements RunnerFeature {
 
-    private static final Log log = LogFactory.getLog(WebDriverFeature.class);
+    private static final Logger log = LogManager.getLogger(WebDriverFeature.class);
 
     protected Browser browser;
 

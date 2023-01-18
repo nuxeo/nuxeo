@@ -27,8 +27,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.AlreadyProcessedRegistrationException;
@@ -48,7 +48,8 @@ import org.nuxeo.runtime.api.Framework;
 @Produces("text/html;charset=UTF-8")
 @WebObject(type = "userRegistration")
 public class UserInvitationObject extends ModuleRoot {
-    private static final Log log = LogFactory.getLog(UserInvitationObject.class);
+
+    private static final Logger log = LogManager.getLogger(UserInvitationObject.class);
 
     @POST
     @Path("validate")
@@ -106,7 +107,7 @@ public class UserInvitationObject extends ModuleRoot {
                     ctx.getMessage("label.errror.requestNotAccepted"));
         } catch (InvalidPasswordException ive) {
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
-                ctx.getMessage("label.registerForm.validation.invalidpassword"));
+                    ctx.getMessage("label.registerForm.validation.invalidpassword"));
         }
         // User redirected to the logout page after validating the password
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());

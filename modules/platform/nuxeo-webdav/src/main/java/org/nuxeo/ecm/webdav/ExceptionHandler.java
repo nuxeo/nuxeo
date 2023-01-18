@@ -21,18 +21,18 @@
 
 package org.nuxeo.ecm.webdav;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpStatus;
-import org.nuxeo.ecm.core.api.RecoverableClientException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 
 /**
  * Simple error handler to give back a user-readable status, and log it to the console.
@@ -42,7 +42,7 @@ import java.io.StringWriter;
 @Provider
 public class ExceptionHandler implements ExceptionMapper<Exception> {
 
-    private static final Log log = LogFactory.getLog(ExceptionHandler.class);
+    private static final Logger log = LogManager.getLogger(ExceptionHandler.class);
 
     @Override
     public Response toResponse(Exception e) {
@@ -53,7 +53,7 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
         if (e instanceof WebApplicationException) {
             status = ((WebApplicationException) e).getResponse().getStatus();
             if (status < 400 || status >= 500) {
-                log.error("Status = " + status);
+                log.error("Status: {}", status);
                 log.error(e, e);
             }
             // msg = "Error " + status + "\n" + e.getMessage() + "\n" + sw;

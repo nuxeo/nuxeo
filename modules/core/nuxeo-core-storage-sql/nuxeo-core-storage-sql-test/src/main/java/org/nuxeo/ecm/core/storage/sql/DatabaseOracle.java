@@ -26,8 +26,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DatabaseOracle extends DatabaseHelper {
 
-    private static final Log log = LogFactory.getLog(DatabaseOracle.class);
+    private static final Logger log = LogManager.getLogger(DatabaseOracle.class);
 
     private static final String DEF_SERVER = "localhost";
 
@@ -66,8 +66,8 @@ public class DatabaseOracle extends DatabaseHelper {
             throw new RuntimeException(e);
         }
         setProperties();
-        Connection connection = getConnection(Framework.getProperty(URL_PROPERTY),
-                Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
+        Connection connection = getConnection(Framework.getProperty(URL_PROPERTY), Framework.getProperty(USER_PROPERTY),
+                Framework.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null, Framework.getProperty(USER_PROPERTY).toUpperCase(),
                 "DROP TABLE \"%s\" CASCADE CONSTRAINTS PURGE");
         dropSequences(connection);
@@ -88,7 +88,7 @@ public class DatabaseOracle extends DatabaseHelper {
             }
             for (String sequenceName : sequenceNames) {
                 String sql = String.format("DROP SEQUENCE \"%s\"", sequenceName);
-                log.trace("SQL: " + sql);
+                log.trace("SQL: {}", sql);
                 st.execute(sql);
             }
         }

@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 
 public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNode {
 
-    private static final Log log = LogFactory.getLog(FileWithNonHeritedIndividalMetaDataSourceNode.class);
+    private static final Logger log = LogManager.getLogger(FileWithNonHeritedIndividalMetaDataSourceNode.class);
 
     public static final String PROPERTY_FILE_SUFIX = ".properties";
 
@@ -99,7 +99,7 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
         try (var in = new FileInputStream(propertyFile)) {
             mdProperties.load(in);
         } catch (IOException e) {
-            log.error("Unable to read property file " + propertyFile, e);
+            log.error("Unable to read property file: {}", propertyFile, e);
         }
         Enumeration<?> names = mdProperties.propertyNames();
         while (names.hasMoreElements()) {

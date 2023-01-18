@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -34,7 +34,7 @@ public abstract class BatchProcessorWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(BatchProcessorWork.class);
+    private static final Logger log = LogManager.getLogger(BatchProcessorWork.class);
 
     public BatchProcessorWork(String repositoryName, List<String> docIds, String originatingUsername) {
         setDocuments(repositoryName, docIds);
@@ -57,9 +57,8 @@ public abstract class BatchProcessorWork extends AbstractWork {
     public void work() {
         int size = docIds.size();
         int batchSize = getBatchSize();
-        if (log.isDebugEnabled()) {
-            log.debug(getTitle() + ": Starting processing: " + size + " documents with batch size: " + batchSize);
-        }
+        log.debug("{}: Starting processing: {} documents with batch size: {}", this::getTitle, () -> size,
+                () -> batchSize);
         openSystemSession();
         setProgress(new Progress(0, size));
         setStatus("Processing");
@@ -78,9 +77,7 @@ public abstract class BatchProcessorWork extends AbstractWork {
             TransactionHelper.startTransaction();
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug(getTitle() + ": Finished processing for batch of size:" + size);
-        }
+        log.debug("{}: Finished processing for batch of size: {}", this::getTitle, () -> size);
         setStatus("Done");
     }
 

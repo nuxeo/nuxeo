@@ -24,8 +24,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -45,8 +43,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
  */
 @XObject("listener")
 public class EventListenerDescriptor {
-
-    public static final Log log = LogFactory.getLog(EventListenerDescriptor.class);
 
     @XNode("@name")
     protected String name;

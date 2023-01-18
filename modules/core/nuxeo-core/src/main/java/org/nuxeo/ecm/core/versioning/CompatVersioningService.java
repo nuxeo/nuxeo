@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.versioning;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -36,8 +34,6 @@ import org.nuxeo.ecm.core.model.Document;
  */
 @Deprecated
 public class CompatVersioningService extends StandardVersioningService {
-
-    private static final Log log = LogFactory.getLog(CompatVersioningService.class);
 
     @Override
     public String getVersionLabel(DocumentModel doc) {

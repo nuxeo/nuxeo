@@ -21,7 +21,7 @@
 
 package org.nuxeo.ecm.platform.importer.log;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Simple logger that wraps a bufferized string logger (for remote retrieval) and a log4J logger
@@ -30,11 +30,11 @@ import org.apache.commons.logging.Log;
  */
 public class BasicLogger implements ImporterLogger {
 
-    protected Log javaLogger;
+    protected Logger javaLogger;
 
     protected boolean bufferActive = false;
 
-    public BasicLogger(Log javaLogger) {
+    public BasicLogger(Logger javaLogger) {
         this.javaLogger = javaLogger;
     }
 

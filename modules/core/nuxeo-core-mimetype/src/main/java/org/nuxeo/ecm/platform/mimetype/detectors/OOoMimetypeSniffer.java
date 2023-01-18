@@ -27,8 +27,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -36,7 +36,7 @@ import net.sf.jmimemagic.MagicDetector;
 
 public class OOoMimetypeSniffer implements MagicDetector {
 
-    private static final Log log = LogFactory.getLog(OOoMimetypeSniffer.class);
+    private static final Logger log = LogManager.getLogger(OOoMimetypeSniffer.class);
 
     @Override
     public String getDisplayName() {

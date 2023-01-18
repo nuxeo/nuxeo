@@ -37,8 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -55,7 +55,7 @@ import com.mongodb.DBObject;
  */
 public class MongoDBAuditEntryReader {
 
-    private static final Log log = LogFactory.getLog(MongoDBAuditEntryReader.class);
+    private static final Logger log = LogManager.getLogger(MongoDBAuditEntryReader.class);
 
     public static LogEntry read(Document doc) {
         LogEntryImpl entry = new LogEntryImpl();
@@ -101,7 +101,7 @@ public class MongoDBAuditEntryReader {
                 entry.setExtendedInfos(readExtendedInfo(doc.get(key, Document.class)));
                 break;
             default:
-                log.warn("Property with key '" + key + "' is not a known LogEntry property, skip it.");
+                log.warn("Property with key: {} is not a known LogEntry property, skip it.", key);
                 break;
             }
         }

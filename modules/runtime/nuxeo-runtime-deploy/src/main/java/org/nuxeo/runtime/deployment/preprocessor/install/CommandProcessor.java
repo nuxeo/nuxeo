@@ -23,7 +23,7 @@ package org.nuxeo.runtime.deployment.preprocessor.install;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -45,6 +45,6 @@ public interface CommandProcessor {
      */
     void exec(CommandContext ctx);
 
-    void setLogger(Log log);
+    void setLogger(Logger log);
 
 }

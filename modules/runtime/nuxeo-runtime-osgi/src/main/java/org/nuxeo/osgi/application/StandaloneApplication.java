@@ -29,8 +29,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.osgi.BundleFile;
@@ -47,9 +47,9 @@ import org.osgi.framework.FrameworkEvent;
  */
 public class StandaloneApplication extends OSGiAdapter {
 
-    public static final String MAIN_TASK = "org.nuxeo.osgi.application.main.task";
+    private static final Logger log = LogManager.getLogger(StandaloneApplication.class);
 
-    private static final Log log = LogFactory.getLog(StandaloneApplication.class);
+    public static final String MAIN_TASK = "org.nuxeo.osgi.application.main.task";
 
     private static StandaloneApplication instance;
 
@@ -339,7 +339,7 @@ public class StandaloneApplication extends OSGiAdapter {
         app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), classLoader.getLoader()));
         // start level 1
         app.start();
-        log.info("Framework started in " + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
+        log.info("Framework started in {} sec.", () -> (System.currentTimeMillis() - startTime) / 1000);
         if (mainTask != null) {
             mainTask.run();
         }

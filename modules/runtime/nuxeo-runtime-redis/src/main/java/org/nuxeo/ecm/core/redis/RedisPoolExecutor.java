@@ -15,9 +15,11 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import redis.clients.jedis.Client;
 import redis.clients.jedis.Jedis;
@@ -26,13 +28,12 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.util.Pool;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 public class RedisPoolExecutor extends RedisAbstractExecutor {
 
-    private static final Log log = LogFactory.getLog(RedisPoolExecutor.class);
+    private static final Logger log = LogManager.getLogger(RedisPoolExecutor.class);
+
     private Thread monitorThread;
+
     protected Pool<Jedis> pool;
 
     protected final ThreadLocal<Jedis> holder = new ThreadLocal<>();
@@ -51,12 +52,12 @@ public class RedisPoolExecutor extends RedisAbstractExecutor {
             }
         }
         if (monitorThread != null) {
-            log.debug(String.format("Redis pool state before getting a conn: active: %d, idle: %s",
-                    pool.getNumActive(), pool.getNumIdle()));
+            log.debug("Redis pool state before getting a conn: active: {}, idle: {}", pool::getNumActive,
+                    pool::getNumIdle);
         }
         Jedis jedis = pool.getResource();
         if (monitorThread != null) {
-            log.debug("Using conn: " + jedis.getClient().getSocket().getLocalPort());
+            log.debug("Using conn: {}", jedis.getClient().getSocket().getLocalPort());
         }
         holder.set(jedis);
         boolean brokenResource = false;
@@ -116,8 +117,8 @@ public class RedisPoolExecutor extends RedisAbstractExecutor {
         monitorThread.setName("Nuxeo-Redis-Monitor");
         monitorThread.start();
         try {
-            if (! monitorLatch.await(5, TimeUnit.SECONDS)) {
-                log.error("Failed to init Redis moniotring");
+            if (!monitorLatch.await(5, TimeUnit.SECONDS)) {
+                log.error("Failed to init Redis monitoring");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -128,7 +129,7 @@ public class RedisPoolExecutor extends RedisAbstractExecutor {
     @Override
     public void stopMonitor() {
         if (monitorThread != null) {
-            log.debug("Stoping monitor");
+            log.debug("Stopping monitor");
             monitorThread.interrupt();
             monitorThread = null;
         }

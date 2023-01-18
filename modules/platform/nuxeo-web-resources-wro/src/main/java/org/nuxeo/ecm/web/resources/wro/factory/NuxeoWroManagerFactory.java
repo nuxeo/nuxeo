@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.api.Processor;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.wro.provider.NuxeoConfigurableProvider;
@@ -42,7 +42,7 @@ import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactor
  */
 public class NuxeoWroManagerFactory extends ConfigurableWroManagerFactory {
 
-    private static final Log log = LogFactory.getLog(NuxeoWroManagerFactory.class);
+    private static final Logger log = LogManager.getLogger(NuxeoWroManagerFactory.class);
 
     @Override
     protected Properties newConfigProperties() {
@@ -50,9 +50,7 @@ public class NuxeoWroManagerFactory extends ConfigurableWroManagerFactory {
         // automatically setup runtime service processors
         addAliases(props, ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS, NuxeoConfigurableProvider.PRE_TYPE);
         addAliases(props, ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS, NuxeoConfigurableProvider.POST_TYPE);
-        if (log.isDebugEnabled()) {
-            log.debug("Built new conf, properties=" + props);
-        }
+        log.debug("Built new conf, properties: {}", props);
         return props;
     }
 

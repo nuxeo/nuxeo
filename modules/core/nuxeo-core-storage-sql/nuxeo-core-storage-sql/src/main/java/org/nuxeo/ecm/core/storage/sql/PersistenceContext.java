@@ -40,8 +40,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.map.ReferenceMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -82,7 +82,7 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
  */
 public class PersistenceContext {
 
-    protected static final Log log = LogFactory.getLog(PersistenceContext.class);
+    private static final Logger log = LogManager.getLogger(PersistenceContext.class);
 
     /**
      * Property for threshold at which we warn that a Selection may be too big, with stack trace.
@@ -214,8 +214,8 @@ public class PersistenceContext {
             bigSelWarnThreshold = Long.parseLong(
                     Framework.getProperty(SEL_WARN_THRESHOLD_PROP, SEL_WARN_THRESHOLD_DEFAULT));
         } catch (NumberFormatException e) {
-            log.error("Invalid value for " + SEL_WARN_THRESHOLD_PROP + ": "
-                    + Framework.getProperty(SEL_WARN_THRESHOLD_PROP));
+            log.error("Invalid value for {}: {}", SEL_WARN_THRESHOLD_PROP,
+                    Framework.getProperty(SEL_WARN_THRESHOLD_PROP));
         }
     }
 
@@ -381,7 +381,7 @@ public class PersistenceContext {
                 break;
             case PRISTINE:
                 // cannot happen, but has been observed :(
-                log.error("Found PRISTINE fragment in modified map: " + fragment);
+                log.error("Found PRISTINE fragment in modified map: {}", fragment);
                 break;
             default:
                 throw new RuntimeException(fragment.toString());
@@ -1109,7 +1109,7 @@ public class PersistenceContext {
         case DELETED:
         case DELETED_DEPENDENT:
             // should not happen
-            log.error("Removed fragment is in invalid state: " + fragment);
+            log.error("Removed fragment is in invalid state: {}", fragment);
             modified.remove(rowId);
             break;
         case DETACHED:

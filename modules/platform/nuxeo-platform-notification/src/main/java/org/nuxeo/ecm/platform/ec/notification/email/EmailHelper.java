@@ -38,8 +38,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mvel2.MVEL;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -78,7 +78,7 @@ import freemarker.template.TemplateException;
  */
 public class EmailHelper {
 
-    private static final Log log = LogFactory.getLog(EmailHelper.class);
+    private static final Logger log = LogManager.getLogger(EmailHelper.class);
 
     // used for loading templates from strings
     private final Configuration stringCfg = new Configuration(Configuration.VERSION_2_3_0);
@@ -112,7 +112,7 @@ public class EmailHelper {
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
         Object to = mail.get("mail.to");
         if (!(to instanceof String)) {
-            log.error("Invalid email recipient: " + to);
+            log.error("Invalid email recipient: {}", to);
             return;
         }
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse((String) to, false));

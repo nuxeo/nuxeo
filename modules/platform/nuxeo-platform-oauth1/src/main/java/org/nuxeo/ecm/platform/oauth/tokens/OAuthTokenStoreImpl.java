@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenStore {
 
-    protected static final Log log = LogFactory.getLog(OAuthTokenStoreImpl.class);
+    private static final Logger log = LogManager.getLogger(OAuthTokenStoreImpl.class);
 
     public static final String DIRECTORY_NAME = "oauthTokens";
 

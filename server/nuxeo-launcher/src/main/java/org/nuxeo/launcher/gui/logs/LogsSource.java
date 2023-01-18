@@ -27,15 +27,16 @@ import java.io.IOException;
 import java.util.Observable;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author jcarsique
  * @since 5.4.2
  */
 public class LogsSource extends Observable implements Runnable {
-    static final Log log = LogFactory.getLog(LogsSource.class);
+
+    private static final Logger log = LogManager.getLogger(LogsSource.class);
 
     private static final long WAIT_FOR_FILE_EXISTS = 2000;
 

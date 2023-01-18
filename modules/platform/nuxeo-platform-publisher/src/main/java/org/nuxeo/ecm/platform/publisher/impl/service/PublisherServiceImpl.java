@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class PublisherServiceImpl extends DefaultComponent implements PublisherService {
 
-    private final Log log = LogFactory.getLog(PublisherServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(PublisherServiceImpl.class);
 
     protected Map<String, PublicationTreeDescriptor> treeDescriptors = new HashMap<>();
 
@@ -139,7 +139,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
-        log.debug("Registry contribution for EP " + extensionPoint);
+        log.debug("Registry contribution for EP: {}", extensionPoint);
 
         if (TREE_EP.equals(extensionPoint)) {
             PublicationTreeDescriptor desc = (PublicationTreeDescriptor) contribution;
@@ -340,8 +340,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
             tree = PublicationRelationHelper.getPublicationTreeUsedForPublishing(doc, coreSession);
         } catch (NuxeoException e) {
             // TODO catch proper exception
-            log.error("Unable to get PublicationTree for " + doc.getPathAsString()
-                    + ". Fallback on first PublicationTree accepting this document.", e);
+            log.error(
+                    "Unable to get PublicationTree for: {}. Fallback on first PublicationTree accepting this document.",
+                    doc.getPathAsString(), e);
             for (String treeName : treeConfigDescriptors.keySet()) {
                 tree = getPublicationTree(treeName, coreSession, null);
                 if (tree.isPublicationNode(doc)) {

@@ -24,8 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
@@ -35,9 +35,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class NXRuntimeApplication {
 
-    protected RuntimeService runtime;
+    private static final Logger log = LogManager.getLogger(NXRuntimeApplication.class);
 
-    private static final Log log = LogFactory.getLog(NXRuntimeApplication.class);
+    protected RuntimeService runtime;
 
     protected final File home;
 
@@ -73,7 +73,7 @@ public abstract class NXRuntimeApplication {
         URL url = getResource(bundle);
         // could be more than core design flaw: assert url != null;
         if (url == null) {
-            log.error("Cannot locate resource for deploying bundle " + bundle);
+            log.error("Cannot locate resource for deploying bundle: {}", bundle);
             return;
         }
         try {

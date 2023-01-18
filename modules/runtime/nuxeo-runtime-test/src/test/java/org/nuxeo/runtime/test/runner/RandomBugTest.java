@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.fail;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -52,7 +52,8 @@ import org.nuxeo.runtime.test.runner.RandomBug.RepeatRule;
  * @since 5.9.5
  */
 public class RandomBugTest {
-    private static final Log log = LogFactory.getLog(RandomBugTest.class);
+
+    private static final Logger log = LogManager.getLogger(RandomBugTest.class);
 
     protected static final String FAILURE_MESSAGE = "FAILURE";
 

@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
@@ -39,7 +39,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 public class DefaultTypeLoader {
 
-    public static final Log log = LogFactory.getLog(DefaultTypeLoader.class);
+    private static final Logger log = LogManager.getLogger(DefaultTypeLoader.class);
 
     public static final String WEB_TYPES_FILE = "META-INF/web-types";
 
@@ -76,7 +76,7 @@ public class DefaultTypeLoader {
                 try {
                     loadTypesFile(file);
                 } catch (IOException | ClassNotFoundException e) {
-                    log.error("Failed to load web types from file " + WEB_TYPES_FILE, e);
+                    log.error("Failed to load web types from file: {}", WEB_TYPES_FILE, e);
                 }
             }
             if (gLoader != null) {

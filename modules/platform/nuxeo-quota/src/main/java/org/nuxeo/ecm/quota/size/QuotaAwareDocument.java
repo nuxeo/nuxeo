@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
@@ -36,6 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class QuotaAwareDocument implements QuotaAware {
 
+    private static final Logger log = LogManager.getLogger(QuotaAwareDocument.class);
+
     public static final String DOCUMENTS_SIZE_STATISTICS_FACET = "DocumentsSizeStatistics";
 
     public static final String DOCUMENTS_SIZE_INNER_SIZE_PROPERTY = "dss:innerSize";
@@ -49,8 +51,6 @@ public class QuotaAwareDocument implements QuotaAware {
     public static final String DOCUMENTS_SIZE_MAX_SIZE_PROPERTY = "dss:maxSize";
 
     protected DocumentModel doc;
-
-    protected static final Log log = LogFactory.getLog(QuotaAwareDocument.class);
 
     public QuotaAwareDocument(DocumentModel doc) {
         this.doc = doc;
@@ -111,33 +111,25 @@ public class QuotaAwareDocument implements QuotaAware {
     @Override
     public void addInnerSize(long delta) {
         Number inner = addDelta(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, delta);
-        if (log.isDebugEnabled()) {
-            log.debug("Setting quota (inner size) : " + inner + " on document " + doc.getId());
-        }
+        log.debug("Setting quota (inner size): {} on document: {}", inner, doc.getId());
     }
 
     @Override
     public void addTotalSize(long delta) {
         Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, delta);
-        if (log.isDebugEnabled()) {
-            log.debug("Setting quota (total size) : " + total + " on document " + doc.getId());
-        }
+        log.debug("Setting quota (total size): {} on document: {}", total, doc.getId());
     }
 
     @Override
     public void addTrashSize(long delta) {
         Number trash = addDelta(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, delta);
-        if (log.isDebugEnabled()) {
-            log.debug("Setting quota (trash size):" + trash + " on document " + doc.getId());
-        }
+        log.debug("Setting quota (trash size): {} on document: {}", trash, doc.getId());
     }
 
     @Override
     public void addVersionsSize(long delta) {
         Number versions = addDelta(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, delta);
-        if (log.isDebugEnabled()) {
-            log.debug("Setting quota (versions size): " + versions + " on document " + doc.getId());
-        }
+        log.debug("Setting quota (versions size): {} on document: {}", versions, doc.getId());
     }
 
     @Override
@@ -178,8 +170,8 @@ public class QuotaAwareDocument implements QuotaAware {
         if (!skipValidation) {
             QuotaStatsService quotaStatsService = Framework.getService(QuotaStatsService.class);
             if (!(quotaStatsService.canSetMaxQuota(maxSize, doc, doc.getCoreSession()))) {
-                throw new QuotaExceededException(doc, "Can not set " + maxSize
-                        + ". Quota exceeded because the quota set on one of the children.");
+                throw new QuotaExceededException(doc,
+                        "Can not set " + maxSize + ". Quota exceeded because the quota set on one of the children.");
             }
         }
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, maxSize);

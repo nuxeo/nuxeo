@@ -21,8 +21,8 @@ package org.nuxeo.ecm.directory.impl;
 
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.directory.EntryAdaptor;
  */
 public class WritePolicyEntryAdaptor implements EntryAdaptor {
 
-    public static final Log log = LogFactory.getLog(WritePolicyEntryAdaptor.class);
+    private static final Logger log = LogManager.getLogger(WritePolicyEntryAdaptor.class);
 
     protected String fieldName;
 
@@ -47,7 +47,7 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
     @Override
     public DocumentModel adapt(Directory directory, DocumentModel entry) {
         if (fieldName == null || pattern == null) {
-            log.warn(getClass().getName() + " is missing configuration parameters");
+            log.warn("{} is missing configuration parameters", getClass().getName());
             return entry;
         }
         if (BaseSession.isReadOnlyEntry(entry)) {
@@ -63,10 +63,9 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
                 BaseSession.setReadOnlyEntry(entry);
             }
         } catch (PropertyException e) {
-            throw new DirectoryException(
-                    String.format(
-                            "The field '%s' of entry '%s' could not be adapt and map on directory '%s', check that the field exist in the schema",
-                            fieldName, entry.getId(), directory.getName()), e);
+            throw new DirectoryException(String.format(
+                    "The field '%s' of entry '%s' could not be adapt and map on directory '%s', check that the field exist in the schema",
+                    fieldName, entry.getId(), directory.getName()), e);
 
         }
         return entry;
@@ -79,7 +78,7 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
         } else if ("regexp".equals(name)) {
             pattern = Pattern.compile(value);
         } else {
-            log.warn("unexpected parameter " + name + " for class " + getClass().getName());
+            log.warn("unexpected parameter: {} for class: {}", name, getClass().getName());
         }
     }
 

@@ -48,8 +48,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.osgi.application.loader.FrameworkLoader;
 import org.osgi.framework.BundleException;
 
@@ -62,13 +62,13 @@ import org.osgi.framework.BundleException;
  * Allowable parameter names come from {@link org.nuxeo.common.Environment}, mainly
  * {@link org.nuxeo.common.Environment#NUXEO_RUNTIME_HOME NUXEO_RUNTIME_HOME} and
  * {@link org.nuxeo.common.Environment#NUXEO_CONFIG_DIR NUXEO_CONFIG_DIR}, but also
- * {@link org.nuxeo.common.Environment#NUXEO_DATA_DIR NUXEO_DATA_DIR},
- * {@link org.nuxeo.common.Environment#NUXEO_LOG_DIR NUXEO_LOG_DIR}, {@link org.nuxeo.common.Environment#NUXEO_TMP_DIR
- * NUXEO_TMP_DIR} and {@link org.nuxeo.common.Environment#NUXEO_WEB_DIR NUXEO_WEB_DIR}.
+ * {@link org.nuxeo.common.Environment#NUXEO_DATA_DIR NUXEO_DATA_DIR}, {@link org.nuxeo.common.Environment#NUXEO_LOG_DIR
+ * NUXEO_LOG_DIR}, {@link org.nuxeo.common.Environment#NUXEO_TMP_DIR NUXEO_TMP_DIR} and
+ * {@link org.nuxeo.common.Environment#NUXEO_WEB_DIR NUXEO_WEB_DIR}.
  */
 public class NuxeoStarter implements ServletContextListener {
 
-    private static final Log log = LogFactory.getLog(NuxeoStarter.class);
+    private static final Logger log = LogManager.getLogger(NuxeoStarter.class);
 
     /** Default location of the home in the server current directory. */
     private static final String DEFAULT_HOME = "nuxeo";
@@ -94,7 +94,7 @@ public class NuxeoStarter implements ServletContextListener {
             long finishedTime = System.currentTimeMillis();
             @SuppressWarnings("boxing")
             Double duration = (finishedTime - startTime) / 1000.0;
-            log.info(String.format("Nuxeo framework started in %.1f sec.", duration));
+            log.info(() -> String.format("Nuxeo framework started in %.1f sec.", duration));
         } catch (IOException | BundleException e) {
             log.error("Exception during startup", e);
             throw new RuntimeException(e);
@@ -131,9 +131,9 @@ public class NuxeoStarter implements ServletContextListener {
             Driver driver = drivers.nextElement();
             try {
                 DriverManager.deregisterDriver(driver);
-                log.info(String.format("Deregister JDBC driver: %s", driver));
+                log.info("Deregister JDBC driver: {}", driver);
             } catch (SQLException e) {
-                log.error(String.format("Error deregistering JDBC driver %s", driver), e);
+                log.error("Error deregistering JDBC driver: {}", driver, e);
             }
         }
     }

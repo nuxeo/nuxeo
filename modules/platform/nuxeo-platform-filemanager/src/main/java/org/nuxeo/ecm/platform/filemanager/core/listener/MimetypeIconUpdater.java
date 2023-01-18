@@ -22,8 +22,6 @@ import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.DEFAUL
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -50,8 +48,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author ogrisel
  */
 public class MimetypeIconUpdater implements EventListener {
-
-    protected Log log = LogFactory.getLog(MimetypeIconUpdater.class);
 
     public static final String ICON_SCHEMA = "common";
 

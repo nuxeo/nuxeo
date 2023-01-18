@@ -39,8 +39,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
@@ -87,7 +87,7 @@ import io.dropwizard.metrics5.Timer;
  */
 public class SessionImpl implements Session {
 
-    private static final Log log = LogFactory.getLog(SessionImpl.class);
+    private static final Logger log = LogManager.getLogger(SessionImpl.class);
 
     /**
      * Set this system property to false if you don't want repositories to be looked up under the compatibility name
@@ -833,7 +833,7 @@ public class SessionImpl implements Session {
             Node node = getNodeById(fragment.getId());
             if (node == null) {
                 // cannot happen
-                log.error("Child node cannot be created: " + fragment.getId());
+                log.error("Child node cannot be created: {}", fragment::getId);
                 continue;
             }
             nodes.add(node);

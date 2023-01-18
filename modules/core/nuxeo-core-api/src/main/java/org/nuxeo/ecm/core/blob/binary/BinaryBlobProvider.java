@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.DownloadBlobGuard;
 import org.nuxeo.ecm.core.blob.BlobInfo;
@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
  */
 public class BinaryBlobProvider implements BlobProvider {
 
-    private static final Log log = LogFactory.getLog(BinaryBlobProvider.class);
+    private static final Logger log = LogManager.getLogger(BinaryBlobProvider.class);
 
     protected final BinaryManager binaryManager;
 
@@ -111,8 +111,8 @@ public class BinaryBlobProvider implements BlobProvider {
         } else if (DownloadBlobGuard.isEnable()) {
             length = -1;
         } else {
-            log.info("Missing content length for blob key: " + blobInfo.key
-                    + ", get the length from the binary's file (may be costly)");
+            log.info("Missing content length for blob key: {}, get the length from the binary's file (may be costly)",
+                    blobInfo.key);
             File file = binary.getFile();
             length = file == null ? -1 : file.length();
         }

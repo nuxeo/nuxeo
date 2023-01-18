@@ -33,8 +33,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.FulltextConfigurationFactory;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
-import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -69,7 +68,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class Model {
 
-    private static final Log log = LogFactory.getLog(Model.class);
+    private static final Logger log = LogManager.getLogger(Model.class);
 
     public static final String ROOT_TYPE = "Root";
 
@@ -663,10 +662,9 @@ public class Model {
         if (previous == null) {
             mergedPropertyInfos.put(propertyName, propertyInfo);
         } else {
-            log.debug(String.format(
-                    "Schemas '%s' and '%s' both have a property '%s', "
-                            + "unqualified reference in queries will use schema '%1$s'",
-                    previous.fragmentName, fragmentName, propertyName));
+            log.debug(
+                    "Schemas '{}' and '{}' both have a property '{}', unqualified reference in queries will use schema '{}'",
+                    previous.fragmentName, fragmentName, propertyName, previous.fragmentName);
         }
         // compatibility for use of schema name as prefix
         if (typeName != null && !propertyName.contains(":")) {
@@ -763,7 +761,7 @@ public class Model {
         }
         String typeName = complexType.getName();
         if (done.contains(typeName)) {
-            log.warn("Complex type " + typeName + " refers to itself recursively: " + done);
+            log.warn("Complex type {} refers to itself recursively: {}", typeName, done);
             // stop recursion
             return;
         }
@@ -1131,7 +1129,7 @@ public class Model {
      */
     private void initModels() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        log.debug("Schemas fields from descriptor: " + repositoryDescriptor.schemaFields);
+        log.debug("Schemas fields from descriptor: {}", repositoryDescriptor.schemaFields);
         // document types
         for (DocumentType docType : schemaManager.getDocumentTypes()) {
             initDocTypeOrMixinModel(docType.getName(), docType.getSchemas(), allDocTypeSchemas, typeFragments,
@@ -1144,7 +1142,7 @@ public class Model {
         for (CompositeType type : schemaManager.getFacets()) {
             initDocTypeOrMixinModel(type.getName(), type.getSchemas(), allMixinSchemas, mixinFragments,
                     mixinPropertyInfos, mixinComplexChildren, false);
-            log.debug("Fragments for facet " + type.getName() + ": " + getMixinFragments(type.getName()));
+            log.debug("Fragments for facet {}: {}", type::getName, () -> getMixinFragments(type.getName()));
         }
         // proxy schemas
         initProxySchemas(schemaManager.getProxySchemas(null));
@@ -1242,8 +1240,8 @@ public class Model {
         // always prefetch ACLs, versions, misc (for lifecycle)
         addDocTypePrefetchedFragments(docTypeName, getCommonFragmentsPrefetched());
 
-        log.debug("Fragments for type " + docTypeName + ": " + getTypeFragments(docTypeName) + ", prefetch: "
-                + getTypePrefetchedFragments(docTypeName));
+        log.debug("Fragments for type {}: {}, prefetch: {}", () -> docType,
+                () -> getTypePrefetchedFragments(docTypeName), () -> getTypePrefetchedFragments(docTypeName));
     }
 
     private void initDocTypeMixins(DocumentType docType) {
@@ -1305,7 +1303,7 @@ public class Model {
         addPropertyInfo(MAIN_IS_RETENTION_ACTIVE_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME,
                 MAIN_IS_RETENTION_ACTIVE_KEY, false, BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(MAIN_IS_TRASHED_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_TRASHED_KEY, false,
-                        BooleanType.INSTANCE, ColumnType.BOOLEAN);
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
         if (changeTokenEnabled) {
             addPropertyInfo(MAIN_SYS_CHANGE_TOKEN_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_SYS_CHANGE_TOKEN_KEY,
                     false, LongType.INSTANCE, ColumnType.LONG);
@@ -1468,7 +1466,7 @@ public class Model {
         /** The children complex properties for this type. */
         Map<String, String> complexChildren = new HashMap<>(1);
 
-        log.debug("Making model for type " + typeName);
+        log.debug("Making model for type: {}", typeName);
 
         /** Initialized if this type has a table associated. */
         for (Field field : complexType.getFields()) {
@@ -1505,8 +1503,8 @@ public class Model {
                         if (fieldDescriptor != null) {
                             if (FIELD_TYPE_ARRAY.equals(fieldDescriptor.type)) {
                                 if (!supportsArrayColumns) {
-                                    log.warn("  Field '" + propertyName + "' array specification is ignored since"
-                                            + " this database does not support arrays");
+                                    log.warn("  Field '{}' array specification is ignored since"
+                                            + " this database does not support arrays", propertyName);
                                 }
                                 useArray = supportsArrayColumns;
                                 columnType = ColumnType.fromFieldType(listFieldType, useArray);
@@ -1514,34 +1512,36 @@ public class Model {
                                 boolean isStringColSpec = ColumnType.fromFieldType(
                                         listFieldType).spec == ColumnSpec.STRING;
                                 if (supportsArrayColumns && !isStringColSpec) {
-                                    log.warn("  Field '" + propertyName + "' is not a String yet it is specified"
-                                            + " as array_largetext, using ARRAY_CLOB for it");
+                                    log.warn("  Field '{}' is not a String yet it is specified"
+                                            + " as array_largetext, using ARRAY_CLOB for it", propertyName);
                                 } else if (!supportsArrayColumns && isStringColSpec) {
-                                    log.warn("  Field '" + propertyName + "' array specification is ignored since"
-                                            + " this database does not support arrays," + " using CLOB for it");
+                                    log.warn(
+                                            "  Field '{}' array specification is ignored since"
+                                                    + " this database does not support arrays," + " using CLOB for it",
+                                            propertyName);
                                 } else if (!supportsArrayColumns && !isStringColSpec) {
-                                    log.warn("  Field '" + propertyName + "' array specification is ignored since"
+                                    log.warn("  Field '{}' array specification is ignored since"
                                             + " this database does not support arrays, also"
                                             + " Field is not a String yet it is specified"
-                                            + " as array_largetext, using CLOB for it");
+                                            + " as array_largetext, using CLOB for it", propertyName);
                                 }
                                 useArray = supportsArrayColumns;
                                 columnType = (supportsArrayColumns) ? ColumnType.ARRAY_CLOB : ColumnType.CLOB;
                             } else if (FIELD_TYPE_LARGETEXT.equals(fieldDescriptor.type)) {
                                 if (ColumnType.fromFieldType(listFieldType).spec != ColumnSpec.STRING) {
-                                    log.warn("  Field '" + propertyName + "' is not a String yet it is specified "
-                                            + " as largetext, using CLOB for it");
+                                    log.warn("  Field '{}' is not a String yet it is specified "
+                                            + " as largetext, using CLOB for it", propertyName);
                                 }
                                 columnType = ColumnType.CLOB;
                             } else {
-                                log.warn("  Field '" + propertyName + "' specified but not successfully mapped");
+                                log.warn("  Field '{}' specified but not successfully mapped", propertyName);
                             }
                         }
 
                         if (columnType == null) {
                             columnType = ColumnType.fromFieldType(listFieldType);
                         }
-                        log.debug("  List field '" + propertyName + "' using column type " + columnType);
+                        log.debug("  List field '{}' using column type {}", propertyName, columnType);
 
                         if (useArray) {
                             /*
@@ -1591,8 +1591,10 @@ public class Model {
                         // backward compat with largetext, since 5.4.2
                         if (fieldDescriptor != null && FIELD_TYPE_LARGETEXT.equals(fieldDescriptor.type)) {
                             if (!type.isUnconstrained() && !type.isClob()) {
-                                log.warn("  String field '" + propertyName + "' has a schema constraint to " + type
-                                        + " but is specified as largetext," + " using CLOB for it");
+                                log.warn(
+                                        "  String field '{}' has a schema constraint to {} but is specified as largetext,"
+                                                + " using CLOB for it",
+                                        propertyName, type);
                             }
                             type = ColumnType.CLOB;
                         }

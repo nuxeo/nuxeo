@@ -1262,12 +1262,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
         <version>${nuxeo.platform.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -4841,10 +4835,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
     </dependency>
@@ -5212,7 +5202,6 @@
               <artifact>org.apache.logging.log4j:log4j-jcl</artifact>
               <artifact>org.apache.logging.log4j:log4j-slf4j-impl</artifact>
               <artifact>org.apache.logging.log4j:log4j-1.2-api</artifact>
-              <artifact>commons-logging:commons-logging</artifact>
               <artifact>junit:junit</artifact>
               <artifact>org.assertj:assertj-core</artifact>
             </ignoredUnusedDeclaredDependencies>

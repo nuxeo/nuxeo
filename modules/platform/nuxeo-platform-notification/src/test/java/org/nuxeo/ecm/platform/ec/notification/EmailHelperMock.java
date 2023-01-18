@@ -23,12 +23,13 @@ package org.nuxeo.ecm.platform.ec.notification;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 
 public class EmailHelperMock extends EmailHelper {
-    public Log log = LogFactory.getLog(this.getClass());
+
+    private static final Logger log = LogManager.getLogger(EmailHelperMock.class);
 
     public int compteur = 0;
 

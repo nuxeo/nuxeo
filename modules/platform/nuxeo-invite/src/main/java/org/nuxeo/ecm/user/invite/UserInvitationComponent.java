@@ -43,8 +43,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -81,9 +81,9 @@ import freemarker.template.TemplateException;
 
 public class UserInvitationComponent extends DefaultComponent implements UserInvitationService {
 
-    public static final String PARAM_ORIGINATING_USER = "registration:originatingUser";
+    private static final Logger log = LogManager.getLogger(UserInvitationComponent.class);
 
-    protected static Log log = LogFactory.getLog(UserInvitationService.class);
+    public static final String PARAM_ORIGINATING_USER = "registration:originatingUser";
 
     public static final String NUXEO_URL_KEY = "nuxeo.url";
 
@@ -713,8 +713,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                     configurations.remove(newConfig.getName());
                 } else {
                     log.warn(
-                            "Trying to register an existing userRegistration configuration without removing or merging it, in: "
-                                    + contributor.getName());
+                            "Trying to register an existing userRegistration configuration without removing or merging it, in: {}",
+                            contributor::getName);
                 }
             } else {
                 configurations.put(newConfig.getName(), newConfig);
@@ -729,7 +729,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             try {
                 factory = factoryClass.getConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                log.warn("Failed to instanciate RegistrationUserFactory", e);
+                log.warn("Failed to instantiate RegistrationUserFactory", e);
             }
         }
         if (factory == null) {
@@ -788,7 +788,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             }
             return configurations.get(configurationName);
         } catch (NuxeoException e) {
-            log.info("Unable to get request parent document: " + e.getMessage());
+            log.info("Unable to get request parent document: {}", e::getMessage);
             throw e;
         }
     }

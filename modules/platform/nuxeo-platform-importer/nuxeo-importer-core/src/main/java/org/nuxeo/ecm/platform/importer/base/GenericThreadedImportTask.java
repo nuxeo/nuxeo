@@ -28,8 +28,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
@@ -60,9 +60,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class GenericThreadedImportTask implements Runnable {
 
-    public static final String DOC_IMPORTED_EVENT = "documentImportedWithPlatformImporter";
+    private static final Logger log = LogManager.getLogger(GenericThreadedImportTask.class);
 
-    private static final Log log = LogFactory.getLog(GenericThreadedImportTask.class);
+    public static final String DOC_IMPORTED_EVENT = "documentImportedWithPlatformImporter";
 
     protected static int taskCounter = 0;
 
@@ -116,8 +116,8 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     protected GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
-            boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
-            ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) {
+            boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize, ImporterDocumentModelFactory factory,
+            ImporterThreadingPolicy threadPolicy) {
         this.rsLogger = rsLogger;
         this.session = session;
         this.batchSize = batchSize;
@@ -136,8 +136,8 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     public GenericThreadedImportTask(String repositoryName, SourceNode rootSource, DocumentModel rootDoc,
-            boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
-            ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy, String jobName) {
+            boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize, ImporterDocumentModelFactory factory,
+            ImporterThreadingPolicy threadPolicy, String jobName) {
         this(null, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory, threadPolicy);
         this.jobName = jobName;
         this.repositoryName = repositoryName;
@@ -234,8 +234,8 @@ public class GenericThreadedImportTask implements Runnable {
                 if (fileSize > 0) {
                     long kbSize = fileSize / 1024;
                     String parentPath = (parent == null) ? "null" : parent.getPathAsString();
-                    fslog("Created doc " + leaf.getName() + " at " + parentPath + " with file " + fileName
-                            + " of size " + kbSize + "KB", true);
+                    fslog("Created doc " + leaf.getName() + " at " + parentPath + " with file " + fileName + " of size "
+                            + kbSize + "KB", true);
                 }
                 uploadedKO += fileSize;
             }

@@ -36,8 +36,8 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -77,9 +77,9 @@ import io.opencensus.trace.Tracing;
  */
 public class EventServiceImpl implements EventService, EventServiceAdmin, Synchronization {
 
-    public static final VMID VMID = new VMID();
+    private static final Logger log = LogManager.getLogger(EventServiceImpl.class);
 
-    private static final Log log = LogFactory.getLog(EventServiceImpl.class);
+    public static final VMID VMID = new VMID();
 
     protected static final ThreadLocal<CompositeEventBundle> threadBundles = new ThreadLocal<CompositeEventBundle>() {
         @Override
@@ -158,24 +158,25 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         if (descriptor.isEnabled()) {
             domainEventProducers.register(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
                     descriptor);
-            log.debug("Registered domain event producer: " + descriptor.getName());
+            log.debug("Registered domain event producer: {}", descriptor::getName);
         } else {
             domainEventProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
                     descriptor);
-            log.debug("Unregistered domain event producer (disabled): " + descriptor.getName());
+            log.debug("Unregistered domain event producer (disabled): {}", descriptor::getName);
         }
     }
 
     public void removeDomainEventProducer(DomainEventProducerDescriptor descriptor) {
         domainEventProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
                 descriptor);
-        log.debug("Unregistered domain event producer: " + descriptor.getName());
+        log.debug("Unregistered domain event producer: {}", descriptor::getName);
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
         postCommitExec.shutdown(timeoutMillis);
-        Set<AsyncWaitHook> notTerminated = asyncWaitHooks.stream().filter(hook -> !hook.shutdown()).collect(
-                Collectors.toSet());
+        Set<AsyncWaitHook> notTerminated = asyncWaitHooks.stream()
+                                                         .filter(hook -> !hook.shutdown())
+                                                         .collect(Collectors.toSet());
         if (!notTerminated.isEmpty()) {
             throw new RuntimeException("Asynch services are still running : " + notTerminated);
         }
@@ -231,33 +232,33 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     @Override
     public void addEventListener(EventListenerDescriptor listener) {
         listenerDescriptors.add(listener);
-        log.debug("Registered event listener: " + listener.getName());
+        log.debug("Registered event listener: {}", listener::getName);
     }
 
     public void addEventPipe(EventPipeDescriptor pipeDescriptor) {
         registeredPipes.addContribution(pipeDescriptor);
-        log.debug("Registered event pipe: " + pipeDescriptor.getName());
+        log.debug("Registered event pipe: {}", pipeDescriptor::getName);
     }
 
     public void addEventDispatcher(EventDispatcherDescriptor dispatcherDescriptor) {
         dispatchers.addContrib(dispatcherDescriptor);
-        log.debug("Registered event dispatcher: " + dispatcherDescriptor.getName());
+        log.debug("Registered event dispatcher: {}", dispatcherDescriptor::getName);
     }
 
     @Override
     public void removeEventListener(EventListenerDescriptor listener) {
         listenerDescriptors.removeDescriptor(listener);
-        log.debug("Unregistered event listener: " + listener.getName());
+        log.debug("Unregistered event listener: {}", listener::getName);
     }
 
     public void removeEventPipe(EventPipeDescriptor pipeDescriptor) {
         registeredPipes.removeContribution(pipeDescriptor);
-        log.debug("Unregistered event pipe: " + pipeDescriptor.getName());
+        log.debug("Unregistered event pipe: {}", pipeDescriptor::getName);
     }
 
     public void removeEventDispatcher(EventDispatcherDescriptor dispatcherDescriptor) {
         dispatchers.removeContrib(dispatcherDescriptor);
-        log.debug("Unregistered event dispatcher: " + dispatcherDescriptor.getName());
+        log.debug("Unregistered event dispatcher: {}", dispatcherDescriptor::getName);
     }
 
     @Override
@@ -311,7 +312,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 // log
                 tracer.getCurrentSpan().addAnnotation("EventService#fireEvent " + event.getName() + ": " + message);
                 if (e instanceof RecoverableClientException) {
-                    log.info(message + "\n" + e.getMessage());
+                    log.info("{}\n{}", message, e.getMessage());
                     log.debug(message, e);
                 } else {
                     log.error(message, e);
@@ -581,7 +582,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             span.addAnnotation("EventService#afterCompletion ROLLBACK");
             handleTxRollbacked();
         } else {
-            log.error("Unexpected afterCompletion status: " + status);
+            log.error("Unexpected afterCompletion status: {}", status);
         }
         span.addAnnotation("EventService#afterCompletion.done");
     }
@@ -599,7 +600,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             try {
                 fireEventBundle(bundle);
             } catch (NuxeoException e) {
-                log.error("Error while processing " + bundle, e);
+                log.error("Error while processing: {}", bundle, e);
             }
         }
     }

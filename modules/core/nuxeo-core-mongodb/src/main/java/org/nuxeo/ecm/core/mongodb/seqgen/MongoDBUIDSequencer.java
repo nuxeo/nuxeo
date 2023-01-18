@@ -23,8 +23,11 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.gte;
 import static com.mongodb.client.model.Filters.not;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -44,9 +47,6 @@ import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * MongoDB implementation of {@link UIDSequencer}.
  * <p>
@@ -56,7 +56,7 @@ import java.util.List;
  */
 public class MongoDBUIDSequencer extends AbstractUIDSequencer {
 
-    private static final Log log = LogFactory.getLog(MongoDBUIDSequencer.class);
+    private static final Logger log = LogManager.getLogger(MongoDBUIDSequencer.class);
 
     public static final String SEQUENCE_DATABASE_ID = "sequence";
 
@@ -138,9 +138,7 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
                 getSequencerCollection().insertOne(sequence);
             } catch (MongoWriteException e) {
                 // There was a race condition - just re-run getNextLong
-                if (log.isTraceEnabled()) {
-                    log.trace("There was a race condition during '" + key + "' sequence insertion", e);
-                }
+                log.trace("There was a race condition during: {} sequence insertion", key, e);
                 return getNextLong(key);
             }
         }

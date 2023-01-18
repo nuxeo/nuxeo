@@ -39,8 +39,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
@@ -59,7 +59,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class LayoutDefinitionJsonWriter extends AbstractLayoutJsonWriter<LayoutDefinition> {
 
-    private static final Log log = LogFactory.getLog(LayoutDefinitionJsonWriter.class);
+    private static final Logger log = LogManager.getLogger(LayoutDefinitionJsonWriter.class);
 
     @Inject
     private LayoutStore webLayoutManager;
@@ -197,8 +197,8 @@ public class LayoutDefinitionJsonWriter extends AbstractLayoutJsonWriter<LayoutD
             widgetDefinition = webLayoutManager.getWidgetDefinition(cat, widgetName);
         }
         if (widgetDefinition == null) {
-            log.error(String.format("No definition found for widget '%s' in layout '%s' => cannot export", widgetName,
-                    layoutDefinition.getName()));
+            log.error("No definition found for widget: {} in layout: {} => cannot export", widgetName,
+                    layoutDefinition.getName());
         } else {
             if (widgetConverters != null) {
                 for (WidgetDefinitionConverter conv : widgetConverters) {

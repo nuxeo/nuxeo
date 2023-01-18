@@ -20,8 +20,8 @@ package org.nuxeo.ecm.platform.routing.api.operation;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -42,12 +42,13 @@ import org.nuxeo.ecm.platform.task.Task;
  * @since 5.6
  */
 @Operation(id = MapPropertiesOnTaskOperation.ID, category = Constants.CAT_WORKFLOW, label = "Apply mapping on input task doc", requires = Constants.WORKFLOW_CONTEXT, description = "Applies the mapping passed in parameter on the task document. "
-        + "The sourceDoc in the mapping is the input document in the workflow. The operation throws a NuxeoException if the input document is not a Task.", aliases = { "Context.ApplyMappingOnTask" })
+        + "The sourceDoc in the mapping is the input document in the workflow. The operation throws a NuxeoException if the input document is not a Task.", aliases = {
+                "Context.ApplyMappingOnTask" })
 public class MapPropertiesOnTaskOperation {
 
-    public static final String ID = "Task.ApplyDocumentMapping";
+    private static final Logger log = LogManager.getLogger(MapPropertiesOnTaskOperation.class);
 
-    private static Log log = LogFactory.getLog(MapPropertiesOnTaskOperation.class);
+    public static final String ID = "Task.ApplyDocumentMapping";
 
     @Context
     protected CoreSession session;

@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,8 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 
 public abstract class AbstractVirtualBackend extends AbstractCoreBackend implements VirtualBackend {
-
-    private static final Log log = LogFactory.getLog(AbstractVirtualBackend.class);
 
     protected Map<String, Backend> backendMap;
 
@@ -287,8 +283,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     }
 
     @Override
-    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
-            {
+    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name) {
         throw new UnsupportedOperationException();
     }
 

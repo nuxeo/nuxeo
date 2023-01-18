@@ -21,8 +21,8 @@ package org.nuxeo.ecm.web.resources.wro.provider;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.runtime.api.Framework;
@@ -38,7 +38,7 @@ import ro.isdc.wro.model.resource.locator.factory.UriLocatorFactory;
  */
 public class NuxeoUriLocator implements UriLocator {
 
-    private static final Log log = LogFactory.getLog(NuxeoUriLocator.class);
+    private static final Logger log = LogManager.getLogger(NuxeoUriLocator.class);
 
     public static final String ALIAS = "nuxeoUri";
 
@@ -56,7 +56,7 @@ public class NuxeoUriLocator implements UriLocator {
         if (resource != null) {
             String ruri = resource.getURI();
             if (ruri == null) {
-                log.error("Cannot handle resource '" + resource.getName() + "': no resolved uri");
+                log.error("Cannot handle resource: {}, no resolved uri", resource::getName);
                 return null;
             }
             final UriLocator uriLocator = uriLocatorFactory.getInstance(ruri);

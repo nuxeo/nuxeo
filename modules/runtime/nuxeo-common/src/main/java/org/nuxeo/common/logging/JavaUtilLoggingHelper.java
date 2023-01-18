@@ -27,9 +27,6 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Helper that can redirect all {@code java.util.logging} messages to the Apache Commons Logging implementation.
  *
@@ -37,7 +34,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JavaUtilLoggingHelper {
 
-    private static final Log log = LogFactory.getLog(JavaUtilLoggingHelper.class);
+    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(
+            JavaUtilLoggingHelper.class);
 
     private static LogHandler activeHandler;
 
@@ -46,18 +44,18 @@ public class JavaUtilLoggingHelper {
     }
 
     /**
-     * Redirects {@code java.util.logging} to Apache Commons Logging do not log below INFO level.
+     * Redirects {@code java.util.logging} to Apache Log4j do not log below INFO level.
      */
-    public static synchronized void redirectToApacheCommons() {
-        redirectToApacheCommons(Level.INFO);
+    public static synchronized void redirectToLog4j() {
+        redirectToLog4j(Level.INFO);
     }
 
     /**
-     * Redirects {@code java.util.logging} to Apache Commons Logging do not log below the threshold level.
+     * Redirects {@code java.util.logging} to Apache Log4j do not log below the threshold level.
      *
      * @since 5.4.2
      */
-    public static synchronized void redirectToApacheCommons(Level threshold) {
+    public static synchronized void redirectToLog4j(Level threshold) {
         if (activeHandler != null) {
             return;
         }
@@ -70,7 +68,7 @@ public class JavaUtilLoggingHelper {
             activeHandler.setLevel(threshold);
             rootLogger.addHandler(activeHandler);
             rootLogger.setLevel(threshold);
-            log.info("Redirecting java.util.logging to Apache Commons Logging, threshold is " + threshold.toString());
+            log.info("Redirecting java.util.logging to Apache Log4j, threshold is {}", threshold);
         } catch (SecurityException e) {
             log.error("Handler setup failed", e);
         }
@@ -96,7 +94,7 @@ public class JavaUtilLoggingHelper {
 
         final ThreadLocal<LogRecord> holder = new ThreadLocal<>();
 
-        private final Map<String, Log> cache = new ConcurrentHashMap<>();
+        private final Map<String, org.apache.logging.log4j.Logger> cache = new ConcurrentHashMap<>();
 
         protected void doPublish(LogRecord record) {
             Level level = record.getLevel();
@@ -108,9 +106,9 @@ public class JavaUtilLoggingHelper {
             if (name == null) {
                 return;
             }
-            Log log = cache.get(name);
+            var log = cache.get(name);
             if (log == null) {
-                log = LogFactory.getLog(name);
+                log = org.apache.logging.log4j.LogManager.getLogger(name);
                 cache.put(name, log);
             }
             if (level == Level.FINE) {

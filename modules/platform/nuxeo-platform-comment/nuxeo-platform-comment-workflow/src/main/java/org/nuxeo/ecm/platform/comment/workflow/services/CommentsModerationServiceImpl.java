@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.task.CreateTask;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,11 +45,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class CommentsModerationServiceImpl implements CommentsModerationService {
 
-    private static final Log log = LogFactory.getLog(CommentsModerationService.class);
+    private static final Logger log = LogManager.getLogger(CommentsModerationServiceImpl.class);
 
     @Override
-    public void startModeration(CoreSession session, DocumentModel doc, String commentID, ArrayList<String> moderators)
-            {
+    public void startModeration(CoreSession session, DocumentModel doc, String commentID,
+            ArrayList<String> moderators) {
         TaskService taskService = Framework.getService(TaskService.class);
         if (moderators == null || moderators.isEmpty()) {
             throw new NuxeoException("No moderators defined");
@@ -67,13 +67,12 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
                 moderators, false, null, null, null, vars, null);
     }
 
-    public Task getModerationTask(TaskService taskService, CoreSession session, DocumentModel doc, String commentId)
-            {
+    public Task getModerationTask(TaskService taskService, CoreSession session, DocumentModel doc, String commentId) {
         List<Task> tasks = DocumentTaskProvider.getTasks("GET_COMMENT_MODERATION_TASKS", session, false, null,
                 doc.getId(), session.getPrincipal().getName(), commentId);
         if (tasks != null && !tasks.isEmpty()) {
             if (tasks.size() > 1) {
-                log.error("There are several moderation workflows running, " + "taking only first found");
+                log.error("There are several moderation workflows running, taking only first found");
             }
             Task task = tasks.get(0);
             return task;

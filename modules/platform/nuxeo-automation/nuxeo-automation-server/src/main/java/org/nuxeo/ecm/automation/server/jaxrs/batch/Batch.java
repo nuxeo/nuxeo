@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
  */
 public class Batch {
 
-    protected static final Log log = LogFactory.getLog(Batch.class);
+    private static final Logger log = LogManager.getLogger(Batch.class);
 
     public static final String CHUNKED_PARAM_NAME = "chunked";
 
@@ -87,7 +87,7 @@ public class Batch {
     public List<Blob> getBlobs() {
         List<Blob> blobs = new ArrayList<>();
         List<String> sortedFileIndexes = getOrderedFileIndexes();
-        log.debug(String.format("Retrieving blobs for batch %s: %s", key, sortedFileIndexes));
+        log.debug("Retrieving blobs for batch {}: {}", key, sortedFileIndexes);
         for (String index : sortedFileIndexes) {
             Blob blob = retrieveBlob(index);
             if (blob != null) {
@@ -98,7 +98,7 @@ public class Batch {
     }
 
     public Blob getBlob(String index) {
-        log.debug(String.format("Retrieving blob %s for batch %s", index, key));
+        log.debug("Retrieving blob: {} for batch: {}", index, key);
         return retrieveBlob(index);
     }
 
@@ -226,7 +226,7 @@ public class Batch {
      */
     public void clean() {
         // Remove batch and all related storage entries from transient store, GC will clean up the files
-        log.debug(String.format("Cleaning batch %s", key));
+        log.debug("Cleaning batch: {}", key);
         for (String fileIndex : fileEntries.keySet()) {
             removeFileEntry(fileIndex, transientStore);
         }

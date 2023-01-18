@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class TaskEventNotificationHelper {
 
-    private final static Log log = LogFactory.getLog(TaskEventNotificationHelper.class);
+    private static final Logger log = LogManager.getLogger(TaskEventNotificationHelper.class);
 
     public static void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal, Task task,
             String eventId, Map<String, Serializable> properties, String comment, String category) {
@@ -110,14 +110,12 @@ public final class TaskEventNotificationHelper {
                     documents.add(document);
                 }
             } catch (DocumentNotFoundException e) {
-                log.error(String.format("Could not fetch document with id '%s:(%s)' for notification", docRepo, docIds),
-                        e);
+                log.error("Could not fetch document with id: {}:({}) for notification", docRepo, docIds, e);
             }
         } else {
-            log.error(String.format(
-                    "Could not resolve document for notification: "
-                            + "document is on repository '%s' and given session is on " + "repository '%s'",
-                    docRepo, coreSession.getRepositoryName()));
+            log.error(
+                    "Could not resolve document for notification: document is on repository: {} and given session is on repository: {}",
+                    docRepo, coreSession.getRepositoryName());
         }
 
         final Map<String, Serializable> eventProperties = new HashMap<>();

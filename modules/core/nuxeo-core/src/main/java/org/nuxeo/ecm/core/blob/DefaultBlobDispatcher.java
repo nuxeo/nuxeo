@@ -38,8 +38,8 @@ import java.util.function.IntPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -102,7 +102,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultBlobDispatcher implements BlobDispatcher {
 
-    private static final Log log = LogFactory.getLog(DefaultBlobDispatcher.class);
+    private static final Logger log = LogManager.getLogger(DefaultBlobDispatcher.class);
 
     protected static final String NAME_DEFAULT = "default";
 
@@ -254,12 +254,12 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                 value = Pattern.compile((String) value);
                 break;
             default:
-                log.error("Invalid dispatcher configuration operator: " + ops);
+                log.error("Invalid dispatcher configuration operator: {}", ops);
                 return null;
             }
             return new Clause(xpath, op, value);
         } else {
-            log.error("Invalid dispatcher configuration property name: " + name);
+            log.error("Invalid dispatcher configuration property name: {}", name);
             return null;
         }
     }
@@ -331,7 +331,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             case BLOB_XPATH:
                 return blobXPath;
             default:
-                log.error("Invalid dispatcher configuration property name: " + xpath);
+                log.error("Invalid dispatcher configuration property name: {}", xpath);
                 throw new PropertyNotFoundException(xpath);
             }
         }
@@ -461,8 +461,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     }
 
     /**
-     * Checks if the blob is stored in the expected blob provider to which it's supposed to be dispatched. If not,
-     * store it in the correct one (and maybe remove it from the previous one if it makes sense).
+     * Checks if the blob is stored in the expected blob provider to which it's supposed to be dispatched. If not, store
+     * it in the correct one (and maybe remove it from the previous one if it makes sense).
      */
     protected void checkBlob(Document doc, BlobAccessor accessor) {
         Blob blob = accessor.getBlob();

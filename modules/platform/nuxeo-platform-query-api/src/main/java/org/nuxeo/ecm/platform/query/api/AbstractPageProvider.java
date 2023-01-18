@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -61,7 +61,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
-    public static final Log log = LogFactory.getLog(AbstractPageProvider.class);
+    private static final Logger log = LogManager.getLogger(AbstractPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 

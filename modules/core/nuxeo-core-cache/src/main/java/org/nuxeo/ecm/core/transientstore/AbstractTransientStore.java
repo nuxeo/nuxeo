@@ -36,8 +36,8 @@ import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -54,7 +54,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
  */
 public abstract class AbstractTransientStore implements TransientStoreProvider {
 
-    protected static final Log log = LogFactory.getLog(AbstractTransientStore.class);
+    private static final Logger log = LogManager.getLogger(AbstractTransientStore.class);
 
     protected TransientStoreConfig config;
 
@@ -179,7 +179,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
             }
             blobInfos.add(blobInfo);
         }
-        log.debug("Stored blobs on the file system: " + blobInfos);
+        log.debug("Stored blobs on the file system: {}", blobInfos);
         return blobInfos;
     }
 
@@ -220,7 +220,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
     }
 
     protected List<Blob> loadBlobs(List<Map<String, String>> blobInfos) {
-        log.debug("Loading blobs from the file system: " + blobInfos);
+        log.debug("Loading blobs from the file system: {}", blobInfos);
         List<Blob> blobs = new ArrayList<>();
         for (Map<String, String> info : blobInfos) {
             File blobFile = new File(cacheDir, info.get("file"));
@@ -236,7 +236,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
 
     @Override
     public void doGC() {
-        log.debug(String.format("Performing GC for TransientStore %s", config.getName()));
+        log.debug("Performing GC for TransientStore: {}", config::getName);
         long newSize = 0;
         try {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(cacheDir.getAbsolutePath()))) {
@@ -280,7 +280,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
 
     @Override
     public void removeAll() {
-        log.debug("Removing all entries from TransientStore " + config.getName());
+        log.debug("Removing all entries from TransientStore: {}", config::getName);
         removeAllEntries();
         doGC();
     }

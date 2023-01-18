@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -60,7 +60,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(ThreeDBatchUpdateWork.class);
+    private static final Logger log = LogManager.getLogger(ThreeDBatchUpdateWork.class);
 
     public static final String CATEGORY_THREED_CONVERSION = "threeDConversion";
 
@@ -224,7 +224,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         ThreeDDocument threedDocument = doc.getAdapter(ThreeDDocument.class);
         ThreeD threed = threedDocument.getThreeD();
         if (threed == null) {
-            log.warn("No original 3d to process for: " + doc);
+            log.warn("No original 3d to process for: {}", doc);
         }
         return threed;
     }
@@ -260,7 +260,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
      * Fire a {@code THREED_CONVERSIONS_DONE_EVENT}
      */
     protected void fireThreeDConversionsDoneEvent(DocumentModel doc) {
-        log.debug("Fire threeDConversionsDone event for doc: " + doc.getId());
+        log.debug("Fire threeDConversionsDone event for doc: {}", doc::getId);
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(THREED_CONVERSIONS_DONE_EVENT);
         Framework.getService(EventService.class).fireEvent(event);

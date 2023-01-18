@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
 import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor;
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDescriptor> {
 
-    private static final Log log = LogFactory.getLog(LifeCycleRegistry.class);
+    private static final Logger log = LogManager.getLogger(LifeCycleRegistry.class);
 
     protected volatile Map<String, LifeCycle> lookup;
 
@@ -48,13 +48,13 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
 
     @Override
     public void contributionUpdated(String id, LifeCycleDescriptor contrib, LifeCycleDescriptor newOrigContrib) {
-        log.info("Registering lifecycle: " + contrib.getName());
+        log.info("Registering lifecycle: {}", contrib::getName);
         lookup = null;
     }
 
     @Override
     public void contributionRemoved(String id, LifeCycleDescriptor lifeCycleDescriptor) {
-        log.info("Unregistering lifecycle: " + lifeCycleDescriptor.getName());
+        log.info("Unregistering lifecycle: {}", lifeCycleDescriptor::getName);
         lookup = null;
     }
 
@@ -87,10 +87,9 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
         String defaultInitialStateName = desc.getDefaultInitialStateName();
         if (initialStateName != null) {
             defaultInitialStateName = initialStateName;
-            log.warn(String.format("Lifecycle registration of default initial"
-                    + " state has changed, change initial=\"%s\" to "
-                    + "defaultInitial=\"%s\" in lifecyle '%s' definition", defaultInitialStateName,
-                    defaultInitialStateName, name));
+            log.warn(
+                    "Lifecycle registration of default initial state has changed, change initial=\"{}\" to defaultInitial=\"{}\" in lifecyle '{}' definition",
+                    defaultInitialStateName, defaultInitialStateName, name);
         }
         boolean defaultInitialStateFound = false;
         Collection<String> initialStateNames = new HashSet<>();
@@ -106,7 +105,7 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
             }
         }
         if (!defaultInitialStateFound) {
-            log.error(String.format("Default initial state %s not found on lifecycle %s", defaultInitialStateName, name));
+            log.error("Default initial state {} not found on lifecycle {}", defaultInitialStateName, name);
         }
         return new LifeCycleImpl(name, defaultInitialStateName, initialStateNames, states, desc.getTransitions());
     }

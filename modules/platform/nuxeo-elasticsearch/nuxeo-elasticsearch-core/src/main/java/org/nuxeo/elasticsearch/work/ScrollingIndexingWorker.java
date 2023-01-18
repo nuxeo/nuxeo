@@ -24,8 +24,8 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_READ
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -38,7 +38,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 7.1
  */
 public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work {
-    private static final Log log = LogFactory.getLog(ScrollingIndexingWorker.class);
+
+    private static final Logger log = LogManager.getLogger(ScrollingIndexingWorker.class);
 
     private static final long serialVersionUID = -4507677669419340384L;
 
@@ -78,10 +79,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
             TransactionHelper.startTransaction(TRANSACTION_TIMEOUT_SECONDS);
         }
         String jobName = getSchedulePath().getPath();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql,
-                    repositoryName));
-        }
+        log.debug("Re-indexing job: {} started, NXQL: {} on repository: {}", jobName, nxql, repositoryName);
         openSystemSession();
         int bucketSize = getBucketSize();
         ScrollResult<String> ret = session.scroll(nxql, bucketSize, 60);

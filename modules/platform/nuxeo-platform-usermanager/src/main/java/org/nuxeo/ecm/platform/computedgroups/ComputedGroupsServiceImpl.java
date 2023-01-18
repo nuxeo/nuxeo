@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.usermanager.GroupConfig;
@@ -46,6 +46,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ComputedGroupsServiceImpl extends DefaultComponent implements ComputedGroupsService {
 
+    private static final Logger log = LogManager.getLogger(ComputedGroupsServiceImpl.class);
+
     public static final String COMPUTER_EP = "computer";
 
     public static final String CHAIN_EP = "computerChain";
@@ -55,8 +57,6 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     protected List<String> computerNames = new ArrayList<>();
 
     protected boolean allowOverride = true;
-
-    protected static Log log = LogFactory.getLog(ComputedGroupsServiceImpl.class);
 
     @Override
     public void activate(ComponentContext context) {
@@ -73,15 +73,15 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
                 GroupComputerDescriptor desc = (GroupComputerDescriptor) contribution;
 
                 if (desc.isEnabled()) {
-                    log.debug("Add " + desc.getName() + " from component " + contributor.getName());
+                    log.debug("Add: {} from component: {}", desc::getName, contributor::getName);
                     computers.put(desc.getName(), desc);
                 } else {
                     if (computers.containsKey(desc.getName())) {
-                        log.debug("Remove " + desc.getName() + " from component " + contributor.getName());
+                        log.debug("Remove: {} from component: {}", desc::getName, contributor::getName);
                         computers.remove(desc.getName());
                     } else {
-                        log.warn("Can't remove " + desc.getName() + " as not found, from component "
-                                + contributor.getName());
+                        log.warn("Can't remove: {} as not found, from component: {}", desc::getName,
+                                contributor::getName);
                     }
                 }
                 return;
@@ -101,7 +101,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
             return;
         }
 
-        log.warn("Unkown contribution, please check the component " + contributor.getName());
+        log.warn("Unknown contribution, please check the component: {}", contributor::getName);
     }
 
     @Override

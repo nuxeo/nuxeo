@@ -44,8 +44,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
@@ -62,7 +62,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
  */
 public class NuxeoRequestControllerFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(NuxeoRequestControllerFilter.class);
+    private static final Logger log = LogManager.getLogger(NuxeoRequestControllerFilter.class);
 
     protected static final String SESSION_LOCK_KEY = "NuxeoSessionLockKey";
 
@@ -101,19 +101,15 @@ public class NuxeoRequestControllerFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if (log.isDebugEnabled()) {
-            log.debug(doFormatLogMessage(request, "Entering NuxeoRequestController filter"));
-        }
+        log.debug(() -> doFormatLogMessage(request, "Entering NuxeoRequestController filter"));
 
         RequestControllerManager rcm = Framework.getService(RequestControllerManager.class);
         RequestFilterConfig config = rcm.getConfigForRequest(request);
         boolean useSync = config.needSynchronization();
         boolean useTx = config.needTransaction();
         boolean useBuffer = config.needTransactionBuffered();
-        if (log.isDebugEnabled()) {
-            log.debug(doFormatLogMessage(request,
-                    "Handling request with tx=" + useTx + " and sync=" + useSync + " and buffer=" + useBuffer));
-        }
+        log.debug(() -> doFormatLogMessage(request,
+                "Handling request with tx=" + useTx + " and sync=" + useSync + " and buffer=" + useBuffer));
         addHeaders(request, response, config);
 
         boolean sessionSynched = false;
@@ -184,9 +180,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             }
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug(doFormatLogMessage(request, "Exiting NuxeoRequestController filter"));
-        }
+        log.debug(() -> doFormatLogMessage(request, "Exiting NuxeoRequestController filter"));
     }
 
     /**
@@ -198,21 +192,15 @@ public class NuxeoRequestControllerFilter implements Filter {
     public static boolean simpleSyncOnSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(request, "HttpSession does not exist, this request won't be synched"));
-            }
+            log.debug(() -> doFormatLogMessage(request, "HttpSession does not exist, this request won't be synched"));
             return false;
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug(doFormatLogMessage(request, "Trying to sync on session "));
-        }
+        log.debug(() -> doFormatLogMessage(request, "Trying to sync on session "));
 
         if (request.getAttribute(SYNCED_REQUEST_FLAG) != null) {
-            if (log.isWarnEnabled()) {
-                log.warn(doFormatLogMessage(request,
-                        "Request has already be synced, filter is reentrant, exiting without locking"));
-            }
+            log.warn(() -> doFormatLogMessage(request,
+                    "Request has already be synced, filter is reentrant, exiting without locking"));
             return false;
         }
 
@@ -232,13 +220,9 @@ public class NuxeoRequestControllerFilter implements Filter {
 
         if (locked) {
             request.setAttribute(SYNCED_REQUEST_FLAG, true);
-            if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(request, "Request synced on session"));
-            }
+            log.debug(() -> doFormatLogMessage(request, "Request synced on session"));
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(request, "Sync timeout"));
-            }
+            log.debug(() -> doFormatLogMessage(request, "Sync timeout"));
         }
 
         return locked;
@@ -250,13 +234,11 @@ public class NuxeoRequestControllerFilter implements Filter {
     public static boolean simpleReleaseSyncOnSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(request,
-                        "No more HttpSession: can not unlock !, HttpSession must have been invalidated"));
-            }
+            log.debug(() -> doFormatLogMessage(request,
+                    "No more HttpSession: can not unlock !, HttpSession must have been invalidated"));
             return false;
         }
-        log.debug("Trying to unlock on session " + session.getId() + " on Thread " + Thread.currentThread().getId());
+        log.debug("Trying to unlock on session: {} on Thread: {}", session::getId, Thread.currentThread()::getId);
 
         Lock lock = (Lock) session.getAttribute(SESSION_LOCK_KEY);
         if (lock == null) {
@@ -267,15 +249,12 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (request.getAttribute(SYNCED_REQUEST_FLAG) != null) {
                 request.removeAttribute(SYNCED_REQUEST_FLAG);
             }
-            if (log.isDebugEnabled()) {
-                log.debug("session unlocked on Thread ");
-            }
+            log.debug("session unlocked on Thread ");
             return true;
         }
     }
 
-    protected void addHeaders(HttpServletRequest request, HttpServletResponse response,
-            RequestFilterConfig config) {
+    protected void addHeaders(HttpServletRequest request, HttpServletResponse response, RequestFilterConfig config) {
         addConfiguredHeaders(response);
         if (request.getMethod().equals("GET")) {
             addCacheHeaders(response, config);

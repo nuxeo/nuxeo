@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.Locator;
@@ -83,7 +83,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class DocumentBasePage extends AbstractPage {
 
-    private static final Log log = LogFactory.getLog(DocumentBasePage.class);
+    private static final Logger log = LogManager.getLogger(DocumentBasePage.class);
 
     /**
      * Exception occurred a user is expected to be connected but it isn't.

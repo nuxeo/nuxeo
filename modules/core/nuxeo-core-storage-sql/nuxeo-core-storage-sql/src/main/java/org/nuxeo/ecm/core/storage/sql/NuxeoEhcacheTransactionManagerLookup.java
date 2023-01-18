@@ -24,18 +24,19 @@ import java.util.Properties;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
 import net.sf.ehcache.transaction.manager.TransactionManagerLookup;
 import net.sf.ehcache.transaction.xa.EhcacheXAResource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Help ehcache to find the Nuxeo transaction manager
  */
 public class NuxeoEhcacheTransactionManagerLookup implements TransactionManagerLookup {
-    private static final Log log = LogFactory.getLog(NuxeoEhcacheTransactionManagerLookup.class);
+
+    private static final Logger log = LogManager.getLogger(NuxeoEhcacheTransactionManagerLookup.class);
 
     @Override
     public TransactionManager getTransactionManager() {

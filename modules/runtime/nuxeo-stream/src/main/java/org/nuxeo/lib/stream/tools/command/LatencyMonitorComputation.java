@@ -21,8 +21,7 @@ package org.nuxeo.lib.stream.tools.command;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -42,7 +41,7 @@ import io.dropwizard.metrics5.graphite.GraphiteUDP;
  */
 public class LatencyMonitorComputation extends LatencyTrackerComputation {
 
-    private static final Log log = LogFactory.getLog(LatencyMonitorComputation.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(LatencyMonitorComputation.class);
 
     protected final String host;
 
@@ -65,8 +64,8 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
     }
 
     public LatencyMonitorComputation(LogManager manager, List<Name> logNames, String host, int port, boolean udp,
-                                     String basePrefix, String computationName, int intervalSecond, int count, boolean partition,
-                                     boolean verbose, Codec<Record> codec) {
+            String basePrefix, String computationName, int intervalSecond, int count, boolean partition,
+            boolean verbose, Codec<Record> codec) {
         super(manager, logNames, computationName, intervalSecond, count, verbose, codec, 0);
         this.host = host;
         this.port = port;
@@ -115,7 +114,7 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
             graphite.send(prefix + "pos", Long.toString(latency.lag().lower()), metricTime);
             graphite.send(prefix + "latency", Long.toString(latency.latency()), metricTime);
         } catch (IOException e) {
-            log.error("Fail to send metric to graphite " + prefix + " " + latency, e);
+            log.error("Fail to send metric to graphite {} {}", prefix, latency, e);
         }
     }
 

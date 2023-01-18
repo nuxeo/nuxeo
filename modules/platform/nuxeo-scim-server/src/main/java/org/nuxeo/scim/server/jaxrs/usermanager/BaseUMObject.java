@@ -22,8 +22,6 @@ package org.nuxeo.scim.server.jaxrs.usermanager;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -42,8 +40,6 @@ import org.nuxeo.scim.server.mapper.UserMapperFactory;
  */
 
 public abstract class BaseUMObject extends DefaultObject {
-
-    protected static Log log = LogFactory.getLog(SCIMUserWebObject.class);
 
     protected UserManager um;
 

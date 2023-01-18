@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -38,9 +38,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class RepositoryManagerImpl extends DefaultComponent implements RepositoryManager {
 
-    private static final Log log = LogFactory.getLog(RepositoryManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(RepositoryManagerImpl.class);
 
-    private Map<String, Repository> repositories = Collections.synchronizedMap(new LinkedHashMap<String, Repository>());
+    private Map<String, Repository> repositories = Collections.synchronizedMap(new LinkedHashMap<>());
 
     // compat from old extension point
     private Map<String, Repository> compatRepositories = new ConcurrentHashMap<>();
@@ -52,9 +52,10 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_REPOSITORIES.equals(extensionPoint)) {
             Repository repo = (Repository) contribution;
-            log.warn("Using old-style extension point" + " org.nuxeo.ecm.core.api.repository.RepositoryManager"
-                    + " for repository \"" + repo.getName()
-                    + "\", use org.nuxeo.ecm.core.storage.sql.RepositoryService instead");
+            log.warn(
+                    "Using old-style extension point org.nuxeo.ecm.core.api.repository.RepositoryManager"
+                            + " for repository: \"{}\", use org.nuxeo.ecm.core.storage.sql.RepositoryService instead",
+                    repo.getName());
             compatRepositories.put(repo.getName(), repo);
         } else {
             throw new RuntimeException("Unknown extension point: " + extensionPoint);
@@ -76,9 +77,9 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
     public void addRepository(Repository repository) {
         String name = repository.getName();
         if (repositories.containsKey(name)) {
-            log.info("Overriding repository: " + name);
+            log.info("Overriding repository: {}", name);
         } else {
-            log.info("Registering repository: " + name);
+            log.info("Registering repository: {}", name);
         }
         Repository compat = compatRepositories.get(name);
         if (compat != null) {
@@ -95,7 +96,7 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
     // call by low-level repository service
     @Override
     public void removeRepository(String name) {
-        log.info("Removing repository: " + name);
+        log.info("Removing repository: {}", name);
         repositories.remove(name);
     }
 

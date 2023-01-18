@@ -32,10 +32,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import net.sf.jooreports.templates.DocumentTemplate;
-import net.sf.jooreports.templates.DocumentTemplateException;
-import net.sf.jooreports.templates.DocumentTemplateFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -59,6 +57,9 @@ import org.nuxeo.template.odt.OOoArchiveModifier;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
 import freemarker.template.TemplateModelException;
+import net.sf.jooreports.templates.DocumentTemplate;
+import net.sf.jooreports.templates.DocumentTemplateException;
+import net.sf.jooreports.templates.DocumentTemplateFactory;
 
 /**
  * {@link TemplateProcessor} for ODT based templates. Using JODReports but also custom ODT hacks. May be migrated to
@@ -67,6 +68,8 @@ import freemarker.template.TemplateModelException;
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class JODReportTemplateProcessor extends AbstractTemplateProcessor implements TemplateProcessor {
+
+    private static final Logger log = LogManager.getLogger(JODReportTemplateProcessor.class);
 
     public static final String TEMPLATE_TYPE = "JODTemplate";
 
@@ -98,8 +101,9 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
 
         Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob(templateName);
         if (templateBasedDocument.getSourceTemplateDoc(templateName) != null) {
-            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc(templateName).getAdapter(
-                    TemplateSourceDocument.class).getTemplateBlob();
+            sourceTemplateBlob = templateBasedDocument.getSourceTemplateDoc(templateName)
+                                                      .getAdapter(TemplateSourceDocument.class)
+                                                      .getTemplateBlob();
         }
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
 
@@ -121,7 +125,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
                 try {
                     property = templateBasedDocument.getAdaptedDoc().getProperty(param.getSource());
                 } catch (PropertyException e) {
-                    log.warn("Unable to ready property " + param.getSource(), e);
+                    log.warn("Unable to ready property: {}", param.getSource(), e);
                 }
                 if (property != null) {
                     Serializable value = property.getValue();

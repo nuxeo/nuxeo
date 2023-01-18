@@ -28,8 +28,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ModuleManager {
 
-    private static final Log log = LogFactory.getLog(ModuleManager.class);
+    private static final Logger log = LogManager.getLogger(ModuleManager.class);
 
     protected final Map<String, ModuleConfiguration> modules;
 
@@ -94,7 +94,7 @@ public class ModuleManager {
     }
 
     public synchronized void registerModule(ModuleConfiguration descriptor) {
-        log.info("Registering web module: " + descriptor.name);
+        log.info("Registering web module: {}", descriptor.name);
         modules.put(descriptor.name, descriptor);
         String path = descriptor.path;
         if (path != null) {
@@ -178,7 +178,7 @@ public class ModuleManager {
     }
 
     public void reloadModule(String name) {
-        log.info("Reloading module: " + name);
+        log.info("Reloading module: {}", name);
         File cfg = unregisterModule(name);
         if (cfg != null) {
             loadModule(cfg);

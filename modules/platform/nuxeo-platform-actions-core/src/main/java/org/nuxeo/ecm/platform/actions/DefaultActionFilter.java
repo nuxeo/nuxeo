@@ -26,8 +26,8 @@ import java.util.Map;
 
 import javax.el.ELException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 @XObject("filter")
 public class DefaultActionFilter implements ActionFilter, Cloneable {
 
-    private static final Log log = LogFactory.getLog(DefaultActionFilter.class);
+    private static final Logger log = LogManager.getLogger(DefaultActionFilter.class);
 
     @XNode("@id")
     protected String id;
@@ -89,18 +89,14 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     // FIXME: the parameter 'action' is not used!
     @Override
     public boolean accept(Action action, ActionContext context) {
-        if (log.isDebugEnabled()) {
-            if (action == null) {
-                log.debug(String.format("#accept: checking filter '%s'", getId()));
-            } else {
-                log.debug(String.format("#accept: checking filter '%s' for action '%s'", getId(), action.getId()));
-            }
+        if (action == null) {
+            log.debug("#accept: checking filter '{}'", getId());
+        } else {
+            log.debug("#accept: checking filter '{}' for action '{}'", getId(), action.getId());
         }
         // no context: reject
         if (context == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("#accept: no context available: action filtered");
-            }
+            log.debug("#accept: no context available: action filtered");
             return false;
         }
         // no rule: accept
@@ -113,9 +109,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             boolean ruleApplies = checkRule(rule, context);
             if (!rule.grant) {
                 if (ruleApplies) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("#accept: denying rule applies => action filtered");
-                    }
+                    log.debug("#accept: denying rule applies => action filtered");
                     return false;
                 }
             } else {
@@ -126,12 +120,10 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             }
         }
         if (existsGrantRule) {
-            if (log.isDebugEnabled()) {
-                if (grantApply) {
-                    log.debug("#accept: granting rule applies, action not filtered");
-                } else {
-                    log.debug("#accept: granting rule applies, action filtered");
-                }
+            if (grantApply) {
+                log.debug("#accept: granting rule applies, action not filtered");
+            } else {
+                log.debug("#accept: granting rule applies, action filtered");
             }
             return grantApply;
         }
@@ -150,17 +142,13 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      */
     @SuppressWarnings("unchecked")
     protected final boolean checkRule(FilterRule rule, ActionContext context) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("#checkRule: checking rule '%s'", rule));
-        }
+        log.debug("#checkRule: checking rule '{}'", rule);
         boolean disableCache = context.disableGlobalCaching();
         if (!disableCache) {
             // check cache
             Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.getLocalVariable(PRECOMPUTED_KEY);
             if (precomputed != null && precomputed.containsKey(rule)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("#checkRule: return precomputed result for rule '%s'", rule));
-                }
+                log.debug("#checkRule: return precomputed result for rule '{}'", rule);
                 return Boolean.TRUE.equals(precomputed.get(rule));
             }
         }
@@ -168,10 +156,11 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(context, rule.facets))
                 && (rule.types == null || rule.types.length == 0 || checkTypes(context, rule.types))
                 && (rule.schemas == null || rule.schemas.length == 0 || checkSchemas(context, rule.schemas))
-                && (rule.permissions == null || rule.permissions.length == 0 || checkPermissions(context,
-                        rule.permissions))
+                && (rule.permissions == null || rule.permissions.length == 0
+                        || checkPermissions(context, rule.permissions))
                 && (rule.groups == null || rule.groups.length == 0 || checkGroups(context, rule.groups))
-                && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(context, rule.conditions));
+                && (rule.conditions == null || rule.conditions.length == 0
+                        || checkConditions(context, rule.conditions));
         if (!disableCache) {
             // put in cache
             Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.getLocalVariable(PRECOMPUTED_KEY);
@@ -196,15 +185,11 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         }
         for (String facet : facets) {
             if (doc.hasFacet(facet)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("#checkFacets: return true for facet '%s'", facet));
-                }
+                log.debug("#checkFacets: return true for facet '{}'", facet);
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("#checkFacets: return false");
-        }
+        log.debug("#checkFacets: return false");
         return false;
     }
 
@@ -222,58 +207,42 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             // default check when there is not context yet
             if (principal != null) {
                 if (principal.isAdministrator()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("#checkPermissions: doc is null but user is admin => return true");
-                    }
+                    log.debug("#checkPermissions: doc is null but user is admin => return true");
                     return true;
                 }
             }
-            if (log.isDebugEnabled()) {
-                log.debug("#checkPermissions: doc and user are null => return false");
-            }
+            log.debug("#checkPermissions: doc and user are null => return false");
             return false;
         }
         // check rights on doc
         CoreSession docMgr = context.getDocumentManager();
         if (docMgr == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("#checkPermissions: no core session => return false");
-            }
+            log.debug("#checkPermissions: no core session => return false");
             return false;
         }
         for (String permission : permissions) {
             if (docMgr.hasPermission(doc.getRef(), permission)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("#checkPermissions: return true for permission '%s'", permission));
-                }
+                log.debug("#checkPermissions: return true for permission '{}'", permission);
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("#checkPermissions: return false");
-        }
+        log.debug("#checkPermissions: return false");
         return false;
     }
 
     protected final boolean checkGroups(ActionContext context, String[] groups) {
         NuxeoPrincipal principal = context.getCurrentPrincipal();
         if (principal == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("#checkGroups: no user => return false");
-            }
+            log.debug("#checkGroups: no user => return false");
             return false;
         }
         for (String group : groups) {
             if (principal.isMemberOf(group)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("#checkGroups: return true for group '%s'", group));
-                }
+                log.debug("#checkGroups: return true for group '{}'", group);
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("#checkGroups: return false");
-        }
+        log.debug("#checkGroups: return false");
         return false;
     }
 
@@ -288,19 +257,15 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         for (String condition : conditions) {
             try {
                 if (context.checkCondition(condition)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("#checkCondition: return true for condition '%s'", condition));
-                    }
+                    log.debug("#checkCondition: return true for condition '{}'", condition);
                     return true;
                 }
             } catch (ELException e) {
-                log.error("evaluation of condition " + condition + " failed: returning false", e);
+                log.error("evaluation of condition {} failed: returning false", condition, e);
                 return false;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("#checkConditions: return false");
-        }
+        log.debug("#checkConditions: return false");
         return false;
     }
 
@@ -323,15 +288,11 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
         for (String type : types) {
             if (type.equals(docType)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("#checkTypes: return true for type '%s'", docType));
-                }
+                log.debug("#checkTypes: return true for type '{}'", docType);
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("#checkTypes: return false");
-        }
+        log.debug("#checkTypes: return false");
         return false;
     }
 
@@ -343,22 +304,16 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     protected final boolean checkSchemas(ActionContext context, String[] schemas) {
         DocumentModel doc = context.getCurrentDocument();
         if (doc == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("#checkSchemas: no doc => return false");
-            }
+            log.debug("#checkSchemas: no doc => return false");
             return false;
         }
         for (String schema : schemas) {
             if (doc.hasSchema(schema)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("#checkSchemas: return true for schema '%s'", schema));
-                }
+                log.debug("#checkSchemas: return true for schema '{}'", schema);
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("#checkSchemas: return false");
-        }
+        log.debug("#checkSchemas: return false");
         return false;
     }
 

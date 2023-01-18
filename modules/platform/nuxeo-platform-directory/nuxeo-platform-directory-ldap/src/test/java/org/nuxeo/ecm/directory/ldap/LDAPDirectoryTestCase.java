@@ -44,10 +44,10 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.junit.After;
 import org.junit.Before;
@@ -64,7 +64,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(LDAPDirectoryFeature.class)
 public abstract class LDAPDirectoryTestCase {
 
-    private static final Log log = LogFactory.getLog(LDAPDirectoryTestCase.class);
+    private static final Logger log = LogManager.getLogger(LDAPDirectoryTestCase.class);
 
     protected MockLdapServer server;
 
@@ -144,14 +144,14 @@ public abstract class LDAPDirectoryTestCase {
 
     protected static void loadDataFromLdif(String ldif, DirContext ctx) {
         List<LdifLoadFilter> filters = new ArrayList<>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters, Thread.currentThread()
-                                                                                       .getContextClassLoader());
+        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters,
+                Thread.currentThread().getContextClassLoader());
         loader.execute();
     }
 
     protected void destroyRecursively(String dn, DirContext ctx, int limit) throws NamingException {
         if (limit == 0) {
-            log.warn("Reach recursion limit, stopping deletion at" + dn);
+            log.warn("Reach recursion limit, stopping deletion at: {}", dn);
             return;
         }
         SearchControls scts = new SearchControls();
@@ -170,7 +170,7 @@ public abstract class LDAPDirectoryTestCase {
                 destroyRecursively(subDn, ctx, limit);
             }
         } catch (SizeLimitExceededException e) {
-            log.warn("SizeLimitExceededException: trying again on partial results " + dn);
+            log.warn("SizeLimitExceededException: trying again on partial results: {}", dn);
             if (limit == -1) {
                 limit = 100;
             }

@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -59,7 +59,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
-    protected static final Log log = LogFactory.getLog(VideoServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(VideoServiceImpl.class);
 
     public static final String VIDEO_CONVERSIONS_EP = "videoConversions";
 
@@ -149,7 +149,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     public void launchConversion(DocumentModel doc, String conversionName) {
         WorkManager workManager = Framework.getService(WorkManager.class);
         VideoConversionWork work = new VideoConversionWork(doc.getRepositoryName(), doc.getId(), conversionName);
-        log.debug(String.format("Scheduling work: %s conversion of Video document %s.", conversionName, doc));
+        log.debug("Scheduling work: {} conversion of Video document: {}.", conversionName, doc);
         workManager.schedule(work, true);
     }
 

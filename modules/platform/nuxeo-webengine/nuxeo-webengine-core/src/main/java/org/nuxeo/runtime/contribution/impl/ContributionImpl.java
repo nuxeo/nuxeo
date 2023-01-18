@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.contribution.Contribution;
 import org.nuxeo.runtime.contribution.ContributionRegistry;
 
@@ -36,8 +34,6 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ContributionImpl<K, T> implements Contribution<K, T> {
-
-    private static final Log log = LogFactory.getLog(ContributionImpl.class);
 
     protected final AbstractContributionRegistry<K, T> registry;
 
@@ -258,8 +254,8 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     @Override
     public void resolve() {
         if (isResolved || isPhantom()) {
-            throw new IllegalStateException("Cannot resolve. Invalid state. phantom: " + isPhantom() + "; resolved: "
-                    + isResolved);
+            throw new IllegalStateException(
+                    "Cannot resolve. Invalid state. phantom: " + isPhantom() + "; resolved: " + isResolved);
         }
         if (checkIsResolved()) { // resolve dependents
             isResolved = true;

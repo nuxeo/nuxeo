@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.user.center.profile.listeners;
 
-import static org.apache.commons.logging.LogFactory.getLog;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_AVATAR_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_FACET;
@@ -27,7 +26,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -48,11 +48,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ResizeAvatarPictureListener implements EventListener {
 
+    private static final Logger log = LogManager.getLogger(ResizeAvatarPictureListener.class);
+
     protected static final int RESIZED_IMAGE_WIDTH = 300;
 
     protected static final int RESIZED_IMAGE_HEIGHT = 200;
-
-    private static final Log log = getLog(ResizeAvatarPictureListener.class);
 
     @Override
     public void handleEvent(Event event) {

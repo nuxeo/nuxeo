@@ -36,8 +36,8 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.AbstractReference;
@@ -55,7 +55,7 @@ import org.nuxeo.ecm.directory.Session;
 @XObject(value = "ldapTreeReference")
 public class LDAPTreeReference extends AbstractReference implements Cloneable {
 
-    private static final Log log = LogFactory.getLog(LDAPTreeReference.class);
+    private static final Logger log = LogManager.getLogger(LDAPTreeReference.class);
 
     public static final List<String> EMPTY_STRING_LIST = Collections.emptyList();
 
@@ -214,15 +214,13 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
         SearchControls sctls = ldapSourceDirectory.getSearchControls(true);
         sctls.setSearchScope(SearchControls.OBJECT_SCOPE);
         try (LDAPSession sourceSession = ldapSourceDirectory.getSession()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
-                                + " filter='%s' args='%s' scope='%s' [%s]",
-                        targetId, parentDn, filterExpr, StringUtils.join(filterArgs, ", "), sctls.getSearchScope(),
-                        this));
-            }
-            NamingEnumeration<SearchResult> results = sourceSession.getContext().search(parentDn, filterExpr,
-                    filterArgs, sctls);
+            log.debug(
+                    "LDAPReference.getSourceIdsForTarget({}): LDAP search search base='{}'"
+                            + " filter='{}' args='{}' scope='{}' [{}]",
+                    () -> targetId, () -> parentDn, () -> filterExpr, () -> StringUtils.join(filterArgs, ", "),
+                    sctls::getSearchScope, () -> this);
+            NamingEnumeration<SearchResult> results = sourceSession.getContext()
+                                                                   .search(parentDn, filterExpr, filterArgs, sctls);
 
             try {
                 while (results.hasMore()) {
@@ -286,15 +284,13 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
         SearchControls sctls = ldapTargetDirectory.getSearchControls(true);
         sctls.setSearchScope(getScope());
         try (LDAPSession targetSession = ldapTargetDirectory.getSession()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "LDAPReference.getTargetIdsForSource(%s): LDAP search search base='%s'"
-                                + " filter='%s' args='%s' scope='%s' [%s]",
-                        sourceId, sourceDn, filterExpr, StringUtils.join(filterArgs, ", "), sctls.getSearchScope(),
-                        this));
-            }
-            NamingEnumeration<SearchResult> results = targetSession.getContext().search(sourceDn, filterExpr,
-                    filterArgs, sctls);
+            log.debug(
+                    "LDAPReference.getTargetIdsForSource({}): LDAP search search base='{}'"
+                            + " filter='{}' args='{}' scope='{}' [{}]",
+                    () -> sourceId, () -> sourceDn, () -> filterExpr, () -> StringUtils.join(filterArgs, ", "),
+                    sctls::getSearchScope, () -> this);
+            NamingEnumeration<SearchResult> results = targetSession.getContext()
+                                                                   .search(sourceDn, filterExpr, filterArgs, sctls);
 
             try {
                 while (results.hasMore()) {

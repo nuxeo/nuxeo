@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -42,6 +42,8 @@ import com.google.common.cache.CacheBuilder;
  * @since 5.7.3 The Automation tracer factory service.
  */
 public class TracerFactory implements TracerFactoryMBean {
+
+    private static final Logger log = LogManager.getLogger(TracerFactory.class);
 
     public static final String AUTOMATION_TRACE_PROPERTY = "org.nuxeo.automation.trace";
 
@@ -196,7 +198,6 @@ public class TracerFactory implements TracerFactoryMBean {
             trace.error.addSuppressed(new Throwable(print(trace)));
         }
         if (printableAssertor.apply(trace.chain.getId())) {
-            Log log = LogFactory.getLog(Trace.class);
             if (containsError) {
                 log.warn(print(trace));
             } else {

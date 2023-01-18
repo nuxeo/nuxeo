@@ -32,8 +32,8 @@ import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.io.output.WriterOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 
@@ -50,7 +50,7 @@ import ro.isdc.wro.model.resource.SupportedResourceType;
 @SupportedResourceType(ResourceType.CSS)
 public class FlavorResourceProcessor extends AbstractFlavorProcessor {
 
-    private static final Log log = LogFactory.getLog(FlavorResourceProcessor.class);
+    private static final Logger log = LogManager.getLogger(FlavorResourceProcessor.class);
 
     public static final String ALIAS = "flavor";
 
@@ -80,7 +80,7 @@ public class FlavorResourceProcessor extends AbstractFlavorProcessor {
             }
             is.close();
         } catch (final Exception e) {
-            log.error("Error while serving resource " + resource.getUri(), e);
+            log.error("Error while serving resource: {}", resource.getUri(), e);
             throw WroRuntimeException.wrap(e);
         }
     }

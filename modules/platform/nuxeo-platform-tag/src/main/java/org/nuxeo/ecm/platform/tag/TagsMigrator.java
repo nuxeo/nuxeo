@@ -40,8 +40,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -60,7 +60,7 @@ import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
  */
 public class TagsMigrator extends AbstractRepositoryMigrator {
 
-    private static final Log log = LogFactory.getLog(TagsMigrator.class);
+    private static final Logger log = LogManager.getLogger(TagsMigrator.class);
 
     protected static final String QUERY_TAGGING = "SELECT ecm:uuid, relation:source, ecm:name, dc:creator FROM Tagging WHERE ecm:isProxy = 0";
 
@@ -201,13 +201,14 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
         checkShutdownRequested(migrationContext);
 
         // recreate all doc tags
-        processBatched(migrationContext, BATCH_SIZE, docTags.entrySet(), es -> addTags(session, es.getKey(), es.getValue()),
-                "Creating new tags");
+        processBatched(migrationContext, BATCH_SIZE, docTags.entrySet(),
+                es -> addTags(session, es.getKey(), es.getValue()), "Creating new tags");
 
         // delete all Tagging and Tag documents
         processBatched(migrationContext, BATCH_SIZE, taggingIds, docId -> removeDocument(session, docId),
                 "Deleting old Tagging documents");
-        processBatched(migrationContext, BATCH_SIZE, tagIds, docId -> removeDocument(session, docId), "Deleting old Tag documents");
+        processBatched(migrationContext, BATCH_SIZE, tagIds, docId -> removeDocument(session, docId),
+                "Deleting old Tag documents");
 
         reportProgress("Done", docTags.size(), docTags.size());
     }

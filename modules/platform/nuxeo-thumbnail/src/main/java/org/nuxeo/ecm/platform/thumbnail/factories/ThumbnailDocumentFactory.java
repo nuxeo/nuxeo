@@ -28,8 +28,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ThumbnailDocumentFactory implements ThumbnailFactory {
 
-    private static final Log log = LogFactory.getLog(ThumbnailDocumentFactory.class);
+    private static final Logger log = LogManager.getLogger(ThumbnailDocumentFactory.class);
 
     @Override
     public Blob getThumbnail(DocumentModel doc, CoreSession session) {
@@ -95,7 +95,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
                 }
             }
         } catch (NuxeoException e) {
-            log.warn("Cannot compute document thumbnail for: " + doc.getId(), e);
+            log.warn("Cannot compute document thumbnail for: {}", doc.getId(), e);
         }
         return thumbnailBlob;
     }
@@ -124,7 +124,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
                 return Blobs.createBlob(iconFile, mimeType);
             }
         } catch (IOException e) {
-            log.warn(String.format("Could not fetch the thumbnail blob from icon path '%s'", iconPath), e);
+            log.warn("Could not fetch the thumbnail blob from icon path: {}", iconPath, e);
         }
 
         return null;

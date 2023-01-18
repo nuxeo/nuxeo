@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mvel2.CompileException;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -48,7 +48,7 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 @XObject("handler")
 public class EventHandler {
 
-    private static final Log log = LogFactory.getLog(EventHandler.class);
+    private static final Logger log = LogManager.getLogger(EventHandler.class);
 
     /** @since 2021.16 */
     @XNode("@id")
@@ -312,7 +312,7 @@ public class EventHandler {
                 }
             } catch (CompileException e) {
                 // happens for expressions evaluated over a DeletedDocumentModel for instance
-                log.debug("Failed to execute expression: " + e, e);
+                log.debug("Failed to execute expression: {}", e, e);
                 return false;
             }
         }

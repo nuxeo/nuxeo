@@ -37,8 +37,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.restapi.server.jaxrs.resource.wro.ResourceBundleEndpoint.ResourceBundleDispatcher;
 
 /**
@@ -49,7 +49,7 @@ import org.nuxeo.ecm.restapi.server.jaxrs.resource.wro.ResourceBundleEndpoint.Re
 @Provider
 public class ResourceBundleWriter implements MessageBodyWriter<ResourceBundleDispatcher> {
 
-    private static final Log log = LogFactory.getLog(ResourceBundleEndpoint.class);
+    private static final Logger log = LogManager.getLogger(ResourceBundleWriter.class);
 
     @Context
     protected UriInfo uriInfo;

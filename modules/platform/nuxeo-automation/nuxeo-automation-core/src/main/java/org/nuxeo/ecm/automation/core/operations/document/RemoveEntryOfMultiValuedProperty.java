@@ -20,11 +20,10 @@ package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -41,12 +40,13 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
-@Operation(id = RemoveEntryOfMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Remove Entry Of Multivalued Property", description = "Remove the first entry of the giving value in the multivalued xpath, does nothing if does not exist: <ul<li>if 'is Remove All' is check, all entry instance in the list.</li><li>if not will remove just the first one found</li></ul><p>Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events.</p>", aliases = { "RemoveEntryOfMultivaluedProperty" })
+@Operation(id = RemoveEntryOfMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Remove Entry Of Multivalued Property", description = "Remove the first entry of the giving value in the multivalued xpath, does nothing if does not exist: <ul<li>if 'is Remove All' is check, all entry instance in the list.</li><li>if not will remove just the first one found</li></ul><p>Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events.</p>", aliases = {
+        "RemoveEntryOfMultivaluedProperty" })
 public class RemoveEntryOfMultiValuedProperty extends AbstractOperationMultiValuedProperty {
 
-    public static final String ID = "Document.RemoveEntryOfMultivaluedProperty";
+    private static final Logger log = LogManager.getLogger(RemoveEntryOfMultiValuedProperty.class);
 
-    public static final Log log = LogFactory.getLog(RemoveEntryOfMultiValuedProperty.class);
+    public static final String ID = "Document.RemoveEntryOfMultivaluedProperty";
 
     @Context
     protected CoreSession session;
@@ -70,13 +70,13 @@ public class RemoveEntryOfMultiValuedProperty extends AbstractOperationMultiValu
         Type type = p.getType();
         checkFieldType(type, value);
 
-        List<Serializable> array = Arrays.asList((Serializable[]) p.getValue());
+        var array = (Serializable[]) p.getValue();
 
         if (array == null) {
-            log.info(String.format("Value \"%s\" not found in %s, can't remove it", value, doc.getPathAsString()));
+            log.info("Value \"{}\" not found in {}, can't remove it", value, doc.getPathAsString());
             return doc;
         }
-        List<Serializable> list = new ArrayList<>(array);
+        List<Serializable> list = new ArrayList<>(List.of(array));
 
         if (!list.contains(value)) {
             log.info(String.format("Value \"%s\" not found in %s, can't remove it", value, doc.getPathAsString()));

@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
@@ -47,6 +47,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractGroupsPageProvider<T> extends AbstractPageProvider<T> {
 
+    private static final Logger log = LogManager.getLogger(AbstractGroupsPageProvider.class);
+
     protected static final String GROUPS_LISTING_MODE_PROPERTY = "groupsListingMode";
 
     protected static final String ALL_MODE = "all";
@@ -54,8 +56,6 @@ public abstract class AbstractGroupsPageProvider<T> extends AbstractPageProvider
     protected static final String SEARCH_ONLY_MODE = "search_only";
 
     protected static final String SEARCH_OVERFLOW_ERROR_MESSAGE = "label.security.searchOverFlow";
-
-    private static final Log log = LogFactory.getLog(AbstractGroupsPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 

@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
@@ -56,7 +56,7 @@ import redis.clients.jedis.exceptions.JedisDataException;
  */
 public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
 
-    private static final Log log = LogFactory.getLog(RedisKeyValueStore.class);
+    private static final Logger log = LogManager.getLogger(RedisKeyValueStore.class);
 
     /**
      * @deprecated since 10.10

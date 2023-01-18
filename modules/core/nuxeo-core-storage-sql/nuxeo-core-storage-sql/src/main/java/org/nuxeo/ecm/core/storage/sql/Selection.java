@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A {@link Selection} holds information about row ids corresponding to a fixed clause for a given table.
@@ -52,7 +52,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Selection {
 
-    private static final Log log = LogFactory.getLog(Selection.class);
+    private static final Logger log = LogManager.getLogger(Selection.class);
 
     /**
      * The selection id, also the key which this instance has in the map holding it.
@@ -263,8 +263,8 @@ public class Selection {
         if (context.bigSelWarnThreshold != 0) {
             int size = existing.size();
             if (size / context.bigSelWarnThreshold != (size - added) / context.bigSelWarnThreshold) {
-                log.warn("Selection " + tableName + "." + filterKey + " for id=" + selId
-                        + " is getting big and now has size: " + size, new RuntimeException("Debug stack trace"));
+                log.warn("Selection {}.{} for id={} is getting big and now has size: {}", tableName, filterKey, selId,
+                        size, new RuntimeException("Debug stack trace"));
             }
         }
     }
@@ -298,7 +298,7 @@ public class Selection {
             for (Serializable id : existing) {
                 SimpleFragment fragment = getFragment(id);
                 if (fragment == null) {
-                    log.warn("Existing fragment missing: " + id);
+                    log.warn("Existing fragment missing: {}", id);
                     continue;
                 }
                 if (filter.equals(fragmentValue(fragment))) {
@@ -310,7 +310,7 @@ public class Selection {
             for (Serializable id : created) {
                 SimpleFragment fragment = getFragmentIfPresent(id);
                 if (fragment == null) {
-                    log.warn("Created fragment missing: " + id);
+                    log.warn("Created fragment missing: {}", id);
                     continue;
                 }
                 if (filter.equals(fragmentValue(fragment))) {
@@ -349,7 +349,7 @@ public class Selection {
             for (Serializable id : existing) {
                 SimpleFragment fragment = getFragment(id);
                 if (fragment == null) {
-                    log.warn("Existing fragment missing: " + id);
+                    log.warn("Existing fragment missing: {}", id);
                     continue;
                 }
                 if (filter == null || filter.equals(fragmentValue(fragment))) {
@@ -361,7 +361,7 @@ public class Selection {
             for (Serializable id : created) {
                 SimpleFragment fragment = getFragmentIfPresent(id);
                 if (fragment == null) {
-                    log.warn("Created fragment missing: " + id);
+                    log.warn("Created fragment missing: {}", id);
                     continue;
                 }
                 if (filter == null || filter.equals(fragmentValue(fragment))) {

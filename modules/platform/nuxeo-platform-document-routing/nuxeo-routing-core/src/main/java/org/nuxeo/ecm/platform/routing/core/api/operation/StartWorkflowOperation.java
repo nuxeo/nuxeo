@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -57,8 +55,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 public class StartWorkflowOperation {
 
     public static final String ID = "Context.StartWorkflow";
-
-    private static Log log = LogFactory.getLog(StartWorkflowOperation.class);
 
     @Context
     protected CoreSession session;
@@ -112,7 +108,8 @@ public class StartWorkflowOperation {
                 vars.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, true);
             }
         }
-        String workflowId = documentRoutingService.createNewInstance(id, ids, vars, session, Boolean.TRUE.equals(start));
+        String workflowId = documentRoutingService.createNewInstance(id, ids, vars, session,
+                Boolean.TRUE.equals(start));
         ctx.put("WorkflowId", workflowId);
         // to be consistent with all the other workflow variablesin the context
         // @since 5.7.2

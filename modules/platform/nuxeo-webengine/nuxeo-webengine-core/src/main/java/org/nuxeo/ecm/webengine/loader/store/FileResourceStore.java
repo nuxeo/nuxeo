@@ -26,15 +26,15 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FileResourceStore implements ResourceStore {
 
-    private static final Log log = LogFactory.getLog(FileResourceStore.class);
+    private static final Logger log = LogManager.getLogger(FileResourceStore.class);
 
     protected File root;
 
@@ -68,7 +68,7 @@ public class FileResourceStore implements ResourceStore {
                 return file.toURI().toURL();
             }
         } catch (IOException e) {
-            log.error("Failed to transform file to URL: " + name, e);
+            log.error("Failed to transform file to URL: {}", name, e);
         }
         return null;
     }
@@ -80,7 +80,7 @@ public class FileResourceStore implements ResourceStore {
                 return IOUtils.toByteArray(in);
             }
         } catch (IOException e) {
-            log.error("Failed to read file: " + name, e);
+            log.error("Failed to read file: {}", name, e);
         }
         return null;
     }

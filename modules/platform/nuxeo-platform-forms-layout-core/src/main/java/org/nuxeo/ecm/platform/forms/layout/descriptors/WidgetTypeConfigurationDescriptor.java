@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -50,7 +50,7 @@ import org.w3c.dom.DocumentFragment;
 @SuppressWarnings("deprecation")
 public class WidgetTypeConfigurationDescriptor {
 
-    private static final Log log = LogFactory.getLog(WidgetTypeConfigurationDescriptor.class);
+    private static final Logger log = LogManager.getLogger(WidgetTypeConfigurationDescriptor.class);
 
     @XNode("sinceVersion")
     String sinceVersion;
@@ -235,7 +235,8 @@ public class WidgetTypeConfigurationDescriptor {
         properties = propsDesc.getProperties();
     }
 
-    protected List<LayoutDefinition> getLayouts(Map<String, LayoutDescriptors> descs, String mode, String additionalMode) {
+    protected List<LayoutDefinition> getLayouts(Map<String, LayoutDescriptors> descs, String mode,
+            String additionalMode) {
         if (descs != null) {
             List<LayoutDefinition> res = new ArrayList<>();
             if (additionalMode != null) {

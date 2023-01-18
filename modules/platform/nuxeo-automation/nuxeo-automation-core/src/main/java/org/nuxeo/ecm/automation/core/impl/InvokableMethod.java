@@ -23,8 +23,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
@@ -40,8 +38,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class InvokableMethod implements Comparable<InvokableMethod> {
-
-    protected static final Log log = LogFactory.getLog(InvokableMethod.class);
 
     public static final int VOID_PRIORITY = 1;
 

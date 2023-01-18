@@ -31,8 +31,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -58,7 +58,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JWTServiceImpl extends DefaultComponent implements JWTService {
 
-    private static final Log log = LogFactory.getLog(JWTServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(JWTServiceImpl.class);
 
     public static final String XP_CONFIGURATION = "configuration";
 
@@ -239,9 +239,7 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
         try {
             jwt = verifier.verify(token);
         } catch (JWTVerificationException e) {
-            if (log.isTraceEnabled()) {
-                log.trace("token verification failed: " + e.toString());
-            }
+            log.trace("token verification failed: {}", e::toString);
             return null; // invalid
         }
         Map<String, JsonNode> tree;
@@ -284,7 +282,7 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
             try {
                 value = FieldUtils.readField(node, "_value", true);
             } catch (ReflectiveOperationException e) {
-                log.warn("Cannot extract primitive value from JsonNode: " + node.getClass().getName());
+                log.warn("Cannot extract primitive value from JsonNode: {}", () -> node.getClass().getName());
                 value = null;
             }
             if (value instanceof Integer) {

@@ -19,14 +19,13 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
-import static org.apache.commons.logging.LogFactory.getLog;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -44,7 +43,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<RenditionDefinition> {
 
-    private static final Log log = getLog(RenditionDefinitionRegistry.class);
+    private static final Logger log = LogManager.getLogger(RenditionDefinitionRegistry.class);
 
     protected Map<String, RenditionDefinition> descriptors = new HashMap<>();
 

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.web.resources.wro.factory;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
@@ -45,7 +45,7 @@ import ro.isdc.wro.model.group.Group;
  */
 public class NuxeoWroModelFactory implements WroModelFactory {
 
-    private static final Log log = LogFactory.getLog(NuxeoWroModelFactory.class);
+    private static final Logger log = LogManager.getLogger(NuxeoWroCacheKeyFactory.class);
 
     @Override
     public WroModel create() {
@@ -73,16 +73,12 @@ public class NuxeoWroModelFactory implements WroModelFactory {
     protected ro.isdc.wro.model.resource.Resource toWroResource(String bundle, Resource resource) {
         ro.isdc.wro.model.resource.ResourceType type = toWroResourceType(resource.getType());
         if (type == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Cannot handle resource type '" + resource.getType() + "' for resource '" + resource.getName()
-                        + "'");
-            }
+            log.debug("Cannot handle resource type: {} for resource: {}", resource::getType, resource::getName);
             return null;
         }
         String uri = NuxeoUriLocator.getUri(resource);
         if (uri == null) {
-            log.error(
-                    "Cannot handle resource '" + resource.getName() + "' for bundle '" + bundle + "': no uri resolved");
+            log.error("Cannot handle resource: {} for bundle: {}: no uri resolved", resource.getName(), bundle);
             return null;
         }
         ro.isdc.wro.model.resource.Resource res = ro.isdc.wro.model.resource.Resource.create(uri, type);

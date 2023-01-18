@@ -19,8 +19,7 @@
 package org.nuxeo.runtime.stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
@@ -45,7 +44,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @Features(RuntimeFeature.class)
 public class RuntimeStreamFeature implements RunnerFeature {
 
-    private static final Log log = LogFactory.getLog(RuntimeStreamFeature.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(RuntimeStreamFeature.class);
 
     public static final String BUNDLE_TEST_NAME = "org.nuxeo.runtime.stream.test";
 

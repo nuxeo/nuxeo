@@ -24,13 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -41,7 +40,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailService {
 
-    private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
+    private static final Logger log = LogManager.getLogger(ThumbnailServiceImpl.class);
 
     public static final String THUMBNAILFACTORY_EP = "thumbnailFactory";
 
@@ -67,7 +66,7 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
                 defaultFactory = desc.getFactory();
             }
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point: {}", extensionPoint);
         }
     }
 

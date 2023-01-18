@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.runtime.api.Framework;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JWTAuthenticator implements NuxeoAuthenticationPlugin {
 
-    private static final Log log = LogFactory.getLog(JWTAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(JWTAuthenticator.class);
 
     protected static final String BEARER_SP = "Bearer ";
 
@@ -94,9 +94,7 @@ public class JWTAuthenticator implements NuxeoAuthenticationPlugin {
             return null;
         }
         String username = (String) sub;
-        if (log.isTraceEnabled()) {
-            log.trace("JWT token valid for username: " + username);
-        }
+        log.trace("JWT token valid for username: {}", username);
         // check Audience
         Object aud = claims.get(CLAIM_AUDIENCE);
         if (aud != null) {
@@ -107,9 +105,7 @@ public class JWTAuthenticator implements NuxeoAuthenticationPlugin {
             String audience = StringUtils.strip((String) aud, "/");
             String path = getRequestPath(request);
             if (!isEqualOrPathPrefix(path, audience)) {
-                if (log.isTraceEnabled()) {
-                    log.trace("JWT token for audience: " + audience + " but used with path: " + path);
-                }
+                log.trace("JWT token for audience: {} but used with path: {}", audience, path);
                 return null;
             }
         }

@@ -24,8 +24,8 @@ import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -46,7 +46,7 @@ import org.quartz.JobExecutionException;
  */
 public class EventJob implements Job {
 
-    private static final Log log = LogFactory.getLog(EventJob.class);
+    private static final Logger log = LogManager.getLogger(EventJob.class);
 
     /**
      * Job execution to send the configured event.
@@ -65,7 +65,7 @@ public class EventJob implements Job {
             execute(dataMap);
         } catch (LoginException e) {
             String eventId = dataMap.getString("eventId");
-            log.error("Error while processing scheduled event id: " + eventId, e);
+            log.error("Error while processing scheduled event id: {}", eventId, e);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCL);
         }
@@ -100,8 +100,7 @@ public class EventJob implements Job {
             boolean tx = TransactionHelper.startTransaction();
 
             // send event
-            log.debug("Sending scheduled event id=" + eventId + ", category=" + eventCategory + ", username="
-                    + username);
+            log.debug("Sending scheduled event id: {}, category: {}, username: {}", eventId, eventCategory, username);
             boolean ok = false;
             try {
                 eventService.fireEvent(event);

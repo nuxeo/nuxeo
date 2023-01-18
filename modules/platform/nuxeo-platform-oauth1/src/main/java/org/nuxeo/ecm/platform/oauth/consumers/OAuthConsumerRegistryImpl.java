@@ -24,8 +24,9 @@ package org.nuxeo.ecm.platform.oauth.consumers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -42,7 +43,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuthConsumerRegistry {
 
-    protected static final Log log = LogFactory.getLog(OAuthConsumerRegistryImpl.class);
+    private static final Logger log = LogManager.getLogger(OAuthConsumerRegistryImpl.class);
 
     public static final String DIRECTORY_NAME = "oauthConsumers";
 
@@ -52,7 +53,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
             NuxeoOAuthConsumer consumer = getEntry(consumerKey, keyType);
             return consumer;
         } catch (DirectoryException e) {
-            log.error("Unable to read consumer " + consumerKey + " from Directory backend", e);
+            log.error("Unable to read consumer: {} from Directory backend", consumerKey, e);
             return null;
         }
     }
@@ -98,7 +99,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
                     session.deleteEntry(consumerKey);
                 }
             } catch (DirectoryException e) {
-                log.error("Unable to delete consumer " + consumerKey, e);
+                log.error("Unable to delete consumer: {}", consumerKey, e);
             }
         });
     }

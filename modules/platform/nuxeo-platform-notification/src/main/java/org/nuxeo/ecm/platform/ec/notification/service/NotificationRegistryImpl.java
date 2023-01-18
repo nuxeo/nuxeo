@@ -27,8 +27,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ec.notification.NotificationImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
@@ -41,7 +41,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(NotificationRegistryImpl.class);
+    private static final Logger log = LogManager.getLogger(NotificationRegistryImpl.class);
 
     // maps EventId to a list of notifications
     private final Map<String, List<Notification>> notificationRegistry = new HashMap<>();

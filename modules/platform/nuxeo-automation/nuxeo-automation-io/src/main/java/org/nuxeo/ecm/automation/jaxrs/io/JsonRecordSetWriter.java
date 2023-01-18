@@ -34,8 +34,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
 
@@ -53,7 +53,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @Produces(MediaType.APPLICATION_JSON)
 public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
 
-    protected static Log log = LogFactory.getLog(JsonRecordSetWriter.class);
+    private static final Logger log = LogManager.getLogger(JsonRecordSetWriter.class);
 
     @Context
     JsonFactory factory;
@@ -71,8 +71,8 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
 
     @Override
     public void writeTo(RecordSet records, Class<?> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream out) throws IOException,
-            WebApplicationException {
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream out)
+            throws IOException, WebApplicationException {
         try {
             writeRecords(out, records);
         } catch (IOException e) {

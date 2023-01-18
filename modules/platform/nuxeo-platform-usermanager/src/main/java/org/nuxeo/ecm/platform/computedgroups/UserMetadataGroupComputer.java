@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.computedgroups;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
@@ -33,8 +31,6 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
  * @since 5.7.3
  */
 public class UserMetadataGroupComputer extends AbstractGroupComputer {
-
-    public static final Log log = LogFactory.getLog(UserMetadataGroupComputer.class);
 
     private String groupPattern;
 

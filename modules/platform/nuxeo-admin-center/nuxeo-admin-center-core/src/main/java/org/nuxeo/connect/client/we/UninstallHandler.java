@@ -29,8 +29,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.packages.PackageManager;
@@ -56,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "uninstallHandler")
 public class UninstallHandler extends DefaultObject {
 
-    protected static final Log log = LogFactory.getLog(UninstallHandler.class);
+    private static final Logger log = LogManager.getLogger(UninstallHandler.class);
 
     @GET
     @Produces("text/html")
@@ -120,7 +120,7 @@ public class UninstallHandler extends DefaultObject {
                 InstallAfterRestart.addPackageForUnInstallation(pkg.getName());
                 return getView("uninstallOnRestart").arg("pkg", pkg).arg("source", source);
             } else {
-                log.debug("Uninstalling: " + pkgToRemove);
+                log.debug("Uninstalling: {}", pkgToRemove);
                 Task uninstallTask;
                 for (DownloadablePackage rpkg : pkgToRemove) {
                     LocalPackage localPackage = pus.getPackage(rpkg.getId());
@@ -146,7 +146,7 @@ public class UninstallHandler extends DefaultObject {
      * @throws PackageException If uninstall fails. A rollback is done before the exception is raised.
      */
     protected Task performUninstall(LocalPackage localPackage) throws PackageException {
-        log.info("Uninstalling " + localPackage.getId());
+        log.info("Uninstalling {}", localPackage.getId());
         Task uninstallTask = localPackage.getUninstallTask();
         try {
             uninstallTask.run(null);

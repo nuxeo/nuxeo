@@ -28,8 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -57,7 +56,8 @@ import net.jodah.failsafe.Execution;
  * @since 9.1
  */
 public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatus>, RebalanceListener {
-    private static final Log log = LogFactory.getLog(ConsumerRunner.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(ConsumerRunner.class);
 
     // This is the registry name used by Nuxeo without adding a dependency nuxeo-runtime
     public static final String NUXEO_METRICS_REGISTRY_NAME = "org.nuxeo.runtime.metrics.MetricsService";
@@ -123,7 +123,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
         consumerId = tailer.toString();
         globalConsumersCounter = registry.counter(MetricRegistry.name("nuxeo", "importer", "stream", "consumers"));
         setTailerPosition = setTailerPosition(manager);
-        log.debug("Consumer thread created tailing on: " + consumerId);
+        log.debug("Consumer thread created tailing on: {}", consumerId);
     }
 
     protected LogTailer<M> createTailer(LogManager manager, Codec<M> codec, List<LogPartition> defaultAssignments) {
@@ -186,9 +186,9 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
                     "Tailer startOffset to " + seekPosition + " is not supported in subscribe mode");
         }
         return switch (policy.getStartOffset()) {
-            case BEGIN -> LogTailer::toStart;
-            case END -> LogTailer::toEnd;
-            default -> LogTailer::toLastCommitted;
+        case BEGIN -> LogTailer::toStart;
+        case END -> LogTailer::toEnd;
+        default -> LogTailer::toLastCommitted;
         };
     }
 
@@ -253,7 +253,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
             BatchState state = acceptBatch();
             commitBatch(state);
             if (state.getState() == BatchState.State.LAST) {
-                log.info("No more message on tailer: " + tailer);
+                log.info("No more message on tailer: {}", tailer);
                 end = true;
             }
         } catch (Exception e) {
@@ -278,9 +278,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
             committedCounter += state.getSize();
             globalCommittedCounter.inc(state.getSize());
             batchCommitCounter += 1;
-            if (log.isDebugEnabled()) {
-                log.debug("Commit batch size: " + state.getSize() + ", total committed: " + committedCounter);
-            }
+            log.debug("Commit batch size: {}, total committed: {}", state.getSize(), committedCounter);
         }
     }
 
@@ -302,7 +300,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
             addSalt(); // do this here so kafka subscription happens concurrently
             message = record.message();
             if (message.poisonPill()) {
-                log.warn("Receive a poison pill: " + message);
+                log.warn("Receive a poison pill: {}", message);
                 batch.last();
             } else {
                 try (Timer.Context ignore = globalAcceptTimer.time()) {
@@ -312,9 +310,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
                 }
                 batch.inc();
                 if (message.forceBatch()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Force end of batch: " + message);
-                    }
+                    log.debug("Force end of batch: {}", message);
                     batch.force();
                 }
             }
@@ -323,8 +319,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
             }
         }
         batch.last();
-        log.info(String.format("No record after: %ds on %s, terminating", policy.getWaitMessageTimeout().getSeconds(),
-                consumerId));
+        log.info("No record after: {}s on {}, terminating", policy.getWaitMessageTimeout().getSeconds(), consumerId);
         return batch;
     }
 

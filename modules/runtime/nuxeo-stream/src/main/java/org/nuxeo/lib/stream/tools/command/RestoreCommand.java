@@ -36,8 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
@@ -54,7 +53,8 @@ import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
  * @since 10.1
  */
 public class RestoreCommand extends Command {
-    private static final Log log = LogFactory.getLog(RestoreCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(RestoreCommand.class);
 
     protected static final String NAME = "restore";
 
@@ -141,7 +141,7 @@ public class RestoreCommand extends Command {
         if (offset == null) {
             return;
         }
-        log.info(key + " new position: " + offset);
+        log.info("{} new position: {}", key, offset);
         try (LogTailer<Record> tailer = manager.createTailer(key.group, key.getLogPartition(), getRecordCodec(codec))) {
             tailer.seek(offset);
             tailer.commit();
@@ -170,19 +170,19 @@ public class RestoreCommand extends Command {
                 }
                 long timestamp = Watermark.ofValue(rec.message().getWatermark()).getTimestamp();
                 if (targetWatermark == timestamp) {
-                    log.info(String.format("%s: offset: %s wm: %d key: %s", key, rec.offset(),
-                            rec.message().getWatermark(), rec.message().getKey()));
+                    log.info("{}: offset: {} wm: {} key: {}", key, rec.offset(), rec.message().getWatermark(),
+                            rec.message().getKey());
                     return rec.offset().nextOffset();
                 }
             }
         }
-        log.error("No offset found for: " + key + ", matching: " + latency.asJson());
+        log.error("No offset found for: {}, matching: {}", key, latency.asJson());
         return null;
     }
 
     protected Map<LogPartitionGroup, Latency> readLatencies(LogManager manager) throws InterruptedException {
         Map<LogPartitionGroup, Latency> latencies = new HashMap<>();
-        log.info("# Reading latencies log: " + input + ", searching for the higher timestamp <= " + date);
+        log.info("# Reading latencies log: {}, searching for the higher timestamp <= {}", input, date);
         try (LogTailer<Record> tailer = manager.createTailer(GROUP, input, getRecordCodec(codec))) {
             for (LogRecord<Record> rec = tailer.read(FIRST_READ_TIMEOUT); rec != null; rec = tailer.read(
                     READ_TIMEOUT)) {
@@ -202,7 +202,7 @@ public class RestoreCommand extends Command {
             }
         }
         log.info("# Latencies found (group:log:partition -> lat)");
-        latencies.forEach((key, latency) -> log.info(String.format("%s: %s", key, latency.asJson())));
+        latencies.forEach((key, latency) -> log.info("{}: {}", key, latency.asJson()));
         return latencies;
     }
 

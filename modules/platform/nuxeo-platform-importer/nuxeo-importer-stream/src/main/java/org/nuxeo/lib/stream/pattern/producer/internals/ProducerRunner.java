@@ -22,8 +22,8 @@ import static java.lang.Thread.currentThread;
 
 import java.util.concurrent.Callable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.pattern.Message;
 import org.nuxeo.lib.stream.pattern.consumer.internals.ConsumerRunner;
@@ -42,7 +42,8 @@ import io.dropwizard.metrics5.Timer;
  * @since 9.1
  */
 public class ProducerRunner<M extends Message> implements Callable<ProducerStatus> {
-    private static final Log log = LogFactory.getLog(ProducerRunner.class);
+
+    private static final Logger log = LogManager.getLogger(ProducerRunner.class);
 
     protected final int producerId;
 
@@ -67,7 +68,7 @@ public class ProducerRunner<M extends Message> implements Callable<ProducerStatu
         this.appender = appender;
         producerTimer = registry.timer(MetricRegistry.name("nuxeo", "importer", "stream", "producer"));
         producersCount = registry.counter(MetricRegistry.name("nuxeo", "importer", "stream", "producers"));
-        log.debug("ProducerIterator thread created: " + producerId);
+        log.debug("ProducerIterator thread created: {}", producerId);
     }
 
     @Override

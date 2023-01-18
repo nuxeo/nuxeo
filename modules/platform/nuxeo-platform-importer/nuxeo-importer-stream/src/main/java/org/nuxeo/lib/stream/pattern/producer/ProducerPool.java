@@ -23,8 +23,7 @@ import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -39,7 +38,8 @@ import org.nuxeo.lib.stream.pattern.producer.internals.ProducerRunner;
  * @since 9.1
  */
 public class ProducerPool<M extends Message> extends AbstractCallablePool<ProducerStatus> {
-    private static final Log log = LogFactory.getLog(ProducerPool.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(ProducerPool.class);
 
     protected final LogManager manager;
 
@@ -87,7 +87,7 @@ public class ProducerPool<M extends Message> extends AbstractCallablePool<Produc
     @Override
     protected void afterCall(List<ProducerStatus> ret) {
         ret.forEach(log::info);
-        log.warn(ProducerStatus.toString(ret));
+        log.warn(() -> ProducerStatus.toString(ret));
     }
 
 }

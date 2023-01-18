@@ -19,8 +19,8 @@
  */
 package org.nuxeo.automation.scripting.helper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class Console implements ContextHelper {
 
-    private static final Log log = LogFactory.getLog(Console.class);
+    private static final Logger log = LogManager.getLogger(Console.class);
 
     protected static boolean infoEnabled = log.isInfoEnabled();
 
@@ -51,7 +51,7 @@ public class Console implements ContextHelper {
         if (infoEnabled) {
             log.info(inWhat);
         } else if (Framework.isDevModeSet()) {
-            log.warn("[LOG] " + inWhat);
+            log.warn("[LOG] {}", inWhat);
         }
     }
 
@@ -62,7 +62,7 @@ public class Console implements ContextHelper {
         if (infoEnabled) {
             log.info(inWhat);
         } else if (Framework.isDevModeSet()) {
-            log.warn("[INFO] " + inWhat);
+            log.warn("[INFO] {}", inWhat);
         }
     }
 
@@ -70,7 +70,7 @@ public class Console implements ContextHelper {
         if (traceEnabled) {
             log.trace(inWhat);
         } else if (Framework.isDevModeSet()) {
-            log.warn("[TRACE] " + inWhat);
+            log.warn("[TRACE] {}", inWhat);
         }
     }
 

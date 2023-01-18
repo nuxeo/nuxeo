@@ -30,8 +30,8 @@ import java.util.Collections;
 import java.util.Locale;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -69,9 +69,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PermissionGrantedNotificationListener implements PostCommitFilteringEventListener {
 
-    public static final String LABEL_SUBJECT_NEW_PERMISSION = "label.subject.new.permission";
+    private static final Logger log = LogManager.getLogger(PermissionGrantedNotificationListener.class);
 
-    private static final Log log = LogFactory.getLog(PermissionGrantedNotificationListener.class);
+    public static final String LABEL_SUBJECT_NEW_PERMISSION = "label.subject.new.permission";
 
     public static final String SUBJECT_FORMAT = "%s %s";
 

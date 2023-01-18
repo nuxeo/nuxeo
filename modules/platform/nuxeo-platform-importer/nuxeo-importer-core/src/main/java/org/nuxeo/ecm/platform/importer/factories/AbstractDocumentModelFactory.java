@@ -22,12 +22,11 @@ package org.nuxeo.ecm.platform.importer.factories;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -41,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractDocumentModelFactory implements ImporterDocumentModelFactory {
 
-    private static final Log log = LogFactory.getLog(AbstractDocumentModelFactory.class);
+    private static final Logger log = LogManager.getLogger(AbstractDocumentModelFactory.class);
 
     /**
      * By default there is no process bound to a folderish node creation error, and the global import task will
@@ -54,8 +53,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
      */
     @Override
     public boolean processFolderishNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node) {
-        log.info(String.format("Nothing to process after error while trying to create the folderish node %s.",
-                node.getSourcePath()));
+        log.info("Nothing to process after error while trying to create the folderish node {}.", node::getSourcePath);
         log.info("Global import task will continue.");
         return true;
     }
@@ -70,8 +68,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
      */
     @Override
     public boolean processLeafNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node) {
-        log.info(String.format("Nothing to process after error while trying to create the leaf node %s.",
-                node.getSourcePath()));
+        log.info("Nothing to process after error while trying to create the leaf node {}.", node::getSourcePath);
         log.info("Global import task will continue.");
         return true;
     }
@@ -86,8 +83,9 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
         return node.isFolderish();
     }
 
-    protected final FilenameNormalizer filenameNormalizer = "true".equals(Framework.getProperty("nuxeo.importer.compatFilenames")) ? new CompatFilenameNormalizer()
-            : new DefaultFilenameNormalizer();
+    protected final FilenameNormalizer filenameNormalizer = "true".equals(
+            Framework.getProperty("nuxeo.importer.compatFilenames")) ? new CompatFilenameNormalizer()
+                    : new DefaultFilenameNormalizer();
 
     protected interface FilenameNormalizer {
         String normalize(String name);
@@ -135,9 +133,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
                 try {
                     doc.setPropertyValue(entry.getKey(), entry.getValue());
                 } catch (PropertyNotFoundException e) {
-                    String message = String.format("Property '%s' not found on document type: %s. Skipping it.",
-                            entry.getKey(), doc.getType());
-                    log.debug(message);
+                    log.debug("Property: {} not found on document type: {}. Skipping it.", entry::getKey, doc::getType);
                 }
             }
             doc = session.saveDocument(doc);

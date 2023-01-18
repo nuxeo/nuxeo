@@ -23,8 +23,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.ByteRange;
@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.blob.ByteRange;
  */
 public class DownloadHelper {
 
-    private static final Log log = LogFactory.getLog(DownloadHelper.class);
+    private static final Logger log = LogManager.getLogger(DownloadHelper.class);
 
     public static final String INLINE = "inline";
 
@@ -176,7 +176,7 @@ public class DownloadHelper {
     }
 
     public static void logClientAbort(Throwable t) {
-        log.debug("Client disconnected: " + unwrapException(t).getMessage());
+        log.debug("Client disconnected: {}", () -> unwrapException(t).getMessage());
     }
 
     private static Throwable unwrapException(Throwable t) {

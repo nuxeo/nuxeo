@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.webengine.loader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.groovy.classgen.Verifier;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
@@ -33,7 +33,7 @@ import groovy.lang.GroovyClassLoader;
  */
 public class GroovyClassProxy implements ClassProxy {
 
-    private static final Log log = LogFactory.getLog(GroovyClassLoader.class);
+    private static final Logger log = LogManager.getLogger(GroovyClassProxy.class);
 
     protected final GroovyClassLoader loader;
 
@@ -57,9 +57,7 @@ public class GroovyClassProxy implements ClassProxy {
             Class<?> clazz = loader.loadClass(className, true, false);
             long tm = Verifier.getTimestamp(clazz);
             if (timestamp > 0 && timestamp < tm) {
-                if (log.isDebugEnabled()) {
-                    log.debug("CLASS CHANGED: " + clazz.getName());
-                }
+                log.debug("CLASS CHANGED: {}", clazz::getName);
             }
             timestamp = tm;
             return clazz;

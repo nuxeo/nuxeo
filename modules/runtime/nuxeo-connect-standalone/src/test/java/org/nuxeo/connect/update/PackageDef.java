@@ -23,9 +23,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
@@ -35,7 +34,7 @@ import org.nuxeo.connect.update.xml.XmlWriter;
  */
 public abstract class PackageDef {
 
-    private static final Log log = LogFactory.getLog(PackageDef.class);
+    private static final Logger log = LogManager.getLogger(PackageDef.class);
 
     private File pkgFile;
 
@@ -57,7 +56,8 @@ public abstract class PackageDef {
         this(name, version, type, "dm-" + version, service);
     }
 
-    public PackageDef(String name, String version, PackageType type, String targetVersion, PackageUpdateService service) {
+    public PackageDef(String name, String version, PackageType type, String targetVersion,
+            PackageUpdateService service) {
         builder = new PackageBuilder();
         builder.name(name).version(version).type(type);
         builder.platform(targetVersion);

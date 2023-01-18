@@ -24,8 +24,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -37,9 +37,9 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class EventService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.EventService");
+    private static final Logger log = LogManager.getLogger(EventService.class);
 
-    private static final Log log = LogFactory.getLog(EventService.class);
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.EventService");
 
     private final Map<String, ListenerList> topics;
 
@@ -93,9 +93,7 @@ public class EventService extends DefaultComponent {
     public void sendEvent(Event event) {
         ListenerList list = topics.get(event.getTopic());
         if (list == null) {
-            if (log.isTraceEnabled()) {
-                log.trace("Event sent to topic " + event.getTopic() + ". Ingnoring");
-            }
+            log.trace("Event sent to topic: {}. Ignoring", event::getTopic);
         } else {
             sendEvent(list, event);
         }

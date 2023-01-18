@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core.uidgen;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.event.Event;
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DocUIDGeneratorListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(DocUIDGeneratorListener.class);
+    private static final Logger log = LogManager.getLogger(DocUIDGeneratorListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -51,11 +51,11 @@ public class DocUIDGeneratorListener implements EventListener {
                 return;
             }
             String eventId = event.getName();
-            log.debug("eventId : " + eventId);
+            log.debug("eventId: {}", eventId);
             try {
                 addUIDtoDoc(doc);
             } catch (PropertyNotFoundException e) {
-                log.error("Error occurred while generating UID for doc: " + doc, e);
+                log.error("Error occurred while generating UID for doc: {}", doc, e);
             }
         }
     }

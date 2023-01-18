@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -34,7 +34,7 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
     private static final long serialVersionUID = 1L;
 
-    protected Log log = LogFactory.getLog(ESDocumentHistoryPageProvider.class);
+    private static final Logger log = LogManager.getLogger(ESDocumentHistoryPageProvider.class);
 
     protected Object[] newParams;
 
@@ -48,40 +48,40 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
             "  }\n" + //
             "}\n";
 
-    protected static String complexQuery = "{\n" +  //
-            "  \"bool\": {\n" +  //
-            "    \"should\": [\n" +  //
-            "      {\n" +  //
-            "        \"term\": {\n" +  //
-            "          \"docUUID\": \"?\"\n" +  //
-            "        }\n" +  //
-            "      },\n" +  //
-            "      {\n" +  //
-            "        \"bool\": {\n" +  //
-            "          \"must\": [\n" +  //
-            "            {\n" +  //
-            "              \"term\": {\n" +  //
-            "                \"docUUID\": \"?\"\n" +  //
-            "              }\n" +  //
-            "            },\n" +  //
-            "            {\n" +  //
-            "              \"range\": {\n" +  //
-            "                \"eventDate\": {\n" +  //
-            "                  \"lte\": \"?\"\n" +  //
-            "                }\n" +  //
-            "              }\n" +  //
-            "            }\n" +  //
-            "          ]\n" +  //
-            "        }\n" +  //
-            "      }\n" +  //
-            "    ]\n" +  //
-            "  }\n" +  //
+    protected static String complexQuery = "{\n" + //
+            "  \"bool\": {\n" + //
+            "    \"should\": [\n" + //
+            "      {\n" + //
+            "        \"term\": {\n" + //
+            "          \"docUUID\": \"?\"\n" + //
+            "        }\n" + //
+            "      },\n" + //
+            "      {\n" + //
+            "        \"bool\": {\n" + //
+            "          \"must\": [\n" + //
+            "            {\n" + //
+            "              \"term\": {\n" + //
+            "                \"docUUID\": \"?\"\n" + //
+            "              }\n" + //
+            "            },\n" + //
+            "            {\n" + //
+            "              \"range\": {\n" + //
+            "                \"eventDate\": {\n" + //
+            "                  \"lte\": \"?\"\n" + //
+            "                }\n" + //
+            "              }\n" + //
+            "            }\n" + //
+            "          ]\n" + //
+            "        }\n" + //
+            "      }\n" + //
+            "    ]\n" + //
+            "  }\n" + //
             "}\n";
 
     @Override
     protected String getFixedPart() {
         if (getDefinition().getWhereClause() != null) {
-            //if the pp definition contains a fixed part, use it
+            // if the pp definition contains a fixed part, use it
             String fixedPart = getDefinition().getWhereClause().getFixedPart();
             if (StringUtils.isNotEmpty(fixedPart)) {
                 return fixedPart;
@@ -112,13 +112,12 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
         if (newParams == null) {
             Object[] params = super.getParameters();
             if (params.length != 1) {
-                log.error(this.getClass().getSimpleName()
-                        + " Expect only one parameter the document uuid, unexpected behavior may occur");
+                log.error("{} Expect only one parameter the document uuid, unexpected behavior may occur",
+                        () -> getClass().getSimpleName());
             }
             CoreSession session;
             String uuid;
-            if (params[0] instanceof DocumentModel) {
-                DocumentModel doc = (DocumentModel) params[0];
+            if (params[0] instanceof DocumentModel doc) {
                 uuid = doc.getId();
                 session = doc.getCoreSession();
             } else {

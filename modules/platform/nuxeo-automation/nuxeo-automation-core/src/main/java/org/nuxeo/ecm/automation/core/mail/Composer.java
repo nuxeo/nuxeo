@@ -39,8 +39,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -56,7 +56,7 @@ import freemarker.template.TemplateException;
  */
 public class Composer {
 
-    private static final Log log = LogFactory.getLog(Composer.class);
+    private static final Logger log = LogManager.getLogger(Composer.class);
 
     /** Mail properties read from mail.properties. */
     protected static final Properties MAIL_PROPERTIES = new Properties();
@@ -196,8 +196,8 @@ public class Composer {
         return msg;
     }
 
-    public Mailer.Message newTextMessage(String templateContent, Object ctx) throws RenderingException,
-            MessagingException, TemplateException, IOException {
+    public Mailer.Message newTextMessage(String templateContent, Object ctx)
+            throws RenderingException, MessagingException, TemplateException, IOException {
         Mailer.Message msg = mailer.newMessage();
         msg.setText(render(templateContent, ctx), "UTF-8");
         return msg;
@@ -209,8 +209,8 @@ public class Composer {
         return msg;
     }
 
-    public Mailer.Message newHtmlMessage(String templateContent, Object ctx) throws MessagingException,
-            TemplateException, IOException {
+    public Mailer.Message newHtmlMessage(String templateContent, Object ctx)
+            throws MessagingException, TemplateException, IOException {
         Mailer.Message msg = mailer.newMessage();
         msg.setContent(render(templateContent, ctx), "text/html; charset=utf-8");
         return msg;

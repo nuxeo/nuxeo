@@ -39,8 +39,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -57,12 +57,12 @@ import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 @Path("")
 public class RootResource {
 
-    private static final Log log = LogFactory.getLog(RootResource.class);
+    private static final Logger log = LogManager.getLogger(RootResource.class);
 
     private HttpServletRequest request;
 
     public RootResource(@Context HttpServletRequest request) {
-        log.debug(request.getMethod() + " " + request.getRequestURI());
+        log.debug("{} {}", request::getMethod, request::getRequestURI);
         this.request = request;
     }
 
@@ -121,7 +121,7 @@ public class RootResource {
         try {
             doc = backend.getDocument(path);
         } catch (DocumentNotFoundException e) {
-            log.error("Error during resolving path: " + path, e);
+            log.error("Error during resolving path: {}", path, e);
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 

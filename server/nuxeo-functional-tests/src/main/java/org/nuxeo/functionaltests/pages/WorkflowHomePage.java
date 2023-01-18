@@ -19,8 +19,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
@@ -35,8 +33,6 @@ import org.openqa.selenium.support.FindBy;
  * @since 5.8
  */
 public class WorkflowHomePage extends AbstractPage {
-
-    protected static final Log log = LogFactory.getLog(WorkflowHomePage.class);
 
     public WorkflowHomePage(WebDriver driver) {
         super(driver);
@@ -86,9 +82,8 @@ public class WorkflowHomePage extends AbstractPage {
     public void reassignTask(String taskDirective, String user) {
         TaskFancyBoxFragment taskBox = showTaskFancyBox("Reassign Task");
         taskBox.waitForTextToBePresent(taskDirective);
-        Select2WidgetElement particpants = new Select2WidgetElement(driver,
-                driver.findElement(By
-                                     .xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout_1:nxw_task_reassignment_actors_1_select2')]")),
+        Select2WidgetElement particpants = new Select2WidgetElement(driver, driver.findElement(By.xpath(
+                "//div[contains(@id, 'nxl_workflowTaskReassignmentLayout_1:nxw_task_reassignment_actors_1_select2')]")),
                 true);
         particpants.selectValue(user);
         taskBox.submit();
@@ -100,9 +95,8 @@ public class WorkflowHomePage extends AbstractPage {
     public void delegateTask(String taskDirective, String user) {
         TaskFancyBoxFragment taskBox = showTaskFancyBox("Delegate Task");
         taskBox.waitForTextToBePresent(taskDirective);
-        Select2WidgetElement particpants = new Select2WidgetElement(driver,
-                driver.findElement(By
-                                     .xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout:nxw_task_reassignment_actors_select2')]")),
+        Select2WidgetElement particpants = new Select2WidgetElement(driver, driver.findElement(By.xpath(
+                "//div[contains(@id, 'nxl_workflowTaskReassignmentLayout:nxw_task_reassignment_actors_select2')]")),
                 true);
         particpants.selectValue(user);
         taskBox.submit();

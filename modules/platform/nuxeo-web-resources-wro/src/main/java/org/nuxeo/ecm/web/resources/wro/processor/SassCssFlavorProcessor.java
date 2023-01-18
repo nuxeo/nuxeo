@@ -33,8 +33,8 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
@@ -62,7 +62,7 @@ import ro.isdc.wro.model.resource.SupportedResourceType;
 @SupportedResourceType(ResourceType.CSS)
 public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
 
-    private static final Log log = LogFactory.getLog(SassCssFlavorProcessor.class);
+    private static final Logger log = LogManager.getLogger(SassCssFlavorProcessor.class);
 
     public static final String ALIAS = "sassCss";
 
@@ -109,7 +109,7 @@ public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
                 try {
                     parser.parseStyleSheet(source);
                 } catch (ParseException e) {
-                    log.error("Error while parsing resource " + resource.getUri(), e);
+                    log.error("Error while parsing resource: {}", resource.getUri(), e);
                     throw WroRuntimeException.wrap(new SCSSParseException(e, resource.getUri()));
                 }
 
@@ -141,7 +141,7 @@ public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
                     finalReader.close();
                 }
             } catch (final Exception e) {
-                log.error("Error while serving resource " + resource.getUri(), e);
+                log.error("Error while serving resource: {}", resource.getUri(), e);
                 throw WroRuntimeException.wrap(e);
             } finally {
                 IOUtils.closeQuietly(finalReader);

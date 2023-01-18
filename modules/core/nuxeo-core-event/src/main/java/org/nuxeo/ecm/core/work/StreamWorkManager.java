@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.work;
 
 import static java.lang.Math.min;
+import static java.util.Objects.requireNonNullElse;
 import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.PREFIX_OPTION;
 import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.STORE_NAME_OPTION;
 import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.STORE_TTL_OPTION;
@@ -42,8 +43,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
@@ -87,7 +87,7 @@ import io.opencensus.trace.Tracing;
  */
 public class StreamWorkManager extends WorkManagerImpl {
 
-    protected static final Log log = LogFactory.getLog(StreamWorkManager.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(StreamWorkManager.class);
 
     public static final String WORK_LOG_CONFIG_PROP = "nuxeo.stream.work.log.config";
 
@@ -189,13 +189,10 @@ public class StreamWorkManager extends WorkManagerImpl {
     @Override
     public void schedule(Work work, Scheduling scheduling, boolean afterCommit) {
         String queueId = getCategoryQueueId(work.getCategory());
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Scheduling: workId: %s, category: %s, queue: %s, scheduling: %s, afterCommit: %s, work: %s",
-                    work.getId(), work.getCategory(), queueId, scheduling, afterCommit, work));
-        }
+        log.debug("Scheduling: workId: {}, category: {}, queue: {}, scheduling: {}, afterCommit: {}, work: {}",
+                work.getId(), work.getCategory(), queueId, scheduling, afterCommit, work);
         if (!isQueuingEnabled(queueId)) {
-            log.info("Queue disabled, scheduling canceled: " + queueId);
+            log.info("Queue disabled, scheduling canceled: {}", queueId);
             return;
         }
         if (CANCEL_SCHEDULED.equals(scheduling)) {
@@ -204,8 +201,7 @@ public class StreamWorkManager extends WorkManagerImpl {
                     WorkStateHelper.setCanceled(work.getId());
                 }
             } else {
-                log.warn(String.format("Canceling a work is only supported if '%s' is true. Skipping work: %s",
-                        STORESTATE_KEY, work));
+                log.warn("Canceling a work is only supported if '{}' is true. Skipping work: {}", STORESTATE_KEY, work);
             }
             return;
         }
@@ -229,18 +225,15 @@ public class StreamWorkManager extends WorkManagerImpl {
             map.put("offset", AttributeValue.stringAttributeValue(offset.toString()));
             span.addAnnotation("WorkManager#schedule", map);
         } catch (IllegalArgumentException e) {
-            log.error(String.format("Not scheduled work, unknown category: %s, mapped to %s", work.getCategory(),
-                    NAMESPACE_PREFIX + queueId));
+            log.error("Not scheduled work, unknown category: {}, mapped to {}", work.getCategory(),
+                    NAMESPACE_PREFIX + queueId);
             return;
         }
         if (work.isCoalescing()) {
             WorkStateHelper.setLastOffset(work.getId(), offset.offset(), stateTTL);
         }
         if (work.isGroupJoin()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Submit Work: %s to GroupJoin: %s, offset: %s", work.getId(),
-                        work.getPartitionKey(), offset));
-            }
+            log.debug("Submit Work: {} to GroupJoin: {}, offset: {}", work.getId(), work.getPartitionKey(), offset);
             WorkStateHelper.addGroupJoinWork(work.getPartitionKey());
         }
     }
@@ -375,8 +368,9 @@ public class StreamWorkManager extends WorkManagerImpl {
         List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
         // create the single topology with one root per work pool
         Topology.Builder builder = Topology.builder();
-        descriptors.stream().filter(WorkQueueDescriptor::isProcessingEnabled).forEach(d -> builder.addComputation(
-                           () -> new WorkComputation(NAMESPACE_PREFIX + d.getId()),
+        descriptors.stream()
+                   .filter(WorkQueueDescriptor::isProcessingEnabled)
+                   .forEach(d -> builder.addComputation(() -> new WorkComputation(NAMESPACE_PREFIX + d.getId()),
                            Collections.singletonList(INPUT_1 + ":" + NAMESPACE_PREFIX + d.getId())));
         topology = builder.build();
         // create a topology for the disabled work pools in order to init their input streams
@@ -451,12 +445,13 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (config.isProcessingEnabled()) {
             deactivateQueueMetrics(config.id);
         }
-        log.info("Deactivated work queue not supported: " + config.id);
+        log.info("Deactivated work queue not supported: {}", config.id);
     }
 
     @Override
     protected void activateQueueMetrics(String queueId) {
-        NuxeoMetricSet queueMetrics = new NuxeoMetricSet(MetricName.build("nuxeo.works.global.queue").tagged("queue", queueId));
+        NuxeoMetricSet queueMetrics = new NuxeoMetricSet(
+                MetricName.build("nuxeo.works.global.queue").tagged("queue", queueId));
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).scheduled, "scheduled");
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).running, "running");
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).completed, "completed");
@@ -478,7 +473,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     public boolean shutdown(long timeout, TimeUnit timeUnit) {
-        log.info("Shutdown WorkManager in " + timeUnit.toMillis(timeout) + " ms");
+        log.info("Shutdown WorkManager in {}ms", () -> timeUnit.toMillis(timeout));
         shutdownInProgress = true;
         try {
             long shutdownDelay = Framework.getService(ConfigurationService.class).getLong(SHUTDOWN_DELAY_MS_KEY, 0);
@@ -495,12 +490,12 @@ public class StreamWorkManager extends WorkManagerImpl {
     @Override
     public int getQueueSize(String queueId, Work.State state) {
         switch (state) {
-            case SCHEDULED:
-                return getMetrics(queueId).getScheduled().intValue();
-            case RUNNING:
-                return getMetrics(queueId).getRunning().intValue();
-            default:
-                return 0;
+        case SCHEDULED:
+            return getMetrics(queueId).getScheduled().intValue();
+        case RUNNING:
+            return getMetrics(queueId).getRunning().intValue();
+        default:
+            return 0;
         }
     }
 
@@ -559,14 +554,10 @@ public class StreamWorkManager extends WorkManagerImpl {
             Thread.sleep(100);
             int lag = getMetrics(queueId).getScheduled().intValue();
             if (lag == 0) {
-                if (log.isDebugEnabled()) {
-                    log.debug("awaitCompletion for " + queueId + " completed " + getMetrics(queueId));
-                }
+                log.debug("awaitCompletion for {} completed {}", () -> queueId, () -> getMetrics(queueId));
                 return true;
             }
-            if (!log.isDebugEnabled()) {
-                log.debug("awaitCompletion for " + queueId + " not completed " + getMetrics(queueId));
-            }
+            log.debug("awaitCompletion for {} not completed {}", () -> queueId, () -> getMetrics(queueId));
         }
         log.warn(String.format("%s timeout after: %.2fs, %s", queueId, durationMs / 1000.0, getMetrics(queueId)));
         return false;
@@ -589,13 +580,12 @@ public class StreamWorkManager extends WorkManagerImpl {
             Thread.sleep(100);
             long wm = getLowWaterMark(queueId);
             if (wm == lowWatermark) {
-                log.debug("awaitCompletion for " + (queueId == null ? "all" : queueId) + " completed " + wm);
+                log.debug("awaitCompletion for {} completed {}", () -> requireNonNullElse(queueId, "all"), () -> wm);
                 return true;
             }
-            if (log.isDebugEnabled()) {
-                log.debug("awaitCompletion low wm  for " + (queueId == null ? "all" : queueId) + ":" + wm + " diff: "
-                        + (wm - lowWatermark));
-            }
+            var lowWatermarkF = lowWatermark;
+            log.debug("awaitCompletion low wm for {}: {} diff: {}", () -> requireNonNullElse(queueId, "all"), () -> wm,
+                    () -> wm - lowWatermarkF);
             lowWatermark = wm;
         }
         log.warn(String.format("%s timeout after: %.2fs", queueId, durationMs / 1000.0));
@@ -642,40 +632,30 @@ public class StreamWorkManager extends WorkManagerImpl {
             transactionManager = null;
         }
         if (transactionManager == null) {
-            log.warn("Not scheduled work after commit because of missing transaction manager: " + work.getId());
+            log.warn("Not scheduled work after commit because of missing transaction manager: {}", work::getId);
             return false;
         }
         try {
             Transaction transaction = transactionManager.getTransaction();
             if (transaction == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Not scheduled work after commit because of missing transaction: " + work.getId());
-                }
+                log.debug("Not scheduled work after commit because of missing transaction: {}", work::getId);
                 return false;
             }
             int status = transaction.getStatus();
             if (status == Status.STATUS_ACTIVE) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Scheduled after commit: " + work.getId());
-                }
+                log.debug("Scheduled after commit: {}", work::getId);
                 transaction.registerSynchronization(new StreamWorkManager.WorkScheduling(work, scheduling));
                 return true;
             } else if (status == Status.STATUS_COMMITTED) {
                 // called in afterCompletion, we can schedule immediately
-                if (log.isDebugEnabled()) {
-                    log.debug("Scheduled immediately: " + work.getId());
-                }
+                log.debug("Scheduled immediately: {}", work::getId);
                 return false;
             } else if (status == Status.STATUS_MARKED_ROLLBACK) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cancelling schedule because transaction marked rollback-only: " + work.getId());
-                }
+                log.debug("Cancelling schedule because transaction marked rollback-only: {}", work::getId);
                 return true;
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Not scheduling work after commit because transaction is in status " + status + ": "
-                            + work.getId());
-                }
+                log.debug("Not scheduling work after commit because transaction is in status {}: {}", status,
+                        work.getId());
                 return false;
             }
         } catch (SystemException | RollbackException e) {

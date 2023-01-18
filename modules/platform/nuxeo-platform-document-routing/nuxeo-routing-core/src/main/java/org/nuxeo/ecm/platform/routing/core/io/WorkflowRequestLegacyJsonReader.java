@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
@@ -45,8 +43,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Setup(mode = SINGLETON, priority = DERIVATIVE)
 @Deprecated
 public class WorkflowRequestLegacyJsonReader extends EntityJsonReader<WorkflowRequest> {
-
-    protected static final Log log = LogFactory.getLog(WorkflowRequestLegacyJsonReader.class);
 
     public static final String ENTITY_TYPE = "workflow";
 
@@ -71,8 +67,7 @@ public class WorkflowRequestLegacyJsonReader extends EntityJsonReader<WorkflowRe
             CoreSession session = closeable.getSession();
             if (variableNode != null) {
                 try {
-                    variables = JsonEncodeDecodeUtils.decodeVariables(variableNode,
-                            null, session);
+                    variables = JsonEncodeDecodeUtils.decodeVariables(variableNode, null, session);
                 } catch (ClassNotFoundException e) {
                     throw new MarshallingException(e);
                 }

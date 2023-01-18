@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageType;
@@ -42,6 +42,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class InstallAfterRestart {
 
+    private static final Logger log = LogManager.getLogger(InstallAfterRestart.class);
+
     public static final String FILE_NAME = "installAfterRestart.log";
 
     public static final String FAKE_VIDOZ = "org.nuxeo.fake.vindoz";
@@ -49,8 +51,6 @@ public class InstallAfterRestart {
     protected static final List<String> pkgNameOrIds = new ArrayList<>();
 
     protected static final List<String> uninstallpkgNameOrIds = new ArrayList<>();
-
-    protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
     protected static boolean isNeededByOs() {
         return Framework.isBooleanPropertyTrue(FAKE_VIDOZ) || SystemUtils.IS_OS_WINDOWS;

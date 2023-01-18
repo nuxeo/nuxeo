@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Calendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SoftDeleteCleanupListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(SoftDeleteCleanupListener.class);
+    private static final Logger log = LogManager.getLogger(SoftDeleteCleanupListener.class);
 
     public static final int DEFAULT_MAX = 1000;
 
@@ -64,7 +64,7 @@ public class SoftDeleteCleanupListener implements EventListener {
         try {
             return Integer.parseInt(max);
         } catch (NumberFormatException e) {
-            log.error("Invalid property " + DEFAULT_MAX_PROP, e);
+            log.error("Invalid property {}", DEFAULT_MAX_PROP, e);
             return DEFAULT_MAX;
         }
     }
@@ -81,7 +81,7 @@ public class SoftDeleteCleanupListener implements EventListener {
         try {
             return Integer.parseInt(delay);
         } catch (NumberFormatException e) {
-            log.error("Invalid property " + DEFAULT_DELAY_PROP, e);
+            log.error("Invalid property {}", DEFAULT_DELAY_PROP, e);
             return DEFAULT_DELAY;
         }
     }
@@ -104,10 +104,10 @@ public class SoftDeleteCleanupListener implements EventListener {
         }
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         for (RepositoryManagement repoMgmt : sqlRepositoryService.getRepositories()) {
-            log.debug("Calling repository soft-delete cleanup for repository: " + repoMgmt.getName() + ", max=" + max
-                    + ", beforeTimeDelay=" + delay);
+            log.debug("Calling repository soft-delete cleanup for repository: {}, max={}, beforeTimeDelay={}",
+                    repoMgmt.getName(), max, delay);
             int n = repoMgmt.cleanupDeletedDocuments(max, beforeTime);
-            log.debug("Number of documents deleted: " + n);
+            log.debug("Number of documents deleted: {}", n);
         }
     }
 

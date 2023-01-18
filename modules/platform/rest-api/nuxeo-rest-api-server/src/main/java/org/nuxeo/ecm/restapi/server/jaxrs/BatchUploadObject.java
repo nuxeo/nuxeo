@@ -55,8 +55,8 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
@@ -107,7 +107,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebObject(type = "upload")
 public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
-    protected static final Log log = LogFactory.getLog(BatchUploadObject.class);
+    private static final Logger log = LogManager.getLogger(BatchUploadObject.class);
 
     protected static final String REQUEST_BATCH_ID = "batchId";
 
@@ -140,8 +140,9 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     public Response handlers() throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
         Set<String> supportedHandlers = bm.getSupportedHandlers();
-        List<Map<String, String>> handlers = supportedHandlers.stream().map(this::mapWithName).collect(
-                Collectors.toList());
+        List<Map<String, String>> handlers = supportedHandlers.stream()
+                                                              .map(this::mapWithName)
+                                                              .collect(Collectors.toList());
         Map<String, Object> result = Collections.singletonMap("handlers", handlers);
         return buildResponse(Status.OK, result);
     }
@@ -297,15 +298,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         String uploadedSizeDisplay = uploadedSize > -1 ? uploadedSize + "b" : "unknown size";
         Batch batch = bm.getBatch(batchId);
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Uploading chunk [index=%d / total=%d] (%s) for file %s", uploadChunkIndex,
-                        chunkCount, uploadedSizeDisplay, fileName));
-            }
+            log.debug("Uploading chunk [index: {} / total: {}] ({}) for file: {}", uploadChunkIndex, chunkCount,
+                    uploadedSizeDisplay, fileName);
             batch.addChunk(fileIdx, blob, chunkCount, uploadChunkIndex, fileName, mimeType, fileSize);
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Uploading file %s (%s)", fileName, uploadedSizeDisplay));
-            }
+            log.debug("Uploading file: {} ({})", fileName, uploadedSizeDisplay);
             batch.addFile(fileIdx, blob, fileName, mimeType);
         }
     }
@@ -520,7 +517,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         ObjectMapper mapper = new ObjectMapper();
         String result = mapper.writeValueAsString(object);
         return buildResponse(status, MediaType.APPLICATION_JSON, result);
-      }
+    }
 
     /**
      * @deprecated since 11.2, not used anymore

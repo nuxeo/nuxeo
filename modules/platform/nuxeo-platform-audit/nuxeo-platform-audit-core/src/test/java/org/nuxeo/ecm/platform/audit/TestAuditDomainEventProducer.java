@@ -28,8 +28,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +51,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
 public class TestAuditDomainEventProducer {
-    protected static final Log log = LogFactory.getLog(TestAuditDomainEventProducer.class);
 
     @Inject
     protected CoreSession repo;

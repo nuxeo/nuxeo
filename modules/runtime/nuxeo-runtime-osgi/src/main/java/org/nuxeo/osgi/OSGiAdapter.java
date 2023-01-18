@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.osgi.services.PackageAdminImpl;
@@ -48,7 +48,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  */
 public class OSGiAdapter {
 
-    private static final Log log = LogFactory.getLog(OSGiAdapter.class);
+    private static final Logger log = LogManager.getLogger(OSGiAdapter.class);
 
     protected final File workingDir;
 
@@ -73,8 +73,7 @@ public class OSGiAdapter {
     protected SystemBundle systemBundle;
 
     public OSGiAdapter(File workingDir) {
-        this(workingDir,
-                new File(System.getProperty(Environment.NUXEO_DATA_DIR, workingDir + File.separator + "data")),
+        this(workingDir, new File(System.getProperty(Environment.NUXEO_DATA_DIR, workingDir + File.separator + "data")),
                 new Properties());
     }
 
@@ -215,18 +214,18 @@ public class OSGiAdapter {
     }
 
     public void fireFrameworkEvent(FrameworkEvent event) {
-        log.debug("Firing FrameworkEvent on " + frameworkListeners.size() + " listeners");
+        log.debug("Firing FrameworkEvent on {} listeners", frameworkListeners::size);
         Object[] listeners = frameworkListeners.getListeners();
         for (Object listener : listeners) {
-            log.debug("Start execution of " + listener.getClass() + " listener");
+            log.debug("Start execution of {} listener", listener::getClass);
             try {
                 ((FrameworkListener) listener).frameworkEvent(event);
-                log.debug("End execution of " + listener.getClass() + " listener");
+                log.debug("End execution of {} listener", listener::getClass);
             } catch (RuntimeException e) {
                 if (Boolean.getBoolean("nuxeo.start.strict")) {
                     throw e;
                 } else {
-                    log.error("Error during Framework Listener execution: " + listener.getClass(), e);
+                    log.error("Error during Framework Listener execution: {}", listener.getClass(), e);
                 }
             }
         }

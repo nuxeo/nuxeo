@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class Collection {
 
-    private static final Log log = LogFactory.getLog(Collection.class);
+    private static final Logger log = LogManager.getLogger(Collection.class);
 
     protected DocumentModel document;
 
@@ -42,7 +42,8 @@ public class Collection {
 
     public List<String> getCollectedDocumentIds() {
         @SuppressWarnings("unchecked")
-        List<String> collected = (List<String>) document.getPropertyValue(CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME);
+        List<String> collected = (List<String>) document.getPropertyValue(
+                CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME);
         return collected;
     }
 
@@ -57,13 +58,14 @@ public class Collection {
     public void removeDocument(final String documentId) {
         List<String> documentIds = getCollectedDocumentIds();
         if (!documentIds.remove(documentId)) {
-            log.warn(String.format("Element '%s' is not present in the specified collection.", documentId));
+            log.warn("Element '{}' is not present in the specified collection.", documentId);
         }
         setDocumentIds(documentIds);
     }
 
     public void setDocumentIds(final List<String> documentIds) {
-        document.setPropertyValue(CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME, (Serializable) documentIds);
+        document.setPropertyValue(CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME,
+                (Serializable) documentIds);
     }
 
     public DocumentModel getDocument() {
@@ -87,14 +89,13 @@ public class Collection {
             documentIds.add(0, member1Id);
             setDocumentIds(documentIds);
             return true;
-        }
-        else {
+        } else {
             int member2IdIndex = documentIds.indexOf(member2Id);
             if (member2IdIndex < 0) {
                 return false;
             }
             if (member1IdIndex == member2IdIndex) {
-               return false;
+                return false;
             }
             if (member2IdIndex > member1IdIndex) {
                 documentIds.remove(member1IdIndex);

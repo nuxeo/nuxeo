@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.work.NuxeoBlockingQueue;
@@ -57,7 +57,7 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 public class RedisWorkQueuing implements WorkQueuing {
 
-    private static final Log log = LogFactory.getLog(RedisWorkQueuing.class);
+    private static final Logger log = LogManager.getLogger(RedisWorkQueuing.class);
 
     /**
      * Global hash of Work instance id -&gt; serialized Work instance.
@@ -606,7 +606,7 @@ public class RedisWorkQueuing implements WorkQueuing {
                 return State.RUNNING;
             default:
                 String msg = new String(bytes, UTF_8);
-                log.error("Unknown work state: " + msg + ", work: " + workId);
+                log.error("Unknown work state: {}, work: {}", msg, workId);
                 return null;
             }
         });

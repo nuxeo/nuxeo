@@ -18,8 +18,8 @@
  */
 package org.nuxeo.runtime.pubsub;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Encapsulates invalidations management through the {@link PubSubService}.
@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class AbstractPubSubInvalidationsAccumulator<T extends SerializableAccumulableInvalidations>
         extends AbstractPubSubBroker<T> {
 
-    private static final Log log = LogFactory.getLog(AbstractPubSubInvalidationsAccumulator.class);
+    private static final Logger log = LogManager.getLogger(AbstractPubSubInvalidationsAccumulator.class);
 
     protected volatile T bufferedInvalidations;
 
@@ -58,9 +58,7 @@ public abstract class AbstractPubSubInvalidationsAccumulator<T extends Serializa
 
     @Override
     public void receivedMessage(T invalidations) {
-        if (log.isTraceEnabled()) {
-            log.trace("Received invalidations: " + invalidations);
-        }
+        log.trace("Received invalidations: {}", invalidations);
         synchronized (this) {
             bufferedInvalidations.add(invalidations);
         }
@@ -76,9 +74,7 @@ public abstract class AbstractPubSubInvalidationsAccumulator<T extends Serializa
             invalidations = bufferedInvalidations;
             bufferedInvalidations = newInvalidations;
         }
-        if (log.isTraceEnabled()) {
-            log.trace("Received invalidations: " + invalidations);
-        }
+        log.trace("Received invalidations: {}", invalidations);
         return invalidations;
     }
 

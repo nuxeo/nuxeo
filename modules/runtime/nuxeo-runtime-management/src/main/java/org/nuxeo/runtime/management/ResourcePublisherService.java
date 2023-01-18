@@ -34,8 +34,8 @@ import javax.management.modelmbean.InvalidTargetObjectTypeException;
 import javax.management.modelmbean.RequiredModelMBean;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -48,6 +48,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ResourcePublisherService extends DefaultComponent implements ResourcePublisher, ResourcePublisherMBean {
 
+    private static final Logger log = LogManager.getLogger(ResourcePublisherService.class);
+
     public static final String SERVICES_EXT_KEY = "services";
 
     public static final String FACTORIES_EXT_KEY = "factories";
@@ -55,8 +57,6 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
     public static final String SHORTCUTS_EXT_KEY = "shortcuts";
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.management.ResourcePublisher");
-
-    private static final Log log = LogFactory.getLog(ResourcePublisherService.class);
 
     protected final ShortcutsRegistry shortcutsRegistry = new ShortcutsRegistry();
 
@@ -184,11 +184,9 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
             MBeanServer server = serverLocatorService.lookupServer(resource.managementName.getDomain());
             try {
                 resource.mbean = doBind(server, resource.managementName, resource.instance, resource.clazz);
-                if (ResourcePublisherService.log.isDebugEnabled()) {
-                    ResourcePublisherService.log.debug("bound " + resource);
-                }
+                log.debug("bound: {}", resource);
             } catch (JMException | InvalidTargetObjectTypeException e) {
-                ResourcePublisherService.log.error("Cannot bind " + resource, e);
+                log.error("Cannot bind: {}", resource, e);
             }
         }
 
@@ -203,9 +201,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
                 throw ManagementRuntimeException.wrap("Cannot unbind " + resource, e);
             } finally {
                 resource.mbean = null;
-                if (ResourcePublisherService.log.isDebugEnabled()) {
-                    ResourcePublisherService.log.debug("unbound " + resource);
-                }
+                log.debug("unbound: {}", resource);
             }
         }
 
@@ -216,9 +212,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
             }
             registry.put(name, resource);
             doBind(resource);
-            if (log.isDebugEnabled()) {
-                log.debug("registered " + name);
-            }
+            log.debug("registered: {}", name);
         }
 
         protected ObjectName doResolveServiceName(ServiceDescriptor descriptor) {

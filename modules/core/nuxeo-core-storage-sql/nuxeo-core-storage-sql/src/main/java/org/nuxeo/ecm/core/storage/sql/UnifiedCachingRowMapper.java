@@ -36,8 +36,8 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
@@ -50,7 +50,6 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 import io.dropwizard.metrics5.Timer.Context;
-
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -64,7 +63,7 @@ import net.sf.ehcache.transaction.manager.TransactionManagerLookup;
  */
 public class UnifiedCachingRowMapper implements RowMapper {
 
-    private static final Log log = LogFactory.getLog(UnifiedCachingRowMapper.class);
+    private static final Logger log = LogManager.getLogger(UnifiedCachingRowMapper.class);
 
     private static final String ABSENT = "__ABSENT__\0\0\0";
 
@@ -134,7 +133,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
         if (cacheManager == null) {
             if (properties.containsKey(EHCACHE_FILE_PROP)) {
                 String value = properties.get(EHCACHE_FILE_PROP);
-                log.info("Creating ehcache manager for VCS, using ehcache file: " + value);
+                log.info("Creating ehcache manager for VCS, using ehcache file: {}", value);
                 cacheManager = CacheManager.create(value);
             } else {
                 log.info("Creating ehcache manager for VCS, No ehcache file provided");

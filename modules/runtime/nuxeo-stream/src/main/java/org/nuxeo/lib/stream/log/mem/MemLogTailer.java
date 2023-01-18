@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -44,7 +44,7 @@ import org.nuxeo.lib.stream.log.mem.MemLogPartition.MemPartitionTailer;
  */
 public class MemLogTailer<M extends Externalizable> implements LogTailer<M> {
 
-    private static final Log log = LogFactory.getLog(MemLogTailer.class);
+    private static final Logger log = LogManager.getLogger(MemLogTailer.class);
 
     protected static final long POLL_INTERVAL_MS = 100L;
 
@@ -125,9 +125,7 @@ public class MemLogTailer<M extends Externalizable> implements LogTailer<M> {
         }
         long offset = tailer.offset();
         tailer.commit(offset);
-        if (log.isTraceEnabled()) {
-            log.trace("Commit %s:+%d".formatted(lpg, offset));
-        }
+        log.trace("Commit {}:+{}", lpg, offset);
         return new LogOffsetImpl(partition, offset);
     }
 
@@ -138,14 +136,14 @@ public class MemLogTailer<M extends Externalizable> implements LogTailer<M> {
 
     @Override
     public void toEnd() {
-        log.debug("toEnd: %s".formatted(lpg));
+        log.debug("toEnd: {}", lpg);
         tailer.toEnd();
         initialized = true;
     }
 
     @Override
     public void toStart() {
-        log.debug("toStart: %s".formatted(lpg));
+        log.debug("toStart: {}", lpg);
         tailer.toStart();
         initialized = true;
     }
@@ -153,7 +151,7 @@ public class MemLogTailer<M extends Externalizable> implements LogTailer<M> {
     @Override
     public void toLastCommitted() {
         long offset = tailer.committed();
-        log.debug("toLastCommitted: %s, found: %d".formatted(lpg, offset));
+        log.debug("toLastCommitted: {}, found: {}", lpg, offset);
         tailer.moveToOffset(offset);
         initialized = true;
     }
@@ -164,7 +162,7 @@ public class MemLogTailer<M extends Externalizable> implements LogTailer<M> {
             throw new IllegalStateException(
                     "Cannot seek, tailer " + this + " has no assignment for partition: " + offset);
         }
-        log.debug("Seek to " + offset + " from tailer: " + this);
+        log.debug("Seek to {} from tailer: {}", offset, this);
         if (!tailer.moveToOffset(offset.offset()) && tailer.offset() != offset.offset()) {
             throw new IllegalStateException("Unable to seek to offset, " + this + " offset: " + offset);
         }
@@ -181,7 +179,7 @@ public class MemLogTailer<M extends Externalizable> implements LogTailer<M> {
         if (!this.partition.equals(partition)) {
             throw new IllegalArgumentException("Cannot reset this partition: " + partition + " from " + lpg);
         }
-        log.debug("Reset offset for partition: " + partition + " from tailer: " + this);
+        log.debug("Reset offset for partition: {} from tailer: {}", partition, this);
         tailer.toStart();
         initialized = true;
         commit(partition);
@@ -205,7 +203,7 @@ public class MemLogTailer<M extends Externalizable> implements LogTailer<M> {
     @Override
     public void close() {
         if (!closed) {
-            log.debug("Closing: " + toString());
+            log.debug("Closing: {}", this);
             tailer.close();
             closed = true;
             initialized = false;

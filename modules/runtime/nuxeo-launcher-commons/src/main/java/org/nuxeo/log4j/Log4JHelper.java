@@ -28,9 +28,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
@@ -48,11 +48,12 @@ import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
  * @since 5.4.2
  */
 public class Log4JHelper {
-    private static final Log log = LogFactory.getLog(Log4JHelper.class);
+
+    private static final Logger log = LogManager.getLogger(Log4JHelper.class);
 
     /**
-     * Returns list of files produced by {@link FileAppender}s defined in a given {@link Configuration}. There's no
-     * need for the log4j configuration corresponding to this repository of being active.
+     * Returns list of files produced by {@link FileAppender}s defined in a given {@link Configuration}. There's no need
+     * for the log4j configuration corresponding to this repository of being active.
      *
      * @param configuration the {@link Configuration} to browse looking for {@link FileAppender}
      * @return {@link FileAppender}s present in configuration
@@ -71,8 +72,8 @@ public class Log4JHelper {
     }
 
     /**
-     * Creates a {@link Configuration} initialized with given log4j configuration file without making this
-     * configuration active.
+     * Creates a {@link Configuration} initialized with given log4j configuration file without making this configuration
+     * active.
      *
      * @param log4jConfigurationFile the XML configuration file to load
      * @return {@link Configuration} initialized with log4jConfigurationFile
@@ -85,7 +86,7 @@ public class Log4JHelper {
             XmlConfiguration configuration = new XmlConfiguration(null,
                     ConfigurationSource.fromUri(log4jConfigurationFile.toURI()));
             configuration.initialize();
-            log.debug("Log4j configuration " + log4jConfigurationFile + " successfully loaded.");
+            log.debug("Log4j configuration: {} successfully loaded.", log4jConfigurationFile);
             return configuration;
         }
     }

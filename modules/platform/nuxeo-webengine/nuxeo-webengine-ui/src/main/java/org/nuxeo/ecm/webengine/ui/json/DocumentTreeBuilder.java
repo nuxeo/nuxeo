@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -34,8 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
-
-    private static final Log log = LogFactory.getLog(DocumentTreeBuilder.class);
 
     protected final CoreSession session;
 

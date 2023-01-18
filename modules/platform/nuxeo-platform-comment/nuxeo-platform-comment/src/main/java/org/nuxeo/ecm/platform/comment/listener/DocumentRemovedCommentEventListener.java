@@ -23,8 +23,8 @@ import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DocumentRemovedCommentEventListener extends AbstractCommentListener implements PostCommitEventListener {
 
-    private static final Log log = LogFactory.getLog(DocumentRemovedCommentEventListener.class);
+    private static final Logger log = LogManager.getLogger(DocumentRemovedCommentEventListener.class);
 
     @Override
     protected void doProcess(CoreSession coreSession, RelationManager relationManager, CommentServiceConfig config,
@@ -79,12 +79,12 @@ public class DocumentRemovedCommentEventListener extends AbstractCommentListener
             if (docModel != null) {
                 try {
                     coreSession.removeDocument(docModel.getRef());
-                    log.debug("comment removal succeded for id: " + commentId);
+                    log.debug("comment removal succeeded for id: {}", commentId);
                 } catch (DocumentNotFoundException e) {
                     log.error("comment removal failed", e);
                 }
             } else {
-                log.warn("comment not found: id=" + commentId);
+                log.warn("comment not found: id: {}", commentId);
             }
         }
         coreSession.save();

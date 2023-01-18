@@ -23,14 +23,14 @@ package org.nuxeo.common.xmap;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class XMLBuilder {
 
-    private static final Log log = LogFactory.getLog(XMLBuilder.class);
+    private static final Logger log = LogManager.getLogger(XMLBuilder.class);
 
     private XMLBuilder() {
     }

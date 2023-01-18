@@ -24,8 +24,8 @@ package org.nuxeo.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -33,9 +33,9 @@ import org.nuxeo.runtime.model.Extension;
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class ComponentWithXPoint extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName("BaseXPoint");
+    private static final Logger log = LogManager.getLogger(ComponentWithXPoint.class);
 
-    private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
+    public static final ComponentName NAME = new ComponentName("BaseXPoint");
 
     final List<DummyContribution> contribs = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public class ComponentWithXPoint extends DefaultComponent {
             return;
         }
         for (Object contrib : contribs) {
-            log.debug("Registering: " + ((DummyContribution) contrib).message);
+            log.debug("Registering: {}", ((DummyContribution) contrib).message);
             this.contribs.add((DummyContribution) contrib);
         }
     }
@@ -58,13 +58,13 @@ public class ComponentWithXPoint extends DefaultComponent {
             return;
         }
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
+            log.debug("Un-Registering: {}", ((DummyContribution) contrib).message);
             this.contribs.add((DummyContribution) contrib);
         }
     }
 
     public DummyContribution[] getContributions() {
-        return contribs.toArray(new DummyContribution[contribs.size()]);
+        return contribs.toArray(DummyContribution[]::new);
     }
 
 }

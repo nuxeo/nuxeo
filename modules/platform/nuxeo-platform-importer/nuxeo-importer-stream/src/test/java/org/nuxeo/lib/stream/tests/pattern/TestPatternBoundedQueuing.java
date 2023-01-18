@@ -23,8 +23,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,7 +43,6 @@ import org.nuxeo.lib.stream.tests.pattern.producer.RandomIdMessageProducerFactor
 import net.jodah.failsafe.RetryPolicy;
 
 public abstract class TestPatternBoundedQueuing {
-    protected static final Log log = LogFactory.getLog(TestPatternBoundedQueuing.class);
 
     protected static final String LOG_NAME = "logName";
 
@@ -177,11 +174,11 @@ public abstract class TestPatternBoundedQueuing {
 
         // 2. Use the log and run a broken consumers
         ConsumerPolicy consumerPolicy = ConsumerPolicy.builder()
-                .waitMessageTimeout(Duration.ofSeconds(10))
-                .maxThreads(NB_CONSUMERS)
-                .batchPolicy(BatchPolicy.builder().capacity(BATCH_SIZE).build())
-                .retryPolicy(new RetryPolicy().withMaxRetries(2))
-                .build();
+                                                      .waitMessageTimeout(Duration.ofSeconds(10))
+                                                      .maxThreads(NB_CONSUMERS)
+                                                      .batchPolicy(BatchPolicy.builder().capacity(BATCH_SIZE).build())
+                                                      .retryPolicy(new RetryPolicy().withMaxRetries(2))
+                                                      .build();
         ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(LOG_NAME, manager, IdMessageFactory.ERROR,
                 consumerPolicy);
         List<ConsumerStatus> cret = consumers.start().get();
@@ -191,7 +188,6 @@ public abstract class TestPatternBoundedQueuing {
         assertEquals(0, cret.stream().mapToLong(r -> r.accepted).sum());
         assertEquals(0, cret.stream().filter(r -> !r.fail).count());
     }
-
 
     public int getNbDocumentForBuggyConsumerTest() {
         return 10151;

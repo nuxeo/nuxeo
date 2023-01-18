@@ -37,8 +37,8 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.connect.update.AlreadyExistsPackageException;
@@ -57,7 +57,7 @@ import org.nuxeo.connect.update.PackageUpdateService;
  */
 public class PackagePersistence {
 
-    private static final Log log = LogFactory.getLog(PackagePersistence.class);
+    private static final Logger log = LogManager.getLogger(PackagePersistence.class);
 
     protected final File root;
 
@@ -184,7 +184,7 @@ public class PackagePersistence {
                 if (oldpkg.getPackageState().isInstalled()) {
                     throw new AlreadyExistsPackageException("Package " + pkg.getId() + " is already installed");
                 }
-                log.info(String.format("Replacement of %s in local cache...", oldpkg));
+                log.info("Replacement of {} in local cache...", oldpkg);
                 org.apache.commons.io.FileUtils.deleteQuietly(dir);
             }
             org.apache.commons.io.FileUtils.copyDirectory(file, dir);
@@ -236,7 +236,7 @@ public class PackagePersistence {
             List<LocalPackage> pkgs = new ArrayList<>(list.length);
             for (File file : list) {
                 if (!file.isDirectory()) {
-                    log.warn("Ignoring file '" + file.getName() + "' in package store");
+                    log.warn("Ignoring file '{}' in package store", file.getName());
                     continue;
                 }
                 pkgs.add(new LocalPackageImpl(file, getState(file.getName()), service));

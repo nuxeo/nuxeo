@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
  */
 public class PreprocessedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
 
-    private static final Log log = LogFactory.getLog(PreprocessedHtmlPreviewAdapter.class);
+    private static final Logger log = LogManager.getLogger(PreprocessedHtmlPreviewAdapter.class);
 
     protected List<String> storedPreviewFieldsPaths = new ArrayList<>();
 

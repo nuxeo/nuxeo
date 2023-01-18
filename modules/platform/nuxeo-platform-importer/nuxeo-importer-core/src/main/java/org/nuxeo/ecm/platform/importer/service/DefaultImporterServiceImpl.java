@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.platform.importer.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class DefaultImporterServiceImpl implements DefaultImporterService {
 
-    private static Log log = LogFactory.getLog(DefaultImporterServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(DefaultImporterServiceImpl.class);
 
     private Class<? extends ImporterDocumentModelFactory> docModelFactoryClass;
 
@@ -77,8 +77,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     @Override
     public String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive)
-            {
+            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive) {
 
         SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
         if (sourceNode == null) {
@@ -89,9 +88,12 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             log.error("Need to set a documentModelFactory to be used by this importer");
         }
 
-        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(sourceNode,
-                destinationPath, executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation).batchSize(
-                batchSize).nbThreads(noImportingThreads).repository(repositoryName).build();
+        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(sourceNode, destinationPath,
+                executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation)
+                                     .batchSize(batchSize)
+                                     .nbThreads(noImportingThreads)
+                                     .repository(repositoryName)
+                                     .build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
         runner.setEnablePerfLogging(enablePerfLogging);
         runner.setTransactionTimeout(transactionTimeout);
@@ -146,8 +148,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         if (documentModelFactory == null && docModelFactoryClass != null) {
             try {
                 if (DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
-                    setDocumentModelFactory(
-                        docModelFactoryClass.getConstructor(String.class, String.class).newInstance(getFolderishDocType(), getLeafDocType()));
+                    setDocumentModelFactory(docModelFactoryClass.getConstructor(String.class, String.class)
+                                                                .newInstance(getFolderishDocType(), getLeafDocType()));
                 } else {
                     setDocumentModelFactory(docModelFactoryClass.getConstructor().newInstance());
                 }
@@ -218,7 +220,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
      */
     @Override
     public void setRepository(String repositoryName) {
-        this.repositoryName=repositoryName;
+        this.repositoryName = repositoryName;
     }
 
     @Override

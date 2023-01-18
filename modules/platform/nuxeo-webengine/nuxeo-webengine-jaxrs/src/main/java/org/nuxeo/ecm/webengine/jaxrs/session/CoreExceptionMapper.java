@@ -25,8 +25,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 @Deprecated
 public class CoreExceptionMapper implements ExceptionMapper<Throwable> {
 
-    protected static final Log log = LogFactory.getLog(CoreExceptionMapper.class);
+    private static final Logger log = LogManager.getLogger(CoreExceptionMapper.class);
 
     @Override
     public Response toResponse(Throwable t) {

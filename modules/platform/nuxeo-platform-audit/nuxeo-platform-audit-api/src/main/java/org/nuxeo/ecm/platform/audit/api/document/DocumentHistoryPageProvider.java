@@ -22,8 +22,8 @@ package org.nuxeo.ecm.platform.audit.api.document;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -49,7 +49,7 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
 
     private static final long serialVersionUID = 1L;
 
-    protected Log log = LogFactory.getLog(DocumentHistoryPageProvider.class);
+    private static final Logger log = LogManager.getLogger(DocumentHistoryPageProvider.class);
 
     protected Object[] newParams;
 
@@ -84,13 +84,12 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
         if (newParams == null) {
             Object[] params = super.getParameters();
             if (params.length != 1) {
-                log.error(this.getClass().getSimpleName()
-                        + " Expect only one parameter the document uuid, unexpected behavior may occur");
+                log.error("{} Expect only one parameter the document uuid, unexpected behavior may occur",
+                        getClass().getSimpleName());
             }
             CoreSession session = null;
             String uuid = null;
-            if (params[0] instanceof DocumentModel) {
-                DocumentModel doc = (DocumentModel) params[0];
+            if (params[0]instanceof DocumentModel doc) {
                 uuid = doc.getId();
                 session = doc.getCoreSession();
             } else {

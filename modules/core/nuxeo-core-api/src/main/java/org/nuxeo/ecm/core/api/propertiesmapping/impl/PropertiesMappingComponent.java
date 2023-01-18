@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.api.propertiesmapping.impl;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -43,8 +41,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class PropertiesMappingComponent extends DefaultComponent implements PropertiesMappingService {
 
-    public static final Log log = LogFactory.getLog(PropertiesMappingComponent.class);
-
     public static final String MAPPING_EP = "mapping";
 
     protected PropertiesMappingContributionRegistry mappingsRegistry = new PropertiesMappingContributionRegistry();
@@ -63,8 +59,7 @@ public class PropertiesMappingComponent extends DefaultComponent implements Prop
     }
 
     @Override
-    public void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mapping)
-            {
+    public void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mapping) {
         Map<String, String> properties = getMapping(mapping);
         for (String keyProp : properties.keySet()) {
             // verify that mapping can be done

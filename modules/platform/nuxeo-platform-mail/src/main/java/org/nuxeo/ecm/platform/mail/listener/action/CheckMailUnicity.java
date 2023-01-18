@@ -23,8 +23,8 @@ package org.nuxeo.ecm.platform.mail.listener.action;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
  */
 public class CheckMailUnicity extends AbstractMailAction {
 
-    private static final Log log = LogFactory.getLog(CheckMailUnicity.class);
+    private static final Logger log = LogManager.getLogger(CheckMailUnicity.class);
 
     public static final String MAIL_SEARCH_QUERY = "SELECT * FROM MailMessage "
             + "WHERE mail:messageId = %s AND ecm:path STARTSWITH %s AND ecm:isProxy = 0 ";

@@ -24,8 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,9 +38,9 @@ import org.nuxeo.template.api.context.DocumentWrapper;
 
 public class AuditExtensionFactory implements ContextExtensionFactory {
 
-    public static List<LogEntry> testAuditEntries;
+    private static final Logger log = LogManager.getLogger(AuditExtensionFactory.class);
 
-    protected static final Log log = LogFactory.getLog(AuditExtensionFactory.class);
+    public static List<LogEntry> testAuditEntries;
 
     @Override
     public Object getExtension(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
@@ -61,7 +61,7 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
             try {
                 auditEntries = preprocessAuditEntries(auditEntries, currentDocument.getCoreSession(), "en");
             } catch (MissingResourceException e) {
-                log.warn("Unable to preprocess Audit entries : " + e.getMessage());
+                log.warn("Unable to preprocess Audit entries : {}", e::getMessage);
             }
             ctx.put("auditEntries", wrapper.wrap(auditEntries));
         }

@@ -24,8 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/core-type-test-contrib.xml")
 public class TestImport extends ImportTestCase {
 
-    private static final Log log = LogFactory.getLog(TestImport.class);
+    private static final Logger log = LogManager.getLogger(TestImport.class);
 
     // MySQL needs to commit the transaction to see the updated state
     protected void nextTransaction() {
@@ -70,7 +70,7 @@ public class TestImport extends ImportTestCase {
         DocumentModelList alldocs = session.query("select * from File order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
-            log.info("imported : " + doc.getPathAsString() + "-" + doc.getType());
+            log.info("imported : {}-{}", doc::getPathAsString, doc::getType);
         }
 
         assertEquals(1, alldocs.size());
@@ -198,7 +198,7 @@ public class TestImport extends ImportTestCase {
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
-            log.info("imported : " + doc.getPathAsString() + "-" + doc.getType());
+            log.info("imported : {}-{}", doc::getPathAsString, doc::getType);
         }
 
         assertEquals(1, alldocs.size());
@@ -229,7 +229,7 @@ public class TestImport extends ImportTestCase {
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
-            log.info("imported : " + doc.getPathAsString() + "-" + doc.getType());
+            log.info("imported : {}-{}", doc::getPathAsString, doc::getType);
         }
 
         assertEquals(1, alldocs.size());

@@ -20,9 +20,10 @@ package org.nuxeo.ecm.platform.query.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
@@ -32,10 +33,10 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 6.0
  */
-public class PageProviderClassReplacerRegistry extends
-        ContributionFragmentRegistry<PageProviderClassReplacerDefinition> {
+public class PageProviderClassReplacerRegistry
+        extends ContributionFragmentRegistry<PageProviderClassReplacerDefinition> {
 
-    private static final Log log = LogFactory.getLog(PageProviderClassReplacerRegistry.class);
+    private static final Logger log = LogManager.getLogger(PageProviderClassReplacerRegistry.class);
 
     protected Map<String, Class<? extends PageProvider<?>>> replacerMap = new HashMap<>();
 
@@ -55,7 +56,7 @@ public class PageProviderClassReplacerRegistry extends
         if (!desc.isEnabled()) {
             return;
         }
-        log.debug("Registering page provider class replacer using " + name);
+        log.debug("Registering page provider class replacer using: {}", name);
         Class<? extends PageProvider<?>> klass = getPageProviderClass(desc.getPageProviderClassName());
         for (String providerName : desc.getPageProviderNames()) {
             replacerMap.put(providerName, klass);
@@ -65,7 +66,7 @@ public class PageProviderClassReplacerRegistry extends
 
     @Override
     public void contributionRemoved(String id, PageProviderClassReplacerDefinition origContrib) {
-        log.debug("Unregistering page provider replacer for class " + id);
+        log.debug("Unregistering page provider replacer for class: {}", id);
         for (String providerName : origContrib.getPageProviderNames()) {
             replacerMap.remove(providerName);
         }
@@ -95,8 +96,8 @@ public class PageProviderClassReplacerRegistry extends
             throw new IllegalStateException(String.format("Class %s not found", className));
         }
         if (!PageProvider.class.isAssignableFrom(ret)) {
-            throw new IllegalStateException(String.format("Class %s does not implement PageProvider interface",
-                    className));
+            throw new IllegalStateException(
+                    String.format("Class %s does not implement PageProvider interface", className));
         }
         return ret;
     }
@@ -111,11 +112,10 @@ public class PageProviderClassReplacerRegistry extends
             log.info("No page provider has been superseded");
             return;
         }
-        StringBuilder out = new StringBuilder();
-        out.append("List of page provider names that are superseded: \n");
-        for (String name : replacerMap.keySet()) {
-            out.append(String.format("  - %s: %s\n", name, replacerMap.get(name).getName()));
-        }
-        log.info(out.toString());
+        log.info(() -> "List of page provider names that are superseded:\n"
+                + replacerMap.entrySet()
+                             .stream()
+                             .map(e -> String.format("  - %s: %s", e.getKey(), e.getValue().getName()))
+                             .collect(Collectors.joining("\n")));
     }
 }

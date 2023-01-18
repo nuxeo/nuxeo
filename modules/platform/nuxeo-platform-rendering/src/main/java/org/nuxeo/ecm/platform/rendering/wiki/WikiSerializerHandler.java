@@ -23,8 +23,8 @@ package org.nuxeo.ecm.platform.rendering.wiki;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.WikiBlockWriter;
 import org.wikimodel.wem.PrintListener;
 import org.wikimodel.wem.WikiFormat;
@@ -38,7 +38,7 @@ import freemarker.template.TemplateException;
  */
 public class WikiSerializerHandler extends PrintListener {
 
-    public static final Log log = LogFactory.getLog(WikiSerializerHandler.class);
+    private static final Logger log = LogManager.getLogger(WikiSerializerHandler.class);
 
     protected static final String LINE_SEP = System.getProperty("line.separator");
 
@@ -400,7 +400,7 @@ public class WikiSerializerHandler extends PrintListener {
                 log.error("Failed to eval macro", e);
             }
         } else {
-            log.warn("Unknown wiki macro: " + macroName);
+            log.warn("Unknown wiki macro: {}", macroName);
         }
     }
 
@@ -415,20 +415,20 @@ public class WikiSerializerHandler extends PrintListener {
                 log.error("Failed to eval macro", e);
             }
         } else {
-            log.warn("Unknown wiki macro: " + macroName);
+            log.warn("Unknown wiki macro: {}", macroName);
         }
     }
 
     @Override
     public void onExtensionBlock(String extensionName, WikiParameters params) {
         flushWords();
-        log.warn("Unknown wiki expression: " + extensionName);
+        log.warn("Unknown wiki expression: {}", extensionName);
     }
 
     @Override
     public void onExtensionInline(String extensionName, WikiParameters params) {
         flushWords();
-        log.warn("Unknown wiki expression: " + extensionName);
+        log.warn("Unknown wiki expression: {}", extensionName);
     }
 
     @Override

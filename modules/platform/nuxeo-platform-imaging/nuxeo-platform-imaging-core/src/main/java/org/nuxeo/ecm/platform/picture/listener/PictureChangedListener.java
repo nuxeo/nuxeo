@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -62,6 +62,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PictureChangedListener implements EventListener {
 
+    private static final Logger log = LogManager.getLogger(PictureChangedListener.class);
+
     /**
      * @deprecated since 2021.27, use {@link PictureViewsHelper#DEFAULT_PICTURE_VIEW_PATH} instead
      */
@@ -69,8 +71,6 @@ public class PictureChangedListener implements EventListener {
     public static final String EMPTY_PICTURE_PATH = PictureViewsHelper.DEFAULT_PICTURE_VIEW_PATH;
 
     protected PictureViewsHelper pvh = new PictureViewsHelper();
-
-    private static final Log log = LogFactory.getLog(PictureChangedListener.class);
 
     private static ImageInfo emptyPictureImageInfo;
 
@@ -142,7 +142,7 @@ public class PictureChangedListener implements EventListener {
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             adapter.preFillPictureViews(blob, pictureConversions, emptyPictureImageInfo);
         } catch (IOException e) {
-            log.error("Error while pre-filling picture views: " + e.getMessage(), e);
+            log.error("Error while pre-filling picture views: {}", e.getMessage(), e);
         }
     }
 

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.auth.saml.user;
 import java.security.Principal;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
@@ -31,8 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractUserResolver implements UserResolver {
 
-    private static final Log log = LogFactory.getLog(AbstractUserResolver.class);
-
+    private static final Logger log = LogManager.getLogger(AbstractUserResolver.class);
 
     public abstract String findNuxeoUser(SAMLCredential userInfo);
 
@@ -50,7 +49,7 @@ public abstract class AbstractUserResolver implements UserResolver {
             userManager.createUser(userDoc);
 
         } catch (NuxeoException e) {
-            log.error("Error while creating user " + nuxeoLogin + "in UserManager", e);
+            log.error("Error while creating user: {} in UserManager", nuxeoLogin, e);
             return null;
         }
 
@@ -63,10 +62,10 @@ public abstract class AbstractUserResolver implements UserResolver {
     public String findOrCreateNuxeoUser(SAMLCredential userInfo) {
 
         String login = getLoginName(userInfo);
-        if (login!=null) {
+        if (login != null) {
             UserManager userManager = Framework.getService(UserManager.class);
             Principal principal = userManager.getPrincipal(login);
-            if (principal!=null) {
+            if (principal != null) {
                 return login;
             }
         }
@@ -80,7 +79,7 @@ public abstract class AbstractUserResolver implements UserResolver {
 
     @Override
     public void init(Map<String, String> parameters) {
-        //NOP
+        // NOP
     }
 
 }

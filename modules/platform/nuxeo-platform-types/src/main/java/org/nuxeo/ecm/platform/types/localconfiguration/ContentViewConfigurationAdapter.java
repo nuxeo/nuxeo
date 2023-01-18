@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -39,10 +39,10 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
-public class ContentViewConfigurationAdapter extends AbstractLocalConfiguration<ContentViewConfiguration> implements
-        ContentViewConfiguration {
+public class ContentViewConfigurationAdapter extends AbstractLocalConfiguration<ContentViewConfiguration>
+        implements ContentViewConfiguration {
 
-    private static final Log log = LogFactory.getLog(ContentViewConfigurationAdapter.class);
+    private static final Logger log = LogManager.getLogger(ContentViewConfigurationAdapter.class);
 
     protected DocumentRef documentRef;
 
@@ -55,7 +55,8 @@ public class ContentViewConfigurationAdapter extends AbstractLocalConfiguration<
         documentRef = doc.getRef();
         typeToContentViewNames = new HashMap<>();
         try {
-            List<Map<String, String>> cvNamesByType = (List<Map<String, String>>) doc.getPropertyValue(CONTENT_VIEW_CONFIGURATION_NAMES_BY_TYPE);
+            List<Map<String, String>> cvNamesByType = (List<Map<String, String>>) doc.getPropertyValue(
+                    CONTENT_VIEW_CONFIGURATION_NAMES_BY_TYPE);
             for (Map<String, String> typeToCv : cvNamesByType) {
                 String type = typeToCv.get(CONTENT_VIEW_CONFIGURATION_DOC_TYPE);
                 String cvName = typeToCv.get(CONTENT_VIEW_CONFIGURATION_CONTENT_VIEW);

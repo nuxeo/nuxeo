@@ -31,8 +31,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractCloudBinaryManager extends CachingBinaryManager implements BlobProvider {
 
-    private static final Log log = LogFactory.getLog(AbstractCloudBinaryManager.class);
+    private static final Logger log = LogManager.getLogger(AbstractCloudBinaryManager.class);
 
     /**
      * Gets the prefix used for configuration using system properties.
@@ -219,7 +219,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
             try {
                 value = Integer.parseInt(s.trim());
             } catch (NumberFormatException e) {
-                log.error("Cannot parse " + key + ": " + s);
+                log.error("Cannot parse: {}: {}", key, s);
             }
         }
         return value;

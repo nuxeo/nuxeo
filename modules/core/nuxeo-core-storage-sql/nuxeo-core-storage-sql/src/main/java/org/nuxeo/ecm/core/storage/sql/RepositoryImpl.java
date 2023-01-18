@@ -39,15 +39,15 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.lock.LockManager;
@@ -89,7 +89,7 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
  */
 public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repository {
 
-    private static final Log log = LogFactory.getLog(RepositoryImpl.class);
+    private static final Logger log = LogManager.getLogger(RepositoryImpl.class);
 
     public static final String TEST_UPGRADE = "testUpgrade";
 
@@ -172,7 +172,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
             }
         });
         gaugeName = MetricName.build("nuxeo", "repositories", "repository", "cache", "mapper")
-                .tagged("repository", repositoryDescriptor.name);
+                              .tagged("repository", repositoryDescriptor.name);
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -336,7 +336,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         if (cachingMapperClass == null) {
             log.warn("VCS Mapper cache is disabled.");
         } else {
-            log.info("VCS Mapper cache using: " + cachingMapperClass.getName());
+            log.info("VCS Mapper cache using: {}", cachingMapperClass::getName);
         }
 
         initRootNode();
@@ -367,7 +367,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         } else {
             selfRegisteredLockManager = false;
         }
-        log.info("Repository " + getName() + " using lock manager " + lockManager);
+        log.info("Repository: {} using lock manager: {}", getName(), lockManager);
     }
 
     protected void prepareClusterInvalidator() {
@@ -639,7 +639,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
                     String upperName = column.getPhysicalName().toUpperCase();
                     Integer type = columnTypes.remove(upperName);
                     if (type == null) {
-                        log.warn("Adding missing column in database: " + column.getFullQuotedName());
+                        log.warn("Adding missing column in database: {}", column::getFullQuotedName);
                         ddlCollector.add(table.getAddColumnSql(column));
                         ddlCollector.addAll(table.getPostAddSqls(column, model));
                         addedColumns.add(column);
@@ -660,8 +660,8 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
                     columnTypes.remove(col.toUpperCase());
                 }
                 if (!columnTypes.isEmpty()) {
-                    log.warn("Database contains additional unused columns for table " + table.getQuotedName() + ": "
-                            + String.join(", ", columnTypes.keySet()));
+                    log.warn("Database contains additional unused columns for table {}: {}", table::getQuotedName,
+                            () -> String.join(", ", columnTypes.keySet()));
                 }
                 if (!addedColumns.isEmpty()) {
                     if (added.containsKey(table.getKey())) {
@@ -737,7 +737,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
                  * Abort if requested.
                  */
                 if (abort) {
-                    log.error("Dumped DDL to: " + dumpFile);
+                    log.error("Dumped DDL to: {}", dumpFile);
                     throw new NuxeoException(
                             "Database initialization failed for: " + getName() + ", DDL must be executed: " + dumpFile);
                 }

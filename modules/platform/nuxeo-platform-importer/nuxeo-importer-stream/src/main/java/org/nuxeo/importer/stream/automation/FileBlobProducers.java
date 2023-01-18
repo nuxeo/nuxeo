@@ -20,13 +20,11 @@ package org.nuxeo.importer.stream.automation;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_NAME;
-import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -52,7 +50,8 @@ import org.nuxeo.runtime.stream.StreamService;
  */
 @Operation(id = FileBlobProducers.ID, category = Constants.CAT_SERVICES, label = "Produces blobs from a list of files", since = "10.2", description = "Produces blobs from a list of files.")
 public class FileBlobProducers {
-    private static final Log log = LogFactory.getLog(FileBlobProducers.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(FileBlobProducers.class);
 
     public static final String ID = "StreamImporter.runFileBlobProducers";
 

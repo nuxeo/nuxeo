@@ -22,8 +22,8 @@ package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -40,9 +40,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class FullTextConverter implements Converter {
 
-    private static final String TEXT_PLAIN_MT = "text/plain";
+    private static final Logger log = LogManager.getLogger(FullTextConverter.class);
 
-    private static final Log log = LogFactory.getLog(FullTextConverter.class);
+    private static final String TEXT_PLAIN_MT = "text/plain";
 
     protected ConverterDescriptor descriptor;
 
@@ -69,7 +69,7 @@ public class FullTextConverter implements Converter {
             }
             return cs.convert(converterName, blobHolder, parameters);
         } else {
-            log.debug("Unable to find full text extractor for source mime type " + srcMT);
+            log.debug("Unable to find full text extractor for source mime type: {}", srcMT);
             return new SimpleBlobHolder(Blobs.createBlob(""));
         }
     }

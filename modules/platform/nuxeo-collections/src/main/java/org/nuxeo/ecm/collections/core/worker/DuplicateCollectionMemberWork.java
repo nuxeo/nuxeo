@@ -21,8 +21,8 @@ package org.nuxeo.ecm.collections.core.worker;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DuplicateCollectionMemberWork extends AbstractWork {
 
-    private static final Log log = LogFactory.getLog(DuplicateCollectionMemberWork.class);
+    private static final Logger log = LogManager.getLogger(DuplicateCollectionMemberWork.class);
 
     public DuplicateCollectionMemberWork(final String repoName, final String newCollectionId,
             final List<String> collectionMemberIds, final int offset) {
@@ -89,8 +89,8 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
             setProgress(new Progress(0, collectionMemberIds.size()));
             openSystemSession();
             for (int i = 0; i < collectionMemberIds.size(); i++) {
-                log.trace(String.format("Worker %s, populating Collection %s, processing CollectionMember %s", getId(),
-                        newCollectionId, collectionMemberIds.get(i)));
+                log.trace("Worker: {}, populating collection: {}, processing CollectionMember: {}", getId(),
+                        newCollectionId, collectionMemberIds.get(i));
                 if (collectionMemberIds.get(i) != null) {
                     DocumentModel collectionMember = session.getDocument(new IdRef(collectionMemberIds.get(i)));
                     if (collectionManager.isCollectable(collectionMember)) {

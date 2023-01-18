@@ -27,8 +27,8 @@ import java.lang.annotation.Target;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -99,7 +99,8 @@ import org.junit.runners.model.Statement;
  * @since 5.9.5
  */
 public class RandomBug {
-    private static final Log log = LogFactory.getLog(RandomBug.class);
+
+    private static final Logger log = LogManager.getLogger(RandomBug.class);
 
     protected static final RandomBug self = new RandomBug();
 

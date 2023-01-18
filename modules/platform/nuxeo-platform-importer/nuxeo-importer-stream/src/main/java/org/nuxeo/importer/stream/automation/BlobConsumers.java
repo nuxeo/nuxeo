@@ -20,14 +20,12 @@ package org.nuxeo.importer.stream.automation;
 
 import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_INFO_NAME;
 import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_NAME;
-import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -57,7 +55,8 @@ import net.jodah.failsafe.RetryPolicy;
  */
 @Operation(id = BlobConsumers.ID, category = Constants.CAT_SERVICES, label = "Import blobs", since = "9.1", description = "Import blob into the binarystore.")
 public class BlobConsumers {
-    private static final Log log = LogFactory.getLog(BlobConsumers.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(BlobConsumers.class);
 
     public static final String ID = "StreamImporter.runBlobConsumers";
 

@@ -24,8 +24,8 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_WRIT
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +48,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 7.1
  */
 public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
-    private static final Log log = LogFactory.getLog(BucketIndexingWorker.class);
+
+    private static final Logger log = LogManager.getLogger(BucketIndexingWorker.class);
 
     private static final long serialVersionUID = -4665673026513796882L;
 
@@ -89,7 +90,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
             ids.clear();
         }
         if (syncAlias) {
-            log.warn(String.format("Re-indexing job: %s completed.", getSchedulePath().getParentPath()));
+            log.warn("Re-indexing job: {} completed.", () -> getSchedulePath().getParentPath());
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esa.syncSearchAndWriteAlias(esa.getIndexNameForRepository(repositoryName));
         }
@@ -122,7 +123,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
             return session.query(sb.toString());
         } catch (DocumentNotFoundException | PropertyConversionException e) {
             // A corrupted document prevents to load the batch of docs
-            log.warn("Fail to fetchDocuments because of: " + e.getMessage() + ", retrying without batching");
+            log.warn("Fail to fetchDocuments because of: {}, retrying without batching", e::getMessage);
             return loadDocumentsOneByOne(session, ids);
         }
     }

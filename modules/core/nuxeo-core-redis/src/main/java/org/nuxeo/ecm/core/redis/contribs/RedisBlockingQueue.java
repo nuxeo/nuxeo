@@ -29,8 +29,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.work.NuxeoBlockingQueue;
 import org.nuxeo.ecm.core.work.WorkHolder;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -47,7 +47,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
  */
 public class RedisBlockingQueue extends NuxeoBlockingQueue {
 
-    private static final Log log = LogFactory.getLog(RedisBlockingQueue.class);
+    private static final Logger log = LogManager.getLogger(RedisBlockingQueue.class);
 
     // this is so that we don't spam the logs with too many errors
     private static final long LOG_INTERVAL = Duration.ofSeconds(10).toMillis();
@@ -63,6 +63,7 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
     protected final RedisWorkQueuing queuing;
 
     protected final Lock lock = new ReentrantLock();
+
     protected final Condition notEmpty = lock.newCondition();
 
     public RedisBlockingQueue(String queueId, RedisWorkQueuing queuing) {
@@ -82,7 +83,7 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
 
     @Override
     public Runnable take() throws InterruptedException {
-        for (; ; ) {
+        for (;;) {
             Runnable r = poll(1, TimeUnit.DAYS);
             if (r != null) {
                 return r;
@@ -98,7 +99,7 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
             return null;
         }
         long end = System.currentTimeMillis() + TimeUnit.NANOSECONDS.toMillis(nanos);
-        for (; ; ) {
+        for (;;) {
             Runnable r = poll();
             if (r != null) {
                 return r;
@@ -119,8 +120,9 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
 
     private int getRemotePollInterval() {
         // add some randomness so we don't generate periodic spike when all workers are starving
-        return REMOTE_POLL_INTERVAL_MS + ThreadLocalRandom.current().nextInt(-1 * REMOTE_POLL_INTERVAL_STDEV_MS,
-                REMOTE_POLL_INTERVAL_STDEV_MS);
+        return REMOTE_POLL_INTERVAL_MS
+                + ThreadLocalRandom.current()
+                                   .nextInt(-1 * REMOTE_POLL_INTERVAL_STDEV_MS, REMOTE_POLL_INTERVAL_STDEV_MS);
     }
 
     @Override
@@ -131,7 +133,7 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
             queuing.workSetScheduled(queueId, work);
             notEmpty.signal();
         } catch (IOException e) {
-            log.error("Failed to add Work: " + work, e);
+            log.error("Failed to add Work: {}", work, e);
             throw new RuntimeException(e);
         } finally {
             lock.unlock();

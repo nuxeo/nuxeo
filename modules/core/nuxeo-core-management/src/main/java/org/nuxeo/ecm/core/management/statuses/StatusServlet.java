@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.RuntimeService;
@@ -45,7 +45,7 @@ public class StatusServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(StatusServlet.class);
+    private static final Logger log = LogManager.getLogger(StatusServlet.class);
 
     public static final String PARAM = "info";
 

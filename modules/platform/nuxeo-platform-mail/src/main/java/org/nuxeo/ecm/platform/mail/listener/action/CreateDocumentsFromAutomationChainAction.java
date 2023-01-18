@@ -30,8 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CreateDocumentsFromAutomationChainAction extends AbstractMailAction {
 
-    private static final Log log = LogFactory.getLog(CreateDocumentsFromAutomationChainAction.class);
+    private static final Logger log = LogManager.getLogger(CreateDocumentsFromAutomationChainAction.class);
 
     protected String chainName;
 

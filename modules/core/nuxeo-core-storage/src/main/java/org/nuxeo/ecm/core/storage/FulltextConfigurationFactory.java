@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class FulltextConfigurationFactory {
 
-    private static final Log log = LogFactory.getLog(FulltextConfigurationFactory.class);
+    private static final Logger log = LogManager.getLogger(FulltextConfigurationFactory.class);
 
     public static final String PROP_TYPE_STRING = "string";
 
@@ -100,7 +100,7 @@ public class FulltextConfigurationFactory {
                 } else if (desc.fieldType.equals(FulltextConfigurationFactory.PROP_TYPE_BLOB)) {
                     ftc.indexesAllBinary.add(name);
                 } else {
-                    log.error("Ignoring unknow repository fulltext configuration fieldType: " + desc.fieldType);
+                    log.error("Ignoring unknown repository fulltext configuration fieldType: {}", desc.fieldType);
                 }
 
             }
@@ -151,8 +151,7 @@ public class FulltextConfigurationFactory {
                         }
                     }
                     if (field == null) {
-                        log.error(String.format("Ignoring unknown property '%s' in fulltext configuration: %s", path,
-                                name));
+                        log.error("Ignoring unknown property: {} in fulltext configuration: {}", path, name);
                         continue;
                     }
                     Type baseType = getBaseType(field.getType());
@@ -173,8 +172,8 @@ public class FulltextConfigurationFactory {
                             // to be in the same format as what DirtyPathsFinder expects, like "content/data".
                         }
                     } else {
-                        log.error(String.format("Ignoring property '%s' with bad type %s in fulltext configuration: %s",
-                                path, field.getType(), name));
+                        log.error("Ignoring property: {} with bad type: {} in fulltext configuration: {}", path,
+                                field.getType(), name);
                         continue;
                     }
                     indexesByPropPath.computeIfAbsent(path, p -> new HashSet<>()).add(name);

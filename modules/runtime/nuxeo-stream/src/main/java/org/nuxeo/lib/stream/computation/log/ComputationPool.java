@@ -32,8 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
@@ -46,7 +46,8 @@ import org.nuxeo.lib.stream.log.LogPartition;
  * @since 9.3
  */
 public class ComputationPool {
-    private static final Log log = LogFactory.getLog(ComputationPool.class);
+
+    private static final Logger log = LogManager.getLogger(ComputationPool.class);
 
     protected final ComputationMetadataMapping metadata;
 
@@ -83,10 +84,10 @@ public class ComputationPool {
     @SuppressWarnings("FutureReturnValueIgnored")
     public void start() {
         if (threads == 0) {
-            log.info(metadata.name() + ": Empty pool");
+            log.info("{}: Empty pool", metadata::name);
             return;
         }
-        log.info(metadata.name() + ": Starting pool");
+        log.info("{}: Starting pool", metadata::name);
         threadPool = newFixedThreadPool(threads, new NamedThreadFactory(metadata.name() + "Pool"));
         defaultAssignments.forEach(assignments -> {
             ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, streamManager, policy);
@@ -95,7 +96,7 @@ public class ComputationPool {
         });
         // close the pool no new admission
         threadPool.shutdown();
-        log.debug(metadata.name() + ": Pool started, threads: " + threads);
+        log.debug("{}: Pool started, threads: {}", metadata.name(), threads);
     }
 
     public boolean isTerminated() {
@@ -103,7 +104,7 @@ public class ComputationPool {
     }
 
     public boolean waitForAssignments(Duration timeout) throws InterruptedException {
-        log.info(metadata.name() + ": Wait for partitions assignments");
+        log.info("{}: Wait for partitions assignments", metadata::name);
         if (threadPool == null || threadPool.isTerminated()) {
             return true;
         }
@@ -119,7 +120,7 @@ public class ComputationPool {
         if (threadPool == null || threadPool.isTerminated()) {
             return true;
         }
-        log.info(metadata.name() + ": Draining");
+        log.info("{}: Draining", metadata::name);
         runners.forEach(ComputationRunner::drain);
         boolean ret = awaitPoolTermination(timeout);
         stop(Duration.ofSeconds(1));
@@ -130,7 +131,7 @@ public class ComputationPool {
         if (threadPool == null || threadPool.isTerminated()) {
             return true;
         }
-        log.info(metadata.name() + ": Stopping");
+        log.info("{}: Stopping", metadata::name);
         runners.forEach(ComputationRunner::stop);
         boolean ret = awaitPoolTermination(timeout);
         shutdown();
@@ -139,14 +140,14 @@ public class ComputationPool {
 
     public void shutdown() {
         if (threadPool != null && !threadPool.isTerminated()) {
-            log.info(metadata.name() + ": Shutting down");
+            log.info("{}: Shutting down", metadata::name);
             threadPool.shutdownNow();
             // give a chance to end threads with valid tailer when shutdown is followed by streams.close()
             try {
                 threadPool.awaitTermination(1, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                log.warn(metadata.name() + ": Interrupted in shutdown");
+                log.warn("{}: Interrupted in shutdown", metadata::name);
             }
         }
         runners.clear();
@@ -156,12 +157,12 @@ public class ComputationPool {
     protected boolean awaitPoolTermination(Duration timeout) {
         try {
             if (!threadPool.awaitTermination(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
-                log.warn(metadata.name() + ": Timeout on wait for pool termination");
+                log.warn("{}: Timeout on wait for pool termination", metadata::name);
                 return false;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.warn(metadata.name() + ": Interrupted while waiting for pool termination");
+            log.warn("{}: Interrupted while waiting for pool termination", metadata::name);
             return false;
         }
         return true;
@@ -181,8 +182,9 @@ public class ComputationPool {
             // There is no known pending records we take the max completed low watermark
             ret = watermarks.stream().filter(Watermark::isCompleted).mapToLong(Watermark::getValue).max().orElse(0);
         }
-        if (log.isTraceEnabled() && ret > 0)
-            log.trace(metadata.name() + ": low: " + ret + " " + (pending ? "Pending" : "Completed"));
+        if (ret > 0) {
+            log.trace("{}: low: {} {}", metadata.name(), ret, pending ? "Pending" : "Completed");
+        }
         return ret;
     }
 
@@ -199,7 +201,7 @@ public class ComputationPool {
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r, String.format("%s-%02d", prefix, count.getAndIncrement()));
-            t.setUncaughtExceptionHandler((t1, e) -> log.error("Uncaught exception: " + e.getMessage(), e));
+            t.setUncaughtExceptionHandler((t1, e) -> log.error("Uncaught exception: {}", e.getMessage(), e));
             return t;
         }
     }

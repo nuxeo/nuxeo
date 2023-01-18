@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
@@ -40,6 +42,8 @@ import groovy.lang.Script;
  * @since 7.4
  */
 public class GroovyUserMapper extends AbstractUserMapper {
+
+    private static final Logger log = LogManager.getLogger(GroovyUserMapper.class);
 
     protected final String mapperSource;
 

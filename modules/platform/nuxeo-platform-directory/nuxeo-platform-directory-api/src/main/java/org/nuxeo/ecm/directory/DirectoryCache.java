@@ -23,8 +23,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.cache.Cache;
@@ -44,6 +44,8 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
  * Beware that this cache is not transaction aware (which is not a problem for LDAP directories anyway).
  */
 public class DirectoryCache {
+
+    private static final Logger log = LogManager.getLogger(DirectoryCache.class);
 
     private static final Serializable CACHE_MISS = Boolean.FALSE;
 
@@ -70,8 +72,6 @@ public class DirectoryCache {
     protected final Counter invalidationsCounter;
 
     protected final Counter sizeCounter;
-
-    private final static Log log = LogFactory.getLog(DirectoryCache.class);
 
     protected DirectoryCache(String name) {
         this.name = name;
@@ -103,14 +103,14 @@ public class DirectoryCache {
         } else if (isCacheEnabled() && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
             if (log.isDebugEnabled()) {
                 if (getEntryCache() == null) {
-                    log.debug(String.format(
-                            "The cache '%s' is undefined for directory '%s', it will be created with the default cache configuration",
-                            entryCacheName, name));
+                    log.debug(
+                            "The cache: {} is undefined for directory: {}, it will be created with the default cache configuration",
+                            entryCacheName, name);
                 }
                 if (getEntryCacheWithoutReferences() == null) {
-                    log.debug(String.format(
-                            "The cache '%s' is undefined for directory '%s', it will be created with the default cache configuration",
-                            entryCacheWithoutReferencesName, name));
+                    log.debug(
+                            "The cache: {} is undefined for directory: {}, it will be created with the default cache configuration",
+                            entryCacheWithoutReferencesName, name);
                 }
             }
             return source.getEntryFromSource(entryId, fetchReferences);

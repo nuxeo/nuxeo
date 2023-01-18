@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -43,8 +41,6 @@ import org.nuxeo.runtime.api.Framework;
 public class RelationHelper {
 
     static RelationManager relationManager;
-
-    private static final Log log = LogFactory.getLog(RelationHelper.class);
 
     // Utility class.
     private RelationHelper() {
@@ -110,8 +106,8 @@ public class RelationHelper {
     public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat,
             DocumentModel objectDocument) {
         QNameResource docResource = getDocumentResource(objectDocument);
-        List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(null, predicat,
-                docResource);
+        List<Statement> stmts = getRelationManager().getGraphByName(graphName)
+                                                    .getStatements(null, predicat, docResource);
         if (stmts != null) {
             DocumentModelList docs = new DocumentModelListImpl();
             for (Statement stmt : stmts) {
@@ -132,8 +128,8 @@ public class RelationHelper {
     public static DocumentModelList getSubjectDocumentsOut(String graphName, Resource predicat,
             DocumentModel objectDocument) {
         QNameResource docResource = getDocumentResource(objectDocument);
-        List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(docResource, predicat,
-                null);
+        List<Statement> stmts = getRelationManager().getGraphByName(graphName)
+                                                    .getStatements(docResource, predicat, null);
         if (stmts != null) {
             DocumentModelList docs = new DocumentModelListImpl();
             for (Statement stmt : stmts) {

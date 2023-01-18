@@ -24,7 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -41,7 +42,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 9.1
  */
 public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
-    private static final org.apache.commons.logging.Log log = LogFactory.getLog(BlobMessageConsumer.class);
+
+    private static final Logger log = LogManager.getLogger(BlobMessageConsumer.class);
 
     protected BlobProvider blobProvider;
 
@@ -142,7 +144,7 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
                 try {
                     Files.delete(fileToDelete);
                 } catch (IOException e) {
-                    log.warn("Unable to delete file: " + fileToDelete, e);
+                    log.warn("Unable to delete file: {}", fileToDelete, e);
                 }
             }
         }

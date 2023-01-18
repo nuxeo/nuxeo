@@ -22,8 +22,8 @@ package org.nuxeo.ecm.core.versioning;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -34,7 +34,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("filter")
 public class VersioningFilterDescriptor {
 
-    private static final Log log = LogFactory.getLog(VersioningFilterDescriptor.class);
+    private static final Logger log = LogManager.getLogger(VersioningFilterDescriptor.class);
 
     @XNode("@id")
     protected String id;
@@ -64,7 +64,7 @@ public class VersioningFilterDescriptor {
             try {
                 filter = className.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                log.error("Class " + className + " could not be instantiated", e);
+                log.error("Class {} could not be instantiated", className, e);
             }
         } else {
             return new StandardVersioningPolicyFilter(types, facets, schemas, condition);

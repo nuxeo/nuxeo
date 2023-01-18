@@ -30,8 +30,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.tools.command.Command;
@@ -41,7 +40,8 @@ import org.nuxeo.lib.stream.tools.command.HelpCommand;
  * @since 9.3
  */
 public class Main {
-    private static final Log log = LogFactory.getLog(Main.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(Main.class);
 
     protected static final String NUXEO_KAFKA_FILE_CONF = "nxserver/config/kafka-config.xml";
 
@@ -83,12 +83,12 @@ public class Main {
             createManager(cmd, cmdLine);
             return cmd.run(manager, cmdLine);
         } catch (ParseException e) {
-            log.error("Parse error: " + e.getMessage() + ", try: help " + command);
+            log.error("Parse error: {}, try: help {}", e.getMessage(), command);
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("Interrupted: " + e.getMessage());
+            log.error("Interrupted: {}", e.getMessage());
         }
         return false;
     }

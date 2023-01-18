@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implements OAuth2ServiceProviderRegistry {
 
-    protected static final Log log = LogFactory.getLog(OAuth2ServiceProviderRegistryImpl.class);
+    private static final Logger log = LogManager.getLogger(OAuth2ServiceProviderRegistryImpl.class);
 
     public static final String PROVIDER_EP = "providers";
 
@@ -92,7 +92,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
             String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
         return addProvider(serviceName, description, tokenServerURL, authorizationServerURL, null, clientId,
-                           clientSecret, scopes, Boolean.TRUE);
+                clientSecret, scopes, Boolean.TRUE);
     }
 
     @Override
@@ -117,8 +117,8 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             boolean enabled = (clientId != null && clientSecret != null);
             entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled && (isEnabled == null ? false : isEnabled)));
             if (!enabled) {
-                log.info("OAuth2 provider for " + serviceName
-                        + " is disabled because clientId and/or clientSecret are empty");
+                log.info("OAuth2 provider for: {} is disabled because clientId and/or clientSecret are empty",
+                        serviceName);
             }
             Framework.doPrivileged(() -> session.updateEntry(entry));
             return getProvider(serviceName);
@@ -141,8 +141,8 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             boolean enabled = provider.getClientId() != null && provider.getClientSecret() != null;
             entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled && provider.isEnabled()));
             if (!enabled) {
-                log.info("OAuth2 provider for " + serviceName
-                        + " is disabled because clientId and/or clientSecret are empty");
+                log.info("OAuth2 provider for: {} is disabled because clientId and/or clientSecret are empty",
+                        serviceName);
             }
             session.updateEntry(entry);
             return getProvider(serviceName);
@@ -199,7 +199,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PROVIDER_EP.equals(extensionPoint)) {
             OAuth2ServiceProviderDescriptor provider = (OAuth2ServiceProviderDescriptor) contribution;
-            log.info("OAuth2 provider for " + provider.getName() + " will be registered at application startup");
+            log.info("OAuth2 provider for: {} will be registered at application startup", provider::getName);
             // delay registration because data sources may not be available
             // at this point
             registry.addContribution(provider);
@@ -218,8 +218,8 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
                         provider.getAuthorizationServerURL(), provider.getClientId(), provider.getClientSecret(),
                         Arrays.asList(provider.getScopes()));
             } else {
-                log.info("Provider " + provider.getName()
-                        + " is already in the Database, XML contribution  won't overwrite it");
+                log.info("Provider: {} is already in the Database, XML contribution  won't overwrite it",
+                        provider::getName);
             }
         }
     }

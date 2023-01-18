@@ -18,20 +18,21 @@
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+
 /**
  * @since 7.3
  */
-public class OAuth2ServiceProviderContributionRegistry extends ContributionFragmentRegistry<OAuth2ServiceProviderDescriptor> {
+public class OAuth2ServiceProviderContributionRegistry
+        extends ContributionFragmentRegistry<OAuth2ServiceProviderDescriptor> {
 
-    protected static final Log log = LogFactory.getLog(OAuth2ServiceProviderContributionRegistry.class);
+    private static final Logger log = LogManager.getLogger(OAuth2ServiceProviderContributionRegistry.class);
 
     protected final Map<String, OAuth2ServiceProviderDescriptor> providers = new HashMap<>();
 
@@ -63,7 +64,7 @@ public class OAuth2ServiceProviderContributionRegistry extends ContributionFragm
 
     @Override
     public void contributionUpdated(String name, OAuth2ServiceProviderDescriptor contrib,
-        OAuth2ServiceProviderDescriptor newOrigContrib) {
+            OAuth2ServiceProviderDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
             providers.put(name, contrib);
         } else {

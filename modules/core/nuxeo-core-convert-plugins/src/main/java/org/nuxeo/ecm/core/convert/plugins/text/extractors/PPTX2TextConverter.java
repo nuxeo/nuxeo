@@ -30,8 +30,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.presentation.PresentationSlide;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -42,13 +42,13 @@ import org.xml.sax.XMLReader;
  */
 public class PPTX2TextConverter extends XmlZip2TextConverter {
 
-    protected static final Log log = LogFactory.getLog(PPTX2TextConverter.class);
+    private static final Logger log = LogManager.getLogger(PPTX2TextConverter.class);
 
     private static final String PRESENTATION_SLIDE_ZIP_ENTRY_NAME_PREFIX = "ppt/slides/slide";
 
     @Override
-    protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb) throws IOException,
-            SAXException {
+    protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb)
+            throws IOException, SAXException {
 
         Set<PresentationSlide> slides = new TreeSet<>();
 

@@ -48,7 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -67,7 +68,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
-    private static final Log log = LogFactory.getLog(DefaultNuxeoExceptionHandler.class);
+    private static final Logger log = LogManager.getLogger(DefaultNuxeoExceptionHandler.class);
 
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -87,9 +88,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     protected void startHandlingException(HttpServletRequest request, HttpServletResponse response, Throwable t)
             throws ServletException {
         if (request.getAttribute(EXCEPTION_HANDLER_MARKER) == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Initial exception", t);
-            }
+            log.debug("Initial exception", t);
             // mark request as already processed by this mechanism to avoid
             // looping over it
             request.setAttribute(EXCEPTION_HANDLER_MARKER, true);
@@ -137,7 +136,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             ErrorHandler handler = getHandler(t);
             Integer code = handler.getCode();
             int status = code == null ? defaultStatus : code.intValue();
-            Log logger = parameters.getLogger();
+            var logger = parameters.getLogger();
             parameters.getListener().startHandling(t, request, response);
 
             StringWriter swriter = new StringWriter();
@@ -197,8 +196,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                     if (requestDispatcher != null) {
                         requestDispatcher.forward(request, response);
                     } else {
-                        log.error("Cannot forward to error page, no RequestDispatcher found for errorPage=" + errorPage
-                                + " handler=" + handler);
+                        log.error(
+                                "Cannot forward to error page, no RequestDispatcher found for errorPage: {}, handler: {}",
+                                errorPage, handler);
                     }
                 }
                 parameters.getListener().responseComplete();

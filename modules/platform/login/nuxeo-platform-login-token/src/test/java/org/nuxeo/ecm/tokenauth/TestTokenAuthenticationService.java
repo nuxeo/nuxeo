@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +59,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(TokenAuthenticationServiceFeature.class)
 public class TestTokenAuthenticationService {
 
-    private static final Log log = LogFactory.getLog(TestTokenAuthenticationService.class);
+    private static final Logger log = LogManager.getLogger(TestTokenAuthenticationService.class);
 
     @Inject
     protected TokenAuthenticationService tokenAuthenticationService;
@@ -129,8 +129,8 @@ public class TestTokenAuthenticationService {
         assertNull(tokenAuthenticationService.getToken("john", "myFavoriteApp", "Ubuntu box 64 bits"));
 
         // Test existing token retrieval
-        tokenAuthenticationService.acquireToken("joe", "myFavoriteApp", "Ubuntu box 64 bits",
-                "This is my personal box", "rw");
+        tokenAuthenticationService.acquireToken("joe", "myFavoriteApp", "Ubuntu box 64 bits", "This is my personal box",
+                "rw");
         assertNotNull(tokenAuthenticationService.getToken("joe", "myFavoriteApp", "Ubuntu box 64 bits"));
     }
 
@@ -173,13 +173,13 @@ public class TestTokenAuthenticationService {
         // Test existing token bindings
         String token1 = tokenAuthenticationService.acquireToken("joe", "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal Linux box", "rw");
-        log.debug("token1 = " + token1);
+        log.debug("token1: {}", token1);
         String token2 = tokenAuthenticationService.acquireToken("joe", "myFavoriteApp", "Windows box 32 bits",
                 "This is my personal Windows box", "rw");
-        log.debug("token2 = " + token2);
+        log.debug("token2: {}", token2);
         String token3 = tokenAuthenticationService.acquireToken("joe", "nuxeoDrive", "Mac OSX VM",
                 "This is my personal Mac box", "rw");
-        log.debug("token3 = " + token3);
+        log.debug("token3: {}", token3);
 
         DocumentModelList tokenBindings = tokenAuthenticationService.getTokenBindings("joe");
         assertEquals(3, tokenBindings.size());
@@ -202,13 +202,9 @@ public class TestTokenAuthenticationService {
 
     private AuthenticationToken asAuthenticationToken(DocumentModel entry) {
         Map<String, Object> props = entry.getProperties("authtoken");
-        AuthenticationToken token = new AuthenticationToken(
-                (String) props.get("token"),
-                (String) props.get("userName"),
-                (String) props.get("applicationName"),
-                (String) props.get("deviceId"),
-                (String) props.get("deviceDescription"),
-                (String) props.get("permission"));
+        AuthenticationToken token = new AuthenticationToken((String) props.get("token"), (String) props.get("userName"),
+                (String) props.get("applicationName"), (String) props.get("deviceId"),
+                (String) props.get("deviceDescription"), (String) props.get("permission"));
         token.setCreationDate((Calendar) props.get("creationDate"));
         return token;
     }

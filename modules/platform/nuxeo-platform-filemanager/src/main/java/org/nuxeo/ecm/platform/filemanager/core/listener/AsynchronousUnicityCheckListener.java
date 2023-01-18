@@ -24,8 +24,8 @@ package org.nuxeo.ecm.platform.filemanager.core.listener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,10 +37,10 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
-public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker implements
-        PostCommitFilteringEventListener {
+public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker
+        implements PostCommitFilteringEventListener {
 
-    private static final Log log = LogFactory.getLog(AsynchronousUnicityCheckListener.class);
+    private static final Logger log = LogManager.getLogger(AsynchronousUnicityCheckListener.class);
 
     @Override
     public boolean acceptEvent(Event event) {

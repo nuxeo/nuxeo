@@ -28,8 +28,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A low level holder of DB cursors that manages cleaning on timeout.
@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CursorService<C, O, R> {
 
-    private static final Log log = LogFactory.getLog(CursorService.class);
+    private static final Logger log = LogManager.getLogger(CursorService.class);
 
     protected final Map<String, CursorResult<C, O>> cursorResults = new ConcurrentHashMap<>();
 
@@ -58,7 +58,7 @@ public class CursorService<C, O, R> {
     protected boolean isScrollTimedOut(String scrollId, CursorResult<C, O> cursorResult) {
         if (cursorResult.timedOut()) {
             if (unregisterCursor(scrollId)) {
-                log.warn("Scroll '" + scrollId + "' timed out");
+                log.warn("Scroll '{}' timed out", scrollId);
             }
             return true;
         }
@@ -148,7 +148,7 @@ public class CursorService<C, O, R> {
                     O obj = cursorResult.next();
                     R result = extractor.apply(obj);
                     if (result == null) {
-                        log.error("Got a document without result: " + obj);
+                        log.error("Got a document without result: {}", obj);
                     } else {
                         results.add(result);
                     }

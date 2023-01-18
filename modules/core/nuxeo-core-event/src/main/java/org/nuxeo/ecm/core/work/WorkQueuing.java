@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.work;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -208,29 +208,29 @@ public interface WorkQueuing {
         void queueChanged(Work work, WorkQueueMetrics metric);
 
         static Listener lookupListener() {
-            final Log log = LogFactory.getLog(WorkQueuing.class);
+            var log = LogManager.getLogger(WorkQueuing.class);
             if (log.isTraceEnabled()) {
                 class Tracing implements Listener {
-                    private final Log log;
+                    private final Logger log;
 
-                    protected Tracing(Log log) {
+                    protected Tracing(Logger log) {
                         this.log = log;
                     }
 
                     @Override
                     public void queueChanged(Work work, WorkQueueMetrics metrics) {
-                        log.trace(String.format("%s -> changed on %s %s", metrics, work.getWorkInstanceState(),
-                                work.getSchedulePath()));
+                        log.trace("{} -> changed on {} {}", metrics, work.getWorkInstanceState(),
+                                work.getSchedulePath());
                     }
 
                     @Override
                     public void queueActivated(WorkQueueMetrics metrics) {
-                        log.trace(String.format("%s -> activated", metrics));
+                        log.trace("{} -> activated", metrics);
                     }
 
                     @Override
                     public void queueDeactivated(WorkQueueMetrics metrics) {
-                        log.trace(String.format("%s -> deactivated", metrics));
+                        log.trace("{} -> deactivated", metrics);
                     }
                 }
 

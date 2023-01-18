@@ -22,8 +22,6 @@ package org.nuxeo.template.adapters;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
@@ -37,8 +35,6 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 public abstract class AbstractTemplateDocument implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    protected static Log log = LogFactory.getLog(AbstractTemplateDocument.class);
 
     protected DocumentModel adaptedDoc;
 

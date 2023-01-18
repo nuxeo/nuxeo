@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -42,6 +42,8 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  */
 public class DocumentPathCodec extends AbstractDocumentViewCodec {
 
+    private static final Logger log = LogManager.getLogger(DocumentPathCodec.class);
+
     // The maximum length of an url for Internet Explorer.
     public static final int URL_MAX_LENGTH = 2000;
 
@@ -54,8 +56,6 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
             + "@([\\w\\-\\.;=]+)" // view id (group 3)
             + "/?" // final slash (optional)
             + "(?:\\?(.*)?)?"; // query (group 4) (optional)
-
-    private static final Log log = LogFactory.getLog(DocumentPathCodec.class);
 
     public DocumentPathCodec() {
     }

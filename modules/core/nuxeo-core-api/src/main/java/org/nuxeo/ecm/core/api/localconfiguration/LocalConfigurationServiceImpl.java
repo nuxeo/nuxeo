@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.core.api.localconfiguration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -33,8 +31,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 5.4.2
  */
 public class LocalConfigurationServiceImpl extends DefaultComponent implements LocalConfigurationService {
-
-    private static final Log log = LogFactory.getLog(LocalConfigurationServiceImpl.class);
 
     @Override
     public <T extends LocalConfiguration> T getConfiguration(Class<T> configurationClass, String configurationFacet,

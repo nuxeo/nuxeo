@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEscalationService {
 
-    private static final Log log = LogFactory.getLog(DocumentRoutingEscalationServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(DocumentRoutingEscalationServiceImpl.class);
 
     public static final String queryForSuspendedNodesWithEscalation = "Select DISTINCT ecm:uuid from RouteNode WHERE ecm:currentLifeCycleState = 'suspended' "
             + "AND ( rnode:escalationRules/*1/executed = 0 OR rnode:escalationRules/*1/multipleExecution = 1 )";
@@ -57,7 +57,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
                 IterableQueryResult results = session.queryAndFetch(queryForSuspendedNodesWithEscalation, "NXQL");
                 for (Map<String, Serializable> result : results) {
                     nodesDocIds.add(result.get("ecm:uuid").toString());
-                    log.trace("Inspecting node for escalation rules:" + result.get("ecm:uuid").toString());
+                    log.trace("Inspecting node for escalation rules: {}", result.get("ecm:uuid"));
                 }
                 results.close();
             }
@@ -143,7 +143,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
                 // check to see if the rule wasn't executed meanwhile
                 boolean alreadyExecuted = getExecutionStatus(rule, session);
                 if (alreadyExecuted && !rule.isMultipleExecution()) {
-                    log.trace("Rule " + rule.getId() + "on node " + node.getId() + " already executed");
+                    log.trace("Rule: {} on node: {} already executed", rule::getId, node::getId);
                     return;
                 }
                 node.executeChain(rule.getChain());
@@ -172,8 +172,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
 
     }
 
-    private static void markRuleAsExecuted(String nodeDocId, String escalationRuleId, CoreSession session)
-            {
+    private static void markRuleAsExecuted(String nodeDocId, String escalationRuleId, CoreSession session) {
         DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
         GraphNode node = nodeDoc.getAdapter(GraphNode.class);
         List<EscalationRule> rules = node.getEscalationRules();

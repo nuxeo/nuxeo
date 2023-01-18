@@ -20,8 +20,6 @@ package org.nuxeo.ecm.platform.routing.core.api.operation;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -48,8 +46,6 @@ import org.nuxeo.ecm.core.api.PropertyException;
 public class SetWorkflowVariablesOperation {
 
     public static final String ID = "Workflow.SetWorkflowVariables";
-
-    private static Log log = LogFactory.getLog(SetWorkflowVariablesOperation.class);
 
     @Context
     protected CoreSession session;

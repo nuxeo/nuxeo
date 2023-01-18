@@ -21,6 +21,10 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,13 +33,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import org.junit.Test;
 import org.junit.Ignore;
-
-import static org.junit.Assert.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -51,8 +50,6 @@ import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public class TestLogEntryProvider extends PersistenceTestCase {
-
-    protected static final Log log = LogFactory.getLog(TestLogEntryProvider.class);
 
     private LogEntryProvider providerUnderTest;
 

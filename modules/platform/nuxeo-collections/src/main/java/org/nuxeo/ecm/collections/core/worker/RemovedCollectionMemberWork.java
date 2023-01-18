@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.collections.core.worker;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.listener.CollectionAsynchrnonousQuery;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -29,6 +29,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class RemovedCollectionMemberWork extends RemovedAbstractWork {
 
+    private static final long serialVersionUID = 6944563540430297431L;
+
+    private static final Logger log = LogManager.getLogger(RemovedCollectionMemberWork.class);
+
     public RemovedCollectionMemberWork() {
         super();
     }
@@ -36,10 +40,6 @@ public class RemovedCollectionMemberWork extends RemovedAbstractWork {
     protected RemovedCollectionMemberWork(long offset) {
         super(offset);
     }
-
-    private static final Log log = LogFactory.getLog(RemovedCollectionMemberWork.class);
-
-    private static final long serialVersionUID = 6944563540430297431L;
 
     public static final String CATEGORY = "removedCollectionMember";
 
@@ -62,8 +62,7 @@ public class RemovedCollectionMemberWork extends RemovedAbstractWork {
 
     @Override
     protected void updateDocument(final DocumentModel collection) {
-        log.trace(String.format("Worker %s, updating Collection %s", getId(), collection.getTitle()));
-
+        log.trace("Worker: {}, updating Collection: {}", this::getId, collection::getTitle);
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         collectionAdapter.removeDocument(docId);
         session.saveDocument(collection);

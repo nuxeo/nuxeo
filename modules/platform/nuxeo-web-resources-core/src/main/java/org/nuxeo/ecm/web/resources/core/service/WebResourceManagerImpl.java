@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class WebResourceManagerImpl extends DefaultComponent implements WebResourceManager {
 
-    private static final Log log = LogFactory.getLog(WebResourceManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(WebResourceManagerImpl.class);
 
     protected static final String RESOURCES_ENDPOINT = "resources";
 
@@ -82,12 +82,11 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             registerResourceBundle(bundle);
         } else if (PROCESSORS_ENDPOINT.equals(extensionPoint)) {
             ProcessorDescriptor p = (ProcessorDescriptor) contribution;
-            log.info(String.format("Register processor '%s'", p.getName()));
+            log.info("Register processor: {}", p::getName);
             processors.addContribution(p);
-            log.info(String.format("Done registering processor '%s'", p.getName()));
+            log.info("Done registering processor: {}", p::getName);
         } else {
-            log.error(String.format("Unknown contribution to the service, extension point '%s': '%s", extensionPoint,
-                    contribution));
+            log.error("Unknown contribution to the service, extension point: {}: {}", extensionPoint, contribution);
         }
     }
 
@@ -101,12 +100,11 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             unregisterResourceBundle(bundle);
         } else if (PROCESSORS_ENDPOINT.equals(extensionPoint)) {
             ProcessorDescriptor p = (ProcessorDescriptor) contribution;
-            log.info(String.format("Removing processor '%s'", p.getName()));
+            log.info("Removing processor: {}", p::getName);
             processors.removeContribution(p);
-            log.info(String.format("Done removing processor '%s'", p.getName()));
+            log.info("Done removing processor: {}", p::getName);
         } else {
-            log.error(String.format("Unknown contribution to the service, extension point '%s': '%s", extensionPoint,
-                    contribution));
+            log.error("Unknown contribution to the service, extension point: {}: {}", extensionPoint, contribution);
         }
     }
 
@@ -126,8 +124,8 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
                 }
                 URL url = contributor.getContext().getLocalResource(path);
                 if (url == null) {
-                    log.error("Cannot resolve local URL for resource '" + resource.getName() + "' with path '"
-                            + resource.getPath() + "'");
+                    log.error("Cannot resolve local URL for resource: {} with path: {}", resource::getName,
+                            resource::getPath);
                 } else {
                     String builtUri = url.toString();
                     if (hasWildcard) {
@@ -174,9 +172,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         List<Resource> res = new ArrayList<>();
         ResourceBundle rb = resourceBundles.getResourceBundle(bundleName);
         if (rb == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Unknown bundle named '%s'", bundleName));
-            }
+            log.debug("Unknown bundle named: {}", bundleName);
             return res;
         }
 
@@ -186,7 +182,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         for (String rn : rb.getResources()) {
             Resource r = getResource(rn);
             if (r == null) {
-                log.error(String.format("Could not resolve resource '%s' on bundle '%s'", rn, bundleName));
+                log.error("Could not resolve resource: {} on bundle: {}", rn, bundleName);
                 continue;
             }
             // resolve sub resources of given type before filtering
@@ -215,7 +211,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             for (String dn : deps) {
                 Resource d = getResource(dn);
                 if (d == null) {
-                    log.error("Unknown resource dependency named '" + dn + "'");
+                    log.error("Unknown resource dependency named: {}", dn);
                     continue;
                 }
                 if (!ResourceType.matches(type, d)) {
@@ -236,38 +232,38 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
 
     @Override
     public void registerResourceBundle(ResourceBundle bundle) {
-        log.info(String.format("Register resource bundle '%s'", bundle.getName()));
+        log.info("Register resource bundle: {}", bundle::getName);
         if (bundle.getResources().removeIf(StringUtils::isBlank)) {
             log.error("Some resources references were null or blank while setting " + bundle.getName()
                     + " and have been supressed. This probably happened because some <resource> tags were empty in "
                     + "the xml declaration. The correct form is <resource>resource name</resource>.");
         }
         resourceBundles.addContribution(bundle);
-        log.info(String.format("Done registering resource bundle '%s'", bundle.getName()));
+        log.info("Done registering resource bundle: {}", bundle::getName);
         setModifiedNow();
     }
 
     @Override
     public void unregisterResourceBundle(ResourceBundle bundle) {
-        log.info(String.format("Removing resource bundle '%s'", bundle.getName()));
+        log.info("Removing resource bundle: {}", bundle::getName);
         resourceBundles.removeContribution(bundle);
-        log.info(String.format("Done removing resource bundle '%s'", bundle.getName()));
+        log.info("Done removing resource bundle: {}", bundle::getName);
         setModifiedNow();
     }
 
     @Override
     public void registerResource(Resource resource) {
-        log.info(String.format("Register resource '%s'", resource.getName()));
+        log.info("Register resource: {}", resource::getName);
         resources.addContribution(resource);
-        log.info(String.format("Done registering resource '%s'", resource.getName()));
+        log.info("Done registering resource: {}", resource::getName);
         setModifiedNow();
     }
 
     @Override
     public void unregisterResource(Resource resource) {
-        log.info(String.format("Removing resource '%s'", resource.getName()));
+        log.info("Removing resource: {}", resource::getName);
         resources.removeContribution(resource);
-        log.info(String.format("Done removing resource '%s'", resource.getName()));
+        log.info("Done removing resource: {}", resource::getName);
         setModifiedNow();
     }
 

@@ -32,14 +32,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
 
-    private static final Log log = LogFactory.getLog(PortalAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(PortalAuthenticator.class);
 
     public static final String SECRET_KEY_NAME = "secret";
 
@@ -130,7 +130,7 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         try {
             hashedToken = MessageDigest.getInstance(digestAlgorithm).digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
-            log.error("Invalid algorithm: " + digestAlgorithm);
+            log.error("Invalid algorithm: {}", digestAlgorithm);
             return false;
         }
         String base64HashedToken = Base64.getEncoder().encodeToString(hashedToken);

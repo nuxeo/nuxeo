@@ -24,13 +24,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.mail.Composer;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -44,9 +45,9 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 @Operation(id = RunConverter.ID, category = Constants.CAT_CONVERSION, label = RunConverter.ID, description = "Simply call a converter based on the 'converter' parameter. You can pass the converter properties with the 'properties' parameter.", since = "7.1")
 public class RunConverter {
 
-    public static final String ID = "Blob.RunConverter";
+    private static final Logger log = LogManager.getLogger(Composer.class);
 
-    public static final Log log = LogFactory.getLog(RunConverter.class);
+    public static final String ID = "Blob.RunConverter";
 
     @Param(name = "converter", description = "The name of the converter to call")
     protected String converter;
@@ -59,9 +60,7 @@ public class RunConverter {
 
     @OperationMethod
     public Blob run(Blob blob) {
-        if (log.isDebugEnabled()) {
-            log.debug("Call converter named: " + converter);
-        }
+        log.debug("Call converter named: {}", converter);
 
         BlobHolder holder = conversionService.convert(converter, new SimpleBlobHolder(blob), propertiesToMap());
 

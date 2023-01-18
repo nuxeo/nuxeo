@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
@@ -48,7 +48,7 @@ import org.osgi.framework.BundleException;
  */
 public class Deploy extends DeployPlaceholder {
 
-    private static final Log log = LogFactory.getLog(Deploy.class);
+    private static final Logger log = LogManager.getLogger(Deploy.class);
 
     public Deploy() {
         super();
@@ -101,7 +101,7 @@ public class Deploy extends DeployPlaceholder {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
-            log.warn("Can't deploy file " + file + ". File is missing.");
+            log.warn("Can't deploy a non existing file: {}", file);
             return null;
         }
         ReloadService srv = Framework.getService(ReloadService.class);
@@ -147,8 +147,10 @@ public class Deploy extends DeployPlaceholder {
         }
         try {
             ReloadResult result = service.reloadBundles(new ReloadContext().deploy(file));
-            return result.deployedFilesAsStream().map(Undeploy::new).findFirst().orElseThrow(
-                    () -> new IllegalStateException("Bundle " + file + " wasn't deployed"));
+            return result.deployedFilesAsStream()
+                         .map(Undeploy::new)
+                         .findFirst()
+                         .orElseThrow(() -> new IllegalStateException("Bundle " + file + " wasn't deployed"));
         } catch (BundleException e) {
             throw new PackageException("Failed to deploy bundle " + file, e);
         }
@@ -167,8 +169,10 @@ public class Deploy extends DeployPlaceholder {
             }
             try {
                 ReloadResult result = service.reloadBundles(new ReloadContext().deploy(bundles));
-                return result.deployedFilesAsStream().map(Undeploy::new).collect(
-                        Collector.of(CompositeCommand::new, CompositeCommand::addCommand, CompositeCommand::combine));
+                return result.deployedFilesAsStream()
+                             .map(Undeploy::new)
+                             .collect(Collector.of(CompositeCommand::new, CompositeCommand::addCommand,
+                                     CompositeCommand::combine));
             } catch (BundleException e) {
                 throw new PackageException("Failed to deploy bundles " + bundles, e);
             }

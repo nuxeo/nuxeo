@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.core.api.adapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -32,7 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("adapter")
 public class DocumentAdapterDescriptor {
 
-    private static final Log log = LogFactory.getLog(DocumentAdapterDescriptor.class);
+    private static final Logger log = LogManager.getLogger(DocumentAdapterDescriptor.class);
 
     @XNode("@facet")
     private String facet;

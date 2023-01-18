@@ -46,8 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -70,7 +70,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CreateDocumentsAction extends AbstractMailAction {
 
-    private static final Log log = LogFactory.getLog(CreateDocumentsAction.class);
+    private static final Logger log = LogManager.getLogger(CreateDocumentsAction.class);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -160,8 +160,8 @@ public class CreateDocumentsAction extends AbstractMailAction {
             document = session.createDocument(document);
 
             // Replace the content references with links to the file blobs
-            List<Map<String, Serializable>> files =
-                    (List<Map<String, Serializable>>) document.getPropertyValue("files:files");
+            List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) document.getPropertyValue(
+                    "files:files");
             if (files != null && !files.isEmpty() && !fileNames.isEmpty()) {
                 String html = (String) document.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
                 if (html != null && !html.isEmpty()) {

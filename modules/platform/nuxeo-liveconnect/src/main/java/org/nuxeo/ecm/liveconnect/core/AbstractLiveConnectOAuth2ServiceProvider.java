@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.oauth2.providers.AbstractOAuth2UserEmailProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
  */
 public abstract class AbstractLiveConnectOAuth2ServiceProvider extends AbstractOAuth2UserEmailProvider {
 
-    private static final Log log = LogFactory.getLog(AbstractLiveConnectOAuth2ServiceProvider.class);
+    private static final Logger log = LogManager.getLogger(AbstractLiveConnectOAuth2ServiceProvider.class);
 
     public final String getServiceUser(String username) {
         Map<String, Serializable> filter = new HashMap<>();
@@ -48,7 +48,7 @@ public abstract class AbstractLiveConnectOAuth2ServiceProvider extends AbstractO
             return null;
         }
         if (entries.size() > 1) {
-            log.error(String.format("Found multiple %s accounts for %s", serviceName, username));
+            log.error("Found multiple {} accounts for {}", serviceName, username);
         }
         return (String) entries.get(0).getProperty(NuxeoOAuth2Token.SCHEMA, NuxeoOAuth2Token.KEY_SERVICE_LOGIN);
     }

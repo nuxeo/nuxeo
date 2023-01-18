@@ -18,15 +18,13 @@
  */
 package org.nuxeo.importer.stream.automation;
 
-import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
 import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_DOC_NAME;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -54,7 +52,8 @@ import net.jodah.failsafe.RetryPolicy;
  */
 @Operation(id = RedisDocumentConsumers.ID, category = Constants.CAT_SERVICES, label = "Imports document into Redis", since = "10.1", description = "Import documents into Redis.")
 public class RedisDocumentConsumers {
-    private static final Log log = LogFactory.getLog(RedisDocumentConsumers.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(RedisDocumentConsumers.class);
 
     public static final String ID = "StreamImporter.runRedisDocumentConsumers";
 
@@ -85,12 +84,13 @@ public class RedisDocumentConsumers {
         ConsumerPolicy consumerPolicy = ConsumerPolicy.builder()
                                                       .name(ID)
                                                       .batchPolicy(BatchPolicy.NO_BATCH)
-                                                      .retryPolicy(new RetryPolicy().withMaxRetries(retryMax).withDelay(
-                                                              retryDelayS, TimeUnit.SECONDS))
+                                                      .retryPolicy(new RetryPolicy().withMaxRetries(retryMax)
+                                                                                    .withDelay(retryDelayS,
+                                                                                            TimeUnit.SECONDS))
                                                       .maxThreads(getNbThreads())
                                                       .waitMessageTimeout(Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                       .build();
-        log.warn(String.format("Import documents into Redis from log: %s, with policy: %s", logName, consumerPolicy));
+        log.warn("Import documents into Redis from log: {}, with policy: {}", logName, consumerPolicy);
         LogManager manager = Framework.getService(StreamService.class).getLogManager();
         Codec<DocumentMessage> codec = StreamImporters.getDocCodec();
         try (ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(logName, manager, codec,

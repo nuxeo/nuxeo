@@ -26,10 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.opensearch.index.query.QueryBuilder;
-import org.opensearch.search.aggregations.Aggregation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -51,14 +49,16 @@ import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.search.aggregations.Aggregation;
 
 public class ElasticSearchNativePageProvider extends AbstractPageProvider<DocumentModel> {
+
+    private static final Logger log = LogManager.getLogger(ElasticSearchNativePageProvider.class);
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
     public static final String SEARCH_ON_ALL_REPOSITORIES_PROPERTY = "searchAllRepositories";
-
-    protected static final Log log = LogFactory.getLog(ElasticSearchNativePageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -82,10 +82,8 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         }
         error = null;
         errorMessage = null;
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Perform query for provider '%s': with pageSize=%d, offset=%d", getName(),
-                    getMinMaxPageSize(), getCurrentPageOffset()));
-        }
+        log.debug("Perform query for provider '{}': with pageSize={}, offset={}", this::getName,
+                this::getMinMaxPageSize, this::getCurrentPageOffset);
         currentPageDocuments = new ArrayList<>();
         // Build the ES query
         QueryBuilder query = makeQueryBuilder();

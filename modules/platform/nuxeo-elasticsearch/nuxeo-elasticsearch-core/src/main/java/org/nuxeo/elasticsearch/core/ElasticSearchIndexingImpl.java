@@ -29,8 +29,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.BlobNotFoundException;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
+import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.opensearch.action.bulk.BulkItemResponse;
 import org.opensearch.action.bulk.BulkRequest;
 import org.opensearch.action.bulk.BulkResponse;
@@ -53,18 +65,6 @@ import org.opensearch.rest.RestStatus;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.search.fetch.subphase.FetchSourceContext;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.model.BlobNotFoundException;
-import org.nuxeo.ecm.core.api.model.PropertyConversionException;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
-import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
-import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -79,7 +79,8 @@ import io.dropwizard.metrics5.Timer.Context;
  * @since 6.0
  */
 public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
-    private static final Log log = LogFactory.getLog(ElasticSearchIndexingImpl.class);
+
+    private static final Logger log = LogManager.getLogger(ElasticSearchIndexingImpl.class);
 
     // debug curl line max size
     private static final int MAX_CURL_LINE = 8 * 1024;
@@ -106,7 +107,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
         indexTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "index"));
         deleteTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "delete"));
-        bulkIndexTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "bulkIndex"));
+        bulkIndexTimer = registry.timer(
+                MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "bulkIndex"));
         this.jsonESDocumentWriter = new JsonESDocumentWriter();// default writer
         this.useExternalVersion = esa.useExternalVersion();
     }
@@ -184,8 +186,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     bulkRequest.add(idxRequest);
                     if (secondaryIndex != null) {
 
-                        IndexRequest idxRequestBis = new IndexRequest(secondaryIndex).id(
-                                cmd.getTargetDocumentId()).source(idxRequest.source(), XContentType.JSON);
+                        IndexRequest idxRequestBis = new IndexRequest(secondaryIndex).id(cmd.getTargetDocumentId())
+                                                                                     .source(idxRequest.source(),
+                                                                                             XContentType.JSON);
                         if (useExternalVersion && cmd.getOrder() > 0) {
                             idxRequestBis.versionType(VersionType.EXTERNAL).version(cmd.getOrder());
                         }
@@ -194,16 +197,16 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     }
                 }
             } catch (BlobNotFoundException be) {
-                log.info("Ignore indexing command in bulk, blob does not exists anymore: " + cmd);
+                log.info("Ignore indexing command in bulk, blob does not exists anymore: {}", cmd);
             } catch (ConcurrentUpdateException e) {
                 throw e; // bubble up, usually until AbstractWork catches it and maybe retries
             } catch (DocumentNotFoundException e) {
-                log.info("Ignore indexing command in bulk, doc does not exists anymore: " + cmd);
+                log.info("Ignore indexing command in bulk, doc does not exists anymore: {}", cmd);
             } catch (IllegalArgumentException e) {
-                log.error("Ignore indexing command in bulk, fail to create request: " + cmd, e);
+                log.error("Ignore indexing command in bulk, fail to create request: {}", cmd, e);
             }
             if (bulkSize > maxBulkSize) {
-                log.warn("Max bulk size reached " + bulkSize + ", sending bulk command");
+                log.warn("Max bulk size reached: {}, sending bulk command", bulkSize);
                 sendBulkCommand(bulkRequest, bulkSize);
                 bulkRequest = new BulkRequest();
                 bulkSize = 0;
@@ -290,16 +293,14 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         IndexRequest request;
         try {
             request = buildEsIndexingRequest(cmd);
-        } catch (BlobNotFoundException pe) {
-            request = null;
-        } catch (DocumentNotFoundException e) {
+        } catch (BlobNotFoundException | DocumentNotFoundException pe) {
             request = null;
         } catch (IllegalStateException e) {
-            log.error("Fail to create request for indexing command: " + cmd, e);
+            log.error("Fail to create request for indexing command: {}", cmd, e);
             return;
         }
         if (request == null) {
-            log.info("Cancel indexing command because target document does not exists anymore: " + cmd);
+            log.info("Cancel indexing command because target document does not exists anymore: {}", cmd);
             return;
         }
         String repository = cmd.getRepositoryName();
@@ -319,8 +320,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         try {
             esa.getClient().index(request);
         } catch (ConcurrentUpdateException e) {
-            log.info("Ignore indexing of doc " + documentId
-                    + " a more recent version has already been indexed: " + e.getMessage());
+            log.info("Ignore indexing of doc: {} a more recent version has already been indexed: {}", documentId,
+                    e.getMessage());
         }
     }
 
@@ -329,7 +330,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             // in trace mode we output the full message
             log.debug(msg);
         } else {
-            log.debug(msg.substring(0, maxSize) + "...");
+            log.debug(() -> msg.substring(0, maxSize) + "...");
         }
     }
 
@@ -352,10 +353,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd, String indexName) {
         DeleteRequest request = new DeleteRequest(indexName, cmd.getTargetDocumentId());
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s'", indexName,
-                    cmd.getTargetDocumentId()));
-        }
+        log.debug("Delete request: curl -XDELETE 'http://localhost:9200/{}/{}'", indexName, cmd.getTargetDocumentId());
         esa.getClient().delete(request);
     }
 
@@ -370,12 +368,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandRecursive(IndexingCommand cmd, String indexName) {
-            // we don't want to rely on target document because the document can be
+        // we don't want to rely on target document because the document can be
         // already removed
         String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), indexName, cmd.getTargetDocumentId());
         if (docPath == null) {
             if (!Framework.isTestModeSet()) {
-                log.warn("Trying to delete a non existing doc: " + cmd.toString());
+                log.warn("Trying to delete a non existing doc: {}", cmd);
             }
             return;
         }
@@ -387,11 +385,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         TimeValue keepAlive = TimeValue.timeValueMinutes(1);
         SearchSourceBuilder search = new SearchSourceBuilder().size(100).query(query).fetchSource(false);
         SearchRequest request = new SearchRequest(indexName).scroll(keepAlive).source(search);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Search with scroll request: curl -XGET 'http://localhost:9200/%s/_search?scroll=%s' -d '%s'",
-                    indexName, keepAlive, query.toString()));
-        }
+        log.debug("Search with scroll request: curl -XGET 'http://localhost:9200/{}/_search?scroll={}' -d '{}'",
+                indexName, keepAlive, query);
         SearchResponse response;
         for (response = esa.getClient().search(request); //
                 response.getHits().getHits().length > 0; //
@@ -402,9 +397,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             for (SearchHit hit : response.getHits().getHits()) {
                 bulkRequest.add(new DeleteRequest(hit.getIndex(), hit.getId()));
             }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Bulk delete request on %s elements", bulkRequest.numberOfActions()));
-            }
+            log.debug("Bulk delete request on {} elements", bulkRequest.numberOfActions());
             // Run bulk delete request
             esa.getClient().bulk(bulkRequest);
         }
@@ -415,11 +408,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     SearchResponse runNextScroll(SearchResponse response, TimeValue keepAlive) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"%s\", \"scroll_id\": \"%s\" }'",
-                    keepAlive, response.getScrollId()));
-        }
+        log.debug(
+                "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"{}\", \"scroll_id\": \"{}\" }'",
+                keepAlive, response.getScrollId());
         SearchScrollRequest request = new SearchScrollRequest(response.getScrollId()).scroll(keepAlive);
         return esa.getClient().searchScroll(request);
     }
@@ -442,10 +433,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         GetRequest request = new GetRequest(indexName, docId).fetchSourceContext(
                 new FetchSourceContext(true, new String[] { PATH_FIELD }, null));
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s?fields=%s'", indexName,
-                    docId, PATH_FIELD));
-        }
+        log.debug("Get path of doc: curl -XGET 'http://localhost:9200/{}/{}?fields={}'", indexName, docId, PATH_FIELD);
         GetResponse ret = esa.getClient().get(request);
         if (!ret.isExists() || ret.getSource() == null || ret.getSource().get(PATH_FIELD) == null) {
             // doc not found
@@ -474,7 +462,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         } catch (IOException e) {
             throw new NuxeoException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
         } catch (PropertyConversionException e) {
-            log.error("Skipping indexing of a corrupted doc: " + cmd.getTargetDocumentId(), e);
+            log.error("Skipping indexing of a corrupted doc: {}", cmd.getTargetDocumentId(), e);
             return null;
         }
     }

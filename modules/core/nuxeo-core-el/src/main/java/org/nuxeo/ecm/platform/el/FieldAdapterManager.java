@@ -29,9 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * The FieldAdapterManager fills the gap between the storage and the display structures.
  * <p>
@@ -48,9 +45,6 @@ import org.apache.commons.logging.LogFactory;
  * @author Thierry Delprat
  */
 public final class FieldAdapterManager {
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(FieldAdapterManager.class);
 
     // Utility class.
     private FieldAdapterManager() {

@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.test;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -39,8 +37,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 public class CanRenameDuplicateTest {
-
-    Log log = LogFactory.getLog(CanRenameDuplicateTest.class);
 
     @Inject
     CoreSession repo;

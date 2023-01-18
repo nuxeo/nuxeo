@@ -18,17 +18,6 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.key;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.DefaultComponent;
-import org.opensaml.common.SAMLRuntimeException;
-import org.opensaml.xml.security.CriteriaSet;
-import org.opensaml.xml.security.SecurityException;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.credential.KeyStoreCredentialResolver;
-import org.opensaml.xml.security.criteria.EntityIDCriteria;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,12 +31,23 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.DefaultComponent;
+import org.opensaml.common.SAMLRuntimeException;
+import org.opensaml.xml.security.CriteriaSet;
+import org.opensaml.xml.security.SecurityException;
+import org.opensaml.xml.security.credential.Credential;
+import org.opensaml.xml.security.credential.KeyStoreCredentialResolver;
+import org.opensaml.xml.security.criteria.EntityIDCriteria;
+
 /**
  * An implementation of {@link KeyManager} that uses a JKS key store.
  */
 public class KeyManagerImpl extends DefaultComponent implements KeyManager {
 
-    private static final Log log = LogFactory.getLog(KeyManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(KeyManagerImpl.class);
 
     private static final String KEYSTORE_TYPE = "JKS";
 
@@ -85,8 +85,8 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
         try {
             File rootKeystoreFile = new File(path);
             if (!rootKeystoreFile.exists()) {
-                throw new SecurityException("Unable to find keyStore at " + new File(".").getAbsolutePath()
-                        + File.separator + path);
+                throw new SecurityException(
+                        "Unable to find keyStore at " + new File(".").getAbsolutePath() + File.separator + path);
             }
             try (InputStream keystoreIS = new FileInputStream(rootKeystoreFile)) {
                 ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);

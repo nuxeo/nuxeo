@@ -30,8 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.automation.core.scripting.Expression;
  */
 public class Call {
 
-    private static final Log log = LogFactory.getLog(Call.class);
+    private static final Logger log = LogManager.getLogger(Call.class);
 
     /**
      * Black listing of mvel expressions which should not be evaluated by the Automation traces for debugging purpose
@@ -124,9 +124,8 @@ public class Call {
                 }
                 try {
                     parameters.put(key, new ExpressionParameter(key, exp.eval(context)));
-                    return;
                 } catch (RuntimeException e) {
-                    log.warn("Cannot evaluate mvel expression for parameter: " + key, e);
+                    log.warn("Cannot evaluate mvel expression for parameter: {}", key, e);
                 }
             }
         }

@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.lib.stream.pattern.producer.AbstractProducer;
 
@@ -36,7 +36,8 @@ import org.nuxeo.lib.stream.pattern.producer.AbstractProducer;
  * @since 9.1
  */
 public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
-    private static final Log log = LogFactory.getLog(FileBlobMessageProducer.class);
+
+    private static final Logger log = LogManager.getLogger(FileBlobMessageProducer.class);
 
     protected final File listFile;
 
@@ -55,7 +56,7 @@ public class FileBlobMessageProducer extends AbstractProducer<BlobMessage> {
         this.listFile = listFile;
         this.nbBlobs = nbBlobs;
         this.basePath = StringUtils.defaultString(basePath);
-        log.info("Producer using file list: " + listFile.getAbsolutePath());
+        log.info("Producer using file list: {}", listFile::getAbsolutePath);
         getFileIterator();
 
     }

@@ -44,8 +44,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -79,7 +79,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractWebContext implements WebContext {
 
-    private static final Log log = LogFactory.getLog(WebContext.class);
+    private static final Logger log = LogManager.getLogger(AbstractWebContext.class);
 
     // TODO: this should be made configurable through an extension point
     protected static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
@@ -496,7 +496,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     @Override
-    public Log getLog() {
+    public Logger getLog() {
         return log;
     }
 
@@ -634,9 +634,7 @@ public abstract class AbstractWebContext implements WebContext {
         try {
             String template = script.getURL();
             Map<String, Object> bindings = createBindings(map);
-            if (log.isDebugEnabled()) {
-                log.debug("## Rendering: " + template);
-            }
+            log.debug("## Rendering: {}", template);
             pushScriptFile(script.getFile());
             engine.getRendering().render(template, bindings, writer);
         } catch (IOException | RenderingException e) {

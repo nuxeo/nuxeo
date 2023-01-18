@@ -40,8 +40,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.ldap.InitialLdapContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.core.configuration.Configuration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.configuration.MutableStartupConfiguration;
@@ -50,6 +48,8 @@ import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.jndi.CoreContextFactory;
 import org.apache.directory.server.core.partition.PartitionNexus;
 import org.apache.directory.server.core.prefs.ServerSystemPreferenceException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * An embedded LDAP test server, complete with test data for running the unit tests against.
@@ -58,11 +58,13 @@ import org.apache.directory.server.core.prefs.ServerSystemPreferenceException;
  * @version $Id: LdapTestServer.java 1496 2006-05-23 13:38:33Z benalex $
  */
 public class MockLdapServer implements ContextProvider {
+
+    private static final Logger log = LogManager.getLogger(MockLdapServer.class);
+
     private static final String BASE_DN = "dc=example,dc=com";
 
     // ~ Instance fields
     // ================================================================================================
-    private static final Log log = LogFactory.getLog(MockLdapServer.class);
 
     private DirContext serverContext;
 
@@ -145,7 +147,7 @@ public class MockLdapServer implements ContextProvider {
         try {
             serverContext.createSubcontext("ou=" + name, ou);
         } catch (NameAlreadyBoundException ignore) {
-            log.warn("ou " + name + " already exists.");
+            log.warn("ou: {} already exists.", name);
         } catch (NamingException ne) {
             log.error("Failed to create ou: ", ne);
         }
@@ -228,7 +230,7 @@ public class MockLdapServer implements ContextProvider {
         cfg = new MutableStartupConfiguration();
         cfg.setWorkingDirectory(workingDir);
 
-        log.debug("Working directory is " + workingDir.getAbsolutePath());
+        log.debug("Working directory is: {}", workingDir::getAbsolutePath);
 
         Properties env = new Properties();
 

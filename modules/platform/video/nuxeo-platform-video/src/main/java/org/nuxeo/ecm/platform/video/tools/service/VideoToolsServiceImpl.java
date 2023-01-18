@@ -18,8 +18,10 @@
  */
 package org.nuxeo.ecm.platform.video.tools.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -39,10 +41,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * The {@link VideoToolsService} default implementation for handling video blobs. It provides extension points for
  * handling video operations, such as concat, slice, watermark and extract closed captions.
@@ -50,8 +48,6 @@ import java.util.Map;
  * @since 8.4
  */
 public class VideoToolsServiceImpl extends DefaultComponent implements VideoToolsService {
-
-    protected static final Log log = LogFactory.getLog(VideoToolsServiceImpl.class);
 
     protected Map<String, Class<?>> videoTools;
 
@@ -159,7 +155,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
 
     protected CmdParameters setupCmdParameters(Map<String, String> parameters) {
         CmdParameters cmdParameters = new CmdParameters();
-        for (String param: parameters.keySet()) {
+        for (String param : parameters.keySet()) {
             cmdParameters.addNamedParameter(param, parameters.get(param));
         }
         return cmdParameters;

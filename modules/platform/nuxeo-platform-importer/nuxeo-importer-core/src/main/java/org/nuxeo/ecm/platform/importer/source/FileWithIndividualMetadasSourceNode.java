@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
@@ -40,7 +40,7 @@ import org.nuxeo.ecm.platform.importer.properties.IndividualMetadataCollector;
  */
 public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
-    private static final Log log = LogFactory.getLog(FileWithIndividualMetadasSourceNode.class);
+    private static final Logger log = LogManager.getLogger(FileWithIndividualMetadasSourceNode.class);
 
     public static final String PROPERTY_FILE_SUFFIX = ".properties";
 
@@ -77,7 +77,7 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
     public List<SourceNode> getChildren() {
         List<SourceNode> children = new ArrayList<>();
         File[] listFiles = file.listFiles();
-        log.trace("Element " + this.getSourcePath() + " has " + listFiles.length + " children");
+        log.trace("Element {} has {} children", this::getSourcePath, () -> listFiles.length);
         // compute map from base name without extension to absolute path
         Map<String, String> paths = new HashMap<>();
         for (File child : listFiles) {
@@ -98,7 +98,7 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
                     try {
                         collector.addPropertyFile(child, path);
                     } catch (IOException e) {
-                        log.error("Error during properties parsing for: " + child, e);
+                        log.error("Error during properties parsing for: {}", child, e);
                     }
                 }
             } else {

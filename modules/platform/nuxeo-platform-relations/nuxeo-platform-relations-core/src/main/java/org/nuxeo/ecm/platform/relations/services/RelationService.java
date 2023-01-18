@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
@@ -60,7 +60,7 @@ public class RelationService extends DefaultComponent implements RelationManager
 
     private static final long serialVersionUID = -4778456059717447736L;
 
-    private static final Log log = LogFactory.getLog(RelationService.class);
+    private static final Logger log = LogManager.getLogger(RelationService.class);
 
     /** Graph type -&gt; class. */
     protected final Map<String, Class<?>> graphTypes;
@@ -94,7 +94,7 @@ public class RelationService extends DefaultComponent implements RelationManager
         } else if (extensionPoint.equals("resourceadapters")) {
             registerResourceAdapter(contribution);
         } else {
-            log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
+            log.error("Unknown extension point: {}, can't register !", extensionPoint);
         }
     }
 
@@ -107,7 +107,7 @@ public class RelationService extends DefaultComponent implements RelationManager
         } else if (extensionPoint.equals("resourceadapters")) {
             unregisterResourceAdapter(contribution);
         } else {
-            log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
+            log.error("Unknown extension point: {}, can't unregister !", extensionPoint);
         }
     }
 
@@ -135,7 +135,7 @@ public class RelationService extends DefaultComponent implements RelationManager
         String className = graphTypeDescriptor.getClassName();
 
         if (graphTypes.containsKey(graphType)) {
-            log.error(String.format("Graph type %s already registered using %s", graphType, graphTypes.get(graphType)));
+            log.error("Graph type: {} already registered using: {}", graphType, graphTypes.get(graphType));
             return;
         }
         Class<?> klass;
@@ -149,7 +149,7 @@ public class RelationService extends DefaultComponent implements RelationManager
             throw new RuntimeException("Invalid graph class/factory type: " + className);
         }
         graphTypes.put(graphType, klass);
-        log.info(String.format("Registered graph type: %s (%s)", graphType, className));
+        log.info("Registered graph type: {} ({})", graphType, className);
     }
 
     /**
@@ -165,11 +165,11 @@ public class RelationService extends DefaultComponent implements RelationManager
                 graphFactories.remove(name);
                 graphRegistry.remove(name);
                 graphDescriptions.remove(name);
-                log.info("Unregistered graph: " + name);
+                log.info("Unregistered graph: {}", name);
             }
         }
         graphTypes.remove(graphType);
-        log.info("Unregistered graph type: " + graphType);
+        log.info("Unregistered graph type: {}", graphType);
     }
 
     public List<String> getGraphTypes() {
@@ -185,11 +185,11 @@ public class RelationService extends DefaultComponent implements RelationManager
         GraphDescription graphDescription = (GraphDescription) contribution;
         String name = graphDescription.getName();
         if (graphDescriptions.containsKey(name)) {
-            log.info(String.format("Overriding graph %s definition", name));
+            log.info("Overriding graph {} definition", name);
             graphDescriptions.remove(name);
         }
         graphDescriptions.put(name, graphDescription);
-        log.info("Registered graph: " + name);
+        log.info("Registered graph: {}", name);
 
         // remove any existing graph instance in case its definition changed
         graphRegistry.remove(name);
@@ -205,7 +205,7 @@ public class RelationService extends DefaultComponent implements RelationManager
             graphFactories.remove(name);
             graphRegistry.remove(name);
             graphDescriptions.remove(name);
-            log.info("Unregistered graph: " + name);
+            log.info("Unregistered graph: {}", name);
         }
     }
 
@@ -216,10 +216,10 @@ public class RelationService extends DefaultComponent implements RelationManager
         String ns = adapter.getNamespace();
         String adapterClassName = adapter.getClassName();
         if (resourceAdapterRegistry.containsKey(ns)) {
-            log.info("Overriding resource adapter config for namespace " + ns);
+            log.info("Overriding resource adapter config for namespace: {}", ns);
         }
         resourceAdapterRegistry.put(ns, adapterClassName);
-        log.info(String.format("%s namespace registered using adapter %s", ns, adapterClassName));
+        log.info("{} namespace registered using adapter: {}", ns, adapterClassName);
     }
 
     private void unregisterResourceAdapter(Object contribution) {
@@ -228,19 +228,19 @@ public class RelationService extends DefaultComponent implements RelationManager
         String adapterClassName = adapter.getClassName();
         String registered = resourceAdapterRegistry.get(ns);
         if (registered == null) {
-            log.error(String.format("Namespace %s not found", ns));
+            log.error("Namespace: {} not found", ns);
         } else if (!registered.equals(adapterClassName)) {
-            log.error(String.format("Namespace %s: wrong class %s", ns, registered));
+            log.error("Namespace: {}, wrong class: {}", ns, registered);
         } else {
             resourceAdapterRegistry.remove(ns);
-            log.info(String.format("%s unregistered, was using %s", ns, adapterClassName));
+            log.info("{} unregistered, was using {}", ns, adapterClassName);
         }
     }
 
     private ResourceAdapter getResourceAdapterForNamespace(String namespace) {
         String adapterClassName = resourceAdapterRegistry.get(namespace);
         if (adapterClassName == null) {
-            log.error(String.format("Cannot find adapter for namespace: %s", namespace));
+            log.error("Cannot find adapter for namespace: {}", namespace);
             return null;
         } else {
             try {
@@ -252,8 +252,7 @@ public class RelationService extends DefaultComponent implements RelationManager
                 adapter.setNamespace(namespace);
                 return adapter;
             } catch (ReflectiveOperationException e) {
-                String msg = String.format("Cannot instantiate generator with namespace '%s': %s", namespace, e);
-                log.error(msg);
+                log.error("Cannot instantiate generator with namespace: {}", namespace, e);
                 return null;
             }
         }
@@ -347,7 +346,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     public Resource getResource(String namespace, Serializable object, Map<String, Object> context) {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
-            log.error("Cannot find adapter for namespace: " + namespace);
+            log.error("Cannot find adapter for namespace: {}", namespace);
             return null;
         } else {
             return adapter.getResource(object, context);
@@ -378,7 +377,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     public Serializable getResourceRepresentation(String namespace, Resource resource, Map<String, Object> context) {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
-            log.error("Cannot find adapter for namespace: " + namespace);
+            log.error("Cannot find adapter for namespace: {}", namespace);
             return null;
         } else {
             return adapter.getResourceRepresentation(resource, context);
@@ -400,7 +399,7 @@ public class RelationService extends DefaultComponent implements RelationManager
         log.info("Relation Service initialization");
         for (String graphName : graphDescriptions.keySet()) {
             GraphDescription desc = graphDescriptions.get(graphName);
-            log.info("create RDF Graph " + graphName);
+            log.info("create RDF Graph: {}", graphName);
             if (desc.getGraphType().equalsIgnoreCase("jena")) {
                 // init jena Graph outside of Tx
                 TransactionHelper.runWithoutTransaction(() -> {

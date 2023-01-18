@@ -24,8 +24,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
@@ -34,11 +34,11 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterExcepti
 @Features({ LogCaptureFeature.class })
 public class LogCaptureFeatureFilterOnTest {
 
-    private static final Log log1 = LogFactory.getLog("loggerOne");
+    private static final Logger log1 = LogManager.getLogger("loggerOne");
 
-    private static final Log log2 = LogFactory.getLog("loggerTwo");
+    private static final Logger log2 = LogManager.getLogger("loggerTwo");
 
-    private static final Log log3 = LogFactory.getLog(LogCaptureFeatureFilterOnTest.class);
+    private static final Logger log3 = LogManager.getLogger(LogCaptureFeatureFilterOnTest.class);
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;

@@ -20,8 +20,6 @@
 
 package org.nuxeo.template.adapters;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
@@ -36,8 +34,6 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class TemplateAdapterFactory implements DocumentAdapterFactory {
-
-    protected static final Log log = LogFactory.getLog(TemplateAdapterFactory.class);
 
     /**
      * Checks if the document can be adapted. Also works on a ShallowDocumentModel.

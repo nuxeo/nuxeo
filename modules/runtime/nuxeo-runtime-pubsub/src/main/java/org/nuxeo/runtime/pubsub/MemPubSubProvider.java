@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * In-Memory implementation of {@link PubSubProvider}.
@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class MemPubSubProvider extends AbstractPubSubProvider {
 
-    private final Log log = LogFactory.getLog(MemPubSubProvider.class);
+    private static final Logger log = LogManager.getLogger(MemPubSubProvider.class);
 
     @Override
     public void initialize(Map<String, String> options, Map<String, List<BiConsumer<String, byte[]>>> subscribers) {

@@ -23,15 +23,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TransactionRequiredException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author Stephane Lacoin [aka matic]
  */
 public class PersistenceProvider {
-
-    protected static final Log log = LogFactory.getLog(PersistenceProvider.class);
 
     protected volatile EntityManagerFactory emf;
 

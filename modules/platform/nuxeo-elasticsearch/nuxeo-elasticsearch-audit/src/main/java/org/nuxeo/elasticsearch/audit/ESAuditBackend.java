@@ -19,12 +19,12 @@
  */
 package org.nuxeo.elasticsearch.audit;
 
-import static org.opensearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
-import static org.opensearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
+import static org.opensearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
+import static org.opensearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,37 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.opensearch.action.bulk.BulkItemResponse;
-import org.opensearch.action.bulk.BulkRequest;
-import org.opensearch.action.bulk.BulkResponse;
-import org.opensearch.action.get.GetRequest;
-import org.opensearch.action.get.GetResponse;
-import org.opensearch.action.index.IndexRequest;
-import org.opensearch.action.search.ClearScrollRequest;
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchResponse;
-import org.opensearch.action.search.SearchScrollRequest;
-import org.opensearch.action.search.SearchType;
-import org.opensearch.common.ParsingException;
-import org.opensearch.common.io.stream.BytesStreamOutput;
-import org.opensearch.common.settings.Settings;
-import org.opensearch.common.unit.TimeValue;
-import org.opensearch.common.xcontent.NamedXContentRegistry;
-import org.opensearch.common.xcontent.XContentBuilder;
-import org.opensearch.common.xcontent.XContentFactory;
-import org.opensearch.common.xcontent.XContentParser;
-import org.opensearch.common.xcontent.XContentType;
-import org.opensearch.index.query.BoolQueryBuilder;
-import org.opensearch.index.query.QueryBuilder;
-import org.opensearch.index.query.QueryBuilders;
-import org.opensearch.search.SearchHit;
-import org.opensearch.search.SearchModule;
-import org.opensearch.search.aggregations.Aggregation;
-import org.opensearch.search.aggregations.AggregationBuilders;
-import org.opensearch.search.builder.SearchSourceBuilder;
-import org.opensearch.search.sort.SortOrder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.nuxeo.common.utils.TextTemplate;
@@ -111,6 +82,35 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.opensearch.action.bulk.BulkItemResponse;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.action.get.GetRequest;
+import org.opensearch.action.get.GetResponse;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.action.search.ClearScrollRequest;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchScrollRequest;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.common.ParsingException;
+import org.opensearch.common.io.stream.BytesStreamOutput;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.common.unit.TimeValue;
+import org.opensearch.common.xcontent.NamedXContentRegistry;
+import org.opensearch.common.xcontent.XContentBuilder;
+import org.opensearch.common.xcontent.XContentFactory;
+import org.opensearch.common.xcontent.XContentParser;
+import org.opensearch.common.xcontent.XContentType;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchModule;
+import org.opensearch.search.aggregations.Aggregation;
+import org.opensearch.search.aggregations.AggregationBuilders;
+import org.opensearch.search.builder.SearchSourceBuilder;
+import org.opensearch.search.sort.SortOrder;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -122,6 +122,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author tiry
  */
 public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend {
+
+    private static final Logger log = LogManager.getLogger(ESAuditBackend.class);
 
     public static final String SEQ_NAME = "audit";
 
@@ -153,8 +155,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     protected ESClient esClient;
-
-    protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
 
     protected BaseLogEntryProvider provider = new BaseLogEntryProvider() {
 
@@ -188,9 +188,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public int getApplicationStartedOrder() {
-        int elasticOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
+        var runtime = Framework.getRuntime();
+        int elasticOrder = ((DefaultComponent) runtime.getComponent(
                 "org.nuxeo.elasticsearch.ElasticSearchComponent")).getApplicationStartedOrder();
-        int uidgenOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
+        int uidgenOrder = ((DefaultComponent) runtime.getComponent(
                 "org.nuxeo.ecm.core.uidgen.UIDGeneratorService")).getApplicationStartedOrder();
         return Integer.max(elasticOrder, uidgenOrder) + 1;
     }
@@ -200,9 +201,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         esClient = getClient();
         if (Boolean.parseBoolean(Framework.getProperty(MIGRATION_FLAG_PROP))) {
             if (!isMigrationDone()) {
-                log.info(String.format(
-                        "Property %s is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index",
-                        MIGRATION_FLAG_PROP));
+                log.info(
+                        "Property {} is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index",
+                        MIGRATION_FLAG_PROP);
                 // Drop audit index first in case of a previous bad migration
                 ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
                 esa.dropAndInitIndex(getESIndexName());
@@ -213,12 +214,11 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 }
                 migrate(batchSize);
             } else {
-                log.warn(String.format(
-                        "Property %s is true but migration is already done, please set this property to false",
-                        MIGRATION_FLAG_PROP));
+                log.warn("Property {} is true but migration is already done, please set this property to false",
+                        MIGRATION_FLAG_PROP);
             }
         } else {
-            log.debug(String.format("Property %s is false, not processing any migration", MIGRATION_FLAG_PROP));
+            log.debug("Property {} is false, not processing any migration", MIGRATION_FLAG_PROP);
         }
         cursorService = new CursorService<>(SearchHit::getSourceAsString);
     }
@@ -232,7 +232,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             esClient.close();
             cursorService.clear();
         } catch (Exception e) {
-            log.warn("Fail to close esClient: " + e.getMessage(), e);
+            log.warn("Fail to close esClient: {}", e.getMessage(), e);
         } finally {
             esClient = null;
             cursorService = null;
@@ -269,7 +269,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             logEntries = buildLogEntries(searchResponse);
             // Scroll on next results
             for (; //
-            searchResponse.getHits().getHits().length > 0
+                    searchResponse.getHits().getHits().length > 0
                             && logEntries.size() < searchResponse.getHits().getTotalHits().value; //
                     searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
                 // Build log entries
@@ -363,8 +363,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public LogEntry getLogEntryByID(long id) {
-        GetResponse ret = esClient.get(
-                new GetRequest(getESIndexName(), String.valueOf(id)));
+        GetResponse ret = esClient.get(new GetRequest(getESIndexName(), String.valueOf(id)));
         if (!ret.isExists()) {
             return null;
         }
@@ -388,12 +387,15 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         SearchModule searchModule = new SearchModule(Settings.EMPTY, false, Collections.emptyList());
         try {
-            try (XContentParser parser = XContentFactory.xContent(XContentType.JSON).createParser(
-                    new NamedXContentRegistry(searchModule.getNamedXContents()), THROW_UNSUPPORTED_OPERATION, query)) {
+            try (XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+                                                        .createParser(
+                                                                new NamedXContentRegistry(
+                                                                        searchModule.getNamedXContents()),
+                                                                THROW_UNSUPPORTED_OPERATION, query)) {
                 searchSourceBuilder.parseXContent(parser);
             }
         } catch (IOException | ParsingException e) {
-            log.error("Invalid query: " + query + ": " + e.getMessage(), e);
+            log.error("Invalid query: {}: {}", query, e.getMessage(), e);
             throw new IllegalArgumentException("Bad query: " + query);
         }
         return searchSourceBuilder;
@@ -496,9 +498,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             for (int i = 0; i < entries.size(); i++) {
                 LogEntry entry = entries.get(i);
                 entry.setId(block.get(i));
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Indexing log entry: %s", entry));
-                }
+                log.debug("Indexing log entry: {}", entry);
                 entry.setLogDate(new Date());
                 try (OutputStream out = new BytesStreamOutput(); //
                         JsonGenerator jg = factory.createGenerator(out); //
@@ -514,8 +514,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             if (bulkResponse.hasFailures()) {
                 for (BulkItemResponse response : bulkResponse.getItems()) {
                     if (response.isFailed()) {
-                        log.error("Unable to index audit entry " + response.getItemId() + " :"
-                                + response.getFailureMessage());
+                        log.error("Unable to index audit entry {} : {}", response.getItemId(),
+                                response.getFailureMessage());
                     }
                 }
             }
@@ -527,11 +527,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public Long getEventsCount(String eventId) {
-        SearchResponse res = esClient.search(
-                new SearchRequest(getESIndexName()).source(
-                        new SearchSourceBuilder().query(
-                                QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("eventId", eventId)))
-                                                 .size(0)));
+        SearchResponse res = esClient.search(new SearchRequest(getESIndexName()).source(new SearchSourceBuilder().query(
+                QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("eventId", eventId))).size(0)));
         return res.getHits().getTotalHits().value;
     }
 
@@ -689,27 +686,21 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     SearchResponse runNextScroll(String scrollId, TimeValue keepAlive) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"%s\", \"scroll_id\": \"%s\" }'",
-                    keepAlive, scrollId));
-        }
+        log.debug(
+                "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"{}\", \"scroll_id\": \"{}\" }'",
+                keepAlive, scrollId);
         SearchResponse response = esClient.searchScroll(new SearchScrollRequest(scrollId).scroll(keepAlive));
         logSearchResponse(response);
         return response;
     }
 
     protected void logSearchResponse(SearchResponse response) {
-        if (log.isDebugEnabled()) {
-            log.debug("Response: " + response.toString());
-        }
+        log.debug("Response: {}", response);
     }
 
     protected void logSearchRequest(SearchRequest request) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Search query: curl -XGET 'http://localhost:9200/%s/_search?pretty' -d '%s'",
-                    getESIndexName(), request.toString()));
-        }
+        log.debug("Search query: curl -XGET 'http://localhost:9200/{}/_search?pretty' -d '{}'", getESIndexName(),
+                request);
     }
 
     /**
@@ -740,8 +731,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
         // Increment sequence to max log entry id if needed
         if (nextSequenceId < maxLogEntryId) {
-            log.info(String.format("Next UID returned by %s sequence is %d, initializing sequence to %d", SEQ_NAME,
-                    nextSequenceId, maxLogEntryId));
+            log.info("Next UID returned by {} sequence is {}, initializing sequence to {}", SEQ_NAME, nextSequenceId,
+                    maxLogEntryId);
             seq.initSequence(SEQ_NAME, maxLogEntryId);
         }
     }
@@ -762,7 +753,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         for (String json : jsonEntries) {
             try {
                 Object entryId = new JSONObject(json).opt(LOG_ID);
-                if (entryId ==  null) {
+                if (entryId == null) {
                     throw new NuxeoException("A json entry has an empty id. entry=" + json);
                 }
                 IndexRequest request = new IndexRequest(getESIndexName()).id(entryId.toString());
@@ -857,12 +848,17 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             return super.getLatestLogId(repositoryId, eventIds);
         }
         // limit to recent events to avoid performance problem related to total hits
-        org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder = new AuditQueryBuilder()
-                .predicate(Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
-                .and(Predicates.in(LOG_EVENT_ID,eventIds))
-                .and(Predicates.gt(LOG_EVENT_DATE, getLatestLogIdAfterDate()))
-                .order(OrderByExprs.desc(LOG_ID))
-                .limit(1);
+        org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder = new AuditQueryBuilder().predicate(
+                Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
+                                                                                         .and(Predicates.in(
+                                                                                                 LOG_EVENT_ID,
+                                                                                                 eventIds))
+                                                                                         .and(Predicates.gt(
+                                                                                                 LOG_EVENT_DATE,
+                                                                                                 getLatestLogIdAfterDate()))
+                                                                                         .order(OrderByExprs.desc(
+                                                                                                 LOG_ID))
+                                                                                         .limit(1);
         return queryLogs(builder).stream().mapToLong(LogEntry::getId).findFirst().orElse(0L);
     }
 

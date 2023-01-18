@@ -30,8 +30,8 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
@@ -48,14 +48,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CheckSenderAction implements MessageAction {
 
-    private static final Log log = LogFactory.getLog(CheckSenderAction.class);
+    private static final Logger log = LogManager.getLogger(CheckSenderAction.class);
 
     @Override
     public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         Address[] addresses = message.getFrom();
         if (addresses == null || addresses.length == 0 || !(addresses[0] instanceof InternetAddress)) {
-            log.debug("No internet messages, stopping the pipe: " + message);
+            log.debug("No internet messages, stopping the pipe: {}", message);
             return false;
         }
         InternetAddress address = (InternetAddress) addresses[0];
@@ -77,7 +77,7 @@ public class CheckSenderAction implements MessageAction {
             map.put("email", address);
             DocumentModelList list = session.query(map);
             if (list == null || list.isEmpty()) {
-                log.debug("Stopping pipe, address: " + address + " return " + list);
+                log.debug("Stopping pipe, address: {} return: {}", address, list);
                 return null;
             }
             DocumentModel dm = list.get(0);

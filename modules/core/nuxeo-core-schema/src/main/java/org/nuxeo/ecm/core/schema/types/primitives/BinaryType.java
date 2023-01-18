@@ -28,8 +28,8 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
@@ -41,7 +41,7 @@ public final class BinaryType extends PrimitiveType {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(BinaryType.class);
+    private static final Logger log = LogManager.getLogger(BinaryType.class);
 
     public static final String ID = "binary";
 

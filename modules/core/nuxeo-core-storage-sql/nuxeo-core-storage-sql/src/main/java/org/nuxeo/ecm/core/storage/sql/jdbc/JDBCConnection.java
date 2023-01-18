@@ -22,8 +22,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.datasource.ConnectionHelper;
  */
 public class JDBCConnection {
 
-    private static final Log log = LogFactory.getLog(JDBCConnection.class);
+    private static final Logger log = LogManager.getLogger(JDBCConnection.class);
 
     /** JDBC application name parameter for setClientInfo. */
     private static final String APPLICATION_NAME = "ApplicationName";

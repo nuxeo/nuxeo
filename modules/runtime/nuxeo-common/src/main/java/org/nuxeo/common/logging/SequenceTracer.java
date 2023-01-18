@@ -18,8 +18,8 @@
  */
 package org.nuxeo.common.logging;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Helper to log information that can be displayed using plantuml to render sequence UML diagram.
@@ -30,9 +30,12 @@ import org.apache.commons.logging.LogFactory;
 @Deprecated(since = "11.1")
 public class SequenceTracer {
 
-    private static final Log log = LogFactory.getLog(SequenceTracer.class);
+    private static final Logger log = LogManager.getLogger(SequenceTracer.class);
+
     private static final String PREFIX = "@@ ";
+
     private static final String DEFAULT_COLOR = "#white";
+
     private static final int MESSAGE_MAX_LEN = 250;
 
     // Utility class.
@@ -68,8 +71,7 @@ public class SequenceTracer {
             return;
         }
         final String tn = getThreadName();
-        log.debug(PREFIX + tn + " -> " + tn + ": " + format(message) + "\n" + PREFIX + "activate " + tn + " " +
-                color);
+        log.debug(PREFIX + tn + " -> " + tn + ": " + format(message) + "\n" + PREFIX + "activate " + tn + " " + color);
     }
 
     /**
@@ -89,9 +91,8 @@ public class SequenceTracer {
             return;
         }
         final String tn = getThreadName();
-        log.debug(PREFIX + sanitize(callerThread) + " o--> " + tn + ": Initiate\n" + PREFIX
-                + tn + " -> " + tn + ": " + format(message) + "\n" + PREFIX
-                + "activate " + tn + " " + color);
+        log.debug(PREFIX + sanitize(callerThread) + " o--> " + tn + ": Initiate\n" + PREFIX + tn + " -> " + tn + ": "
+                + format(message) + "\n" + PREFIX + "activate " + tn + " " + color);
     }
 
     private static String format(String message) {

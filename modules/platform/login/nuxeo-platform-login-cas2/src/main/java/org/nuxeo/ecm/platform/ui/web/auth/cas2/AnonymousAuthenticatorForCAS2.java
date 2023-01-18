@@ -30,8 +30,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
 
-    protected static final Log log = LogFactory.getLog(AnonymousAuthenticatorForCAS2.class);
+    private static final Logger log = LogManager.getLogger(AnonymousAuthenticatorForCAS2.class);
 
     protected Cas2Authenticator casAuthenticator;
 

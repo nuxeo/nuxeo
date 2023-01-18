@@ -27,8 +27,8 @@ import java.util.MissingResourceException;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -70,7 +70,7 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  */
 public class ConstraintViolation implements ValidationViolation {
 
-    private static final Log log = LogFactory.getLog(ConstraintViolation.class);
+    private static final Logger log = LogManager.getLogger(ConstraintViolation.class);
 
     private static final long serialVersionUID = 1L;
 

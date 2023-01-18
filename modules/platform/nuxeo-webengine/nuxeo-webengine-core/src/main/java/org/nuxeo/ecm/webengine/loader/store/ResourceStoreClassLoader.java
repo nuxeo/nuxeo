@@ -26,8 +26,8 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The class loader allows modifying the stores (adding/removing). Mutable operations are thread safe.
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
 
-    private final Log log = LogFactory.getLog(ResourceStoreClassLoader.class);
+    private static final Logger log = LogManager.getLogger(ResourceStoreClassLoader.class);
 
     private volatile ResourceStore[] stores;
 
@@ -85,9 +85,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
             for (final ResourceStore store : _stores) {
                 final byte[] clazzBytes = store.getBytes(convertClassToResourcePath(name));
                 if (clazzBytes != null) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(getId() + " found class: " + name + " (" + clazzBytes.length + " bytes)");
-                    }
+                    log.trace("{} found class: {} ({} bytes)", getId(), name, clazzBytes.length);
                     doDefinePackage(name);
                     return defineClass(name, clazzBytes, 0, clazzBytes.length);
                 }
@@ -117,9 +115,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
             for (final ResourceStore store : _stores) {
                 final URL url = store.getURL(name);
                 if (url != null) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(getId() + " found resource: " + name);
-                    }
+                    log.trace("{} found resource: {}", getId(), name);
                     return url;
                 }
             }
@@ -135,9 +131,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
             for (final ResourceStore store : _stores) {
                 final URL url = store.getURL(name);
                 if (url != null) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(getId() + " found resource: " + name);
-                    }
+                    log.trace("{} found resource: {}", getId(), name);
                     result.add(url);
                 }
             }
@@ -148,7 +142,6 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
 
     @Override
     public synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        // log.debug(getId() + " looking for: " + name);
         Class<?> clazz = findLoadedClass(name);
 
         if (clazz == null) {
@@ -159,15 +152,12 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
                 final ClassLoader parent = getParent();
                 if (parent != null) {
                     clazz = parent.loadClass(name);
-                    // log.debug(getId() + " delegating loading to parent: " + name);
                 } else {
                     throw new ClassNotFoundException(name);
                 }
 
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug(getId() + " loaded from store: " + name);
-                }
+                log.debug("{} loaded from store: {}", getId(), name);
             }
         }
 

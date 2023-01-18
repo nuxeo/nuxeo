@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.internal.runners.statements.RunAfters;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
@@ -41,7 +41,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public class LogTestWatchman extends TestWatchman {
 
-    private static final Log log = LogFactory.getLog(LogTestWatchman.class);
+    private static final Logger log = LogManager.getLogger(LogTestWatchman.class);
 
     protected String lastScreenshot;
 
@@ -123,7 +123,7 @@ public class LogTestWatchman extends TestWatchman {
     public void failed(Throwable e, FrameworkMethod method) {
         String className = getTestClassName(method);
         String methodName = method.getName();
-        log.error(String.format("Test '%s#%s' failed", className, methodName), e);
+        log.error("Test '{}#{}' failed", className, methodName, e);
 
         if (lastScreenshot == null || lastPageSource == null) {
             ScreenshotTaker taker = new ScreenshotTaker();
@@ -139,14 +139,14 @@ public class LogTestWatchman extends TestWatchman {
             }
 
         }
-        log.info(String.format("Created screenshot file named '%s'", lastScreenshot));
-        log.info(String.format("Created page source file named '%s'", lastPageSource));
+        log.info("Created screenshot file named '{}'", lastScreenshot);
+        log.info("Created page source file named '{}'", lastPageSource);
         super.failed(e, method);
     }
 
     @Override
     public void finished(FrameworkMethod method) {
-        log.info(String.format("Finished test '%s#%s'", getTestClassName(method), method.getName()));
+        log.info("Finished test '{}#{}'", () -> getTestClassName(method), method::getName);
         lastScreenshot = null;
         lastPageSource = null;
         super.finished(method);
@@ -197,10 +197,10 @@ public class LogTestWatchman extends TestWatchman {
     @Override
     public void succeeded(FrameworkMethod method) {
         if (lastPageSource != null && !new File(lastPageSource).delete()) {
-            log.warn("file deletion failed for: " + lastPageSource);
+            log.warn("file deletion failed for: {}", lastPageSource);
         }
         if (lastScreenshot != null && !new File(lastScreenshot).delete()) {
-            log.warn("file deletion failed for: " + lastScreenshot);
+            log.warn("file deletion failed for: {}", lastScreenshot);
         }
     }
 

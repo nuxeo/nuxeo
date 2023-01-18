@@ -20,7 +20,8 @@ package org.nuxeo.ecm.webdav;
 
 import java.io.File;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,9 +33,11 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
  */
 public class WebDavRepoInit implements RepositoryInit {
 
+    private static final Logger log = LogManager.getLogger(WebDavRepoInit.class);
+
     @Override
     public void populate(CoreSession session) {
-        LogFactory.getLog(WebDavRepoInit.class).trace("enter populate webdav");
+        log.trace("enter populate webdav");
         DocumentModel ws = session.createDocumentModel("/", "workspaces", "WorkspaceRoot");
         ws.setPropertyValue("dc:title", "Workspaces");
         session.createDocument(ws);
@@ -49,8 +52,7 @@ public class WebDavRepoInit implements RepositoryInit {
         session.save();
     }
 
-    protected void createFile(DocumentModel folder, String name, String mimeType, CoreSession session)
-            {
+    protected void createFile(DocumentModel folder, String name, String mimeType, CoreSession session) {
         DocumentModel file = session.createDocumentModel(folder.getPathAsString(), name, "File");
         file.setProperty("dublincore", "title", name);
         String testDocsPath = Thread.currentThread().getContextClassLoader().getResource("testdocs").getPath();

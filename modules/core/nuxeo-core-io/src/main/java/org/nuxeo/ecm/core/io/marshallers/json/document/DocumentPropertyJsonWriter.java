@@ -34,8 +34,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -90,14 +90,14 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
 
+    private static final Logger log = LogManager.getLogger(DocumentPropertyJsonWriter.class);
+
     /**
      * Whether we should omit to write phantom secured properties.
      *
      * @since 11.1
      */
     public static final String OMIT_PHANTOM_SECURED_PROPERTY = "omitPhantomSecuredProperty";
-
-    private static final Log log = LogFactory.getLog(DocumentPropertyJsonWriter.class);
 
     @Override
     public void write(Property prop, JsonGenerator jg) throws IOException {
@@ -174,7 +174,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
                         jg.writeRawValue(baos.toString());
                         fetched = true;
                     } catch (MarshallingException e) {
-                        log.error("Unable to marshall as json the entity referenced by the property " + path, e);
+                        log.error("Unable to marshall as json the entity referenced by the property: {}", path, e);
                     }
                 }
             }

@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -42,9 +42,9 @@ import org.nuxeo.runtime.services.event.EventService;
 
 public class UserService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName(UserService.class.getName());
+    private static final Logger log = LogManager.getLogger(UserService.class);
 
-    private static final Log log = LogFactory.getLog(UserService.class);
+    public static final ComponentName NAME = new ComponentName(UserService.class.getName());
 
     private final List<UserManagerDescriptor> descriptors = new LinkedList<>();
 

@@ -24,8 +24,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.coursera.metrics.datadog.model.DatadogGauge;
 import org.coursera.metrics.datadog.transport.HttpTransport;
 import org.coursera.metrics.datadog.transport.Transport;
@@ -44,7 +43,7 @@ import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
  */
 public class LatencyDatadogComputation extends LatencyTrackerComputation {
 
-    private static final Log log = LogFactory.getLog(LatencyDatadogComputation.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(LatencyDatadogComputation.class);
 
     protected static final String HOSTNAME_UNKNOWN = "unknown";
 
@@ -116,9 +115,9 @@ public class LatencyDatadogComputation extends LatencyTrackerComputation {
             request.addGauge(new DatadogGauge(prefix + ".latency", latency.latency(), metricTime, hostname, mTags));
             request.send();
         } catch (IOException e) {
-            log.error("Fail to prepare metric to datadog " + prefix + " " + latency, e);
+            log.error("Fail to prepare metric to datadog {} {}", prefix, latency, e);
         } catch (Exception e) {
-            log.error("Fail to send metric to datadog " + prefix + " " + latency, e);
+            log.error("Fail to send metric to datadog {} {}", prefix, latency, e);
         }
     }
 

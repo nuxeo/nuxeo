@@ -43,8 +43,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -72,7 +72,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ConditionalUpdates;
  */
 public class MemConnection extends DBSConnectionBase {
 
-    private static final Log log = LogFactory.getLog(MemRepository.class);
+    private static final Logger log = LogManager.getLogger(MemConnection.class);
 
     protected static final String NOSCROLL_ID = "noscroll";
 
@@ -135,9 +135,7 @@ public class MemConnection extends DBSConnectionBase {
                 }
                 state = partialState;
             }
-            if (log.isTraceEnabled()) {
-                log.trace("Mem: READ  " + id + ": " + state);
-            }
+            log.trace("Mem: READ  {}: {}", id, state);
         }
         return state;
     }
@@ -154,9 +152,7 @@ public class MemConnection extends DBSConnectionBase {
     @Override
     public void createState(State state) {
         String id = (String) state.get(KEY_ID);
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: CREATE " + id + ": " + state);
-        }
+        log.trace("Mem: CREATE {}: {}", id, state);
         if (states.containsKey(id)) {
             throw new NuxeoException("Already exists: " + id);
         }
@@ -167,9 +163,7 @@ public class MemConnection extends DBSConnectionBase {
 
     @Override
     public void updateState(String id, StateDiff diff, ConditionalUpdates conditionalUpdates) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: UPDATE " + id + ": " + diff);
-        }
+        log.trace("Mem: UPDATE {}: {}", id, diff);
         State state = states.get(id);
         if (state == null) {
             throw new ConcurrentUpdateException("Missing: " + id);
@@ -192,12 +186,10 @@ public class MemConnection extends DBSConnectionBase {
 
     @Override
     public void deleteStates(Set<String> ids) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: REMOVE " + ids);
-        }
+        log.trace("Mem: REMOVE {}", ids);
         for (String id : ids) {
             if (states.remove(id) == null) {
-                log.debug("Missing on remove: " + id);
+                log.debug("Missing on remove: {}", id);
             }
         }
     }
@@ -227,9 +219,7 @@ public class MemConnection extends DBSConnectionBase {
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: QUERY " + key + " = " + value);
-        }
+        log.trace("Mem: QUERY {} = {}", key, value);
         List<State> list = new ArrayList<>();
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
@@ -241,17 +231,13 @@ public class MemConnection extends DBSConnectionBase {
             }
             list.add(state);
         }
-        if (log.isTraceEnabled() && !list.isEmpty()) {
-            log.trace("Mem:    -> " + list.size());
-        }
+        log.trace("Mem:    -> {}", list.size());
         return list;
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: QUERY " + key1 + " = " + value1 + " AND " + key2 + " = " + value2);
-        }
+        log.trace("Mem: QUERY {} = {} AND {} = {}", key1, value1, key2, value2);
         List<State> list = new ArrayList<>();
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
@@ -263,9 +249,7 @@ public class MemConnection extends DBSConnectionBase {
             }
             list.add(state);
         }
-        if (log.isTraceEnabled() && !list.isEmpty()) {
-            log.trace("Mem:    -> " + list.size());
-        }
+        log.trace("Mem:    -> {}", list.size());
         return list;
     }
 
@@ -276,9 +260,7 @@ public class MemConnection extends DBSConnectionBase {
 
     @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys, int limit) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: QUERY " + KEY_ANCESTOR_IDS + " = " + rootId);
-        }
+        log.trace("Mem: QUERY {} = {}", KEY_ANCESTOR_IDS, rootId);
         Stream<State> stream = states.values() //
                                      .stream()
                                      .filter(state -> hasAncestor(state, rootId));
@@ -295,33 +277,25 @@ public class MemConnection extends DBSConnectionBase {
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: QUERY " + key + " = " + value);
-        }
+        log.trace("Mem: QUERY {} = {}", key, value);
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
             if (ignored.contains(id)) {
                 continue;
             }
             if (value.equals(state.get(key))) {
-                if (log.isTraceEnabled()) {
-                    log.trace("Mem:    -> present");
-                }
+                log.trace("Mem:    -> present");
                 return true;
             }
         }
-        if (log.isTraceEnabled()) {
-            log.trace("Mem:    -> absent");
-        }
+        log.trace("Mem:    -> absent");
         return false;
     }
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: QUERY " + evaluator + " OFFSET " + offset + " LIMIT " + limit);
-        }
+        log.trace("Mem: QUERY {} OFFSET {} LIMIT {}", evaluator, offset, limit);
         evaluator.parse();
         List<Map<String, Serializable>> projections = new ArrayList<>();
         for (State state : states.values()) {
@@ -362,17 +336,13 @@ public class MemConnection extends DBSConnectionBase {
         }
         // TODO DISTINCT
 
-        if (log.isTraceEnabled() && !projections.isEmpty()) {
-            log.trace("Mem:    -> " + projections.size());
-        }
+        log.trace("Mem:    -> {}", projections.size());
         return new PartialList<>(projections, totalSize);
     }
 
     @Override
     public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
-        if (log.isTraceEnabled()) {
-            log.trace("Mem: QUERY " + evaluator);
-        }
+        log.trace("Mem: QUERY {}", evaluator);
         evaluator.parse();
         List<String> ids = new ArrayList<>();
         for (State state : states.values()) {

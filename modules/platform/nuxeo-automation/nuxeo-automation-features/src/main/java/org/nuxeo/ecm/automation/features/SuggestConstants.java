@@ -21,8 +21,8 @@ package org.nuxeo.ecm.automation.features;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class SuggestConstants {
 
-    private static final Log log = LogFactory.getLog(SuggestConstants.class);
+    private static final Logger log = LogManager.getLogger(SuggestConstants.class);
 
     public static final String LANG_TOKEN = "{lang}";
 
@@ -75,8 +75,8 @@ public class SuggestConstants {
 
     public static final String DEFAULT_KEY_SEPARATOR = "/";
 
-    public static void computeGroupLabel(final Map<String, Object> obj, final String groupId, final String groupLabelField,
-            final boolean hideFirstLabel) {
+    public static void computeGroupLabel(final Map<String, Object> obj, final String groupId,
+            final String groupLabelField, final boolean hideFirstLabel) {
         String label = null;
         if (hideFirstLabel) {
             label = groupId;
@@ -215,9 +215,8 @@ public class SuggestConstants {
                     return result;
                 }
 
-                log.warn(String.format(
-                        "Unable to find field %s in directory schema %s. Trying to fallback on default one.",
-                        labelFieldName, schema.getName()));
+                log.warn("Unable to find field {} in directory schema {}. Trying to fallback on default one.",
+                        labelFieldName, schema.getName());
 
                 result = DIRECTORY_DEFAULT_LABEL_COL_NAME + "_" + DEFAULT_LANG;
                 if (schema.getField(result) != null) {

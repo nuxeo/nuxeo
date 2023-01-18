@@ -48,8 +48,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
@@ -82,7 +82,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
-    private static final Log log = LogFactory.getLog(DBSExpressionEvaluator.class);
+    private static final Logger log = LogManager.getLogger(DBSExpressionEvaluator.class);
 
     private static final Long ZERO = Long.valueOf(0);
 
@@ -384,7 +384,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         }
         String[] racl = (String[]) state.get(KEY_READ_ACL);
         if (racl == null) {
-            log.error("NULL racl for " + state.get(KEY_ID));
+            log.error("NULL racl for {}", state.get(KEY_ID));
             return false;
         }
         for (String user : racl) {
@@ -468,8 +468,11 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     }
 
     public boolean hasWildcardProjection() {
-        return selectClause.getSelectList().values().stream().anyMatch(
-                operand -> operand instanceof Reference && ((Reference) operand).name.contains("*"));
+        return selectClause.getSelectList()
+                           .values()
+                           .stream()
+                           .anyMatch(
+                                   operand -> operand instanceof Reference && ((Reference) operand).name.contains("*"));
     }
 
     @Override

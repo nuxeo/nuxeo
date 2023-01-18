@@ -20,24 +20,24 @@ package org.nuxeo.ecm.platform.shibboleth.auth.exceptionhandling;
 
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
 
+import java.security.Principal;
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.runtime.api.Framework;
-
-import java.security.Principal;
-import java.util.Optional;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class ShibbolethSecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
-    private static final Log log = LogFactory.getLog(ShibbolethSecurityExceptionHandler.class);
+    private static final Logger log = LogManager.getLogger(ShibbolethSecurityExceptionHandler.class);
 
     @Override
     public String getLoginURL(HttpServletRequest request) {

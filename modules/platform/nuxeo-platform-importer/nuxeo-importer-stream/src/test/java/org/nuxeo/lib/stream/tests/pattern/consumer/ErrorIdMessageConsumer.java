@@ -18,8 +18,6 @@
  */
 package org.nuxeo.lib.stream.tests.pattern.consumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.pattern.KeyValueMessage;
 import org.nuxeo.lib.stream.pattern.consumer.AbstractConsumer;
 
@@ -29,7 +27,6 @@ import org.nuxeo.lib.stream.pattern.consumer.AbstractConsumer;
  * @since 10.3
  */
 public class ErrorIdMessageConsumer extends AbstractConsumer<KeyValueMessage> {
-    private static final Log log = LogFactory.getLog(ErrorIdMessageConsumer.class);
 
     public ErrorIdMessageConsumer(String consumerId) {
         super(consumerId);

@@ -40,8 +40,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
@@ -68,7 +68,7 @@ public class NuxeoOAuth1Servlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(NuxeoOAuth1Servlet.class);
+    private static final Logger log = LogManager.getLogger(NuxeoOAuth1Servlet.class);
 
     public static final String ENDPOINT_REQUEST_TOKEN = "/request-token";
 
@@ -172,7 +172,7 @@ public class NuxeoOAuth1Servlet extends HttpServlet {
             }
             callbackUrl = consumer.getCallbackURL();
             if (callbackUrl == null) {
-                log.error("No callback URL configured for consumer: " + rToken.getConsumerKey());
+                log.error("No callback URL configured for consumer: {}", rToken::getConsumerKey);
                 response.sendError(SC_INTERNAL_SERVER_ERROR);
                 return;
             }

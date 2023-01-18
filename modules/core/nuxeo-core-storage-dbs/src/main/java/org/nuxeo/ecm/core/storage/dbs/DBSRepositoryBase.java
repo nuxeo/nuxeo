@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.lock.LockManager;
@@ -61,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class DBSRepositoryBase implements DBSRepository {
 
-    private static final Log log = LogFactory.getLog(DBSRepositoryBase.class);
+    private static final Logger log = LogManager.getLogger(DBSRepositoryBase.class);
 
     public static final String TYPE_ROOT = "Root";
 
@@ -182,12 +182,12 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         if (lockManager == null) {
             // no descriptor, use DBS repository intrinsic lock manager
             lockManager = this;
-            log.info("Repository " + repositoryName + " using own lock manager");
+            log.info("Repository: {} using own lock manager", repositoryName);
             lockManagerService.registerLockManager(lockManagerName, lockManager);
             selfRegisteredLockManager = true;
         } else {
             selfRegisteredLockManager = false;
-            log.info("Repository " + repositoryName + " using lock manager " + lockManager);
+            log.info("Repository: {} using lock manager {}", repositoryName, lockManager);
         }
     }
 

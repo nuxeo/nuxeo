@@ -43,8 +43,8 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringDefi
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyUriDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RelationshipTypeDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.SecondaryTypeDefinitionImpl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -81,7 +81,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoTypeHelper {
 
-    private static final Log log = LogFactory.getLog(NuxeoTypeHelper.class);
+    private static final Logger log = LogManager.getLogger(NuxeoTypeHelper.class);
 
     public static final String NUXEO_DOCUMENT = "Document";
 
@@ -271,8 +271,7 @@ public class NuxeoTypeHelper {
                 if (isComplexPropertiesEnabled()) {
                     // content is specifically excluded from the properties
                     if ("content".equals(fieldType.getName())) {
-                        log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + " in type: "
-                                + t.getId());
+                        log.debug("Ignoring complex type: {}/{} in type: {}", schemaName, field.getName(), t.getId());
                         continue;
                     }
                     // complex types get exposed to CMIS as a single string value;
@@ -282,7 +281,7 @@ public class NuxeoTypeHelper {
                     queryable = false;
                     orderable = false;
                 } else {
-                    log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + " in type: " + t.getId());
+                    log.debug("Ignoring complex type: {}/{} in type: {}", schemaName, field.getName(), t.getId());
                     continue;
                 }
             } else {
@@ -297,8 +296,8 @@ public class NuxeoTypeHelper {
                             queryable = false;
                             orderable = false;
                         } else {
-                            log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + "in type: "
-                                    + t.getId());
+                            log.debug("Ignoring complex type: {}/{} in type: {}", schemaName, field.getName(),
+                                    t.getId());
                             continue;
                         }
                     } else {
@@ -320,9 +319,8 @@ public class NuxeoTypeHelper {
             PropertyDefinition<?> pd = newPropertyDefinition(name, name, propertyType, cardinality,
                     Updatability.READWRITE, false, false, queryable, orderable);
             if (t.getPropertyDefinitions().containsKey(pd.getId())) {
-                log.error("Type '" + t.getId() + "' has duplicate property '" + name + "' in schemas '"
-                        + propertyToSchema.get(pd.getId()) + "' and '" + schemaName + "', ignoring the one in '"
-                        + schemaName + "'");
+                log.error("Type '{}' has duplicate property '{}' in schemas '{}' and '{}', ignoring the one in '{}'",
+                        t.getId(), name, propertyToSchema.get(pd.getId()), schemaName, schemaName);
                 continue;
             }
             propertyToSchema.put(pd.getId(), schemaName);
@@ -333,8 +331,8 @@ public class NuxeoTypeHelper {
     /**
      * Constructs the base for a {@link DocumentType}.
      */
-    protected void constructBaseDocumentType(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
-            String nuxeoTypeId, boolean creatable) {
+    protected void constructBaseDocumentType(String id, String parentId, BaseTypeId baseTypeId,
+            DocumentType documentType, String nuxeoTypeId, boolean creatable) {
         if (baseTypeId == BaseTypeId.CMIS_FOLDER) {
             t = new FolderTypeDefinitionImpl();
         } else if (baseTypeId == BaseTypeId.CMIS_RELATIONSHIP) {
@@ -370,11 +368,12 @@ public class NuxeoTypeHelper {
             t.setIsFileable(Boolean.FALSE);
         } else {
             DocumentTypeDefinitionImpl dt = (DocumentTypeDefinitionImpl) t;
-            boolean versionable = documentType == null ? false : documentType.getFacets().contains(
-                    FacetNames.VERSIONABLE);
+            boolean versionable = documentType == null ? false
+                    : documentType.getFacets().contains(FacetNames.VERSIONABLE);
             dt.setIsVersionable(Boolean.valueOf(versionable));
             t.setIsFileable(Boolean.TRUE);
-            ContentStreamAllowed csa = (documentType != null && supportsBlobHolder(documentType)) ? ContentStreamAllowed.ALLOWED
+            ContentStreamAllowed csa = (documentType != null && supportsBlobHolder(documentType))
+                    ? ContentStreamAllowed.ALLOWED
                     : ContentStreamAllowed.NOTALLOWED;
             dt.setContentStreamAllowed(csa);
             addDocumentPropertyDefinitions(dt);
@@ -414,16 +413,16 @@ public class NuxeoTypeHelper {
             t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SECONDARY_OBJECT_TYPE_IDS, "Secondary Type IDs",
                     PropertyType.ID, Cardinality.MULTI, Updatability.READONLY, false, false, false, false));
         }
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.NAME, "Name", PropertyType.STRING,
-                Cardinality.SINGLE, Updatability.READWRITE, false, true, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.NAME, "Name", PropertyType.STRING, Cardinality.SINGLE,
+                Updatability.READWRITE, false, true, true, true));
         if (cmisVersion != CmisVersion.CMIS_1_0) {
             t.addPropertyDefinition(newPropertyDefinition(PropertyIds.DESCRIPTION, "Description", PropertyType.STRING,
                     Cardinality.SINGLE, Updatability.READWRITE, false, false, true, true));
         }
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATED_BY, "Created By", PropertyType.STRING,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATION_DATE, "Creation Date",
-                PropertyType.DATETIME, Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATION_DATE, "Creation Date", PropertyType.DATETIME,
+                Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.LAST_MODIFIED_BY, "Last Modified By",
                 PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.LAST_MODIFICATION_DATE, "Last Modification Date",
@@ -447,11 +446,11 @@ public class NuxeoTypeHelper {
     protected static void addFolderPropertyDefinitions(FolderTypeDefinitionImpl t) {
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.PARENT_ID, "Parent ID", PropertyType.ID,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.PATH, "Path", PropertyType.STRING,
-                Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
-                "Allowed Child Object Type IDs", PropertyType.ID, Cardinality.MULTI, Updatability.READONLY, false,
-                false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.PATH, "Path", PropertyType.STRING, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(
+                newPropertyDefinition(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, "Allowed Child Object Type IDs",
+                        PropertyType.ID, Cardinality.MULTI, Updatability.READONLY, false, false, false, false));
     }
 
     protected static void addRelationshipPropertyDefinitions(RelationshipTypeDefinitionImpl t) {
@@ -474,15 +473,15 @@ public class NuxeoTypeHelper {
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.VERSION_SERIES_ID, "Version Series ID",
                 PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
-                "Is Version Series Checked Out", PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY,
-                false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY,
-                "Version Series Checked Out By", PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false,
-                false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID,
-                "Version Series Checked Out ID", PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY, false,
-                false, false, false));
+        t.addPropertyDefinition(
+                newPropertyDefinition(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, "Is Version Series Checked Out",
+                        PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(
+                newPropertyDefinition(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "Version Series Checked Out By",
+                        PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        t.addPropertyDefinition(
+                newPropertyDefinition(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, "Version Series Checked Out ID",
+                        PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CHECKIN_COMMENT, "Checkin Comment",
                 PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
         // mandatory properties even when content stream not allowed

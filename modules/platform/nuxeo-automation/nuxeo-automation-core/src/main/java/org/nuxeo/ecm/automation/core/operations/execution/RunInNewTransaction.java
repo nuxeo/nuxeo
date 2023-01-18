@@ -19,8 +19,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -46,9 +46,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Operation(id = RunInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain in new Tx", description = "Run an operation chain in a separate tx. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", deprecatedSince = "6.0")
 public class RunInNewTransaction {
 
-    public static final String ID = "Context.RunDocumentOperationInNewTx";
+    private static final Logger log = LogManager.getLogger(RunInNewTransaction.class);
 
-    private static final Log log = LogFactory.getLog(RunInNewTransaction.class);
+    public static final String ID = "Context.RunDocumentOperationInNewTx";
 
     @Context
     protected OperationContext ctx;
@@ -92,7 +92,7 @@ public class RunInNewTransaction {
                             throw new NuxeoException(e);
                         } else {
                             // just log, no rethrow
-                            log.warn("Error while executing operation " + chainId, e);
+                            log.warn("Error while executing operation {}", chainId, e);
                         }
                     } finally {
                         LoginComponent.popPrincipal();

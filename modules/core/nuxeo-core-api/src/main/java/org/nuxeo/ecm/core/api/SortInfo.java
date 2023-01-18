@@ -25,8 +25,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class holds the details for sorting.
@@ -37,7 +37,7 @@ public class SortInfo implements Serializable {
 
     private static final long serialVersionUID = -5490026543290755342L;
 
-    private static final Log log = LogFactory.getLog(SortInfo.class);
+    private static final Logger log = LogManager.getLogger(SortInfo.class);
 
     public static final String SORT_COLUMN_NAME = "sortColumn";
 
@@ -130,7 +130,7 @@ public class SortInfo implements Serializable {
             return new SortInfo((String) map.get("sortColumn"),
                     Boolean.parseBoolean(String.valueOf(map.get("sortAscending"))));
         } else {
-            log.error("Cannot resolve sort info from map: " + map);
+            log.error("Cannot resolve sort info from map: {}", map);
             return null;
         }
     }

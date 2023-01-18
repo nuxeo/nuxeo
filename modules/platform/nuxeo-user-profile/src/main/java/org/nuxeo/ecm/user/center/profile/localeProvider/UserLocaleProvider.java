@@ -22,8 +22,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.LocaleUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.web.common.locale.DefaultLocaleProvider;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class UserLocaleProvider extends DefaultLocaleProvider {
 
-    public static final Log log = LogFactory.getLog(UserLocaleProvider.class);
+    private static final Logger log = LogManager.getLogger(UserLocaleProvider.class);
 
     @Override
     public Locale getLocale(CoreSession repo) {
@@ -66,7 +66,7 @@ public class UserLocaleProvider extends DefaultLocaleProvider {
         try {
             return LocaleUtils.toLocale(locale);
         } catch (IllegalArgumentException e) {
-            log.error("Locale parse exception:  \"" + locale + "\"", e);
+            log.error("Locale parse exception: {}", locale, e);
         }
         return null;
     }

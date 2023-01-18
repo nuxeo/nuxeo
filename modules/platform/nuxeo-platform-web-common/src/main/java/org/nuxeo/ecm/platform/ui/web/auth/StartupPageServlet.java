@@ -25,8 +25,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 
@@ -39,8 +37,6 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 public class StartupPageServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
-    protected static final Log log = LogFactory.getLog(StartupPageServlet.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

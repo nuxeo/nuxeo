@@ -19,13 +19,15 @@
 package org.nuxeo.ecm.core.trash;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -39,7 +41,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 @Deprecated
 public class LifeCycleTrashService extends AbstractTrashService {
 
-    private static final Log log = LogFactory.getLog(LifeCycleTrashService.class);
+    private static final Logger log = LogManager.getLogger(LifeCycleTrashService.class);
 
     /**
      * Context data property for backward mechanism in {@link CoreSession#followTransition(DocumentModel, String)}.
@@ -61,8 +63,7 @@ public class LifeCycleTrashService extends AbstractTrashService {
         CoreSession session = docs.get(0).getCoreSession();
         for (DocumentModel doc : docs) {
             DocumentRef docRef = doc.getRef();
-            if (session.getAllowedStateTransitions(docRef).contains(LifeCycleConstants.DELETE_TRANSITION)
-                    && !doc.isProxy()) {
+            if (session.getAllowedStateTransitions(docRef).contains(DELETE_TRANSITION) && !doc.isProxy()) {
                 if (!session.canRemoveDocument(docRef)) {
                     throw new DocumentSecurityException("User " + session.getPrincipal().getName()
                             + " does not have the permission to remove the document " + doc.getId() + " ("
@@ -70,13 +71,12 @@ public class LifeCycleTrashService extends AbstractTrashService {
                 }
                 trashDocument(session, doc);
             } else if (session.isTrashed(docRef)) {
-                log.warn("Document " + doc.getId() + " of type " + doc.getType()
-                        + " is already in the trash, nothing to do");
+                log.warn("Document: {} of type: {} is already in the trash, nothing to do", doc::getId, doc::getType);
                 return;
             } else {
-                log.warn("Document " + doc.getId() + " of type " + doc.getType() + " in state "
-                        + doc.getCurrentLifeCycleState() + " does not support transition "
-                        + LifeCycleConstants.DELETE_TRANSITION + ", it will be deleted immediately");
+                log.warn(
+                        "Document: {} of type: {} in state: {} does not support transition: {}, it will be deleted immediately",
+                        doc::getId, doc::getType, doc::getCurrentLifeCycleState, () -> DELETE_TRANSITION);
                 session.removeDocument(docRef);
             }
         }
@@ -94,7 +94,7 @@ public class LifeCycleTrashService extends AbstractTrashService {
                 session.move(doc.getRef(), doc.getParentRef(), name);
             }
             doc.putContextData(FROM_LIFE_CYCLE_TRASH_SERVICE, TRUE);
-            session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
+            session.followTransition(doc, DELETE_TRANSITION);
         }
     }
 
@@ -133,12 +133,12 @@ public class LifeCycleTrashService extends AbstractTrashService {
         Set<DocumentRef> undeleted = new HashSet<>();
         for (DocumentModel doc : docs) {
             DocumentRef docRef = doc.getRef();
-            if (session.getAllowedStateTransitions(docRef).contains(LifeCycleConstants.UNDELETE_TRANSITION)) {
+            if (session.getAllowedStateTransitions(docRef).contains(UNDELETE_TRANSITION)) {
                 undeleteDocument(session, doc);
                 undeleted.add(docRef);
             } else {
-                log.debug("Impossible to undelete document " + docRef + " as it does not support transition "
-                        + LifeCycleConstants.UNDELETE_TRANSITION);
+                log.debug("Impossible to undelete document: {} as it does not support transition: {}", docRef,
+                        UNDELETE_TRANSITION);
             }
         }
         return undeleted;
@@ -153,7 +153,7 @@ public class LifeCycleTrashService extends AbstractTrashService {
             // ReadLifeCycle and WriteLifeCycle
             if (session.hasPermission(ancestorRef, SecurityConstants.READ_LIFE_CYCLE)
                     && session.hasPermission(ancestorRef, SecurityConstants.WRITE_LIFE_CYCLE)) {
-                if (session.getAllowedStateTransitions(ancestorRef).contains(LifeCycleConstants.UNDELETE_TRANSITION)) {
+                if (session.getAllowedStateTransitions(ancestorRef).contains(UNDELETE_TRANSITION)) {
                     DocumentModel ancestor = session.getDocument(ancestorRef);
                     undeleteDocument(session, ancestor);
                     undeleted.add(ancestorRef);
@@ -162,7 +162,7 @@ public class LifeCycleTrashService extends AbstractTrashService {
                 }
             } else {
                 // stop if lifecycle properties can't be read on an ancestor
-                log.debug("Stopping to restore ancestors because " + ancestorRef.toString() + " is not readable");
+                log.debug("Stopping to restore ancestors because: {} is not readable", ancestorRef);
                 break;
             }
         }
@@ -177,17 +177,17 @@ public class LifeCycleTrashService extends AbstractTrashService {
             }
         }
         doc.putContextData(FROM_LIFE_CYCLE_TRASH_SERVICE, TRUE);
-        session.followTransition(doc, LifeCycleConstants.UNDELETE_TRANSITION);
+        session.followTransition(doc, UNDELETE_TRANSITION);
     }
 
     @Override
     public boolean hasFeature(Feature feature) {
         switch (feature) {
-            case TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE:
-                return true;
-            case TRASHED_STATE_IN_MIGRATION:
-            case TRASHED_STATE_IS_DEDICATED_PROPERTY:
-                return false;
+        case TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE:
+            return true;
+        case TRASHED_STATE_IN_MIGRATION:
+        case TRASHED_STATE_IS_DEDICATED_PROPERTY:
+            return false;
         default:
             throw new UnsupportedOperationException(feature.name());
         }

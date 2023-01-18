@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.platform.oauth.consumers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import net.oauth.OAuth;
@@ -40,6 +40,8 @@ import net.oauth.signature.pem.PEMReader;
  */
 public class NuxeoOAuthConsumer extends OAuthConsumer {
 
+    private static final Logger log = LogManager.getLogger(NuxeoOAuthConsumer.class);
+
     public static final String ALLOW_SIGNEDFETCH = "allowSignedFetch";
 
     public static final String SIGNEDFETCH_NONE = "none";
@@ -51,8 +53,6 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     public static final String SIGNEDFETCH_DEDICATED_USER = "nuxeo:user";
 
     public static final String SCHEMA = "oauthConsumer";
-
-    protected static final Log log = LogFactory.getLog(NuxeoOAuthConsumer.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -69,8 +69,7 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
 
     protected boolean allowBypassVerifier = false;
 
-    public static NuxeoOAuthConsumer createFromDirectoryEntry(DocumentModel entry, String keyType)
-            {
+    public static NuxeoOAuthConsumer createFromDirectoryEntry(DocumentModel entry, String keyType) {
         String callbackURL = (String) entry.getProperty(SCHEMA, "callbackURL");
         String consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
         String consumerSecret = (String) entry.getProperty(SCHEMA, "consumerSecret");
@@ -171,7 +170,7 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         } else if (OAuth.RSA_SHA1.equals(type)) {
             return "";
         } else {
-            log.error("Unknown type of key :" + type);
+            log.error("Unknown type of key: {}", type);
             return null;
         }
     }

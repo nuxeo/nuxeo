@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -47,7 +47,7 @@ public class PrefetchInfo implements Serializable {
 
     private static final long serialVersionUID = -6495547095819614741L;
 
-    private static final Log log = LogFactory.getLog(PrefetchInfo.class);
+    private static final Logger log = LogManager.getLogger(PrefetchInfo.class);
 
     private final String expr;
 
@@ -168,7 +168,7 @@ public class PrefetchInfo implements Serializable {
                 continue;
             }
             if (!isScalarField(field)) {
-                log.error("Prefetch field '" + s + "' is not scalar");
+                log.error("Prefetch field '{}' is not scalar", s);
                 continue;
             }
             fields.add(StringUtils.join(parts, '/'));
@@ -196,7 +196,7 @@ public class PrefetchInfo implements Serializable {
     }
 
     private static void logNotFound(String s) {
-        log.error("Prefetch field or schema '" + s + "' not found");
+        log.error("Prefetch field or schema '{}' not found", s);
     }
 
 }

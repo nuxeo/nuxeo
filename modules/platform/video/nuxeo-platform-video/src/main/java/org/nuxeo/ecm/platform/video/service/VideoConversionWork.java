@@ -32,8 +32,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -57,7 +57,7 @@ public class VideoConversionWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(VideoConversionWork.class);
+    private static final Logger log = LogManager.getLogger(VideoConversionWork.class);
 
     public static final String CATEGORY_VIDEO_CONVERSION = "videoConversion";
 
@@ -101,14 +101,14 @@ public class VideoConversionWork extends AbstractWork {
             return;
         }
         // Perform the actual conversion
-        log.debug(String.format("Processing %s conversion of Video document %s.", conversionName, doc));
+        log.debug("Processing: {} conversion of Video document: {}.", conversionName, doc);
         setStatus("Transcoding");
         VideoService service = Framework.getService(VideoService.class);
         TranscodedVideo transcodedVideo = null;
         try {
             transcodedVideo = service.convert(originalVideo, conversionName);
         } catch (ConversionException e) {
-            log.warn(String.format("Cannot convert video %s on doc: %s, skipping.", conversionName, doc.getId()), e);
+            log.warn("Cannot convert video: {} on doc: {}, skipping.", conversionName, doc.getId(), e);
         }
         if (transcodedVideo != null) {
             // Saving it to the document
@@ -117,7 +117,7 @@ public class VideoConversionWork extends AbstractWork {
             session.save();
             doc = session.getDocument(new IdRef(docId));
             saveNewTranscodedVideo(doc, transcodedVideo);
-            log.debug(String.format("End processing %s conversion of Video document %s.", conversionName, doc));
+            log.debug("End processing: {} conversion of Video document: {}.", conversionName, doc);
             setStatus("Done");
         }
     }
@@ -163,7 +163,7 @@ public class VideoConversionWork extends AbstractWork {
     }
 
     protected void resetTranscodedVideos(DocumentModel doc) {
-        log.warn(String.format("No original video to transcode, resetting transcoded videos of document %s.", doc));
+        log.warn("No original video to transcode, resetting transcoded videos of document: {}.", doc);
         setStatus("No video to process");
         doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, null);
         if (doc.isVersion()) {

@@ -22,8 +22,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -59,6 +59,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class BulkLifeCycleChangeListener implements PostCommitEventListener {
 
+    private static final Logger log = LogManager.getLogger(BulkLifeCycleChangeListener.class);
+
     /**
      * @since 8.10-HF05 9.2
      */
@@ -68,8 +70,6 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
      * @since 8.10-HF05 9.2
      */
     public static final String GET_CHILDREN_PAGE_SIZE_PROPERTY = "nuxeo.bulkLifeCycleChangeListener.get-children-page-size";
-
-    private static final Log log = LogFactory.getLog(BulkLifeCycleChangeListener.class);
 
     @Override
     public void handleEvent(EventBundle events) {
@@ -227,12 +227,12 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 }
             } else {
                 if (targetState.equals(doc.getCurrentLifeCycleState())) {
-                    log.debug("Document" + doc.getRef() + " is already in the target LifeCycle state");
+                    log.debug("Document: {} is already in the target LifeCycle state", doc::getRef);
                 } else if (LifeCycleConstants.DELETED_STATE.equals(targetState)) {
-                    log.debug("Impossible to change state of " + doc.getRef() + " :removing");
+                    log.debug("Impossible to change state of {} :removing", doc::getRef);
                     session.removeDocument(doc.getRef());
                 } else {
-                    log.debug("Document" + doc.getRef() + " has no transition to the target LifeCycle state");
+                    log.debug("Document {} has no transition to the target LifeCycle state", doc::getRef);
                 }
             }
         }

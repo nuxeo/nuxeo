@@ -183,7 +183,7 @@ public class TestConverters extends SimpleConverterTest {
         // no converter found, return an empty blob
         assertEquals("", result.getBlob().getString());
         assertEquals(1, logCaptureResult.getCaughtEventMessages().size());
-        assertEquals("Unable to find full text extractor for source mime type foo/bar",
+        assertEquals("Unable to find full text extractor for source mime type: foo/bar",
                 logCaptureResult.getCaughtEventMessages().get(0));
     }
 

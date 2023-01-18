@@ -21,14 +21,13 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +56,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryJTAJCA {
 
-    private static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
+    private static final Logger log = LogManager.getLogger(TestSQLRepositoryJTAJCA.class);
 
     @SuppressWarnings("deprecation")
     private static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;
@@ -183,7 +182,7 @@ public class TestSQLRepositoryJTAJCA {
                     doc1.getProperty("dc:title").setValue("second update");
                     session2.saveDocument(doc1);
                 } catch (Exception e) {
-                    log.error("Catched error while setting title", e);
+                    log.error("Caught error while setting title", e);
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
                 }

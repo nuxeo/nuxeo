@@ -21,8 +21,6 @@ package org.nuxeo.ecm.automation.jaxrs.io.operations;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
@@ -32,8 +30,6 @@ import org.nuxeo.ecm.automation.OperationException;
  */
 public class AutomationInfo {
 
-    protected static final Log log = LogFactory.getLog(AutomationInfo.class);
-
     public static final String CHAIN = "Chain";
 
     protected List<OperationDocumentation> ops;
@@ -42,8 +38,8 @@ public class AutomationInfo {
 
     public AutomationInfo(AutomationService service) throws OperationException {
         ops = service.getDocumentation();
-        for(OperationDocumentation op: ops){
-            if(CHAIN.equals(op.getCategory())){
+        for (OperationDocumentation op : ops) {
+            if (CHAIN.equals(op.getCategory())) {
                 chains.add(op);
             }
         }

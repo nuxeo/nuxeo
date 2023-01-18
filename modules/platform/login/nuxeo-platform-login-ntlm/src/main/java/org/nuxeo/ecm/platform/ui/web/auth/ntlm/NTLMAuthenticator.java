@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.ntlm;
 
+import static jcifs.smb.NtStatus.NT_STATUS_ACCESS_VIOLATION;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -30,22 +32,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+
 import jcifs.Config;
 import jcifs.UniAddress;
 import jcifs.http.NtlmSsp;
-
 import jcifs.smb.NtlmChallenge;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
-
-import static jcifs.smb.NtStatus.NT_STATUS_ACCESS_VIOLATION;
 
 public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
+
+    private static final Logger log = LogManager.getLogger(NTLMAuthenticator.class);
 
     private static final String JCIFS_PREFIX = "jcifs.";
 
@@ -71,8 +73,6 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected static boolean loadBalance;
 
-    private static final Log log = LogFactory.getLog(NTLMAuthenticator.class);
-
     @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
@@ -97,11 +97,11 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
             try {
                 httpResponse.flushBuffer();
             } catch (IOException e) {
-                log.error("Error while flushing buffer:" + e.getMessage(), e);
+                log.error("Error while flushing buffer: {}", e.getMessage(), e);
             }
             return true;
         } else {
-            log.debug("No NTLM Prompt done since NTLM Auth was found :" + ntlm.getUsername());
+            log.debug("No NTLM Prompt done since NTLM Auth was found: {}", ntlm.getUsername());
             return false;
         }
     }
@@ -116,7 +116,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         try {
             ntlm = negotiate(httpRequest, httpResponse, false);
         } catch (IOException | ServletException e) {
-            log.error("NTLM negotiation failed : " + e.getMessage(), e);
+            log.error("NTLM negotiation failed: {}", e.getMessage(), e);
             return null;
         }
 
@@ -126,11 +126,11 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         } else {
             log.debug("Negotiation succeed and returned a NTLM token, creating UserIdentificationInfo");
             String userName = ntlm.getUsername();
-            log.debug("ntlm.getUsername() = " + userName);
+            log.debug("ntlm.getUsername(): {}", userName);
             if (userName.startsWith(ntlm.getDomain())) {
                 userName = userName.replace(ntlm.getDomain() + "/", "");
             }
-            log.debug("userName = " + userName);
+            log.debug("userName: {}", userName);
             String password = ntlm.getPassword();
             if (password == null || "".equals(password)) {
                 // we don't get the NTLM password, so we have to trust NTLM auth
@@ -185,7 +185,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
         String msg = req.getHeader("Authorization");
 
-        log.debug("NTLM negotiation header = " + msg);
+        log.debug("NTLM negotiation header: {}", msg);
         NtlmPasswordAuthentication ntlm;
         if (msg != null && msg.startsWith("NTLM ")) {
             HttpSession ssn = req.getSession();
@@ -213,35 +213,21 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
             }
 
             log.debug("NtlmSsp.authenticate succeed");
-            log.debug("Domain controller is " + dc.getHostName());
-            if (ntlm.getDomain() != null) {
-                log.debug("NtlmSsp.authenticate => domain = " + ntlm.getDomain());
-            } else {
-                log.debug("NtlmSsp.authenticate => null domain");
-            }
-            if (ntlm.getUsername() != null) {
-                log.debug("NtlmSsp.authenticate => userName = " + ntlm.getUsername());
-            } else {
-                log.debug("NtlmSsp.authenticate => userName = null");
-            }
-            if (ntlm.getPassword() != null) {
-                log.debug("NtlmSsp.authenticate => password = " + ntlm.getPassword());
-            } else {
-                log.debug("NtlmSsp.authenticate => password = null");
-            }
+            log.debug("Domain controller is: {}", dc::getHostName);
+            log.debug("NtlmSsp.authenticate => domain: {}", ntlm::getDomain);
+            log.debug("NtlmSsp.authenticate => userName: {}", ntlm::getUsername);
+            log.debug("NtlmSsp.authenticate => password: {}", ntlm::getPassword);
 
             /* negotiation complete, remove the challenge object */
             ssn.removeAttribute(NTLM_HTTP_CHAL_SESSION_KEY);
             if (!skipAuthentication) {
                 try {
-                    log.debug("Trying to logon NTLM session on dc " + dc.toString());
+                    log.debug("Trying to logon NTLM session on dc: {}", dc);
                     SmbSession.logon(dc, ntlm);
-                    log.debug(ntlm + " successfully authenticated against " + dc);
-
+                    log.debug("{} successfully authenticated against: {}", ntlm, dc);
                 } catch (SmbAuthException sae) {
-
-                    log.error(ntlm.getName() + ": 0x" + jcifs.util.Hexdump.toHexString(sae.getNtStatus(), 8) + ": "
-                            + sae);
+                    log.error("{}: 0x{}: {}", ntlm.getName(), jcifs.util.Hexdump.toHexString(sae.getNtStatus(), 9),
+                            sae);
 
                     if (sae.getNtStatus() == NT_STATUS_ACCESS_VIOLATION) {
                         /*

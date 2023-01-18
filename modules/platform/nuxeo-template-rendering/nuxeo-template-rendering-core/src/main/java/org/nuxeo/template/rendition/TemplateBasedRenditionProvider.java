@@ -22,8 +22,6 @@ package org.nuxeo.template.rendition;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
@@ -31,8 +29,6 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 public class TemplateBasedRenditionProvider implements RenditionProvider {
-
-    protected static Log log = LogFactory.getLog(TemplateBasedRenditionProvider.class);
 
     @Override
     public boolean isAvailable(DocumentModel doc, RenditionDefinition def) {

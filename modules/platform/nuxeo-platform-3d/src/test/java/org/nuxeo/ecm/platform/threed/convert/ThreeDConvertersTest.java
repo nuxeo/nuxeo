@@ -47,8 +47,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,13 +77,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
 public class ThreeDConvertersTest {
 
+    private static final Logger log = LogManager.getLogger(ThreeDConvertersTest.class);
+
     protected static final String TEST_MODEL = "suzanne";
 
     private static final String renderId1 = "renderId1";
 
     private static final String renderId2 = "renderId2";
-
-    private static final Log log = LogFactory.getLog(ThreeDConvertersTest.class);
 
     @Inject
     protected ConversionService cs;
@@ -130,16 +130,16 @@ public class ThreeDConvertersTest {
         long timeDelta = System.currentTimeMillis() - before;
         assertNotNull(result);
         if (result.getBlobs().size() == 0) {
-            log.warn(String.format("[NXP-21450] memory max: %dMB", Runtime.getRuntime().maxMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] memory total: %dMB", Runtime.getRuntime().totalMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] memory free: %dMB", Runtime.getRuntime().freeMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] duration: %dms", timeDelta));
-            log.warn(String.format("[NXP-21450] converter: %s", converter));
+            log.warn("[NXP-21450] memory max: {}MB", Runtime.getRuntime().maxMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] memory total: {}MB", Runtime.getRuntime().totalMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] memory free: {}MB", Runtime.getRuntime().freeMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] duration: {}ms", timeDelta);
+            log.warn("[NXP-21450] converter: {}", converter);
             for (Blob blob : blobs.getBlobs()) {
-                log.warn(String.format("[NXP-21450] blob: %s (%s)", blob.getFilename(), blob.getDigest()));
+                log.warn("[NXP-21450] blob: {} ({})", blob.getFilename(), blob.getDigest());
             }
             for (Map.Entry<String, Serializable> entry : params.entrySet()) {
-                log.warn(String.format("[NXP-21450] param: %s -> %s", entry.getKey(), entry.getValue()));
+                log.warn("[NXP-21450] param: {} -> {}", entry.getKey(), entry.getValue());
             }
         }
         return result;

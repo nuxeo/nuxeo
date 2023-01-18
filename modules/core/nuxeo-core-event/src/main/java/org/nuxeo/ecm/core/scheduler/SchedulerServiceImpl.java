@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.common.utils.TextTemplate;
@@ -56,14 +56,14 @@ import org.quartz.impl.jdbcjobstore.LockException;
 import org.quartz.impl.matchers.GroupMatcher;
 
 /**
- * Schedule service implementation. Since the cleanup of the quartz job is done when service is activated, ( see see
+ * Schedule service implementation. Since the cleanup of the quartz job is done when service is activated, ( see
  * https://jira.nuxeo.com/browse/NXP-7303 ) in cluster mode, the schedules contributions MUST be the same on all nodes.
  * Due the fact that all jobs are removed when service starts on a node it may be a short period with no schedules in
  * quartz table even other node is running.
  */
 public class SchedulerServiceImpl extends DefaultComponent implements SchedulerService {
 
-    private static final Log log = LogFactory.getLog(SchedulerServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(SchedulerServiceImpl.class);
 
     /** @since 11.1 */
     public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.scheduler.cluster.start.duration";
@@ -235,7 +235,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     }
 
     protected void schedule(Schedule schedule, Map<String, Serializable> parameters) {
-        log.info("Registering " + schedule);
+        log.info("Registering: {}", schedule);
 
         EventJobFactory jobFactory = schedule.getJobFactory();
         JobDetail job = jobFactory.buildJob(schedule, parameters).build();
@@ -250,20 +250,20 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
             } catch (ObjectAlreadyExistsException e) {
                 // when jobs are persisted in a database, the job should already be there
                 // remove existing job and re-schedule
-                log.trace("Overriding scheduler with id: " + schedule.getId());
+                log.trace("Overriding scheduler with id: {}", schedule::getId);
                 boolean unregistered = unschedule(schedule.getId(), job.getKey());
                 if (unregistered) {
                     schedule(schedule.getId(), job, trigger);
                 }
             }
         } catch (SchedulerException e) {
-            log.error(String.format("failed to schedule job with id '%s': %s", schedule.getId(), e.getMessage()), e);
+            log.error("failed to schedule job with id '{}': {}", schedule.getId(), e.getMessage(), e);
         }
     }
 
     @Override
     public boolean unregisterSchedule(String id) {
-        log.info("Unregistering schedule with id" + id);
+        log.info("Unregistering schedule with id: {}", id);
         Schedule schedule = registry.getSchedule(id);
         if (schedule == null) {
             return false;
@@ -285,13 +285,13 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     protected boolean unschedule(String id, JobKey jobKey) {
         if (jobKey == null) {
             // shouldn't happen but let's be robust
-            log.warn("Unscheduling null jobKey for id: " + id);
+            log.warn("Unscheduling null jobKey for id: {}", id);
             return false;
         }
         try {
             return scheduler.deleteJob(jobKey);
         } catch (SchedulerException e) {
-            log.error(String.format("failed to unschedule job with '%s': %s", id, e.getMessage()), e);
+            log.error("failed to unschedule job with '{}': {}", id, e.getMessage(), e);
             return true; // didn't exist so consider it removed (maybe concurrency)
         }
     }

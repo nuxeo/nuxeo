@@ -34,9 +34,9 @@ import javax.mail.Session;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -75,7 +75,7 @@ import freemarker.template.TemplateException;
         "Notification.SendMail" })
 public class SendMail {
 
-    protected static final Log log = LogFactory.getLog(SendMail.class);
+    private static final Logger log = LogManager.getLogger(SendMail.class);
 
     /**
      * @deprecated since 11.1 due to its static modifier, it messes up tests, instantiate {@link Composer} instead
@@ -203,9 +203,9 @@ public class SendMail {
             if (rollbackOnError) {
                 throw e;
             } else {
-                log.warn(String.format(
-                        "An error occured while trying to execute the %s operation, see complete stack trace below. Continuing chain since 'rollbackOnError' was set to false.",
-                        ID), e);
+                log.warn(
+                        "An error occurred while trying to execute the {} operation, see complete stack trace below. Continuing chain since 'rollbackOnError' was set to false.",
+                        ID, e);
             }
         }
     }
@@ -275,7 +275,7 @@ public class SendMail {
                         }
                     }
                 } catch (PropertyException pe) {
-                    log.error("Error while fetching blobs: " + pe.getMessage());
+                    log.error("Error while fetching blobs: {}", pe.getMessage());
                     log.debug(pe, pe);
                 }
             }

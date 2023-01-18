@@ -27,8 +27,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -46,7 +46,7 @@ public class VideoStoryboardWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(VideoStoryboardWork.class);
+    private static final Logger log = LogManager.getLogger(VideoStoryboardWork.class);
 
     public static final String CATEGORY_VIDEO_STORYBOARD = "videoStoryboard";
 
@@ -111,9 +111,9 @@ public class VideoStoryboardWork extends AbstractWork {
             return false;
         }
 
-        log.debug(String.format("Updating storyboard of Video document %s.", doc));
+        log.debug("Updating storyboard of Video document: {}.", doc);
         VideoHelper.updateStoryboard(doc, blob);
-        log.debug(String.format("End updating storyboard of Video document %s.", doc));
+        log.debug("End updating storyboard of Video document: {}.", doc);
         return true;
     }
 
@@ -123,14 +123,14 @@ public class VideoStoryboardWork extends AbstractWork {
             return false;
         }
 
-        log.debug(String.format("Updating previews of Video document %s.", doc));
+        log.debug("Updating previews of Video document: {}.", doc);
         try {
             VideoHelper.updatePreviews(doc, blob);
-            log.debug(String.format("End updating previews of Video document %s.", doc));
+            log.debug("End updating previews of Video document {}.", doc);
             return true;
         } catch (IOException e) {
             // this should only happen if the hard drive is full
-            log.debug(String.format("Failed to extract previews of Video document %s.", doc), e);
+            log.debug("Failed to extract previews of Video document {}.", doc, e);
             return false;
         }
     }

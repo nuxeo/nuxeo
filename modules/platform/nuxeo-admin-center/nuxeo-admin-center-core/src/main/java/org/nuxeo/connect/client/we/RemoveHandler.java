@@ -25,8 +25,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "removeHandler")
 public class RemoveHandler extends DefaultObject {
 
-    protected static final Log log = LogFactory.getLog(RemoveHandler.class);
+    private static final Logger log = LogManager.getLogger(RemoveHandler.class);
 
     @GET
     @Produces("text/html")

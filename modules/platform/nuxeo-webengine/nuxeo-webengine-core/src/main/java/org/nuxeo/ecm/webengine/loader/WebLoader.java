@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.loader.store.FileResourceStore;
 import org.nuxeo.ecm.webengine.scripting.GroovyScripting;
@@ -34,7 +34,7 @@ import org.osgi.framework.Bundle;
  */
 public class WebLoader {
 
-    private static final Log log = LogFactory.getLog(WebLoader.class);
+    private static final Logger log = LogManager.getLogger(WebLoader.class);
 
     protected final WebEngine engine;
 
@@ -62,7 +62,7 @@ public class WebLoader {
             classLoader.addResourceStore(new FileResourceStore(container));
             gScripting.getGroovyClassLoader().addURL(container.toURI().toURL());
         } catch (IOException e) {
-            log.error("Failed to create file store: " + container, e);
+            log.error("Failed to create file store: {}", container, e);
         }
     }
 

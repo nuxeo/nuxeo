@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.automation.core.operations;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -31,7 +31,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  *
  * @since 5.6
  */
-@Operation(id = LogOperation.ID, category = Constants.CAT_NOTIFICATION, label = "Log", description = "Logging with log4j", aliases = { "LogOperation" })
+@Operation(id = LogOperation.ID, category = Constants.CAT_NOTIFICATION, label = "Log", description = "Logging with log4j", aliases = {
+        "LogOperation" })
 public class LogOperation {
 
     public static final String ID = "Log";
@@ -51,7 +52,7 @@ public class LogOperation {
             category = "org.nuxeo.ecm.automation.logger";
         }
 
-        Log log = LogFactory.getLog(category);
+        Logger log = LogManager.getLogger(category);
 
         if ("debug".equals(level)) {
             log.debug(message);

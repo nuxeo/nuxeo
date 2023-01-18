@@ -28,8 +28,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Filter that sets encoding to UTF-8, before any other filter tries to parse the request. Also set the X-UA-Compatible
@@ -43,11 +43,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class NuxeoEncodingFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(NuxeoEncodingFilter.class);
+    private static final Logger log = LogManager.getLogger(NuxeoEncodingFilter.class);
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         if (request != null) {
             // NXP-5555: set encoding to UTF-8 in case this method is called
             // before

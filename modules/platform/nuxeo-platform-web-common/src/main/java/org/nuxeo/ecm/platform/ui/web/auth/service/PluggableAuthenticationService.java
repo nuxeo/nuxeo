@@ -33,8 +33,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
@@ -45,6 +45,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class PluggableAuthenticationService extends DefaultComponent {
+
+    private static final Logger log = LogManager.getLogger(PluggableAuthenticationService.class);
 
     public static final String NAME = "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService";
 
@@ -61,8 +63,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public static final String EP_OPENURL = "openUrl";
 
     public static final String EP_LOGINSCREEN = "loginScreen";
-
-    private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
 
     private Map<String, AuthenticationPluginDescriptor> authenticatorsDescriptors;
 
@@ -105,27 +105,27 @@ public class PluggableAuthenticationService extends DefaultComponent {
             AuthenticationPluginDescriptor descriptor = (AuthenticationPluginDescriptor) contribution;
             if (authenticatorsDescriptors.containsKey(descriptor.getName())) {
                 mergeDescriptors(descriptor);
-                log.debug("merged AuthenticationPluginDescriptor: " + descriptor.getName());
+                log.debug("merged AuthenticationPluginDescriptor: {}", descriptor::getName);
             } else {
                 authenticatorsDescriptors.put(descriptor.getName(), descriptor);
-                log.debug("registered AuthenticationPluginDescriptor: " + descriptor.getName());
+                log.debug("registered AuthenticationPluginDescriptor: {}", descriptor::getName);
             }
 
             // create the new instance
             AuthenticationPluginDescriptor actualDescriptor = authenticatorsDescriptors.get(descriptor.getName());
             try {
-                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName().getDeclaredConstructor().newInstance();
+                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName()
+                                                                       .getDeclaredConstructor()
+                                                                       .newInstance();
                 authPlugin.initPlugin(actualDescriptor.getParameters());
                 authenticators.put(actualDescriptor.getName(), authPlugin);
             } catch (ReflectiveOperationException e) {
-                log.error(
-                        "Unable to create AuthPlugin for : " + actualDescriptor.getName() + "Error : " + e.getMessage(),
-                        e);
+                log.error("Unable to create AuthPlugin: {} Error : {}", actualDescriptor.getName(), e.getMessage(), e);
             }
 
         } else if (extensionPoint.equals(EP_CHAIN)) {
             AuthenticationChainDescriptor chainContrib = (AuthenticationChainDescriptor) contribution;
-            log.debug("New authentication chain powered by " + contributor.getName());
+            log.debug("New authentication chain powered by: {}", contributor::getName);
             authChain.clear();
             authChain.addAll(chainContrib.getPluginsNames());
         } else if (extensionPoint.equals(EP_OPENURL)) {
@@ -163,7 +163,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         if (extensionPoint.equals(EP_AUTHENTICATOR)) {
             AuthenticationPluginDescriptor descriptor = (AuthenticationPluginDescriptor) contribution;
             authenticatorsDescriptors.remove(descriptor.getName());
-            log.debug("unregistered AuthenticationPlugin: " + descriptor.getName());
+            log.debug("unregistered AuthenticationPlugin: {}", descriptor::getName);
         } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
             LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
             unregisterLoginScreenConfig(newConfig);
@@ -291,7 +291,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         if (authenticatorsDescriptors.containsKey(pluginName)) {
             return authenticatorsDescriptors.get(pluginName);
         } else {
-            log.error("Plugin " + pluginName + " not registered or not created");
+            log.error("Plugin: {} not registered or not created", pluginName);
             return null;
         }
     }

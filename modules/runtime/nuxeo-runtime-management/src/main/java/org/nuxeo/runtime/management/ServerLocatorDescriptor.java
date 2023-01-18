@@ -18,8 +18,8 @@
  */
 package org.nuxeo.runtime.management;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
@@ -30,7 +30,7 @@ import org.nuxeo.runtime.api.Framework;
 @XObject("locator")
 public class ServerLocatorDescriptor {
 
-    private static final Log log = LogFactory.getLog(ServerLocatorDescriptor.class);
+    private static final Logger log = LogManager.getLogger(ServerLocatorDescriptor.class);
 
     @XNode("@default")
     protected boolean isDefault = true;
@@ -58,7 +58,7 @@ public class ServerLocatorDescriptor {
     public void setExisting(String value) {
         String expandedValue = Framework.expandVars(value);
         if (expandedValue.startsWith("$")) {
-            log.warn("Cannot expand " + value + " for existing server");
+            log.warn("Cannot expand: {} for existing server", value);
             return;
         }
         isExisting = Boolean.parseBoolean(expandedValue);
@@ -68,7 +68,7 @@ public class ServerLocatorDescriptor {
     public void setRmiPort(String value) {
         String expandedValue = Framework.expandVars(value);
         if (expandedValue.startsWith("$")) {
-            log.warn("Cannot expand " + value + " for server locator");
+            log.warn("Cannot expand: {} for server locator", value);
             return;
         }
         rmiPort = Integer.parseInt(expandedValue);

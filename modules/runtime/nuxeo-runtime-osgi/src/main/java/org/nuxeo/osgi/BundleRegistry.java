@@ -27,8 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -38,7 +38,7 @@ import org.osgi.framework.Constants;
  */
 public class BundleRegistry {
 
-    private static final Log log = LogFactory.getLog(BundleRegistry.class);
+    private static final Logger log = LogManager.getLogger(BundleRegistry.class);
 
     private final Map<Long, BundleRegistration> bundlesById;
 
@@ -145,7 +145,7 @@ public class BundleRegistry {
 
     protected void doPostpone(BundleRegistration reg) {
         String name = reg.bundle.getSymbolicName();
-        log.info("Registering unresolved bundle: " + name);
+        log.info("Registering unresolved bundle: {}", name);
         bundles.put(name, reg);
         bundlesById.put(reg.bundle.getBundleId(), reg);
 
@@ -162,7 +162,7 @@ public class BundleRegistry {
 
     protected void doRegister(BundleRegistration reg) throws BundleException {
         String name = reg.bundle.getSymbolicName();
-        log.info("Registering resolved bundle: " + name);
+        log.info("Registering resolved bundle: {}", name);
         bundles.put(name, reg);
         bundlesById.put(reg.bundle.getBundleId(), reg);
         reg.bundle.setInstalled();
@@ -208,10 +208,8 @@ public class BundleRegistry {
                 if (reg.bundle != null) {
                     reg.bundle.shutdown();
                 }
-            } catch (BundleException e) {
-                log.error("Failed to stop bundle " + reg.bundle.getSymbolicName(), e);
-            } catch (RuntimeException e) {
-                log.error("Failed to stop bundle " + reg.bundle.getSymbolicName(), e);
+            } catch (BundleException | RuntimeException e) {
+                log.error("Failed to stop bundle: {}", reg.bundle.getSymbolicName(), e);
             }
         }
     }

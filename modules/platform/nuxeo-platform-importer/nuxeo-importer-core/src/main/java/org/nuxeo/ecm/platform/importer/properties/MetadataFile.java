@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
  */
 public class MetadataFile {
 
-    private static final Log log = LogFactory.getLog(MetadataFile.class);
+    private static final Logger log = LogManager.getLogger(MetadataFile.class);
 
     protected DocumentModel doc;
 
@@ -111,9 +111,7 @@ public class MetadataFile {
             try {
                 addProperty(property, doc.getPropertyValue(property));
             } catch (PropertyException e) {
-                String message = String.format("Property '%s' not found on document type: %s. Skipping it.", property,
-                        doc.getType());
-                log.debug(message);
+                log.debug("Property: {} not found on document type: {}. Skipping it.", property, doc.getType());
             }
         }
     }

@@ -20,8 +20,8 @@
 package org.nuxeo.runtime.services.config;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.Descriptor;
 @XObject("property")
 public class ConfigurationPropertyDescriptor implements Descriptor {
 
-    protected static final Log log = LogFactory.getLog(ConfigurationPropertyDescriptor.class);
+    private static final Logger log = LogManager.getLogger(ConfigurationPropertyDescriptor.class);
 
     @XNode("@name")
     protected String name;
@@ -103,19 +103,15 @@ public class ConfigurationPropertyDescriptor implements Descriptor {
             } else {
                 merged.value = other.value;
             }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Merging property %s with old %s resulting in %s", other, this, merged));
-            }
+            log.debug("Merging property: {} with old: {} resulting in: {}", other, this, merged);
             return merged;
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Overriding existing property %s with %s", this, other));
-            }
+            log.debug("Overriding existing property: {} with: {}", this, other);
             if (other.list) {
                 other.list = false;
-                log.warn(String.format(
-                        "Property %s cannot be marked as list because it is already defined as not list. Overriding existing property.",
-                        other.getName()));
+                log.warn(
+                        "Property: {} cannot be marked as list because it is already defined as not list. Overriding existing property.",
+                        other.getName());
             }
             return other;
         }

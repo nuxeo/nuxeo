@@ -48,8 +48,8 @@ import javax.transaction.xa.XAException;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -76,7 +76,7 @@ import org.nuxeo.runtime.datasource.ConnectionHelper;
  */
 public class DialectOracle extends Dialect {
 
-    private static final Log log = LogFactory.getLog(DialectOracle.class);
+    private static final Logger log = LogManager.getLogger(DialectOracle.class);
 
     private Constructor<?> arrayDescriptorConstructor;
 
@@ -139,11 +139,8 @@ public class DialectOracle extends Dialect {
             String xaErrorMessage = (String) m_xaErrorMessage.invoke(xaError);
             int oracleError = ((Integer) m_oracleError.invoke(e)).intValue();
             int oracleSQLError = ((Integer) m_oracleSQLError.invoke(e)).intValue();
-            StringBuilder builder = new StringBuilder();
-            builder.append("Oracle XA Error : ").append(xaError).append(" (").append(xaErrorMessage).append("),");
-            builder.append("Oracle Error : ").append(oracleError).append(",");
-            builder.append("Oracle SQL Error : ").append(oracleSQLError);
-            log.warn(builder.toString(), e);
+            log.warn("Oracle XA Error : {} ({}), Oracle Error : {}, Oracle SQL Error : {}", xaError, xaErrorMessage,
+                    oracleError, oracleSQLError, e);
         }
 
     }
@@ -188,7 +185,7 @@ public class DialectOracle extends Dialect {
         try {
             return new XAErrorLogger();
         } catch (ReflectiveOperationException e) {
-            log.warn("Cannot initialize xa error loggger", e);
+            log.warn("Cannot initialize xa error logger", e);
             return null;
         }
     }
@@ -249,13 +246,13 @@ public class DialectOracle extends Dialect {
         String user;
         try (Statement st = connection.createStatement()) {
             String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
-            log.trace("SQL: " + sql);
+            log.trace("SQL: {}", sql);
             try (ResultSet rs = st.executeQuery(sql)) {
                 rs.next();
                 user = rs.getString(1);
             }
         }
-        log.trace("SQL:   -> " + user);
+        log.trace("SQL:   -> {}", user);
         return user;
     }
 

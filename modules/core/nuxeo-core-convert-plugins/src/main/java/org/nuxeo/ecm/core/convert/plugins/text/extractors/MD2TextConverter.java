@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
  */
 public class MD2TextConverter implements Converter {
 
-    private static final Log LOGGER = LogFactory.getLog(MD2TextConverter.class);
+    private static final Logger log = LogManager.getLogger(MD2TextConverter.class);
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
@@ -51,7 +51,7 @@ public class MD2TextConverter implements Converter {
         try {
             Blob blob = blobHolder.getBlob();
             if (blob == null) {
-                LOGGER.warn(
+                log.warn(
                         "Trying to convert a blobHolder that has a null blob. Nothing to do, returning the blobHolder.");
                 return blobHolder;
             }

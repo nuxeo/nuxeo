@@ -19,14 +19,12 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * XMap Descriptor for contributing a new {@link EventBundlePipe}
@@ -35,8 +33,6 @@ import java.util.Map;
  */
 @XObject("eventPipe")
 public class EventPipeDescriptor {
-
-    private static final Log log = LogFactory.getLog(EventPipeDescriptor.class);
 
     @XNode("@name")
     protected String name;
@@ -97,7 +93,7 @@ public class EventPipeDescriptor {
     @Override
     public EventPipeDescriptor clone() {
         EventPipeDescriptor copy = new EventPipeDescriptor(name, clazz);
-        copy.priority=priority;
+        copy.priority = priority;
         copy.parameters = parameters;
         return copy;
     }

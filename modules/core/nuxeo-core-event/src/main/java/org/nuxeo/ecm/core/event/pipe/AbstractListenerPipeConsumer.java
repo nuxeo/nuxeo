@@ -18,8 +18,9 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
@@ -27,17 +28,12 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Consumes {@link EventBundle} EventBundles by running asynchronous {@link org.nuxeo.ecm.core.event.EventListener}
  *
  * @since 8.4
  */
 public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsumer<T> {
-
-    private static final Log log = LogFactory.getLog(AbstractListenerPipeConsumer.class);
 
     protected volatile AsyncEventExecutor asyncExec;
 
@@ -60,15 +56,15 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
 
     @Override
     protected boolean processEventBundles(List<EventBundle> bundles) {
-            EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);//
-            EventListenerList listeners = eventService.getListenerList();
-            List<EventListenerDescriptor> postCommitAsync = listeners.getEnabledAsyncPostCommitListenersDescriptors();
+        EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);//
+        EventListenerList listeners = eventService.getListenerList();
+        List<EventListenerDescriptor> postCommitAsync = listeners.getEnabledAsyncPostCommitListenersDescriptors();
 
-            // could introduce bulk mode for EventListeners
-            for (EventBundle eventBundle : bundles) {
-                asyncExec.run(postCommitAsync, eventBundle);
-            }
-            return true;
+        // could introduce bulk mode for EventListeners
+        for (EventBundle eventBundle : bundles) {
+            asyncExec.run(postCommitAsync, eventBundle);
+        }
+        return true;
     }
 
     @Override

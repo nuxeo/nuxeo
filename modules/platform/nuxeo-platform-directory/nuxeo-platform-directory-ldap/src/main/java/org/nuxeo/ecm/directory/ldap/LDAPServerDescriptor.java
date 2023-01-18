@@ -32,11 +32,11 @@ import javax.naming.InvalidNameException;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.directory.shared.ldap.codec.util.LdapURL;
 import org.apache.directory.shared.ldap.codec.util.LdapURLEncodingException;
 import org.apache.directory.shared.ldap.name.LdapDN;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -48,7 +48,7 @@ import org.nuxeo.ecm.directory.ldap.dns.DNSServiceResolverImpl;
 @XObject(value = "server")
 public class LDAPServerDescriptor {
 
-    public static final Log log = LogFactory.getLog(LDAPServerDescriptor.class);
+    private static final Logger log = LogManager.getLogger(LDAPServerDescriptor.class);
 
     protected static final String LDAPS_SCHEME = "ldaps";
 

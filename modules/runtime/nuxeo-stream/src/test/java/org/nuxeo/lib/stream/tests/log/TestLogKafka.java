@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -56,6 +57,8 @@ import org.nuxeo.lib.stream.tests.KeyValueMessage;
 import org.nuxeo.lib.stream.tests.TestKafkaUtils;
 
 public class TestLogKafka extends TestLog {
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(TestLogKafka.class);
 
     public static final String TOPIC_PREFIX = "nuxeo-test";
 
@@ -235,7 +238,7 @@ public class TestLogKafka extends TestLog {
                     }
                 } catch (RebalanceException e) {
                     // rebalance is expected on first read and when consumer returns
-                    // log.warn("rebalance " +  consumerTailer.assignments().size());
+                    // log.warn("rebalance " + consumerTailer.assignments().size());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
@@ -250,7 +253,7 @@ public class TestLogKafka extends TestLog {
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r, String.format("%s-%02d", "consumer", count.getAndIncrement()));
-                t.setUncaughtExceptionHandler((t1, e) -> log.error("Uncaught exception: " + e.getMessage(), e));
+                t.setUncaughtExceptionHandler((t1, e) -> log.error("Uncaught exception: {}", e.getMessage(), e));
                 return t;
             }
         });

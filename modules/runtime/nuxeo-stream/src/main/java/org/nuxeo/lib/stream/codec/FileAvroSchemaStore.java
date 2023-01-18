@@ -31,8 +31,8 @@ import java.util.stream.Stream;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaNormalization;
 import org.apache.avro.SchemaParseException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Very simple SchemaStore that uses a file storage to persists its schemas.
@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FileAvroSchemaStore implements AvroSchemaStore {
 
-    private static final Log log = LogFactory.getLog(FileAvroSchemaStore.class);
+    private static final Logger log = LogManager.getLogger(FileAvroSchemaStore.class);
 
     protected static final String AVRO_SCHEMA_EXT = ".avsc";
 
@@ -91,7 +91,7 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
             Schema schema = new Schema.Parser().parse(schemaPath.toFile());
             addSchema(schema);
         } catch (IOException | SchemaParseException e) {
-            log.error("Invalid schema file: " + schemaPath, e);
+            log.error("Invalid schema file: {}", schemaPath, e);
         }
     }
 
@@ -122,13 +122,11 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
         }
         // reload from disk, a schema store can be shared
         String suffix = getFilename("", fingerprint);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Fingerprint %d not found, reload from disk: *%s", fingerprint, suffix));
-        }
+        log.debug("Fingerprint: {} not found, reload from disk: *{}", fingerprint, suffix);
         loadSchemasEndingWith(schemaDirectoryPath, suffix);
         ret = schemas.get(fingerprint);
         if (ret == null) {
-            log.warn(String.format("Fingerprint %d not found, no schema matching *%s", fingerprint, suffix));
+            log.warn("Fingerprint: {} not found, no schema matching *{}", fingerprint, suffix);
         }
         return ret;
     }

@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,9 +54,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
-    private static final Log log = LogFactory.getLog(IOAuditAdapter.class);
-
     private static final long serialVersionUID = -3661302796286246086L;
+
+    private static final Logger log = LogManager.getLogger(IOAuditAdapter.class);
 
     /**
      * Should be overridden if IOLogEntryBase is subclassed.
@@ -190,9 +190,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             DocumentRef oldRef = entry.getKey();
             DocumentRef newRef = map.getDocRefMap().get(oldRef);
             if (newRef == null) {
-                if (log.isErrorEnabled()) {
-                    log.error("newRef does not exist in translation map for " + oldRef);
-                }
+                log.error("newRef does not exist in translation map for {}", oldRef);
                 continue;
             }
             List<LogEntry> docLogs = auditResources.getDocumentLogs(oldRef);

@@ -29,32 +29,33 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestClient;
-import org.opensearch.client.RestClientBuilder;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.common.transport.TransportAddress;
-import org.opensearch.http.HttpServerTransport;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 import org.nuxeo.runtime.api.Framework;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestClientBuilder;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.common.transport.TransportAddress;
+import org.opensearch.http.HttpServerTransport;
 
 /**
  * @since 9.3
  */
 public class ESRestClientFactory implements ESClientFactory {
-    private static final Log log = LogFactory.getLog(ESRestClientFactory.class);
+
+    private static final Logger log = LogManager.getLogger(ESRestClientFactory.class);
 
     public static final String DEFAULT_CONNECT_TIMEOUT_MS = "5000";
 
@@ -234,7 +235,7 @@ public class ESRestClientFactory implements ESClientFactory {
             return;
         }
         if (StringUtils.isNotBlank(Framework.getProperty(oldProp))) {
-            log.warn("Configuration property " + oldProp + " is deprecated, use " + newProp + " instead");
+            log.warn("Configuration property: {} is deprecated, use: {} instead", oldProp, newProp);
         }
     }
 

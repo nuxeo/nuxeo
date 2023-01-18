@@ -22,8 +22,8 @@ package org.nuxeo.functionaltests.forms;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
@@ -49,6 +49,8 @@ import com.google.common.base.Function;
  */
 public class Select2WidgetElement extends WebFragmentImpl {
 
+    private static final Logger log = LogManager.getLogger(Select2WidgetElement.class);
+
     private static class Select2Wait implements Function<WebElement, Boolean> {
 
         @Override
@@ -57,8 +59,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
             return result;
         }
     }
-
-    private static final Log log = LogFactory.getLog(Select2WidgetElement.class);
 
     private static final String S2_CSS_ACTIVE_CLASS = "select2-active";
 
@@ -245,14 +245,14 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         List<WebElement> suggestions = getSuggestedEntries();
         if (suggestions == null || suggestions.isEmpty()) {
-            log.warn("Suggestion for element " + element.getAttribute("id") + " returned no result for value '" + value
-                    + "'.");
+            log.warn("Suggestion for element {} returned no result for value '{}'.", element.getAttribute("id"), value);
             return;
         }
         WebElement suggestion = suggestions.get(0);
         if (suggestions.size() > 1) {
-            log.warn("Suggestion for element " + element.getAttribute("id") + " returned more than 1 result for value '"
-                    + value + "', the first suggestion will be selected : " + suggestion.getText());
+            log.warn(
+                    "Suggestion for element {} returned more than 1 result for value '{}', the first suggestion will be selected : {}",
+                    element.getAttribute("id"), value, suggestion.getText());
         }
 
         AjaxRequestManager arm = new AjaxRequestManager(driver);
@@ -303,7 +303,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         try {
             waitSelect2();
         } catch (TimeoutException e) {
-            log.warn("Suggestion timed out with input : " + value + ". Let's try with next letter.");
+            log.warn("Suggestion timed out with input : {}. Let's try with next letter.", value);
         }
 
         return getSuggestedEntries();
@@ -347,11 +347,12 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 6.0
      */
     private void waitSelect2() throws TimeoutException {
-        Wait<WebElement> wait = new FluentWait<>(
-                !multiple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
-                        : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(SELECT2_LOADING_TIMEOUT,
-                                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
-                                        NoSuchElementException.class);
+        Wait<WebElement> wait = new FluentWait<>(!multiple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
+                : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH)))
+                                                                         .withTimeout(SELECT2_LOADING_TIMEOUT,
+                                                                                 TimeUnit.SECONDS)
+                                                                         .pollingEvery(100, TimeUnit.MILLISECONDS)
+                                                                         .ignoring(NoSuchElementException.class);
         Function<WebElement, Boolean> s2WaitFunction = new Select2Wait();
         wait.until(s2WaitFunction);
     }

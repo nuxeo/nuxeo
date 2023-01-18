@@ -20,8 +20,8 @@ package org.nuxeo.lib.stream.tests.computation;
 
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -34,7 +34,8 @@ import org.nuxeo.lib.stream.computation.Watermark;
  * @since 9.3
  */
 public class ComputationSource extends AbstractComputation {
-    private static final Log log = LogFactory.getLog(ComputationSource.class);
+
+    private static final Logger log = LogManager.getLogger(ComputationSource.class);
 
     protected final int records;
 
@@ -80,7 +81,7 @@ public class ComputationSource extends AbstractComputation {
                 generated += 1;
                 metadata.outputStreams().forEach(o -> context.produceRecord(o, getRandomRecord()));
                 if (generated % 100 == 0) {
-                    log.debug("Generate record: " + generated + " wm " + getWatermark());
+                    log.debug("Generate record: {} wm {}", () -> generated, this::getWatermark);
                 }
             } while (generated < endOfBatch);
             // try {
@@ -93,7 +94,7 @@ public class ComputationSource extends AbstractComputation {
                 context.setTimer("generate", System.currentTimeMillis());
                 context.setSourceLowWatermark(getWatermark());
             } else {
-                log.info("Generate record terminated: " + generated + " last wm " + getWatermark());
+                log.info("Generate record terminated: {} last wm {}", () -> generated, this::getWatermark);
                 context.setSourceLowWatermark(Watermark.completedOf(Watermark.ofTimestamp(targetTimestamp)).getValue());
                 // Job is done we can ask for the termination of the computation
                 context.askForTermination();

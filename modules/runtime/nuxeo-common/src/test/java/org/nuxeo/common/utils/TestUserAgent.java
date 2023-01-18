@@ -25,13 +25,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 public class TestUserAgent {
 
-    private static final Log log = LogFactory.getLog(TestUserAgent.class);
+    private static final Logger log = LogManager.getLogger(TestUserAgent.class);
 
     public static final String MSIE6_UA = "Mozilla/4.0 (compatible; MSIE 6.1;"
             + " Windows XP; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
@@ -68,14 +68,14 @@ public class TestUserAgent {
 
         for (String UA : UAs) {
             if (!UA.startsWith("#") && !UA.isEmpty()) {
-                log.debug("Testing user agent : " + UA);
+                log.debug("Testing user agent : {}", UA);
                 assertTrue(UserAgentMatcher.html5DndIsSupported(UA));
             }
         }
 
         for (String UA : BadUAs) {
             if (!UA.startsWith("#") && !UA.isEmpty()) {
-                log.debug("Testing bad user agent : " + UA);
+                log.debug("Testing bad user agent : {}", UA);
                 assertFalse(UserAgentMatcher.html5DndIsSupported(UA));
             }
         }

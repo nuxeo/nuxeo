@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.rendition.impl;
 import java.io.File;
 import java.util.Calendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -36,9 +36,9 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
  */
 public abstract class AbstractRendition implements Rendition {
 
-    protected final RenditionDefinition definition;
+    private static final Logger log = LogManager.getLogger(AbstractRendition.class);
 
-    protected static final Log log = LogFactory.getLog(AbstractRendition.class);
+    protected final RenditionDefinition definition;
 
     public AbstractRendition(RenditionDefinition definition) {
         this.definition = definition;

@@ -18,8 +18,8 @@
  */
 package org.nuxeo.elasticsearch.test;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.client.ESRestClientFactory;
@@ -33,6 +33,9 @@ import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
  * @since 9.3
  */
 public class ESTestClientFactory implements ESClientFactory {
+
+    private static final Logger log = LogManager.getLogger(ESTestClientFactory.class);
+
     public static final String TRANSPORT_CLIENT = "TransportClient";
 
     public static final String REST_CLIENT = "RestClient";
@@ -44,8 +47,6 @@ public class ESTestClientFactory implements ESClientFactory {
     public static final String ADDRESS_LIST_PROPERTY = "nuxeo.test.elasticsearch.addressList";
 
     public static final String CLUSTER_NAME_PROPERTY = "nuxeo.test.elasticsearch.clusterName";
-
-    private static final Log log = LogFactory.getLog(ESTestClientFactory.class);
 
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {

@@ -31,8 +31,8 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xml.serialize.Method;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -50,7 +50,7 @@ import org.w3c.dom.Element;
 // use by reflection from DevFrameworkBootstrap
 public class ComponentRegistrySerializer {
 
-    private final static Log log = LogFactory.getLog(ComponentRegistrySerializer.class);
+    private static final Logger log = LogManager.getLogger(ComponentRegistrySerializer.class);
 
     public static void writeIndex(File file) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));

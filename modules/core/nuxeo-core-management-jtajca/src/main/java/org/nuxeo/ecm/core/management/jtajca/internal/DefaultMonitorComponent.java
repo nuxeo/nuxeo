@@ -30,9 +30,9 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
@@ -52,7 +52,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class DefaultMonitorComponent extends DefaultComponent {
 
-    protected final Log log = LogFactory.getLog(DefaultMonitorComponent.class);
+    private static final Logger log = LogManager.getLogger(DefaultMonitorComponent.class);
 
     protected CoreSessionMonitor coreSessionMonitor;
 
@@ -120,7 +120,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
             return;
         }
         // temporary log to help diagnostics
-        log.info("Total commits during server life: " + transactionMonitor.getTotalCommits());
+        log.info("Total commits during server life: {}", transactionMonitor::getTotalCommits);
         installed = false;
         for (ConnectionPoolMonitor storage : poolConnectionMonitors.values()) {
             storage.uninstall();
@@ -171,7 +171,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         try {
             instance.server.unregisterMBean(instance.name);
         } catch (MBeanRegistrationException | InstanceNotFoundException e) {
-            LogFactory.getLog(DefaultMonitorComponent.class).error("Cannot unbind " + instance, e);
+            LogManager.getLogger(DefaultMonitorComponent.class).error("Cannot unbind {}", instance, e);
         }
     }
 

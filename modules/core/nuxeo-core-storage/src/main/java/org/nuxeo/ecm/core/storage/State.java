@@ -29,13 +29,13 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -50,7 +50,7 @@ public class State implements StateAccessor, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Log log = LogFactory.getLog(State.class);
+    private static final Logger log = LogManager.getLogger(State.class);
 
     private static final int HASHMAP_DEFAULT_INITIAL_CAPACITY = 16;
 
@@ -578,7 +578,8 @@ public class State implements StateAccessor, Serializable {
                 // data migration not done in database, return a simple value anyway
                 return array[0];
             } else {
-                log.warn("Property " + name + ": expected a simple value but read an array: " + Arrays.toString(array));
+                log.warn("Property: {}: expected a simple value but read an array: {}", () -> name,
+                        () -> Arrays.toString(array));
                 return array[0];
             }
         } else {

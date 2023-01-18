@@ -42,8 +42,8 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -62,13 +62,13 @@ import org.nuxeo.ecm.quota.size.QuotaExceededException;
  */
 public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
 
+    private static final Logger log = LogManager.getLogger(AbstractQuotaStatsUpdater.class);
+
     protected String name;
 
     protected String label;
 
     protected String descriptionLabel;
-
-    protected static Log log = LogFactory.getLog(AbstractQuotaStatsUpdater.class);
 
     @Override
     public void setName(String name) {

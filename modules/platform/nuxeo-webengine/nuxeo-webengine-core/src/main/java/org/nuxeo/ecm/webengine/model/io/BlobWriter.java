@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.webengine.model.io;
 
-import static org.apache.commons.logging.LogFactory.getLog;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -38,7 +36,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.JSONBlob;
 import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
@@ -54,8 +51,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Provider
 @Produces({ "*/*", "text/plain" })
 public class BlobWriter implements MessageBodyWriter<Blob> {
-
-    private static final Log log = getLog(BlobWriter.class);
 
     public static final String BLOB_ID = "blobId";
 
@@ -94,10 +89,7 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
             transferBlob(blob, entityStream);
         } else {
             String reason = blob instanceof JSONBlob ? "webengine" : "download";
-            DownloadContext context = DownloadContext.builder(request, response)
-                                                     .blob(blob)
-                                                     .reason(reason)
-                                                     .build();
+            DownloadContext context = DownloadContext.builder(request, response).blob(blob).reason(reason).build();
             Framework.getService(DownloadService.class).downloadBlob(context);
         }
     }
@@ -111,7 +103,7 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
 
     protected void transferBlob(Blob blob, OutputStream entityStream) throws IOException {
         if (entityStream instanceof BufferingServletOutputStream) {
-            ((BufferingServletOutputStream)entityStream).stopBuffering();
+            ((BufferingServletOutputStream) entityStream).stopBuffering();
         }
         blob.transferTo(entityStream);
         entityStream.flush();

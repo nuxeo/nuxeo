@@ -32,18 +32,18 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ThreadDeadlocksDetector {
+
+    private static final Logger log = LogManager.getLogger(ThreadDeadlocksDetector.class);
 
     protected Timer timer;
 
     protected final ThreadMXBean mgmt = ManagementFactory.getThreadMXBean();
 
     protected final Printer printer = new JVM16Printer();
-
-    protected static final Log log = LogFactory.getLog(ThreadDeadlocksDetector.class);
 
     public interface Printer {
 
@@ -80,8 +80,7 @@ public class ThreadDeadlocksDetector {
 
                 sb.append("\tat ").append(st.toString()).append("\n");
                 if (index == 0) {
-                    if ("java.lang.Object".equals(st.getClassName()) &&
-                            "wait".equals(st.getMethodName())) {
+                    if ("java.lang.Object".equals(st.getClassName()) && "wait".equals(st.getMethodName())) {
                         if (lock != null) {
                             sb.append("\t- waiting on ");
                             printLock(sb, lock);
@@ -159,7 +158,7 @@ public class ThreadDeadlocksDetector {
 
         @Override
         public void deadlockDetected(long[] ids, File dumpFile) {
-            log.error("Exiting, detected threads dead locks, see thread dump in " + dumpFile.getPath());
+            log.error("Exiting, detected threads dead locks, see thread dump in {}", dumpFile.getPath());
             System.exit(1);
         }
 

@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -47,7 +47,7 @@ import com.google.common.base.Function;
  */
 public class RelationTabSubPage extends DocumentBasePage {
 
-    private static final Log log = LogFactory.getLog(RelationTabSubPage.class);
+    private static final Logger log = LogManager.getLogger(RelationTabSubPage.class);
 
     private static final int CREATE_FORM_LOADING_TIMEOUT = 20;
 
@@ -103,11 +103,9 @@ public class RelationTabSubPage extends DocumentBasePage {
             }
         };
 
-        Wait<WebDriver> wait = new FluentWait<>(driver)
-                                                                .withTimeout(CREATE_FORM_LOADING_TIMEOUT,
-                                                                        TimeUnit.SECONDS)
-                                                                .pollingEvery(100, TimeUnit.MILLISECONDS)
-                                                                .ignoring(NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(CREATE_FORM_LOADING_TIMEOUT, TimeUnit.SECONDS)
+                                                       .pollingEvery(100, TimeUnit.MILLISECONDS)
+                                                       .ignoring(NoSuchElementException.class);
 
         wait.until(createRelationFormVisible);
 
@@ -115,7 +113,7 @@ public class RelationTabSubPage extends DocumentBasePage {
     }
 
     private boolean isObjectChecked(int index) {
-        assert(index < 3 && index >= 0);
+        assert (index < 3 && index >= 0);
         org.junit.Assert.assertNotNull(objectCheckBoxList);
         org.junit.Assert.assertEquals(3, objectCheckBoxList.size());
 
@@ -154,15 +152,13 @@ public class RelationTabSubPage extends DocumentBasePage {
         org.junit.Assert.assertTrue(isObjectDocumentChecked());
 
         Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS)
-                                                                .pollingEvery(100, TimeUnit.MILLISECONDS)
-                                                                .ignoring(StaleElementReferenceException.class);
+                                                       .pollingEvery(100, TimeUnit.MILLISECONDS)
+                                                       .ignoring(StaleElementReferenceException.class);
 
         wait.until(isDocumentSelected);
 
-        if (log.isDebugEnabled()) {
-            WebElement selectedDocument = driver.findElement(By.id(OBJECT_DOCUMENT_UID_ID));
-            log.debug("Submitting relation on document: " + selectedDocument.getAttribute("value"));
-        }
+        log.debug("Submitting relation on document: {}",
+                () -> driver.findElement(By.id(OBJECT_DOCUMENT_UID_ID)).getAttribute("value"));
 
         addButton.click();
 

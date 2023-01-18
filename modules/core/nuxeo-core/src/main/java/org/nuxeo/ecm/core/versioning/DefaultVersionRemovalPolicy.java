@@ -22,8 +22,8 @@ package org.nuxeo.ecm.core.versioning;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
 
-    private static final Log log = LogFactory.getLog(DefaultVersionRemovalPolicy.class);
+    private static final Logger log = LogManager.getLogger(DefaultVersionRemovalPolicy.class);
 
     public static final String ORPHAN_VERSION_REMOVE = "orphan_versions_to_remove";
 
@@ -75,9 +75,7 @@ public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
         }
         if (proxies.isEmpty()) {
             List<String> versionsIds = doc.getVersionsIds();
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Removing %s versions for: %s", versionsIds.size(), doc.getUUID()));
-            }
+            log.debug("Removing {} versions for: {}", versionsIds.size(), doc.getUUID());
 
             if (versionsIds.size() > 0) {
                 DocumentModel docModel = coreSession.getDocument(new IdRef(doc.getUUID()));

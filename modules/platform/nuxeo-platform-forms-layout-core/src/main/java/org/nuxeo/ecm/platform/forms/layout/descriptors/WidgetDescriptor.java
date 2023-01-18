@@ -21,14 +21,16 @@
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import static org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition.REQUIRED_PROPERTY_NAME;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -55,7 +57,7 @@ import org.w3c.dom.Node;
 @XObject("widget")
 public class WidgetDescriptor {
 
-    private static final Log log = LogFactory.getLog(WidgetDescriptor.class);
+    private static final Logger log = LogManager.getLogger(WidgetDescriptor.class);
 
     @XNode("@name")
     String name;
@@ -162,13 +164,12 @@ public class WidgetDescriptor {
     public String getRequired(String layoutMode, String mode) {
         String res = "false";
         Map<String, Serializable> props = getProperties(layoutMode, mode);
-        if (props != null && props.containsKey(WidgetDefinition.REQUIRED_PROPERTY_NAME)) {
-            Object value = props.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
+        if (props != null && props.containsKey(REQUIRED_PROPERTY_NAME)) {
+            Object value = props.get(REQUIRED_PROPERTY_NAME);
             if (value instanceof String) {
                 res = (String) value;
             } else {
-                log.error(String.format("Invalid property \"%s\" on widget %s: %s",
-                        WidgetDefinition.REQUIRED_PROPERTY_NAME, value, name));
+                log.error("Invalid property: {} on widget {}: {}", REQUIRED_PROPERTY_NAME, value, name);
             }
         }
         return res;

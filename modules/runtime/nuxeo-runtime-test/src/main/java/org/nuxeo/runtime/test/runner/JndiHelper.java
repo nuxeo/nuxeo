@@ -22,15 +22,15 @@ import javax.naming.Name;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * helper for common jndi operations copied from jboss Util class
  */
 public class JndiHelper {
 
-    private static final Log log = LogFactory.getLog(JndiHelper.class);
+    private static final Logger log = LogManager.getLogger(JndiHelper.class);
 
     /**
      * Create a subcontext including any intermediate contexts.

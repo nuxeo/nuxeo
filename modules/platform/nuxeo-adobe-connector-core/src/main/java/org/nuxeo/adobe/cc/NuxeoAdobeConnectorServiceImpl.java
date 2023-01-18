@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class NuxeoAdobeConnectorServiceImpl extends DefaultComponent implements NuxeoAdobeConnectorService {
 
-    private static final Log log = LogFactory.getLog(NuxeoAdobeConnectorService.class);
+    private static final Logger log = LogManager.getLogger(NuxeoAdobeConnectorServiceImpl.class);
 
     /**
      * Component activated notification. Called when the component is activated. All component dependencies are resolved

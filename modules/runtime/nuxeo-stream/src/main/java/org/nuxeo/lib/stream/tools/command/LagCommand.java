@@ -24,8 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.Name;
@@ -36,7 +35,8 @@ import org.nuxeo.lib.stream.log.Name;
  * @since 9.3
  */
 public class LagCommand extends Command {
-    private static final Log log = LogFactory.getLog(LagCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(LagCommand.class);
 
     protected static final String NAME = "lag";
 
@@ -54,7 +54,8 @@ public class LagCommand extends Command {
         options.addOption(
                 Option.builder("l").longOpt("log-name").desc("Log name").hasArg().argName("LOG_NAME").build());
         options.addOption(Option.builder().longOpt("verbose").desc("Display lag for each partition").build());
-        options.addOption(Option.builder("q").longOpt("quiet").desc("No output for consumer group without lag").build());
+        options.addOption(
+                Option.builder("q").longOpt("quiet").desc("No output for consumer group without lag").build());
     }
 
     @Override
@@ -71,14 +72,14 @@ public class LagCommand extends Command {
     }
 
     protected void lag(LogManager manager) {
-        log.info("# " + manager);
+        log.info("# {}", manager);
         for (Name name : manager.listAllNames()) {
             lag(manager, name);
         }
     }
 
     protected void lag(LogManager manager, Name name) {
-        log.info("## Log: " + name + " partitions: " + manager.size(name));
+        log.info("## Log: {} partitions: {}", name, manager.size(name));
         List<Name> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions
@@ -90,18 +91,17 @@ public class LagCommand extends Command {
     protected void renderLag(Name group, List<LogLag> lags) {
         LogLag all = LogLag.of(lags);
         if (quiet && all.lag() == 0) {
-            log.info("### Group: " + group + " no lag end: " + all.upper());
+            log.info("### Group: {} no lag end: {}", group, all.upper());
             return;
         }
-        log.info("### Group: " + group);
+        log.info("### Group: {}", group);
         log.info("| partition | lag | pos | end | posOffset | endOffset |\n"
                 + "| --- | ---: | ---: | ---: | ---: | ---: |");
-        log.info(String.format("|All|%d|%d|%d|%d|%d|", all.lag(), all.lower(), all.upper(), all.lowerOffset(),
-                all.upperOffset()));
+        log.info("|All|{}|{}|{}|{}|{}|", all::lag, all::lower, all::upper, all::lowerOffset, all::upperOffset);
         if (verbose && lags.size() > 1) {
             AtomicInteger i = new AtomicInteger();
-            lags.forEach(lag -> log.info(String.format("|%s|%d|%d|%d|%d|%d|", i.getAndIncrement(), lag.lag(),
-                    lag.lower(), lag.upper(), lag.lowerOffset(), lag.upperOffset())));
+            lags.forEach(lag -> log.info("|{}|{}|{}|{}|{}|{}|", i::getAndIncrement, lag::lag, lag::lower, lag::upper,
+                    lag::lowerOffset, lag::upperOffset));
         }
     }
 

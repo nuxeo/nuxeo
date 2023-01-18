@@ -33,8 +33,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -57,8 +55,6 @@ import org.nuxeo.runtime.api.Framework;
 @Produces(MediaType.APPLICATION_JSON)
 public class WorkflowObject extends DefaultObject {
 
-    private static Log log = LogFactory.getLog(WorkflowObject.class);
-
     private DocumentRoutingService documentRoutingService;
 
     @Override
@@ -72,8 +68,8 @@ public class WorkflowObject extends DefaultObject {
         List<String> attachedDocumentIds = workflowRequest.getAttachedDocumentIds();
         String workflowModelName = workflowRequest.getWorkflowModelName();
         if (documentRoutingService.canCreateInstance(session, attachedDocumentIds, workflowModelName)) {
-            String workflowInstanceId = documentRoutingService.createNewInstance(workflowModelName,
-                    attachedDocumentIds, workflowRequest.getVariables(), session, true);
+            String workflowInstanceId = documentRoutingService.createNewInstance(workflowModelName, attachedDocumentIds,
+                    workflowRequest.getVariables(), session, true);
             DocumentModel workflowInstance = session.getDocument(new IdRef(workflowInstanceId));
             DocumentRoute route = workflowInstance.getAdapter(DocumentRoute.class);
             return Response.ok(route).status(Status.CREATED).build();

@@ -38,8 +38,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationFactory;
@@ -64,7 +64,7 @@ import com.sun.jersey.spi.inject.InjectableProvider;
  */
 public class WebEngineModule extends Application implements ApplicationFactory {
 
-    private final static Log log = LogFactory.getLog(WebEngineModule.class);
+    private static final Logger log = LogManager.getLogger(WebEngineModule.class);
 
     public final static String WEBOBJECT_ANNO = "Lorg/nuxeo/ecm/webengine/model/WebObject;";
 
@@ -198,20 +198,21 @@ public class WebEngineModule extends Application implements ApplicationFactory {
                 // compat mode - should be removed later
                 WebObject wo = cl.getAnnotation(WebObject.class);
                 if (wo != null && wo.type().equals(cfg.rootType)) {
-                    log.warn("Invalid web module " + cfg.name + " from bundle " + bundle.getSymbolicName()
-                            + ". The root-type " + cl
-                            + " in module.xml is deprecated. Consider using @Path annotation on you root web objects.");
+                    log.warn(
+                            "Invalid web module: {} from bundle: {}. The root-type {} in module.xml is deprecated. "
+                                    + "Consider using @Path annotation on you root web objects.",
+                            cfg.name, bundle.getSymbolicName(), cl);
                 }
             }
         }
         if (roots.isEmpty()) {
-            log.error(
-                    "No root web objects found in web module " + cfg.name + " from bundle " + bundle.getSymbolicName());
+            log.error("No root web objects found in web module: {} from bundle: {}", cfg.name,
+                    bundle.getSymbolicName());
             // throw new
             // IllegalStateException("No root web objects found in web module "+cfg.name+" from bundle
             // "+bundle.getSymbolicName());
         }
-        cfg.roots = roots.toArray(new Class<?>[roots.size()]);
+        cfg.roots = roots.toArray(Class<?>[]::new);
     }
 
     private ModuleConfiguration loadModuleConfigurationFile(WebEngine engine, File file) throws IOException {

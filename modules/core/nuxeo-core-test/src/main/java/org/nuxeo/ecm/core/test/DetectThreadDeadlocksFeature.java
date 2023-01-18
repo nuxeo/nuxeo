@@ -28,7 +28,8 @@ import java.time.Duration;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
@@ -37,6 +38,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 public class DetectThreadDeadlocksFeature implements RunnerFeature {
+
+    private static final Logger log = LogManager.getLogger(DetectThreadDeadlocksFeature.class);
 
     protected static final long SCHEDULE_PERIOD = Duration.ofSeconds(30).toMillis();
 
@@ -91,6 +94,6 @@ public class DetectThreadDeadlocksFeature implements RunnerFeature {
     protected void dump() throws IOException {
         long[] detectThreadLock = detector.detectThreadLock();
         File dump = detector.dump(detectThreadLock);
-        LogFactory.getLog(DetectThreadDeadlocksFeature.class).warn("Thread dump available at " + dump);
+        log.warn("Thread dump available at {}", dump);
     }
 }

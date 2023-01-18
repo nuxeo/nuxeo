@@ -24,22 +24,21 @@ import java.util.Map;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Nuxeo component allowing the JNDI registration of datasources by extension
- * point contributions.
+ * Nuxeo component allowing the JNDI registration of datasources by extension point contributions.
  * <p>
  * For now only the internal Nuxeo JNDI server is supported.
  */
 public class DataSourceComponent extends DefaultComponent {
 
-    private final Log log = LogFactory.getLog(DataSourceComponent.class);
+    private static final Logger log = LogManager.getLogger(DataSourceComponent.class);
 
     public static final String DATASOURCES_XP = "datasources";
 
@@ -64,7 +63,7 @@ public class DataSourceComponent extends DefaultComponent {
         super.deactivate(context);
         links = null;
         datasources = null;
-        //TODO should poolRegistry and sorterRegistry be removed?
+        // TODO should poolRegistry and sorterRegistry be removed?
     }
 
     @Override
@@ -74,7 +73,7 @@ public class DataSourceComponent extends DefaultComponent {
         } else if (contrib instanceof DataSourceLinkDescriptor) {
             addDataSourceLink((DataSourceLinkDescriptor) contrib);
         } else {
-            log.error("Wrong datasource extension type " + contrib.getClass().getName());
+            log.error("Wrong datasource extension type: {}", contrib.getClass().getName());
         }
     }
 
@@ -137,12 +136,12 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     protected void bindDataSource(DataSourceDescriptor descr) {
-        log.info("Registering datasource: " + descr.getName());
+        log.info("Registering datasource: {}", descr::getName);
         poolRegistry.registerPooledDataSource(descr.getName(), descr.getAllProperties());
     }
 
     protected void unbindDataSource(DataSourceDescriptor descr) {
-        log.info("Unregistering datasource: " + descr.getName());
+        log.info("Unregistering datasource: {}", descr::getName);
         poolRegistry.unregisterPooledDataSource(descr.getName());
     }
 
@@ -157,7 +156,7 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     protected void bindDataSourceLink(DataSourceLinkDescriptor descr) {
-        log.info("Registering DataSourceLink: " + descr.name);
+        log.info("Registering DataSourceLink: {}", descr.name);
         DataSource ds;
         try {
             ds = DataSourceHelper.getDataSource(descr.global, DataSource.class);
@@ -168,7 +167,7 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     protected void unbindDataSourceLink(DataSourceLinkDescriptor descr) {
-        log.info("Unregistering DataSourceLink: " + descr.name);
+        log.info("Unregistering DataSourceLink: {}", descr.name);
         poolRegistry.removeAlias(descr.name);
     }
 

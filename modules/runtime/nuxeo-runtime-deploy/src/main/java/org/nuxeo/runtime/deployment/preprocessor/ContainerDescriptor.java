@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -46,7 +46,7 @@ import org.w3c.dom.DocumentFragment;
 @XObject("container")
 public class ContainerDescriptor {
 
-    private static final Log log = LogFactory.getLog(ContainerDescriptor.class);
+    private static final Logger log = LogManager.getLogger(ContainerDescriptor.class);
 
     @XNode("@name")
     public String name;

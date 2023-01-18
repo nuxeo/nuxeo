@@ -24,8 +24,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -43,7 +43,7 @@ import org.openqa.selenium.WebDriverException;
  */
 public class ScreenshotTaker {
 
-    private static final Log log = LogFactory.getLog(ScreenshotTaker.class);
+    private static final Logger log = LogManager.getLogger(ScreenshotTaker.class);
 
     protected final String targetDirName;
 
@@ -89,7 +89,7 @@ public class ScreenshotTaker {
                 outputFolder.mkdir();
             }
             File tmpFile = File.createTempFile(filename, ".html", outputFolder);
-            log.trace(String.format("Created page source file named '%s'", tmpFile.getPath()));
+            log.trace("Created page source file named: {}", tmpFile::getPath);
             writer = new FileWriter(tmpFile);
             writer.write(driver.getPageSource());
             return tmpFile;

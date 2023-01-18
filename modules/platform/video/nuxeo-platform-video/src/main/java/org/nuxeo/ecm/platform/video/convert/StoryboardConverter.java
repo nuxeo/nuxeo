@@ -34,8 +34,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -59,7 +59,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class StoryboardConverter implements Converter {
 
-    public static final Log log = LogFactory.getLog(StoryboardConverter.class);
+    private static final Logger log = LogManager.getLogger(StoryboardConverter.class);
 
     /** @deprecated since 11.1, not used. */
     @Deprecated
@@ -110,8 +110,7 @@ public class StoryboardConverter implements Converter {
 
             Double duration = (Double) parameters.get("duration");
             if (duration == null) {
-                log.warn(String.format("Cannot extract storyboard for file '%s'" + " with missing duration info.",
-                        blob.getFilename()));
+                log.warn("Cannot extract storyboard for file: {} with missing duration info.", blob::getFilename);
                 return bh;
             }
 

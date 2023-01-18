@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.core.versioning;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.model.Session;
  */
 public class NullVersionRemovalPolicy implements VersionRemovalPolicy {
 
-    private static final Log log = LogFactory.getLog(NullVersionRemovalPolicy.class);
+    private static final Logger log = LogManager.getLogger(NullVersionRemovalPolicy.class);
 
     @Override
     public void removeVersions(Session session, Document doc, CoreSession coreSession) {

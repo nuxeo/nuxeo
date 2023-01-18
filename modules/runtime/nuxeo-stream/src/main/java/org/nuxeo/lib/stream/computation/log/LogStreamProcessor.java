@@ -33,8 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.nuxeo.lib.stream.StreamRuntimeException;
@@ -60,7 +59,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @since 9.3
  */
 public class LogStreamProcessor implements StreamProcessor {
-    private static final Log log = LogFactory.getLog(LogStreamProcessor.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(LogStreamProcessor.class);
 
     protected final LogManager manager;
 
@@ -167,9 +167,7 @@ public class LogStreamProcessor implements StreamProcessor {
             }
             ret.set("topology", topologyNode);
             String json = OBJECT_MAPPER.writer().writeValueAsString(ret);
-            if (log.isDebugEnabled()) {
-                log.debug("Starting processor: " + json);
-            }
+            log.debug("Starting processor: {}", json);
             return json;
         } catch (JsonProcessingException e) {
             throw new StreamRuntimeException("Fail to dump processor as JSON", e);
@@ -194,7 +192,7 @@ public class LogStreamProcessor implements StreamProcessor {
             log.debug("Computation pool already terminated");
             return false;
         }
-        log.warn("Stopping computation thread pool: " + computation);
+        log.warn("Stopping computation thread pool: {}", computation);
         pool.stop(Duration.ofSeconds(1));
         return true;
     }
@@ -220,7 +218,7 @@ public class LogStreamProcessor implements StreamProcessor {
             }
 
             pools.remove(pool);
-            log.warn("Starting computation thread pool: " + computation);
+            log.warn("Starting computation thread pool: {}", computation);
             ComputationMetadataMapping meta = topology.metadataList()
                                                       .stream()
                                                       .filter(m -> m.name().equals(computation.getUrn()))
@@ -245,7 +243,7 @@ public class LogStreamProcessor implements StreamProcessor {
             return true;
         }
         long failures = pools.parallelStream().filter(comp -> !comp.stop(timeout)).count();
-        log.debug(String.format("Stopped %d failure", failures));
+        log.debug("Stopped, {} failures", failures);
         return failures == 0;
     }
 
@@ -257,7 +255,7 @@ public class LogStreamProcessor implements StreamProcessor {
             return true;
         }
         long failures = pools.stream().filter(comp -> !comp.drainAndStop(timeout)).count();
-        log.debug(String.format("Drained and stopped %d failure", failures));
+        log.debug("Drained and stopped, {} failures", failures);
         return failures == 0;
     }
 
@@ -284,10 +282,11 @@ public class LogStreamProcessor implements StreamProcessor {
         }
         // return the minimum wm for all trees that are not 0
         long ret = watermarkTrees.values().stream().filter(wm -> wm > 1).mapToLong(Long::valueOf).min().orElse(0);
-        if (log.isTraceEnabled()) {
-            log.trace("lowWatermark: " + ret);
-            watermarkTrees.forEach((k, v) -> log.trace("tree " + k + ": " + v));
-        }
+        log.trace(() -> "lowWatermark: " + ret + "\n"
+                + watermarkTrees.entrySet()
+                                .stream()
+                                .map(e -> String.format("  tree %s: %s", e.getKey(), e.getValue()))
+                                .collect(Collectors.joining("\n")));
         return ret;
     }
 

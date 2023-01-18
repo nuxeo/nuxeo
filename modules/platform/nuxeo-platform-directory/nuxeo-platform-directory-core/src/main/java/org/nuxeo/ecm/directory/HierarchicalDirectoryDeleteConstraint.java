@@ -22,11 +22,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.impl.AbstractDirectoryDeleteConstraint;
 
@@ -41,7 +39,7 @@ public class HierarchicalDirectoryDeleteConstraint extends AbstractDirectoryDele
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(HierarchicalDirectoryDeleteConstraint.class);
+    private static final Logger log = LogManager.getLogger(HierarchicalDirectoryDeleteConstraint.class);
 
     protected String targetDirectory;
 
@@ -59,8 +57,8 @@ public class HierarchicalDirectoryDeleteConstraint extends AbstractDirectoryDele
             throw new DirectoryException(String.format("This delete constraint requires property '%s'", targetDirKey));
         }
         if (!properties.containsKey(targetDirFieldKey)) {
-            throw new DirectoryException(String.format("This delete constraint requires property '%s'",
-                    targetDirFieldKey));
+            throw new DirectoryException(
+                    String.format("This delete constraint requires property '%s'", targetDirFieldKey));
         }
         targetDirectory = properties.get(targetDirKey);
         targetDirectoryField = properties.get(targetDirFieldKey);
@@ -76,10 +74,8 @@ public class HierarchicalDirectoryDeleteConstraint extends AbstractDirectoryDele
             if (res.isEmpty()) {
                 return true;
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Can not delete " + targetDirectory + " " + entryId + ", constraint on "
-                        + targetDirectoryField + ":" + res.get(0).getId());
-            }
+            log.debug("Can not delete: {} / {}, constraint on {}:{}", targetDirectory, entryId, targetDirectoryField,
+                    res.get(0).getId());
             return false;
         }
     }

@@ -32,8 +32,8 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
@@ -53,7 +53,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 9.3
  */
 public class StreamAuditEventListener implements EventListener, Synchronization {
-    private static final Log log = LogFactory.getLog(StreamAuditEventListener.class);
+
+    private static final Logger log = LogManager.getLogger(StreamAuditEventListener.class);
 
     protected static final ThreadLocal<Boolean> isEnlisted = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
@@ -78,9 +79,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         if (!isEnlisted.get()) {
             isEnlisted.set(registerSynchronization(this));
             entries.get().clear();
-            if (log.isDebugEnabled()) {
-                log.debug("AuditEventListener collecting entries for the tx");
-            }
+            log.debug("AuditEventListener collecting entries for the tx");
         }
         if (logger.getAuditableEventNames().contains(event.getName())) {
             entries.get().add(logger.buildEntryFromEvent(event));
@@ -94,9 +93,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
 
     @Override
     public void beforeCompletion() {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("AuditEventListener going to write %d entries.", entries.get().size()));
-        }
+        log.debug("AuditEventListener going to write {} entries.", () -> entries.get().size());
     }
 
     @Override
@@ -108,9 +105,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
                 return;
             }
             writeEntries();
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("AuditEventListener writes %d entries.", entries.get().size()));
-            }
+            log.debug("AuditEventListener writes {} entries.", () -> entries.get().size());
         } finally {
             isEnlisted.set(false);
             entries.get().clear();
@@ -166,7 +161,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         try {
             return MarshallerHelper.objectToJson(entry, ctx);
         } catch (IOException e) {
-            log.warn("Unable to translate entry into json, eventId:" + entry.getEventId() + ": " + e.getMessage(), e);
+            log.warn("Unable to translate entry into json, eventId: {}: {}", entry.getEventId(), e.getMessage(), e);
             return null;
         }
     }

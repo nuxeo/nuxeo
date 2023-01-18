@@ -29,8 +29,6 @@ import java.util.Enumeration;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.runtime.api.Framework;
@@ -43,8 +41,6 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoInstanceIdentifierHelper {
 
     private static final String HASH_METHOD = "MD5";
-
-    protected static final Log log = LogFactory.getLog(NuxeoInstanceIdentifierHelper.class);
 
     protected static String serverInstanceName;
 

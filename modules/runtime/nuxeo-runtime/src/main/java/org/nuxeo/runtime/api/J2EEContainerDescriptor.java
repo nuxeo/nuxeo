@@ -21,8 +21,8 @@
 
 package org.nuxeo.runtime.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 
 /**
@@ -36,7 +36,7 @@ public enum J2EEContainerDescriptor {
 
     JBOSS, TOMCAT, JETTY, GF3;
 
-    public static final Log log = LogFactory.getLog(J2EEContainerDescriptor.class);
+    private static final Logger log = LogManager.getLogger(J2EEContainerDescriptor.class);
 
     static J2EEContainerDescriptor autodetect() {
         String hostName = Environment.getDefault().getHostApplicationName();

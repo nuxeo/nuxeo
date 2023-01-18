@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.web.resources.wro.servlet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroManagerFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -35,7 +35,7 @@ import ro.isdc.wro.manager.factory.WroManagerFactory;
  */
 public class NuxeoWroServletContextListener extends WroServletContextListener {
 
-    private static final Log log = LogFactory.getLog(NuxeoWroServletContextListener.class);
+    private static final Logger log = LogManager.getLogger(NuxeoWroServletContextListener.class);
 
     public NuxeoWroServletContextListener() {
         super();
@@ -56,9 +56,7 @@ public class NuxeoWroServletContextListener extends WroServletContextListener {
         WroConfiguration conf = new WroConfiguration();
         conf.setIgnoreMissingResources(false);
         if (Framework.isDevModeSet()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Set wro debug configuration");
-            }
+            log.debug("Set wro debug configuration");
             conf.setDebug(true);
             conf.setMinimizeEnabled(false);
             conf.setCacheUpdatePeriod(2);

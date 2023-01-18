@@ -30,8 +30,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DirectoryAuditStorage implements AuditStorage {
 
-    private static final Log log = LogFactory.getLog(DirectoryAuditStorage.class);
+    private static final Logger log = LogManager.getLogger(DirectoryAuditStorage.class);
 
     public static final String NAME = "DirectoryAuditStorage";
 
@@ -132,8 +132,10 @@ public class DirectoryAuditStorage implements AuditStorage {
         }
 
         // Get the orderBy map from the query builder.
-        Map<String, String> orderBy = queryBuilder.orders().stream().collect(
-                Collectors.toMap(o -> o.reference.name, o -> o.isDescending ? "desc" : "asc"));
+        Map<String, String> orderBy = queryBuilder.orders()
+                                                  .stream()
+                                                  .collect(Collectors.toMap(o -> o.reference.name,
+                                                          o -> o.isDescending ? "desc" : "asc"));
 
         // Get the limit and offset from the query builder.
         int limit = (int) queryBuilder.limit();

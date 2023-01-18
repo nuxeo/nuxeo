@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.audio.extension;
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,9 +43,6 @@ import org.nuxeo.runtime.api.Framework;
 public class AudioImporter extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1L;
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(AudioImporter.class);
 
     public static final String AUDIO_TYPE = "Audio";
 

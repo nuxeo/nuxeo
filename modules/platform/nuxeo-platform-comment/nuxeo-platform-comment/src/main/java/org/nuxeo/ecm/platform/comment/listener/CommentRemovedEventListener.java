@@ -26,8 +26,8 @@ import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class CommentRemovedEventListener extends AbstractCommentListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(CommentRemovedEventListener.class);
+    private static final Logger log = LogManager.getLogger(CommentRemovedEventListener.class);
 
     @Override
     protected void doProcess(CoreSession coreSession, RelationManager relationManager, CommentServiceConfig config,

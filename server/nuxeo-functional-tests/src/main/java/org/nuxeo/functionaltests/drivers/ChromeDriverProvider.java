@@ -27,8 +27,8 @@ import java.io.File;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -41,7 +41,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public class ChromeDriverProvider implements DriverProvider {
 
-    private static final Log log = LogFactory.getLog(DriverProvider.class);
+    private static final Logger log = LogManager.getLogger(ChromeDriverProvider.class);
 
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
@@ -83,23 +83,23 @@ public class ChromeDriverProvider implements DriverProvider {
             }
 
             if (chromeDriverDefaultPath != null && new File(chromeDriverDefaultPath).exists()) {
-                log.warn(String.format("Missing property %s but found %s. Using it...", SYSPROP_CHROME_DRIVER_PATH,
-                        chromeDriverDefaultPath));
+                log.warn("Missing property: {} but found: {}. Using it...", SYSPROP_CHROME_DRIVER_PATH,
+                        chromeDriverDefaultPath);
                 System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverDefaultPath);
             } else {
                 // Can't find chromedriver in default location, check system
                 // path
                 File chromeDriverExecutable = findExecutableOnPath(chromeDriverExecutableName);
                 if ((chromeDriverExecutable != null) && (chromeDriverExecutable.exists())) {
-                    log.warn(String.format("Missing property %s but found %s. Using it...", SYSPROP_CHROME_DRIVER_PATH,
-                            chromeDriverExecutable.getCanonicalPath()));
+                    log.warn("Missing property: {} but found: {}. Using it...", SYSPROP_CHROME_DRIVER_PATH,
+                            chromeDriverExecutable.getCanonicalPath());
                     System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath());
                 } else {
-                    log.error(String.format(
-                            "Could not find the Chrome driver looking at %s or system path."
-                                    + " Download it from %s and set its path with " + "the System property %s.",
+                    log.error(
+                            "Could not find the Chrome driver looking at {} or system path."
+                                    + " Download it from {} and set its path with the System property {}.",
                             chromeDriverDefaultPath, "http://code.google.com/p/chromedriver/downloads/list",
-                            SYSPROP_CHROME_DRIVER_PATH));
+                            SYSPROP_CHROME_DRIVER_PATH);
                 }
             }
         }

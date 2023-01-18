@@ -33,8 +33,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -113,8 +111,6 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     protected PageProviderService pageProviderService;
 
     protected boolean skipAggregates;
-
-    private static final Log log = LogFactory.getLog(SearchObject.class);
 
     public void initExecutor() {
         pageProviderService = Framework.getService(PageProviderService.class);
@@ -304,8 +300,8 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), null,
                 namedParameters);
 
-        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo,
-                props, searchDocumentModel, parameters);
+        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo, props,
+                searchDocumentModel, parameters);
     }
 
     protected DocumentModelList queryByPageProvider(String pageProviderName,

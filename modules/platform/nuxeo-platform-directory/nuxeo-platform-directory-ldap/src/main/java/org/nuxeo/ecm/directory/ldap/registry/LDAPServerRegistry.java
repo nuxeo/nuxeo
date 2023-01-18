@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.directory.ldap.registry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class LDAPServerRegistry extends SimpleContributionRegistry<LDAPServerDescriptor> {
 
-    public static final Log log = LogFactory.getLog(LDAPServerRegistry.class);
+    private static final Logger log = LogManager.getLogger(LDAPServerRegistry.class);
 
     @Override
     public String getContributionId(LDAPServerDescriptor contrib) {
@@ -41,13 +41,13 @@ public class LDAPServerRegistry extends SimpleContributionRegistry<LDAPServerDes
     @Override
     public void contributionUpdated(String id, LDAPServerDescriptor contrib, LDAPServerDescriptor newOrigContrib) {
         super.contributionUpdated(id, contrib, newOrigContrib);
-        log.info("server registered: " + contrib.getName());
+        log.info("server registered: {}", contrib::getName);
     }
 
     @Override
     public void contributionRemoved(String id, LDAPServerDescriptor origContrib) {
         super.contributionRemoved(id, origContrib);
-        log.info("server unregistered: " + origContrib.getName());
+        log.info("server unregistered: {}", origContrib::getName);
     }
 
     // API

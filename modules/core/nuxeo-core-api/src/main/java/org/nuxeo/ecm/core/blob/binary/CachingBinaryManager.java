@@ -27,8 +27,8 @@ import java.io.OutputStream;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.file.FileCache;
 import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.SizeUtils;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
  */
 public abstract class CachingBinaryManager extends AbstractBinaryManager {
 
-    private static final Log log = LogFactory.getLog(CachingBinaryManager.class);
+    private static final Logger log = LogManager.getLogger(CachingBinaryManager.class);
 
     protected File cachedir;
 
@@ -59,7 +59,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         BinaryManagerRootDescriptor descriptor = new BinaryManagerRootDescriptor();
         descriptor.digest = getDefaultDigestAlgorithm();
         setDescriptor(descriptor);
-        log.info("Registering binary manager '" + blobProviderId + "' using " + getClass().getSimpleName());
+        log.info("Registering binary manager: {} using: {}", () -> blobProviderId, () -> getClass().getSimpleName());
     }
 
     /**
@@ -110,8 +110,8 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         long maxCount = Long.parseLong(maxCountStr);
         long minAge = Long.parseLong(minAgeStr);
         initializeCache(cachedir, maxSize, maxCount, minAge, fileStorage);
-        log.info("Using binary cache directory: " + cachedir.getPath() + " size: " + maxSizeStr + " maxCount: "
-                + maxCount + " minAge: " + minAge);
+        log.info("Using binary cache directory: {} size: {} maxCount: {} minAge: {}", cachedir.getPath(), maxSizeStr,
+                maxCount, minAge);
 
         // be sure FileTracker won't steal our files !
         FileEventTracker.registerProtectedPath(cachedir.getAbsolutePath());

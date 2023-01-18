@@ -30,8 +30,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
@@ -64,7 +63,8 @@ import net.jodah.failsafe.RetryPolicy;
  */
 @SuppressWarnings("squid:S2925")
 public abstract class TestStreamProcessor {
-    private static final Log log = LogFactory.getLog(TestStreamProcessor.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(TestStreamProcessor.class);
 
     protected static final String OUTPUT_STREAM = "output";
 
@@ -106,7 +106,7 @@ public abstract class TestStreamProcessor {
             while (!processor.isDone(targetTimestamp)) {
                 Thread.sleep(30);
                 long lowWatermark = processor.getLowWatermark();
-                log.info("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+                log.info("low: {} dist: {}", lowWatermark, targetWatermark - lowWatermark);
             }
             double elapsed = (System.currentTimeMillis() - start) / 1000.0;
             // shutdown brutally so there is no more processing in background
@@ -126,7 +126,7 @@ public abstract class TestStreamProcessor {
                     waiter -= 10;
                     Thread.sleep(10);
                     long lowWatermark = processor.getLowWatermark();
-                    log.warn("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+                    log.warn("low: {} dist: {}", lowWatermark, targetWatermark - lowWatermark);
                 } while (waiter > 0);
                 processor.shutdown();
             }
@@ -350,7 +350,8 @@ public abstract class TestStreamProcessor {
         for (int i = 0; i < 10; i++) {
             try (LogManager manager = getSameLogManager()) {
                 StreamManager streamManager = new LogStreamManager(manager);
-                StreamProcessor processor = streamManager.registerAndCreateProcessor("processor2", topology2, settings2);
+                StreamProcessor processor = streamManager.registerAndCreateProcessor("processor2", topology2,
+                        settings2);
                 log.info("RESUME computations");
                 processor.start();
                 assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
@@ -360,7 +361,7 @@ public abstract class TestStreamProcessor {
                 processor.shutdown();
                 long processed = readOutputCounter(manager);
                 result += processed;
-                log.info("processed: " + processed + " total: " + result);
+                log.info("processed: {} total: {}", processed, result);
             }
         }
         // 3. run the rest
@@ -420,13 +421,12 @@ public abstract class TestStreamProcessor {
         final int nbRecords = 3;
         final int concurrent = 1;
         Topology topology1 = Topology.builder()
-                .addComputation(
-                        () -> new ComputationSource("GENERATOR", 1, nbRecords, 1, targetTimestamp),
-                        Collections.singletonList("o1:input"))
-                .addComputation(
-                        () -> new ComputationForwardSlow("SLOW", 1, 1, 1500),
-                        Arrays.asList("i1:input", "o1:output"))
-                .build();
+                                     .addComputation(
+                                             () -> new ComputationSource("GENERATOR", 1, nbRecords, 1, targetTimestamp),
+                                             Collections.singletonList("o1:input"))
+                                     .addComputation(() -> new ComputationForwardSlow("SLOW", 1, 1, 1500),
+                                             Arrays.asList("i1:input", "o1:output"))
+                                     .build();
         Settings settings1 = new Settings(concurrent, concurrent, codec);
 
         try (LogManager manager = getLogManager()) {
@@ -601,7 +601,6 @@ public abstract class TestStreamProcessor {
 
     }
 
-
     @Test
     public void testPolicyBatchComputation() throws Exception {
         // Define a topology
@@ -749,7 +748,7 @@ public abstract class TestStreamProcessor {
                 while (!processor.isDone(targetTimestamp)) {
                     Thread.sleep(30);
                     long lowWatermark = processor.getLowWatermark();
-                    log.info("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+                    log.info("low: {} dist: {}", lowWatermark, targetWatermark - lowWatermark);
                 }
             }
             processor.shutdown();
@@ -768,7 +767,7 @@ public abstract class TestStreamProcessor {
                     waiter -= 10;
                     Thread.sleep(10);
                     long lowWatermark = processor.getLowWatermark();
-                    log.warn("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
+                    log.warn("low: {} dist: {}", lowWatermark, targetWatermark - lowWatermark);
                 } while (waiter > 0);
                 processor.shutdown();
             }

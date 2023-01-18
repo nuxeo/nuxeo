@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentModelFactory {
 
-    private static final Log log = LogFactory.getLog(DocumentModelFactory.class);
+    private static final Logger log = LogManager.getLogger(DocumentModelFactory.class);
 
     // Utility class.
     private DocumentModelFactory() {
@@ -132,7 +132,7 @@ public class DocumentModelFactory {
             String lifeCyclePolicy = doc.getLifeCyclePolicy();
             docModel.prefetchLifeCyclePolicy(lifeCyclePolicy);
         } catch (LifeCycleException e) {
-            log.debug("Cannot prefetch lifecycle for doc: " + doc.getName() + ". Error: " + e.getMessage());
+            log.debug("Cannot prefetch lifecycle for doc: {}. Error: {}", doc::getName, e::getMessage);
         }
 
         return docModel;

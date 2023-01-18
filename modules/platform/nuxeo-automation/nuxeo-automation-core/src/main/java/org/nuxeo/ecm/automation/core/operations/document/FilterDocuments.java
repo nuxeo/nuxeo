@@ -21,8 +21,8 @@ package org.nuxeo.ecm.automation.core.operations.document;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -45,7 +45,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 @Operation(id = FilterDocuments.ID, category = Constants.CAT_DOCUMENT, label = "Filter List", description = "Filter the input list of documents given a condition. The condition can be expressed using 4 parameters: types, facets, lifecycle and condition. If more than one parameter is specified an AND will be used to group conditions. <br>The 'types' parameter can take a comma separated list of document type: File,Note.<br>The 'facet' parameter can take a single facet name.<br> The 'life cycle' parameter takes a name of a life cycle state the document should have.<br>The 'condition' parameter can take any EL expression.<p>Returns the list of documents that match the filter condition.")
 public class FilterDocuments {
 
-    private static final Log log = LogFactory.getLog(FilterDocuments.class);
+    private static final Logger log = LogManager.getLogger(FilterDocuments.class);
 
     public static final String ID = "Document.Filter";
 

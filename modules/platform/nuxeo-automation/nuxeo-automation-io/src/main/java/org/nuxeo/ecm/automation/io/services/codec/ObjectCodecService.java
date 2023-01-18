@@ -35,8 +35,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -61,7 +61,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ObjectCodecService {
 
-    protected static final Log log = LogFactory.getLog(ObjectCodecService.class);
+    private static final Logger log = LogManager.getLogger(ObjectCodecService.class);
 
     protected Map<Class<?>, ObjectCodec<?>> codecs;
 
@@ -563,8 +563,8 @@ public class ObjectCodecService {
                 }
                 DocumentAdapterCodec codec = new DocumentAdapterCodec(desc);
                 if (service.codecsByName.containsKey(codec.getType())) {
-                    log.warn("Be careful, you have already contributed an adapter with the same simple name:"
-                            + codec.getType());
+                    log.warn("Be careful, you have already contributed an adapter with the same simple name: {}",
+                            codec.getType());
                     continue;
                 }
                 service.codecs.put(desc.getInterface(), codec);

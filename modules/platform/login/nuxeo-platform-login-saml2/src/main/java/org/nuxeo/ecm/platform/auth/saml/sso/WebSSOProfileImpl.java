@@ -26,6 +26,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.auth.saml.AbstractSAMLProfile;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
@@ -63,6 +65,8 @@ import org.opensaml.xml.signature.Signature;
  */
 public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProfile {
 
+    private static final Logger log = LogManager.getLogger(WebSSOProfileImpl.class);
+
     public WebSSOProfileImpl(SingleSignOnService sso) {
         super(sso);
     }
@@ -86,7 +90,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         // Validate status
         String statusCode = response.getStatus().getStatusCode().getValue();
         if (!StringUtils.equals(statusCode, StatusCode.SUCCESS_URI)) {
-            log.debug("StatusCode was not a success: " + statusCode);
+            log.debug("StatusCode was not a success: {}", statusCode);
             throw new SAMLException("StatusCode was not a success: " + statusCode);
         }
 

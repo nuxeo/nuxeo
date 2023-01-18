@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -77,7 +77,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
+    private static final Logger log = LogManager.getLogger(CoreQueryAndFetchPageProvider.class);
 
     protected String query;
 
@@ -119,10 +119,8 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                 long minMaxPageSize = getMinMaxPageSize();
 
                 long offset = getCurrentPageOffset();
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
-                            getName(), query, Long.valueOf(minMaxPageSize), Long.valueOf(offset)));
-                }
+                log.debug("Perform query for provider: {}: {} with pageSize: {}, offset: {}", getName(), query,
+                        minMaxPageSize, offset);
 
                 final String language = getQueryLanguage();
                 final boolean useUnrestricted = useUnrestrictedSession();
@@ -148,10 +146,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                     currentItems.add(item);
                 }
 
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Performed query for provider '%s': got %s hits", getName(),
-                            Long.valueOf(resultsCount)));
-                }
+                log.debug("Performed query for provider: {}: got {} hits", getName(), resultsCount);
 
             } catch (NuxeoException e) {
                 errorMessage = e.getMessage();
@@ -245,22 +240,13 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
             if (offset != 0 && currentItems != null && currentItems.size() == 0) {
                 if (resultsCount == 0) {
                     // fetch first page directly
-                    if (log.isDebugEnabled()) {
-                        log.debug(
-                                String.format(
-                                        "Current page %s is not the first one but " + "shows no result and there are "
-                                                + "no results => rewind to first page",
-                                        Long.valueOf(getCurrentPageIndex())));
-                    }
+                    log.debug("Current page: {} is not the first one but shows no result and there are "
+                            + "no results => rewind to first page", this::getCurrentPageIndex);
                     firstPage();
                 } else {
                     // fetch last page
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Current page %s is not the first one but " + "shows no result and there are "
-                                        + "%s results => fetch last page",
-                                Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
-                    }
+                    log.debug("Current page: {} is not the first one but shows no result and there are "
+                            + "{} results => fetch last page", this::getCurrentPageIndex, () -> resultsCount);
                     lastPage();
                 }
                 // fetch current page again

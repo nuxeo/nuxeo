@@ -35,8 +35,8 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -60,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
 // FIXME: design issue - this is a utility class (only static methods) with no subclasses (misleading name).
 public class IOLogEntryBase {
 
-    private static final Log log = LogFactory.getLog(IOLogEntryBase.class);
+    private static final Logger log = LogManager.getLogger(IOLogEntryBase.class);
 
     public static final String DOCUMENT_TAG = "documentLogs";
 

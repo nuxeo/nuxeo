@@ -24,8 +24,8 @@ import java.util.Date;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -41,9 +41,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Operation(id = DummyDocToTxt.ID, category = Constants.CAT_CONVERSION, label = "Convert Doc To Txt", description = "very dummy just for tests !")
 public class DummyDocToTxt {
 
-    public static final String ID = "DummyDoc.ToTxt";
+    private static final Logger log = LogManager.getLogger(DummyDocToTxt.class);
 
-    private static final Log log = LogFactory.getLog(DummyDocToTxt.class);
+    public static final String ID = "DummyDoc.ToTxt";
 
     @Context
     protected CoreSession session;

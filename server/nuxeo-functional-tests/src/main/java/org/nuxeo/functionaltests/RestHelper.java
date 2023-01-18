@@ -36,9 +36,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.NuxeoVersion;
 import org.nuxeo.client.objects.Document;
@@ -61,6 +61,8 @@ import okhttp3.Response;
  * @since 8.3
  */
 public class RestHelper {
+
+    private static final Logger log = LogManager.getLogger(RestHelper.class);
 
     // by default timeout is 10s, hot reload needs a bit more
     private static final NuxeoClient CLIENT = new NuxeoClientForNuxeo.BuilderForNuxeo().url(NUXEO_URL)
@@ -88,8 +90,6 @@ public class RestHelper {
     private static final List<String> groupsToDelete = new ArrayList<>();
 
     protected static final Map<String, Set<String>> directoryEntryIdsToDelete = new HashMap<>();
-
-    protected static final Log log = LogFactory.getLog(RestHelper.class);
 
     private RestHelper() {
         // helper class
@@ -242,7 +242,7 @@ public class RestHelper {
             CLIENT.userManager().deleteUser(username);
         } catch (NuxeoClientRemoteException e) {
             if (e.getStatus() == HttpStatus.SC_NOT_FOUND) {
-                log.warn(String.format("User %s not deleted because not found", username));
+                log.warn("User: {} not deleted because not found", username);
             } else {
                 throw e;
             }
@@ -301,7 +301,7 @@ public class RestHelper {
             CLIENT.userManager().deleteGroup(name);
         } catch (NuxeoClientRemoteException e) {
             if (e.getStatus() == HttpStatus.SC_NOT_FOUND) {
-                log.warn(String.format("Group %s not deleted because not found", name));
+                log.warn("Group {} not deleted because not found", name);
             } else {
                 throw e;
             }

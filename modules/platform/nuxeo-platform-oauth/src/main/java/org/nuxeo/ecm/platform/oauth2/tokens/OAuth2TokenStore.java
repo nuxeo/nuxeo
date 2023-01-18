@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -50,7 +50,7 @@ import com.google.api.client.util.store.DataStoreFactory;
  */
 public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
-    protected static final Log log = LogFactory.getLog(OAuth2TokenStore.class);
+    private static final Logger log = LogManager.getLogger(OAuth2TokenStore.class);
 
     public static final String DIRECTORY_NAME = "oauth2Tokens";
 

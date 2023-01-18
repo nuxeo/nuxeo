@@ -29,8 +29,7 @@ import java.time.Duration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -43,7 +42,8 @@ import org.nuxeo.lib.stream.log.Name;
  * @since 11.5
  */
 public class WorkCatCommand extends Command {
-    private static final Log log = LogFactory.getLog(WorkCatCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(WorkCatCommand.class);
 
     protected static final String NAME = "workCat";
 

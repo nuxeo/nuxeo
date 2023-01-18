@@ -30,8 +30,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -40,6 +38,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.codec.SerializableCodec;
@@ -55,7 +55,8 @@ import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
  * @since 9.3
  */
 public class KafkaLogAppender<M extends Externalizable> implements CloseableLogAppender<M> {
-    private static final Log log = LogFactory.getLog(KafkaLogAppender.class);
+
+    private static final Logger log = LogManager.getLogger(KafkaLogAppender.class);
 
     protected final String topic;
 
@@ -100,9 +101,7 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
                 resolver.getId(this.name) + "-" + PRODUCER_CLIENT_ID_SEQUENCE.getAndIncrement());
         this.producer = new KafkaProducer<>(this.producerProps);
         this.size = producer.partitionsFor(topic).size();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Created appender: %s on topic: %s with %d partitions", this.name, topic, size));
-        }
+        log.debug("Created appender: {} on topic: {} with {} partitions", this.name, topic, size);
     }
 
     public static <M extends Externalizable> KafkaLogAppender<M> open(Codec<M> codec, NameResolver resolver, Name name,
@@ -153,11 +152,8 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
                     String.format("Unable to send record with key: %s on %s-%02d", key, name, partition), e);
         }
         LogOffset ret = new LogOffsetImpl(name, partition, result.offset());
-        if (log.isDebugEnabled()) {
-            int len = record.value().get().length;
-            log.debug(String.format("Append to %s-%02d:+%d, len: %d, key: %s, value: %s", name, partition, ret.offset(),
-                    len, key, message));
-        }
+        log.debug(() -> String.format("Append to %s-%02d:+%d, len: %d, key: %s, value: %s", name, partition,
+                ret.offset(), record.value().get().length, key, message));
         return ret;
     }
 
@@ -182,9 +178,7 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
             }
             return ret;
         } finally {
-            if (log.isDebugEnabled()) {
-                log.debug("waitFor " + offset + "/" + group + " returns: " + ret);
-            }
+            log.debug("waitFor {}/{} returns: {}", offset, group, ret);
         }
     }
 
@@ -195,8 +189,8 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
 
     @Override
     public String toString() {
-        return "KafkaLogAppender{" + "name='" + name + '\'' + ", size=" + size + ", closed=" + closed
-                + ", codec=" + codec + '}';
+        return "KafkaLogAppender{" + "name='" + name + '\'' + ", size=" + size + ", closed=" + closed + ", codec="
+                + codec + '}';
     }
 
     @Override
@@ -213,22 +207,20 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
             consumer.assign(Collections.singletonList(topicPartition));
             long last = consumer.position(topicPartition);
             boolean ret = last > 0 && last > offset;
-            if (log.isDebugEnabled()) {
-                log.debug("isProcessed " + topicPartition.topic() + ":" + topicPartition.partition() + "/" + group
-                        + ":+" + offset + "? " + ret + ", current position: " + last);
-            }
+            log.debug("isProcessed {}:{}/{}:+{}? {}, current position: {}", topicPartition.topic(),
+                    topicPartition.partition(), group, offset, ret, last);
             return ret;
         }
     }
 
     @Override
     public void close() {
-        log.debug("Closing appender: " + name);
+        log.debug("Closing appender: {}", name);
         tailers.stream().filter(Objects::nonNull).forEach(tailer -> {
             try {
                 tailer.close();
             } catch (Exception e) {
-                log.error("Failed to close tailer: " + tailer);
+                log.error("Failed to close tailer: {}", tailer);
             }
         });
         tailers.clear();

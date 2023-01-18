@@ -18,14 +18,12 @@
  */
 package org.nuxeo.ecm.core.event.pipe.dispatch;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * XMap Descriptor for contributing a new {@link EventBundleDispatcher}
@@ -34,8 +32,6 @@ import java.util.Map;
  */
 @XObject("eventDispatcher")
 public class EventDispatcherDescriptor {
-
-    public static final Log log = LogFactory.getLog(EventDispatcherDescriptor.class);
 
     public EventDispatcherDescriptor() {
     }

@@ -34,16 +34,16 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class ServerLocatorService extends DefaultComponent implements ServerLocator {
 
-    public static final String LOCATORS_EXT_KEY = "locators";
+    private static final Logger log = LogManager.getLogger(ServerLocatorService.class);
 
-    private static final Log log = LogFactory.getLog(ServerLocatorService.class);
+    public static final String LOCATORS_EXT_KEY = "locators";
 
     protected final Map<String, MBeanServer> servers = new HashMap<>();
 
@@ -126,7 +126,7 @@ public class ServerLocatorService extends DefaultComponent implements ServerLoca
             }
         }
         assert connector.isActive();
-        log.info("Started a mbean server : " + url);
+        log.info("Started a mbean server: {}", url);
         return server;
     }
 

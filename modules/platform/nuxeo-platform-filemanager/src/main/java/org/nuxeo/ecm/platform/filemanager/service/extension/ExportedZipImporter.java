@@ -26,8 +26,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -54,7 +54,7 @@ public class ExportedZipImporter extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1876876876L;
 
-    private static final Log log = LogFactory.getLog(ExportedZipImporter.class);
+    private static final Logger log = LogManager.getLogger(ExportedZipImporter.class);
 
     public static boolean isArchiveFileValid(File file) throws IOException {
         try (ZipFile zipFile = getArchiveFileIfValid(file)) {

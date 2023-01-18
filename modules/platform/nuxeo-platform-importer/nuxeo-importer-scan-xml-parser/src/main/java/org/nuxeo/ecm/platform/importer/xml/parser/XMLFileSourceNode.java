@@ -22,8 +22,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public class XMLFileSourceNode extends FileSourceNode {
 
-    public static final Log log = LogFactory.getLog(XMLFileSourceNode.class);
+    private static final Logger log = LogManager.getLogger(XMLFileSourceNode.class);
 
     public XMLFileSourceNode(File file) {
         super(file);
@@ -49,7 +49,7 @@ public class XMLFileSourceNode extends FileSourceNode {
             if (child.getName().endsWith(".xml") || child.getName().endsWith(".zip") || child.isDirectory()) {
                 children.add(new XMLFileSourceNode(child));
             } else {
-                log.info("File ignored as not xml or zip or directory file " + child.getAbsolutePath());
+                log.info("File ignored as not xml or zip or directory file: {}", child::getAbsolutePath);
             }
         }
         return children;

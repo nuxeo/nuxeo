@@ -29,8 +29,8 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Loader;
 import org.apache.catalina.util.ServerInfo;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 import org.nuxeo.osgi.application.MutableClassLoader;
 import org.nuxeo.runtime.tomcat.dev.DevFrameworkBootstrap;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
  */
 public class NuxeoLauncher implements LifecycleListener {
 
-    static final Log log = LogFactory.getLog(NuxeoLauncher.class);
+    private static final Logger log = LogManager.getLogger(NuxeoLauncher.class);
 
     protected boolean shared; // TODO
 
@@ -108,7 +108,7 @@ public class NuxeoLauncher implements LifecycleListener {
                 bootstrap.stop(cl);
             }
         } catch (IOException | JMException | ReflectiveOperationException e) {
-            log.error("Failed to handle event: " + type, e);
+            log.error("Failed to handle event: {}", type, e);
         }
     }
 

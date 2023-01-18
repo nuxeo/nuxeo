@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.versioning;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class OrphanVersionRemoverListener implements PostCommitEventListener {
 
-    protected static final Log log = LogFactory.getLog(OrphanVersionRemoverListener.class);
+    private static final Logger log = LogManager.getLogger(OrphanVersionRemoverListener.class);
 
     @Override
     public void handleEvent(EventBundle events) {
@@ -76,8 +76,8 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
         return Framework.getService(CoreService.class).getOrphanVersionRemovalFilters();
     }
 
-    protected void removeIfPossible(CoreSession session, ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs)
-            {
+    protected void removeIfPossible(CoreSession session, ShallowDocumentModel deletedLiveDoc,
+            List<String> versionUUIDs) {
         session.save(); // receive invalidations if no tx
 
         for (OrphanVersionRemovalFilter filter : getFilters()) {
@@ -90,7 +90,7 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
         for (String id : versionUUIDs) {
             IdRef idRef = new IdRef(id);
             if (session.exists(idRef)) {
-                log.debug("Removing version: " + id);
+                log.debug("Removing version: {}", id);
                 session.removeDocument(idRef);
             }
         }

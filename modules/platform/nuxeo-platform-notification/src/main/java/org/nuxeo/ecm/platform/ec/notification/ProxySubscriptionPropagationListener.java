@@ -23,8 +23,8 @@ package org.nuxeo.ecm.platform.ec.notification;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
  */
 public class ProxySubscriptionPropagationListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(ProxySubscriptionPropagationListener.class);
+    private static final Logger log = LogManager.getLogger(ProxySubscriptionPropagationListener.class);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -81,6 +81,5 @@ public class ProxySubscriptionPropagationListener implements EventListener {
         }
         ctx.getCoreSession().saveDocument(publishedDoc);
     }
-
 
 }

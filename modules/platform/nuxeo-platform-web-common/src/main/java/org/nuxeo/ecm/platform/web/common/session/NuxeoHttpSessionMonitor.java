@@ -31,8 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.management.counters.CounterHelper;
 
 /**
@@ -49,8 +47,6 @@ public class NuxeoHttpSessionMonitor {
     public static final String SESSION_COUNTER = "org.nuxeo.web.sessions";
 
     public static final long REQUEST_COUNTER_STEP = 5;
-
-    protected static final Log log = LogFactory.getLog(NuxeoHttpSessionMonitor.class);
 
     protected static NuxeoHttpSessionMonitor instance = new NuxeoHttpSessionMonitor();
 

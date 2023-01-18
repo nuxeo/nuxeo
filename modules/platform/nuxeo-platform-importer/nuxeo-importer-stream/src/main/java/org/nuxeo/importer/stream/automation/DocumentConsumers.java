@@ -18,15 +18,13 @@
  */
 package org.nuxeo.importer.stream.automation;
 
-import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
 import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_DOC_NAME;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -53,7 +51,8 @@ import net.jodah.failsafe.RetryPolicy;
  */
 @Operation(id = DocumentConsumers.ID, category = Constants.CAT_SERVICES, label = "Imports document", since = "9.1", description = "Import documents into repository.")
 public class DocumentConsumers {
-    private static final Log log = LogFactory.getLog(DocumentConsumers.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(DocumentConsumers.class);
 
     public static final String ID = "StreamImporter.runDocumentConsumers";
 
@@ -126,8 +125,8 @@ public class DocumentConsumers {
                                                                       Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                               .salted()
                                                               .build();
-        log.warn(String.format("Import documents from log: %s into: %s/%s, with policy: %s", logName, repositoryName,
-                rootFolder, consumerPolicy));
+        log.warn("Import documents from log: {} into: {}/{}, with policy: {}", logName, repositoryName, rootFolder,
+                consumerPolicy);
         LogManager manager = Framework.getService(StreamService.class).getLogManager();
         Codec<DocumentMessage> codec = StreamImporters.getDocCodec();
         try (DocumentConsumerPool<DocumentMessage> consumers = new DocumentConsumerPool<>(logName, manager, codec,

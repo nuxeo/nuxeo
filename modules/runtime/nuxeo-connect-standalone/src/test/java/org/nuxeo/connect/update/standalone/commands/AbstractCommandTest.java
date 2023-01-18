@@ -27,6 +27,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,6 +49,8 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractCommandTest extends PackageTestCase {
+
+    private static final Logger log = LogManager.getLogger(AbstractCommandTest.class);
 
     @Override
     @Before

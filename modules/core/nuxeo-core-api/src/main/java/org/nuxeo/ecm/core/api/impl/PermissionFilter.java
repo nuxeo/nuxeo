@@ -24,8 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
@@ -38,8 +36,6 @@ import org.nuxeo.ecm.core.api.Filter;
  * @since 5.7.2
  */
 public class PermissionFilter implements Filter {
-
-    private static final Log log = LogFactory.getLog(PermissionFilter.class);
 
     protected final Set<String> required;
 

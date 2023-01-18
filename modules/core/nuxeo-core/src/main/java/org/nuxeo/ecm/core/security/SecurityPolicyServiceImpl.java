@@ -29,8 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -48,7 +48,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
 
     private static final long serialVersionUID = 482814921906794786L;
 
-    private static final Log log = LogFactory.getLog(SecurityPolicyServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(SecurityPolicyServiceImpl.class);
 
     private final Map<String, SecurityPolicyDescriptor> policyDescriptors;
 
@@ -76,15 +76,16 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
                         policies.add((SecurityPolicy) policy);
                         policyNames.add(descriptor.getName());
                     } else {
-                        log.error(String.format("Invalid contribution to security policy service %s:"
-                                + " must implement SecurityPolicy interface", descriptor.getName()));
+                        log.error(
+                                "Invalid contribution to security policy service {}: must implement SecurityPolicy interface",
+                                descriptor::getName);
                     }
                 } catch (ReflectiveOperationException e) {
                     log.error(e, e);
                 }
             }
         }
-        log.debug("Ordered security policies: " + policyNames.toString());
+        log.debug("Ordered security policies: {}", policyNames);
     }
 
     @Override
@@ -126,8 +127,8 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
             if (policy.isExpressibleInQuery(repositoryName)) {
                 transformers.add(policy.getQueryTransformer(repositoryName));
             } else {
-                log.warn(String.format("Security policy '%s' for repository '%s'"
-                        + " cannot be expressed in SQL query.", policy.getClass().getName(), repositoryName));
+                log.warn("Security policy '{}' for repository '{}' cannot be expressed in SQL query.",
+                        () -> policy.getClass().getName(), () -> repositoryName);
             }
         }
         return transformers;
@@ -137,7 +138,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     public void registerDescriptor(SecurityPolicyDescriptor descriptor) {
         String id = descriptor.getName();
         if (policyDescriptors.containsKey(id)) {
-            log.info("Overriding security policy " + id);
+            log.info("Overriding security policy: {}", id);
         }
         policyDescriptors.put(id, descriptor);
         resetPolicies();

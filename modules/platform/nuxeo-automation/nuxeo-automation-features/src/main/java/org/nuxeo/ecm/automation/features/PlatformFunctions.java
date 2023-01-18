@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class PlatformFunctions extends CoreFunctions {
 
-    private static final Log log = LogFactory.getLog(PlatformFunctions.class);
+    private static final Logger log = LogManager.getLogger(PlatformFunctions.class);
 
     public static final String HIBERNATE_SEQUENCER_PROPERTY = "org.nuxeo.ecm.core.uidgen.sequencer.hibernate";
 
@@ -71,7 +71,7 @@ public class PlatformFunctions extends CoreFunctions {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(voc)) {
             if (!session.hasEntry(key)) {
-                log.debug("Unable to find the key '" + key + "' in the vocabulary '" + voc + "'.");
+                log.debug("Unable to find the key '{}' in the vocabulary '{}'.", key, voc);
                 return key;
             }
             DocumentModel doc = session.getEntry(key);

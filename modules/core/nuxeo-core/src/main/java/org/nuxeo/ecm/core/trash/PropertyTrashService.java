@@ -25,8 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PropertyTrashService extends AbstractTrashService {
 
-    private static final Log log = LogFactory.getLog(PropertyTrashService.class);
+    private static final Logger log = LogManager.getLogger(PropertyTrashService.class);
 
     public static final String SYSPROP_IS_TRASHED = "isTrashed";
 
@@ -62,16 +62,15 @@ public class PropertyTrashService extends AbstractTrashService {
         CoreSession session = doc.getCoreSession();
         DocumentRef docRef = doc.getRef();
         if (doc.isProxy()) {
-            log.warn("Document " + doc.getId() + " of type " + doc.getType()
-                    + " will be deleted immediately because it's a proxy");
+            log.warn("Document: {} of type: {} will be deleted immediately because it's a proxy", doc::getId,
+                    doc::getType);
             session.removeDocument(docRef);
         } else if (!session.canRemoveDocument(docRef)) {
             throw new DocumentSecurityException(
                     "User " + session.getPrincipal().getName() + " does not have the permission to remove the document "
                             + doc.getId() + " (" + doc.getPath() + ")");
         } else if (session.isTrashed(docRef)) {
-            log.warn("Document " + doc.getId() + " of type " + doc.getType()
-                    + " is already in the trash, nothing to do");
+            log.warn("Document: {} of type: {} is already in the trash, nothing to do", doc::getId, doc::getType);
         } else {
             if (doc.getParentRef() == null) {
                 // handle placeless document
@@ -145,21 +144,22 @@ public class PropertyTrashService extends AbstractTrashService {
         BulkService service = Framework.getService(BulkService.class);
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
         String user = session.getPrincipal().getName();
-        service.submitTransactional(new BulkCommand.Builder(ACTION_NAME, nxql, user).repository(session.getRepositoryName())
-                                                                       .param(PARAM_NAME, value)
-                                                                       .build());
+        service.submitTransactional(
+                new BulkCommand.Builder(ACTION_NAME, nxql, user).repository(session.getRepositoryName())
+                                                                .param(PARAM_NAME, value)
+                                                                .build());
     }
 
     @Override
     public boolean hasFeature(Feature feature) {
         switch (feature) {
-            case TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE:
-            case TRASHED_STATE_IN_MIGRATION:
-                return false;
-            case TRASHED_STATE_IS_DEDICATED_PROPERTY:
-                return true;
-            default:
-                throw new UnsupportedOperationException(feature.name());
+        case TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE:
+        case TRASHED_STATE_IN_MIGRATION:
+            return false;
+        case TRASHED_STATE_IS_DEDICATED_PROPERTY:
+            return true;
+        default:
+            throw new UnsupportedOperationException(feature.name());
         }
     }
 

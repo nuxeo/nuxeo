@@ -49,8 +49,8 @@ import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 import org.nuxeo.osgi.application.MutableClassLoader;
 
@@ -59,6 +59,8 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  */
 public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBundlesManager {
 
+    private static final Logger log = LogManager.getLogger(DevFrameworkBootstrap.class);
+
     public static final String DEV_BUNDLES_NAME = "org.nuxeo:type=sdk,name=dev-bundles";
 
     public static final String WEB_RESOURCES_NAME = "org.nuxeo:type=sdk,name=web-resources";
@@ -66,8 +68,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     public static final String USE_COMPAT_HOT_RELOAD = "nuxeo.hotreload.compat.mechanism";
 
     protected static final String DEV_BUNDLES_CP = "dev-bundles/*";
-
-    protected final Log log = LogFactory.getLog(DevFrameworkBootstrap.class);
 
     protected DevBundle[] devBundles;
 
@@ -270,9 +270,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
                 devBundles = bundlesToDeploy;
             }
         }
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Hot reload has been run in %s ms", System.currentTimeMillis() - begin));
-        }
+        log.info("Hot reload has been run in {}ms", System.currentTimeMillis() - begin);
     }
 
     /**
@@ -377,7 +375,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
                 try {
                     jarUrls.add(bundle.url());
                 } catch (IOException e) {
-                    log.error("Cannot install " + bundle);
+                    log.error("Cannot install: {}", bundle);
                 }
             } else if (bundle.devBundleType == DevBundleType.Seam) {
                 seamDirs.add(bundle.file());
@@ -411,7 +409,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         file = new File(file, "components.index");
         try {
             Method m = getClassLoader().loadClass("org.nuxeo.runtime.model.impl.ComponentRegistrySerializer")
-                    .getMethod("writeIndex", File.class);
+                                       .getMethod("writeIndex", File.class);
             m.invoke(null, file);
         } catch (ReflectiveOperationException t) {
             // ignore

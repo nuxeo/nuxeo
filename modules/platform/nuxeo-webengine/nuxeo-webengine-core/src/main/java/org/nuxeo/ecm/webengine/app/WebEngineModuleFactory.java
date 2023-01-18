@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.common.utils.ZipUtils;
@@ -41,7 +41,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  */
 public class WebEngineModuleFactory {
 
-    private static final Log log = LogFactory.getLog(WebEngineModuleFactory.class);
+    private static final Logger log = LogManager.getLogger(WebEngineModuleFactory.class);
 
     public static Bundle[] getFragments(Bundle bundle) {
         BundleContext context = bundle.getBundleContext();
@@ -73,11 +73,11 @@ public class WebEngineModuleFactory {
             File fragmentDir = locateModuleDir(fragment, engine, explode);
             app.cfg.fragmentDirectories.add(fragmentDir);
         }
-        app.cfg.allowHostOverride = Boolean.parseBoolean((String) bundle.getHeaders().get(
-                BundleManifestReader.ALLOW_HOST_OVERRIDE));
+        app.cfg.allowHostOverride = Boolean.parseBoolean(
+                (String) bundle.getHeaders().get(BundleManifestReader.ALLOW_HOST_OVERRIDE));
         engine.addApplication(app);
 
-        log.info("Deployed web module found in bundle: " + bundle.getSymbolicName());
+        log.info("Deployed web module found in bundle: {}", bundle::getSymbolicName);
 
         return app;
     }

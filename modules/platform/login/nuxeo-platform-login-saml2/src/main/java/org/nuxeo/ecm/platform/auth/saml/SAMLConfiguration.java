@@ -19,8 +19,18 @@
 
 package org.nuxeo.ecm.platform.auth.saml;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
 import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
 import org.nuxeo.runtime.api.Framework;
@@ -40,21 +50,12 @@ import org.opensaml.xml.security.credential.UsageType;
 import org.opensaml.xml.security.keyinfo.KeyInfoGenerator;
 import org.opensaml.xml.signature.KeyInfo;
 
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 /**
  * @since 7.3
  */
 public class SAMLConfiguration {
 
-    protected static final Log log = LogFactory.getLog(SAMLConfiguration.class);
+    private static final Logger log = LogManager.getLogger(SAMLConfiguration.class);
 
     public static final String ENTITY_ID = "nuxeo.saml2.entityId";
 
@@ -64,7 +65,7 @@ public class SAMLConfiguration {
 
     public static final String WANT_ASSERTIONS_SIGNED = "nuxeo.saml2.wantAssertionsSigned";
 
-    public static final String SKEW_TIME_MS= "nuxeo.saml2.skewTimeMs";
+    public static final String SKEW_TIME_MS = "nuxeo.saml2.skewTimeMs";
 
     public static final int DEFAULT_SKEW_TIME_MS = 1000 * 60; // 1 minute;
 
@@ -73,7 +74,7 @@ public class SAMLConfiguration {
     public static final String DEFAULT_LOGIN_BINDINGS = "HTTP-Redirect,HTTP-POST";
 
     public static final Collection<String> nameID = Arrays.asList(NameIDType.EMAIL, NameIDType.TRANSIENT,
-        NameIDType.PERSISTENT, NameIDType.UNSPECIFIED, NameIDType.X509_SUBJECT);
+            NameIDType.PERSISTENT, NameIDType.UNSPECIFIED, NameIDType.X509_SUBJECT);
 
     private SAMLConfiguration() {
 
@@ -95,7 +96,7 @@ public class SAMLConfiguration {
             if (supportedBindings.contains(binding)) {
                 bindings.add(binding);
             } else {
-                log.warn("Unknown SAML binding " + binding);
+                log.warn("Unknown SAML binding: {}", binding);
             }
         }
         return bindings;
@@ -145,19 +146,19 @@ public class SAMLConfiguration {
         // Generate key info
         KeyManager keyManager = Framework.getService(KeyManager.class);
         if (keyManager.getSigningCredential() != null) {
-            spDescriptor.getKeyDescriptors().add(
-                buildKeyDescriptor(UsageType.SIGNING,
-                    generateKeyInfoForCredential(keyManager.getSigningCredential())));
+            spDescriptor.getKeyDescriptors()
+                        .add(buildKeyDescriptor(UsageType.SIGNING,
+                                generateKeyInfoForCredential(keyManager.getSigningCredential())));
         }
         if (keyManager.getEncryptionCredential() != null) {
-            spDescriptor.getKeyDescriptors().add(
-                buildKeyDescriptor(UsageType.ENCRYPTION,
-                    generateKeyInfoForCredential(keyManager.getEncryptionCredential())));
+            spDescriptor.getKeyDescriptors()
+                        .add(buildKeyDescriptor(UsageType.ENCRYPTION,
+                                generateKeyInfoForCredential(keyManager.getEncryptionCredential())));
         }
         if (keyManager.getTlsCredential() != null) {
-            spDescriptor.getKeyDescriptors().add(
-                buildKeyDescriptor(UsageType.UNSPECIFIED,
-                    generateKeyInfoForCredential(keyManager.getTlsCredential())));
+            spDescriptor.getKeyDescriptors()
+                        .add(buildKeyDescriptor(UsageType.UNSPECIFIED,
+                                generateKeyInfoForCredential(keyManager.getTlsCredential())));
         }
 
         // LOGIN

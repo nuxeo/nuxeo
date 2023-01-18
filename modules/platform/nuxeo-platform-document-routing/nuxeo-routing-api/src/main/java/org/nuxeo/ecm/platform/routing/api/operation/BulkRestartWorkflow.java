@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -51,12 +51,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 5.7
  */
-@Operation(id = BulkRestartWorkflow.ID, category = Constants.CAT_WORKFLOW, label = "Bulk Restart Workflow", description = "Bulk operation to restart workflows.", aliases = { "BulkRestartWorkflow" })
+@Operation(id = BulkRestartWorkflow.ID, category = Constants.CAT_WORKFLOW, label = "Bulk Restart Workflow", description = "Bulk operation to restart workflows.", aliases = {
+        "BulkRestartWorkflow" })
 public class BulkRestartWorkflow {
 
-    public static final String ID = "WorkflowModel.BulkRestartInstances";
+    private static final Logger log = LogManager.getLogger(BulkRestartWorkflow.class);
 
-    private static final Log log = LogFactory.getLog(BulkRestartWorkflow.class);
+    public static final String ID = "WorkflowModel.BulkRestartInstances";
 
     @Param(name = "workflowId")
     protected String workflowId;
@@ -127,14 +128,14 @@ public class BulkRestartWorkflow {
                     List<String> relatedDocIds = route.getAttachedDocuments();
                     route.cancel(session);
 
-                    log.debug("Canceling workflow  " + route.getDocument().getName());
+                    log.debug("Canceling workflow: {}", route.getDocument().getName());
 
                     if (reinitLifecycle) {
                         reinitLifecycle(relatedDocIds, session);
                     }
                     routingService.createNewInstance(workflowId, relatedDocIds, session, true);
                     for (String string : relatedDocIds) {
-                        log.debug("Starting workflow for " + string);
+                        log.debug("Starting workflow for: {}", string);
                     }
                     // removing old workflow instance
                     session.removeDocument(route.getDocument().getRef());
@@ -147,9 +148,9 @@ public class BulkRestartWorkflow {
                     }
                 } catch (NuxeoException e) {
                     Throwable t = unwrapException(e);
-                    log.error(t.getClass().getSimpleName() + ": " + t.getMessage());
-                    log.error("Workflow with the docId '" + routeId + "' cannot be canceled. " + routesRestartedCount
-                            + " workflows have been processed.");
+                    log.error("{}: {}", t.getClass().getSimpleName(), t.getMessage());
+                    log.error("Workflow with the docId: {} cannot be canceled. {} workflows have been processed.",
+                            routeId, routesRestartedCount);
                 }
             }
         } finally {

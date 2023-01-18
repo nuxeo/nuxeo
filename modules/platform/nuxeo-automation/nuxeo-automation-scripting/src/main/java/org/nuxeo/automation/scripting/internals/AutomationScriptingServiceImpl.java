@@ -39,8 +39,9 @@ import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,7 +53,7 @@ import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
-    private static final Log log = LogFactory.getLog(AutomationScriptingServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(AutomationScriptingServiceImpl.class);
 
     protected final ScriptEngine engine = getScriptEngine();
 

@@ -22,14 +22,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.SigningDisposition;
 import org.nuxeo.runtime.api.Framework;
 
 public class SignatureHelper {
 
-    private static final Log log = LogFactory.getLog(SignatureHelper.class);
+    private static final Logger log = LogManager.getLogger(SignatureHelper.class);
 
     /**
      * If this system property is set to "true", then signature will use PDF/A.
@@ -51,7 +51,8 @@ public class SignatureHelper {
     /** Used with {@link SimpleDateFormat}. */
     public static final String DEFAULT_ARCHIVE_FORMAT = " ('archive' yyyy-MM-dd HH:mm:ss)";
 
-    private SignatureHelper() {}
+    private SignatureHelper() {
+    }
 
     public static boolean getPDFA() {
         return Framework.isBooleanPropertyTrue(SIGNATURE_USE_PDFA_PROP);
@@ -67,7 +68,7 @@ public class SignatureHelper {
         try {
             return Enum.valueOf(SigningDisposition.class, disp.toUpperCase());
         } catch (RuntimeException e) {
-            log.warn("Invalid signing disposition: " + disp);
+            log.warn("Invalid signing disposition: {}", disp);
             return SigningDisposition.ATTACH;
         }
     }

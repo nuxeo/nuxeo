@@ -18,8 +18,8 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.runtime.api.Framework;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BinaryMetadataComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(BinaryMetadataComponent.class);
+    private static final Logger log = LogManager.getLogger(BinaryMetadataComponent.class);
 
     protected BinaryMetadataService metadataService = new BinaryMetadataServiceImpl(this);
 
@@ -63,7 +63,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
         } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
             processorRegistry.addContribution((MetadataProcessorDescriptor) contribution);
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point: {}", extensionPoint);
         }
     }
 
@@ -76,7 +76,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
         } else if (BinaryMetadataConstants.METADATA_PROCESSORS_EP.equals(extensionPoint)) {
             processorRegistry.removeContribution((MetadataProcessorDescriptor) contribution);
         } else {
-            log.error("Unknown extension point " + extensionPoint);
+            log.error("Unknown extension point: {}", extensionPoint);
         }
     }
 

@@ -21,8 +21,8 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -41,7 +41,7 @@ import org.openqa.selenium.support.ui.Select;
 @Deprecated
 public class AccessRightsSubPage extends AbstractPage {
 
-    private static final Log log = LogFactory.getLog(AccessRightsSubPage.class);
+    private static final Logger log = LogManager.getLogger(AccessRightsSubPage.class);
 
     /*
      * @Required

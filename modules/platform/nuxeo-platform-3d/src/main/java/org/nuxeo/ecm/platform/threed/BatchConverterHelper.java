@@ -18,9 +18,36 @@
  */
 package org.nuxeo.ecm.platform.threed;
 
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.DIMENSION_X;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.DIMENSION_Y;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.DIMENSION_Z;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.EDGES;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.GEOMETRY_LOD_SUCCESS;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.NON_MANIFOLD_EDGES;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.NON_MANIFOLD_POLYGONS;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.NON_MANIFOLD_VERTICES;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.POLYGONS;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.POSITION_X;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.POSITION_Y;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.POSITION_Z;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.TEXTURES_MAX_DIMENSION;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.TEXTURES_SIZE;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.TEXTURE_LOD_SUCCESS;
+import static org.nuxeo.ecm.platform.threed.ThreeDInfo.VERTICES;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
@@ -33,19 +60,14 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.nuxeo.ecm.platform.threed.ThreeDInfo.*;
-
 /**
  * Helper class to take out renders and list of {@link TransmissionThreeD} form batch conversion
  *
  * @since 8.4
  */
 public class BatchConverterHelper {
+
+    private static final Logger log = LogManager.getLogger(BatchConverterHelper.class);
 
     public static final String WIDTH = "width";
 
@@ -54,8 +76,6 @@ public class BatchConverterHelper {
     public static final String DEPTH = "depth";
 
     public static final String FORMAT = "format";
-
-    private static final Log log = LogFactory.getLog(BatchConverterHelper.class);
 
     private BatchConverterHelper() {
     }
@@ -159,9 +179,7 @@ public class BatchConverterHelper {
 
         int maxWidth = resources.stream().mapToInt(resource -> (Integer) resource.getProperty(WIDTH)).max().orElse(0);
         int maxHeight = resources.stream().mapToInt(resource -> (Integer) resource.getProperty(HEIGHT)).max().orElse(0);
-        long resourcesSize = resources.stream()
-                                      .mapToLong(resource -> resource.getBlob().getFile().length())
-                                      .sum();
+        long resourcesSize = resources.stream().mapToLong(resource -> resource.getBlob().getFile().length()).sum();
 
         infoMap.put(TEXTURE_LOD_SUCCESS, Boolean.TRUE);
         infoMap.put(TEXTURES_MAX_DIMENSION, String.valueOf(maxWidth) + "x" + String.valueOf(maxHeight));

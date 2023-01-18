@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
-
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
@@ -26,7 +25,6 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS
 import java.io.Serializable;
 import java.sql.Types;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,10 +40,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FullTextUtils;
-import org.nuxeo.common.utils.PeriodAndDuration;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.trash.TrashService;
@@ -153,7 +150,7 @@ import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
  */
 public class NXQLQueryMaker implements QueryMaker {
 
-    private static final Log log = LogFactory.getLog(NXQLQueryMaker.class);
+    private static final Logger log = LogManager.getLogger(NXQLQueryMaker.class);
 
     public static final String TYPE_DOCUMENT = "Document";
 
@@ -895,7 +892,7 @@ public class NXQLQueryMaker implements QueryMaker {
     // non-canonical index syntax, for replaceAll
     protected final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(\\d+|\\*|\\*\\d+)\\]" // index in brackets
-            );
+    );
 
     /**
      * Canonicalizes a Nuxeo-xpath.
@@ -1461,7 +1458,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 } else {
                     throw new QueryParseException("Function not supported in WHERE clause: " + node);
                 }
-             }
+            }
         }
 
         @Override
@@ -2323,7 +2320,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             } else {
                 // single field matched with ILIKE
-                log.warn("No fulltext index configured for field " + name + ", falling back on LIKE query");
+                log.warn("No fulltext index configured for field {}, falling back on LIKE query", name);
                 String value = ((StringLiteral) node.rvalue).value;
 
                 // fulltext translation into pseudo-LIKE syntax

@@ -23,22 +23,23 @@ package org.nuxeo.elasticsearch.client;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.opensearch.client.transport.TransportClient;
-import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
-import org.opensearch.transport.client.PreBuiltTransportClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.common.transport.TransportAddress;
+import org.opensearch.transport.client.PreBuiltTransportClient;
 
 /**
  * @since 9.3
  */
 public class ESTransportClientFactory implements ESClientFactory {
-    private static final Log log = LogFactory.getLog(ESTransportClientFactory.class);
+
+    private static final Logger log = LogManager.getLogger(ESTransportClientFactory.class);
 
     public ESTransportClientFactory() {
     }
@@ -66,7 +67,7 @@ public class ESTransportClientFactory implements ESClientFactory {
     @SuppressWarnings("resource")
     protected ESClient createRemoteClient(ElasticSearchClientConfig config) {
         Settings settings = getSetting(config).build();
-        log.debug("Using settings: " + settings.toDelimitedString(','));
+        log.debug("Using settings: {}", () -> settings.toDelimitedString(','));
         TransportClient client = new PreBuiltTransportClient(settings); // not closed here
         String[] addresses = config.getOption("addressList", "").split(",");
         if (addresses.length == 0) {
@@ -74,12 +75,12 @@ public class ESTransportClientFactory implements ESClientFactory {
         } else {
             for (String item : addresses) {
                 String[] address = item.split(":");
-                log.debug("Add transport address: " + item);
+                log.debug("Add transport address: {}", item);
                 try {
                     InetAddress inet = InetAddress.getByName(address[0]);
                     client.addTransportAddress(new TransportAddress(inet, Integer.parseInt(address[1])));
                 } catch (UnknownHostException e) {
-                    log.error("Unable to resolve host " + address[0], e);
+                    log.error("Unable to resolve host: {}", address[0], e);
                 }
             }
         }

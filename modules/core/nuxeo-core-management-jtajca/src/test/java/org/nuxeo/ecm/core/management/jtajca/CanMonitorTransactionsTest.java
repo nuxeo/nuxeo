@@ -34,8 +34,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LogEvent;
 import org.junit.After;
@@ -55,6 +56,8 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterExcepti
 @RunWith(FeaturesRunner.class)
 @Features({ JtajcaManagementFeature.class, CoreFeature.class, LogCaptureFeature.class })
 public class CanMonitorTransactionsTest {
+
+    private static final Logger log = LogManager.getLogger(CanMonitorTransactionsTest.class);
 
     @Inject
     @Named("default")
@@ -164,8 +167,7 @@ public class CanMonitorTransactionsTest {
                 stats = monitor.getActiveStatistics();
                 assertThat((long) stats.size(), is(count));
             } catch (Exception cause) {
-                LogFactory.getLog(CanMonitorTransactionsTest.class).error("Caught error while collecting statistics",
-                        cause);
+                log.error("Caught error while collecting statistics", cause);
             }
 
             return TRUE;
@@ -185,7 +187,8 @@ public class CanMonitorTransactionsTest {
 
     @Test
     @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogRollbackTraceFilter.class)
-    public void logContainsRollbackTrace() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
+    public void logContainsRollbackTrace()
+            throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
         FutureTask<Boolean> task = new FutureTask<>(new TestLogRollbackTrace());
         executor.execute(task);
         assertThat(task.get(), is(TRUE));

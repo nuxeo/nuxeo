@@ -23,8 +23,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
@@ -38,10 +38,10 @@ import org.nuxeo.runtime.api.Framework;
 @Path("randomImporter")
 public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
 
-    private static final Log log = LogFactory.getLog(RandomImporterExecutor.class);
+    private static final Logger log = LogManager.getLogger(RandomImporterExecutor.class);
 
     @Override
-    protected Log getJavaLogger() {
+    protected Logger getJavaLogger() {
         return log;
     }
 
@@ -57,8 +57,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("blockSyncPostCommitProcessing") Boolean blockSyncPostCommitProcessing,
             @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing,
             @QueryParam("blockIndexing") Boolean blockIndexing, @QueryParam("bulkMode") Boolean bulkMode,
-            @QueryParam("transactionTimeout") Integer transactionTimeout,
-            @QueryParam("lang") String lang) {
+            @QueryParam("transactionTimeout") Integer transactionTimeout, @QueryParam("lang") String lang) {
         if (onlyText == null) {
             onlyText = true;
         }
@@ -81,8 +80,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
                             .nbThreads(nbThreads)
                             .build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
-        runner.setEnablePerfLogging(Framework.getService(
-                DefaultImporterService.class).getEnablePerfLogging());
+        runner.setEnablePerfLogging(Framework.getService(DefaultImporterService.class).getEnablePerfLogging());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing,
                 !onlyText, blockIndexing, bulkMode);

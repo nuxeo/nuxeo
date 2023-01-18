@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class IndexingCommand implements Serializable {
 
-    private static final Log log = LogFactory.getLog(IndexingCommand.class);
+    private static final Logger log = LogManager.getLogger(IndexingCommand.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -122,13 +122,13 @@ public class IndexingCommand implements Serializable {
         }
         // transient document try to get it from its path
         DocumentRef documentRef = target.getRef();
-        log.warn("Creating indexing command on a document with a null id, ref: " + documentRef
-                + ", trying to get the docId from its path, activate trace level for more info " + this);
+        log.warn("Creating indexing command on a document with a null id, ref: {}, trying to get the docId from "
+                + "its path, activate trace level for more info: {}", documentRef, this);
         if (log.isTraceEnabled()) {
             Throwable throwable = new Throwable();
             StringWriter stack = new StringWriter();
             throwable.printStackTrace(new PrintWriter(stack));
-            log.trace("You should use a document returned by session.createDocument, stack " + stack.toString());
+            log.trace("You should use a document returned by session.createDocument, stack {}", stack);
         }
         return target.getCoreSession().getDocument(documentRef);
     }
@@ -317,9 +317,7 @@ public class IndexingCommand implements Serializable {
         if (!sync) {
             if (!recurse || type == Type.DELETE) {
                 sync = true;
-                if (log.isDebugEnabled()) {
-                    log.debug("Turn command into sync: " + toString());
-                }
+                log.debug("Turn command into sync: {}", this);
             }
         }
     }

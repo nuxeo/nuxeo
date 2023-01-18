@@ -35,8 +35,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,7 +60,6 @@ import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.tests.KeyValueMessage;
 
 public abstract class TestLog {
-    protected static final Log log = LogFactory.getLog(TestLog.class);
 
     public static final Duration DEF_TIMEOUT = Duration.ofSeconds(10);
 

@@ -36,8 +36,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
@@ -57,8 +57,7 @@ import redis.clients.util.SafeEncoder;
  */
 public class RedisPubSubProvider extends AbstractPubSubProvider {
 
-    // package-private to avoid synthetic accessor for nested class
-    static final Log log = LogFactory.getLog(RedisPubSubProvider.class);
+    private static final Logger log = LogManager.getLogger(RedisPubSubProvider.class);
 
     /** Maximum delay to wait for a channel subscription on startup. */
     public static final long TIMEOUT_SUBSCRIBE_SECONDS = 5;
@@ -78,14 +77,13 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
         namespace = Framework.getService(RedisAdmin.class).namespace();
         dispatcher = new Dispatcher(namespace + "*");
         thread = new Thread(dispatcher::run, THREAD_NAME);
-        thread.setUncaughtExceptionHandler((t, e) -> log.error("Uncaught error on thread " + t.getName(), e));
+        thread.setUncaughtExceptionHandler((t, e) -> log.error("Uncaught error on thread {}", t.getName(), e));
         thread.setPriority(Thread.NORM_PRIORITY);
         thread.setDaemon(true);
         thread.start();
         if (!dispatcher.awaitSubscribed(TIMEOUT_SUBSCRIBE_SECONDS, TimeUnit.SECONDS)) {
             thread.interrupt();
-            throw new NuxeoException(
-                    "Failed to subscribe to Redis pubsub after " + TIMEOUT_SUBSCRIBE_SECONDS + "s");
+            throw new NuxeoException("Failed to subscribe to Redis pubsub after " + TIMEOUT_SUBSCRIBE_SECONDS + "s");
         }
         log.debug("Initialized");
     }
@@ -140,7 +138,7 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
          * To be called from a new thread to do the actual Redis subscription and to dispatch messages.
          */
         public void run() {
-            log.debug("Subscribing to: " + pattern);
+            log.debug("Subscribing to: {}", pattern);
             // we can't do service lookup during startup here because we're in a separate thread
             RedisExecutor redisExecutor = this.redisExecutor;
             this.redisExecutor = null;
@@ -159,18 +157,14 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
         @Override
         public void onPSubscribe(String pattern, int subscribedChannels) {
             subscribedLatch.countDown();
-            if (log.isDebugEnabled()) {
-                log.debug("Subscribed to: " + pattern);
-            }
+            log.debug("Subscribed to: {}", pattern);
         }
 
         public void onMessage(String channel, byte[] message) {
             if (message == null) {
                 message = new byte[0];
             }
-            if (log.isTraceEnabled()) {
-                log.trace("Message received from channel: " + channel + " (" + message.length + " bytes)");
-            }
+            log.trace("Message received from channel: {} ({} bytes)", channel, message.length);
             String topic = channel.substring(namespace.length());
             // localPublish needs to be called in a different thread,
             // so that if a subscriber calls Redis it doesn't reuse our current Redis connection

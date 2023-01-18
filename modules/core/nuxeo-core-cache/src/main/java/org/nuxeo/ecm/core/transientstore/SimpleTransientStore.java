@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
@@ -48,7 +48,7 @@ import com.google.common.cache.CacheBuilder;
  */
 public class SimpleTransientStore extends AbstractTransientStore {
 
-    protected Log log = LogFactory.getLog(SimpleTransientStore.class);
+    private static final Logger log = LogManager.getLogger(SimpleTransientStore.class);
 
     protected Cache<String, Serializable> l1Cache;
 
@@ -61,7 +61,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
 
     @Override
     public void init(TransientStoreConfig config) {
-        log.debug("Initializing SimpleTransientStore: " + config.getName());
+        log.debug("Initializing SimpleTransientStore: {}", config::getName);
         super.init(config);
         l1Cache = CacheBuilder.newBuilder().expireAfterWrite(config.getFirstLevelTTL(), TimeUnit.MINUTES).build();
         l2Cache = CacheBuilder.newBuilder().expireAfterWrite(config.getSecondLevelTTL(), TimeUnit.MINUTES).build();
@@ -69,7 +69,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
 
     @Override
     public void shutdown() {
-        log.debug("Shutting down SimpleTransientStore: " + config.getName());
+        log.debug("Shutting down SimpleTransientStore: {}", config::getName);
     }
 
     @Override
@@ -98,10 +98,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
                 entry = new StorageEntry();
             }
             entry.putParam(parameter, value);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Setting parameter %s to value %s in StorageEntry stored at key %s", parameter,
-                        value, key));
-            }
+            log.debug("Setting parameter: {} to value: {} in StorageEntry stored at key: {}", parameter, value, key);
             putStorageEntry(key, entry);
         }
     }
@@ -113,10 +110,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
             return null;
         }
         Serializable res = entry.getParam(parameter);
-        if (log.isDebugEnabled()) {
-            log.debug(
-                    String.format("Fetched parameter %s from StorageEntry stored at key %s: %s", parameter, key, res));
-        }
+        log.debug("Fetched parameter: {} from StorageEntry stored at key {}: {}", parameter, key, res);
         return res;
     }
 
@@ -128,9 +122,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
                 entry = new StorageEntry();
             }
             entry.putParams(parameters);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Setting parameters %s in StorageEntry stored at key %s", parameters, key));
-            }
+            log.debug("Setting parameters: {} in StorageEntry stored at key: {}", parameters, key);
             putStorageEntry(key, entry);
         }
     }
@@ -142,9 +134,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
             return null;
         }
         Map<String, Serializable> res = new HashMap<>(entry.getParams());
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched parameters from StorageEntry stored at key %s: %s", key, res));
-        }
+        log.debug("Fetched parameters from StorageEntry stored at key {}: {}", key, res);
         return res;
     }
 
@@ -170,9 +160,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
             return -1;
         }
         long size = entry.getSize();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched field \"size\" from StorageEntry stored at key %s: %d", key, size));
-        }
+        log.debug("Fetched field \"size\" from StorageEntry stored at key {}: {}", key, size);
         return size;
     }
 
@@ -180,10 +168,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
     public boolean isCompleted(String key) {
         StorageEntry entry = getStorageEntry(key);
         boolean completed = entry != null && entry.isCompleted();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched field \"completed\" from StorageEntry stored at key %s: %s", key,
-                    completed));
-        }
+        log.debug("Fetched field \"completed\" from StorageEntry stored at key {}: {}", key, completed);
         return completed;
     }
 
@@ -195,10 +180,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
                 entry = new StorageEntry();
             }
             entry.setCompleted(completed);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Setting field \"completed\" to value %s in StorageEntry stored at key %s",
-                        completed, key));
-            }
+            log.debug("Setting field \"completed\" to value: {} in StorageEntry stored at key: {}", completed, key);
             putStorageEntry(key, entry);
         }
     }
@@ -207,14 +189,10 @@ public class SimpleTransientStore extends AbstractTransientStore {
     public void release(String key) {
         StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
         if (entry != null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Invalidating StorageEntry stored at key %s form L1 cache", key));
-            }
+            log.debug("Invalidating StorageEntry stored at key: {} form L1 cache", key);
             getL1Cache().invalidate(key);
             if (getStorageSize() <= config.getTargetMaxSizeMB() * (1024 * 1024) || config.getTargetMaxSizeMB() < 0) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Putting StorageEntry at key %s in L2 cache", key));
-                }
+                log.debug("Putting StorageEntry at key: {} in L2 cache", key);
                 getL2Cache().put(key, entry);
             }
         }
@@ -237,9 +215,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
             entry.setSize(sizeOfBlobs);
             // Set blob information
             entry.setBlobInfos(blobInfos);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Setting blobs %s in StorageEntry stored at key %s", blobInfos, key));
-            }
+            log.debug("Setting blobs: {} in StorageEntry stored at key: {}", blobInfos, key);
             putStorageEntry(key, entry);
         }
     }
@@ -247,35 +223,27 @@ public class SimpleTransientStore extends AbstractTransientStore {
     @Override
     public long getStorageSize() {
         long size = storageSize.get();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched storage size of store %s: %d", config.getName(), size));
-        }
+        log.debug("Fetched storage size of store {}: {}", config.getName(), size);
         return size;
     }
 
     @Override
     protected void setStorageSize(long newSize) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Setting storage size of store %s to %d", config.getName(), newSize));
-        }
+        log.debug("Setting storage size of store: {} to: {}", config.getName(), newSize);
         storageSize.set(newSize);
     }
 
     @Override
     protected long incrementStorageSize(long size) {
         long incremented = storageSize.addAndGet(size);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Incremented storage size of store %s to %s", config.getName(), incremented));
-        }
+        log.debug("Incremented storage size of store: {} to: {}", config.getName(), incremented);
         return incremented;
     }
 
     @Override
     protected long decrementStorageSize(long size) {
         long decremented = storageSize.addAndGet(-size);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Decremented storage size of store %s to %s", config.getName(), decremented));
-        }
+        log.debug("Decremented storage size of store: {} to: {}", config.getName(), decremented);
         return decremented;
     }
 
@@ -285,14 +253,10 @@ public class SimpleTransientStore extends AbstractTransientStore {
             StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
             if (entry == null) {
                 entry = (StorageEntry) getL2Cache().getIfPresent(key);
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Invalidating StorageEntry stored at key %s form L2 cache", key));
-                }
+                log.debug("Invalidating StorageEntry stored at key: {} form L2 cache", key);
                 getL2Cache().invalidate(key);
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Invalidating StorageEntry stored at key %s form L1 cache", key));
-                }
+                log.debug("Invalidating StorageEntry stored at key: {} form L1 cache", key);
                 getL1Cache().invalidate(key);
             }
             if (entry != null) {

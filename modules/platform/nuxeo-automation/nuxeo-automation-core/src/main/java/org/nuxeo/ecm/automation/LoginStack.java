@@ -24,8 +24,8 @@ import java.util.List;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -111,7 +111,7 @@ public class LoginStack {
 
     public static class Entry {
 
-        private static final Log log = LogFactory.getLog(Entry.class);
+        private static final Logger log = LogManager.getLogger(Entry.class);
 
         public LoginContext lc;
 

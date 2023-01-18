@@ -24,8 +24,8 @@ import java.time.Instant;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
@@ -59,7 +59,8 @@ import org.opensearch.rest.RestStatus;
  * @since 10.3
  */
 public class BulkIndexComputation extends AbstractComputation implements BulkProcessor.Listener {
-    private static final Log log = LogFactory.getLog(BulkIndexComputation.class);
+
+    private static final Logger log = LogManager.getLogger(BulkIndexComputation.class);
 
     public static final String NAME = "bulk/bulkIndex";
 
@@ -169,33 +170,26 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
     // the following methods are called from a different thread than the computation
     @Override
     public void beforeBulk(long executionId, BulkRequest request) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Creating elasticsearch bulk %s with %d action", executionId,
-                    request.numberOfActions()));
-        }
+        log.debug("Creating elasticsearch bulk {} with {} action", executionId, request.numberOfActions());
     }
 
     @Override
     public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("After bulk: %s, actions: %d, status: %s", executionId, request.numberOfActions(),
-                    response.status()));
-        }
+        log.debug("After bulk: {}, actions: {}, status: {}", executionId, request.numberOfActions(), response.status());
         if (!response.hasFailures()) {
             return;
         }
         MutableBoolean inError = new MutableBoolean(false);
         Arrays.stream(response.getItems()).filter(BulkItemResponse::isFailed).forEach(item -> {
             if (item.getFailure().getStatus() != RestStatus.CONFLICT) {
-                log.warn("Failure in bulk indexing: " + item.getFailureMessage());
+                log.warn("Failure in bulk indexing: {}", item::getFailureMessage);
                 inError.setTrue();
-            } else if (log.isDebugEnabled()) {
-                log.debug("Skipping version conflict: " + item.getFailureMessage());
+            } else {
+                log.debug("Skipping version conflict: {}", item::getFailureMessage);
             }
         });
         if (inError.isTrue()) {
-            log.error(String.format("Elasticsearch bulk %s returns with failures: %s", executionId,
-                    response.buildFailureMessage()));
+            log.error("Elasticsearch bulk {} returns with failures: {}", executionId, response.buildFailureMessage());
             if (!continueOnFailure) {
                 abort = true;
             }
@@ -204,8 +198,7 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
 
     @Override
     public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-        log.error(String.format("Elasticsearch bulk %s fails, contains %d actions", executionId,
-                request.numberOfActions()), failure);
+        log.error("Elasticsearch bulk {} fails, contains {} actions", executionId, request.numberOfActions(), failure);
         if (!continueOnFailure) {
             abort = true;
         }

@@ -29,12 +29,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PaletteParser {
 
-    private static final Log log = LogFactory.getLog(PaletteParser.class);
+    private static final Logger log = LogManager.getLogger(PaletteParser.class);
 
     public static Map<String, String> parse(URL url) {
         Map<String, String> entries = new HashMap<>();
@@ -43,11 +43,11 @@ public class PaletteParser {
             in = url.openStream();
             entries = parse(in, url.getFile());
         } catch (FileNotFoundException e) {
-            log.error("File not found: " + url);
+            log.error("File not found: {}", url);
         } catch (IOException e) {
-            log.error("Could not open file: " + url);
+            log.error("Could not open file: {}", url);
         } catch (PaletteParseException e) {
-            log.error("Could not parse palette: " + url);
+            log.error("Could not parse palette: {}", url);
         } finally {
             if (in != null) {
                 try {

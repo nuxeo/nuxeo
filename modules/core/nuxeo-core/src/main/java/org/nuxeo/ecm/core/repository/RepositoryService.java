@@ -30,8 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.Synchronization;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -39,6 +37,8 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -61,6 +61,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class RepositoryService extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(RepositoryService.class);
+
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.repository.RepositoryService");
 
     /** @since 11.1 */
@@ -68,8 +70,6 @@ public class RepositoryService extends DefaultComponent {
 
     /** @since 11.1 */
     public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
-
-    private static final Log log = LogFactory.getLog(RepositoryService.class);
 
     public static final String XP_REPOSITORY = "repository";
 
@@ -353,7 +353,7 @@ public class RepositoryService extends DefaultComponent {
                 } else if (status == STATUS_ROLLEDBACK) {
                     session.rollback();
                 } else {
-                    log.error("Unexpected afterCompletion status: " + status);
+                    log.error("Unexpected afterCompletion status: {}", status);
                 }
                 completedAbruptly = false;
             } finally {

@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -42,7 +41,8 @@ import org.nuxeo.lib.stream.pattern.consumer.internals.ConsumerRunner;
  * @since 9.1
  */
 public class ConsumerPool<M extends Message> extends AbstractCallablePool<ConsumerStatus> {
-    private static final Log log = LogFactory.getLog(ConsumerPool.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(ConsumerPool.class);
 
     protected final String logName;
 
@@ -78,9 +78,9 @@ public class ConsumerPool<M extends Message> extends AbstractCallablePool<Consum
         this.policy = policy;
         this.defaultAssignments = getDefaultAssignments();
         if (manager.supportSubscribe()) {
-            log.info("Creating consumer pool using Log subscribe on " + logName);
+            log.info("Creating consumer pool using Log subscribe on {}", logName);
         } else {
-            log.info("Creating consumer pool using Log assignments on " + logName + ": " + defaultAssignments);
+            log.info("Creating consumer pool using Log assignments on {}: {}", logName, defaultAssignments);
         }
     }
 
@@ -113,7 +113,7 @@ public class ConsumerPool<M extends Message> extends AbstractCallablePool<Consum
     @Override
     protected void afterCall(List<ConsumerStatus> ret) {
         ret.forEach(log::info);
-        log.warn(ConsumerStatus.toString(ret));
+        log.warn(() -> ConsumerStatus.toString(ret));
     }
 
     protected List<List<LogPartition>> getDefaultAssignments() {

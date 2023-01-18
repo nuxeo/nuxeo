@@ -21,8 +21,8 @@ package org.nuxeo.ecm.automation.context;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class ContextHelperRegistry extends SimpleContributionRegistry<ContextHelperDescriptor> {
 
-    private static final Log log = LogFactory.getLog(ContextHelperRegistry.class);
+    private static final Logger log = LogManager.getLogger(ContextHelperRegistry.class);
 
     public static final String[] RESERVED_VAR_NAMES = { "CurrentDate", "Context", "ctx", "This", "Session",
             "CurrentUser", "currentUser", "Env", "Document", "currentDocument", "Documents", "params", "input" };

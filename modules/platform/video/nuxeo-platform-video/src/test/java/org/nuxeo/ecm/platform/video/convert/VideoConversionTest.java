@@ -30,12 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -46,11 +45,8 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.video.VideoFeature;
 import org.nuxeo.ecm.platform.video.VideoInfo;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import javax.inject.Inject;
 
 /**
  * @since 5.5
@@ -58,8 +54,6 @@ import javax.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(VideoFeature.class)
 public class VideoConversionTest {
-
-    public static final Log log = LogFactory.getLog(VideoConversionTest.class);
 
     public static final String DELTA_MP4 = "DELTA.mp4";
 

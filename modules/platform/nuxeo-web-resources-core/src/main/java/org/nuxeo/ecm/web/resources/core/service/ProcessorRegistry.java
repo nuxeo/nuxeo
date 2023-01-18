@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.api.Processor;
 import org.nuxeo.ecm.web.resources.core.ProcessorDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class ProcessorRegistry extends ContributionFragmentRegistry<ProcessorDescriptor> {
 
-    private static final Log log = LogFactory.getLog(ProcessorRegistry.class);
+    private static final Logger log = LogManager.getLogger(ProcessorRegistry.class);
 
     protected final Map<String, ProcessorDescriptor> processors = new HashMap<>();
 
@@ -54,14 +54,14 @@ public class ProcessorRegistry extends ContributionFragmentRegistry<ProcessorDes
         }
         if (contrib.isEnabled()) {
             processors.put(id, contrib);
-            log.info("Registering processor with name " + id);
+            log.info("Registering processor with name: {}", id);
         }
     }
 
     @Override
     public void contributionRemoved(String id, ProcessorDescriptor origContrib) {
         processors.remove(id);
-        log.info("Unregistering processor with name " + id);
+        log.info("Unregistering processor with name: {}", id);
     }
 
     @Override

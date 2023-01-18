@@ -21,8 +21,8 @@ package org.nuxeo.connect.update.task.update;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Command;
@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  */
 public class Update extends AbstractCommand {
 
-    protected static final Log log = LogFactory.getLog(Update.class);
+    private static final Logger log = LogManager.getLogger(Update.class);
 
     public static final String ID = "update";
 
@@ -143,8 +143,8 @@ public class Update extends AbstractCommand {
             return;
         }
         if (todir.isFile()) {
-            status.addError("Cannot execute command in installer."
-                    + " Invalid update command: todir should be a directory!");
+            status.addError(
+                    "Cannot execute command in installer." + " Invalid update command: todir should be a directory!");
         }
         if (file.isFile()) {
             Match<String> match = JarUtils.findJarVersion(file.getName());
@@ -161,7 +161,7 @@ public class Update extends AbstractCommand {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
-            log.warn("Can't update using " + file + ". File is missing.");
+            log.warn("Can't update using a non existing file: {}", file);
             return null;
         }
         UpdateManager mgr = ((AbstractTask) task).getUpdateManager();

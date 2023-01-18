@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
@@ -58,6 +58,8 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
 public class Cas2Authenticator
         implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension, LoginResponseHandler {
 
+    private static final Logger log = LogManager.getLogger(Cas2Authenticator.class);
+
     /**
      * @deprecated since 2023, no used anymore for security reasons
      */
@@ -75,8 +77,6 @@ public class Cas2Authenticator
     protected static final String VALIDATE_ACTION = "Valid";
 
     protected static final String PROXY_VALIDATE_ACTION = "ProxyValid";
-
-    protected static final Log log = LogFactory.getLog(Cas2Authenticator.class);
 
     protected static final String EXCLUDE_PROMPT_KEY = "excludePromptURL";
 
@@ -136,7 +136,7 @@ public class Cas2Authenticator
         if (url.contains(CAS_SERVER_PATTERN_KEY)) {
             url = url.replace(CAS_SERVER_PATTERN_KEY, defaultCasServer);
         }
-        log.debug("serviceUrl: " + url);
+        log.debug("serviceUrl: {}", url);
         return url;
     }
 
@@ -146,8 +146,8 @@ public class Cas2Authenticator
         // Check for an alternative authentication plugin in request cookies
         NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(httpRequest, httpResponse);
         if (alternativeAuthPlugin != null) {
-            log.debug(String.format("Found alternative authentication plugin %s, using it to handle login prompt.",
-                    alternativeAuthPlugin));
+            log.debug("Found alternative authentication plugin: {}, using it to handle login prompt.",
+                    alternativeAuthPlugin);
             return alternativeAuthPlugin.handleLoginPrompt(httpRequest, httpResponse, baseURL);
         }
 
@@ -160,7 +160,7 @@ public class Cas2Authenticator
             location = URIUtils.addParametersToURIQuery(getServiceURL(httpRequest, LOGIN_ACTION), urlParameters);
             httpResponse.sendRedirect(location);
         } catch (IOException e) {
-            log.error("Unable to redirect to CAS login screen to " + location, e);
+            log.error("Unable to redirect to CAS login screen to: {}", location, e);
             return false;
         }
         return true;
@@ -317,14 +317,14 @@ public class Cas2Authenticator
         NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(httpRequest, httpResponse);
         if (alternativeAuthPlugin != null) {
             if (alternativeAuthPlugin instanceof NuxeoAuthenticationPluginLogoutExtension) {
-                log.debug(String.format("Found alternative authentication plugin %s, using it to handle logout.",
-                        alternativeAuthPlugin));
+                log.debug("Found alternative authentication plugin: {}, using it to handle logout.",
+                        alternativeAuthPlugin);
                 return ((NuxeoAuthenticationPluginLogoutExtension) alternativeAuthPlugin).handleLogout(httpRequest,
                         httpResponse);
             } else {
-                log.debug(String.format(
-                        "Found alternative authentication plugin %s which cannot handle logout, letting authentication filter handle it.",
-                        alternativeAuthPlugin));
+                log.debug(
+                        "Found alternative authentication plugin: {} which cannot handle logout, letting authentication filter handle it.",
+                        alternativeAuthPlugin);
                 return false;
             }
         }
@@ -379,7 +379,7 @@ public class Cas2Authenticator
         }
         log.debug("checkProxyCasTicket: validation executed without error");
         String username = proxyValidator.getUser();
-        log.debug("checkProxyCasTicket: validation returned username = " + username);
+        log.debug("checkProxyCasTicket: validation returned username: {}", username);
 
         return username;
     }
@@ -415,7 +415,7 @@ public class Cas2Authenticator
         }
         log.debug("checkCasTicket : validation executed without error");
         String username = ticketValidator.getUser();
-        log.debug("checkCasTicket: validation returned username = " + username);
+        log.debug("checkCasTicket: validation returned username: {}", username);
         return username;
     }
 
@@ -448,8 +448,8 @@ public class Cas2Authenticator
             PluggableAuthenticationService authService = Framework.getService(PluggableAuthenticationService.class);
             NuxeoAuthenticationPlugin alternativeAuthPlugin = authService.getPlugin(alternativeAuthPluginName);
             if (alternativeAuthPlugin == null) {
-                log.error(String.format("No alternative authentication plugin named %s, will remove cookie %s.",
-                        alternativeAuthPluginName, ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME));
+                log.error("No alternative authentication plugin named: {}, will remove cookie {}.",
+                        alternativeAuthPluginName, ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME);
                 removeCookie(httpRequest, httpResponse, alternativeAuthPluginCookie);
             } else {
                 return alternativeAuthPlugin;
@@ -471,7 +471,7 @@ public class Cas2Authenticator
     }
 
     protected void removeCookie(HttpServletRequest httpRequest, HttpServletResponse httpResponse, Cookie cookie) {
-        log.debug(String.format("Removing cookie %s.", cookie.getName()));
+        log.debug("Removing cookie: {}.", cookie::getName);
         cookie.setMaxAge(0);
         cookie.setValue("");
         cookie.setPath(httpRequest.getContextPath());

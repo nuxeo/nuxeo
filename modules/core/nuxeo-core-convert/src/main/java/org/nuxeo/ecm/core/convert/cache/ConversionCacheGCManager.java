@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 
 /**
@@ -41,11 +41,11 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
  */
 public class ConversionCacheGCManager {
 
+    private static final Logger log = LogManager.getLogger(ConversionCacheGCManager.class);
+
     public static final String MAX_DISK_SPACE_USAGE_KEY = "MaxDiskSpaceUsageForCache";
 
     public static final long MAX_DISK_SPACE_USAGE_KB = 1000;
-
-    private static final Log log = LogFactory.getLog(ConversionCacheGCManager.class);
 
     private static int gcRuns = 0;
 
@@ -98,7 +98,7 @@ public class ConversionCacheGCManager {
             // mainly for testing : negative limit means cleanup everything
             deltaInKB = totalSize;
         }
-        log.debug("GC needed to free " + deltaInKB + " KB of data");
+        log.debug("GC needed to free: {}KB of data", deltaInKB);
         doGC(deltaInKB);
         log.debug("GC terminated");
         gcCalls += 1;

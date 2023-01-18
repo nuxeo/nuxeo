@@ -24,8 +24,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 
 import ro.isdc.wro.cache.CacheKey;
@@ -41,7 +41,7 @@ import ro.isdc.wro.model.group.Inject;
  */
 public class NuxeoWroCacheKeyFactory extends DefaultCacheKeyFactory {
 
-    private static final Log log = LogFactory.getLog(NuxeoWroCacheKeyFactory.class);
+    private static final Logger log = LogManager.getLogger(NuxeoWroCacheKeyFactory.class);
 
     @Inject
     private GroupExtractor groupExtractor;
@@ -63,10 +63,7 @@ public class NuxeoWroCacheKeyFactory extends DefaultCacheKeyFactory {
                 }
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Cache key for request '%s' '%s': %s", request.getRequestURL(),
-                    request.getQueryString(), key));
-        }
+        log.debug("Cache key for request: {} {}: {}", request.getRequestURL(), request.getQueryString(), key);
         return key;
     }
 

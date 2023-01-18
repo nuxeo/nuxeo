@@ -21,10 +21,10 @@ package org.nuxeo.ecm.platform.oauth2.openid.auth;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class UserResolver {
 
-    private static final Log log = LogFactory.getLog(UserResolver.class);
+    private static final Logger log = LogManager.getLogger(UserResolver.class);
 
     private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder().filteredBy(
             CharacterPredicates.DIGITS).build();
@@ -60,7 +60,7 @@ public abstract class UserResolver {
                 return userManager.createUser(user);
             });
         } catch (NuxeoException e) {
-            log.error("Error while creating user " + nuxeoLogin + "in UserManager", e);
+            log.error("Error while creating user: {} in UserManager", nuxeoLogin, e);
             return null;
         }
 

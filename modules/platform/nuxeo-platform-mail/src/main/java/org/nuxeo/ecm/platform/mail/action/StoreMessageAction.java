@@ -26,8 +26,8 @@ import java.util.Map;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -41,9 +41,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class StoreMessageAction implements MessageAction {
 
-    public static final String MAIL_MESSAGE = "MailMessage";
+    private static final Logger log = LogManager.getLogger(StoreMessageAction.class);
 
-    private static final Log log = LogFactory.getLog(StoreMessageAction.class);
+    public static final String MAIL_MESSAGE = "MailMessage";
 
     protected final String parentPath;
 
@@ -57,9 +57,7 @@ public class StoreMessageAction implements MessageAction {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         Message message = context.getMessage();
         String title = message.getSubject();
-        if (log.isDebugEnabled()) {
-            log.debug("Storing message: " + message.getSubject());
-        }
+        log.debug("Storing message: {}", message.getSubject());
         Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
         CoreSession session = CoreInstance.getCoreSessionSystem(null);
         DocumentModel doc = session.createDocumentModel(getMailDocumentType());

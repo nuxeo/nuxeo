@@ -22,8 +22,6 @@ package org.nuxeo.ecm.core.redis.contribs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
@@ -38,8 +36,6 @@ import redis.clients.jedis.exceptions.JedisException;
  * @since 7.4
  */
 public class RedisUIDSequencer extends AbstractUIDSequencer {
-
-    protected static final Log log = LogFactory.getLog(RedisUIDSequencer.class);
 
     protected String namespace;
 

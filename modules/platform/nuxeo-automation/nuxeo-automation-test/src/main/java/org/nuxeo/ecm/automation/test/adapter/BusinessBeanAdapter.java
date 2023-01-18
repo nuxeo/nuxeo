@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.automation.test.adapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -27,8 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Document Model Adapter example server side
  */
 public class BusinessBeanAdapter extends BusinessAdapter {
-
-    private static final Log log = LogFactory.getLog(BusinessBeanAdapter.class);
 
     /**
      * Default constructor is needed for jackson mapping

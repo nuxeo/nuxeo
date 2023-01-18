@@ -30,8 +30,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.unboundid.scim.data.UserResource;
 import com.unboundid.scim.marshal.Unmarshaller;
@@ -49,18 +49,16 @@ import com.unboundid.scim.sdk.InvalidResourceException;
 @Consumes({ "application/xml", "application/json" })
 public class UserResourceReader implements MessageBodyReader<UserResource> {
 
-    private static final Log log = LogFactory.getLog(UserResourceReader.class);
+    private static final Logger log = LogManager.getLogger(UserResourceReader.class);
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return UserResource.class.isAssignableFrom(type);
     }
 
     @Override
-    public UserResource readFrom(Class<UserResource> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public UserResource readFrom(Class<UserResource> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
 
         Unmarshaller unmarshaller = null;
@@ -69,7 +67,7 @@ public class UserResourceReader implements MessageBodyReader<UserResource> {
         } else {
             unmarshaller = new NXJsonUnmarshaller();
         }
-         try {
+        try {
             return unmarshaller.unmarshal(entityStream, CoreSchema.USER_DESCRIPTOR, UserResource.USER_RESOURCE_FACTORY);
         } catch (InvalidResourceException e) {
             log.error(e, e);

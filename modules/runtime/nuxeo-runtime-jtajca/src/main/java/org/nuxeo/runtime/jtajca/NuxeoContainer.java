@@ -41,13 +41,13 @@ import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.XidImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xbean.naming.reference.SimpleReference;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -71,7 +71,7 @@ import io.opencensus.trace.Tracing;
  */
 public class NuxeoContainer {
 
-    protected static final Log log = LogFactory.getLog(NuxeoContainer.class);
+    private static final Logger log = LogManager.getLogger(NuxeoContainer.class);
 
     protected static RecoverableTransactionManager tmRecoverable;
 

@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 
 /**
@@ -34,8 +32,6 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
  * @since 7.10
  */
 public class StorageEntry implements Serializable {
-
-    protected Log log = LogFactory.getLog(StorageEntry.class);
 
     private static final long serialVersionUID = 1L;
 

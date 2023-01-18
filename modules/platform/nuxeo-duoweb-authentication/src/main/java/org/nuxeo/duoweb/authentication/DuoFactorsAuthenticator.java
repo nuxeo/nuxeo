@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.FormAuthenticator;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 
 import com.duosecurity.DuoWeb;
@@ -59,7 +58,7 @@ import com.google.common.cache.CacheBuilder;
  */
 public class DuoFactorsAuthenticator extends FormAuthenticator {
 
-    private static final Log log = LogFactory.getLog(FormAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(DuoFactorsAuthenticator.class);
 
     protected static final Random RANDOM = new SecureRandom();
 
@@ -96,8 +95,12 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     private String HOST;
 
-    private Cache<String, UserIdentificationInfo> credentials = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL).maximumSize(
-            CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+    private Cache<String, UserIdentificationInfo> credentials = CacheBuilder.newBuilder()
+                                                                            .concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
+                                                                            .maximumSize(CACHE_MAXIMUM_SIZE)
+                                                                            .expireAfterWrite(CACHE_TIMEOUT,
+                                                                                    TimeUnit.MINUTES)
+                                                                            .build();
 
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
@@ -105,12 +108,11 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         if (session == null || session.getAttribute(ONE_FACTOR_CHECK) == null
                 || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
             if (session != null)
-                session.setAttribute(START_PAGE_SAVE_KEY, getRequestedUrl
-                        (httpRequest));
+                session.setAttribute(START_PAGE_SAVE_KEY, getRequestedUrl(httpRequest));
             super.handleLoginPrompt(httpRequest, httpResponse, baseURL);
             return Boolean.TRUE;
-        } else if ((Boolean) session.getAttribute(ONE_FACTOR_CHECK)
-                && (session.getAttribute(TWO_FACTORS_CHECK) == null || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK))) {
+        } else if ((Boolean) session.getAttribute(ONE_FACTOR_CHECK) && (session.getAttribute(TWO_FACTORS_CHECK) == null
+                || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK))) {
             String redirectUrl = baseURL + DUO_FACTOR_PAGE;
             String postUrl = baseURL + LoginScreenHelper.getStartupPagePath();
             Map<String, String> parameters = new HashMap<>();
@@ -209,7 +211,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     public NuxeoPrincipal createIdentity(String username) throws LoginException {
         UserManager manager = Framework.getService(UserManager.class);
-        log.debug("createIdentity: " + username);
+        log.debug("createIdentity: {}", username);
         try {
             NuxeoPrincipal principal;
             if (manager == null) {

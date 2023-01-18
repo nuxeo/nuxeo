@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class VersioningComponent extends DefaultComponent implements VersioningService {
 
-    private static final Log log = LogFactory.getLog(VersioningComponent.class);
+    private static final Logger log = LogManager.getLogger(VersioningComponent.class);
 
     public static final String VERSIONING_SERVICE_XP = "versioningService";
 
@@ -278,13 +278,13 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate: " + klass, e);
         }
-        log.info("Registered versioning service: " + klass);
+        log.info("Registered versioning service: {}", klass);
         recompute();
     }
 
     protected void unregisterVersioningService(VersioningServiceDescriptor contrib) {
         versioningServices.remove(contrib);
-        log.info("Unregistered versioning service: " + contrib.className);
+        log.info("Unregistered versioning service: {}", contrib.className);
         recompute();
     }
 
@@ -294,7 +294,7 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     @Deprecated
     protected void registerVersioningRule(VersioningRuleDescriptor contrib) {
         versioningRulesRegistry.addContribution(contrib);
-        log.info("Registered versioning rule: " + contrib.getTypeName());
+        log.info("Registered versioning rule: {}", contrib::getTypeName);
         recompute();
     }
 
@@ -304,7 +304,7 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     @Deprecated
     protected void unregisterVersioningRule(VersioningRuleDescriptor contrib) {
         versioningRulesRegistry.removeContribution(contrib);
-        log.info("Unregistered versioning rule: " + contrib.getTypeName());
+        log.info("Unregistered versioning rule: {}", contrib::getTypeName);
         recompute();
     }
 
@@ -329,37 +329,37 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
 
     protected void registerVersioningPolicy(VersioningPolicyDescriptor contrib) {
         versioningPoliciesRegistry.addContribution(contrib);
-        log.info("Registered versioning policy: " + contrib.getId());
+        log.info("Registered versioning policy: {}", contrib::getId);
         recompute();
     }
 
     protected void unregisterVersioningPolicy(VersioningPolicyDescriptor contrib) {
         versioningPoliciesRegistry.removeContribution(contrib);
-        log.info("Unregistered versioning policy: " + contrib.getId());
+        log.info("Unregistered versioning policy: {}", contrib::getId);
         recompute();
     }
 
     protected void registerVersioningFilter(VersioningFilterDescriptor contrib) {
         versioningFiltersRegistry.addContribution(contrib);
-        log.info("Registered versioning filter: " + contrib.getId());
+        log.info("Registered versioning filter: {}", contrib::getId);
         recompute();
     }
 
     protected void unregisterVersioningFilter(VersioningFilterDescriptor contrib) {
         versioningFiltersRegistry.removeContribution(contrib);
-        log.info("Unregistered versioning filter: " + contrib.getId());
+        log.info("Unregistered versioning filter: {}", contrib::getId);
         recompute();
     }
 
     protected void registerVersioningRestriction(VersioningRestrictionDescriptor contrib) {
         versioningRestrictionsRegistry.addContribution(contrib);
-        log.info("Registered versioning restriction: " + contrib.getType());
+        log.info("Registered versioning restriction: {}", contrib::getType);
         recompute();
     }
 
     protected void unregisterVersioningRestriction(VersioningRestrictionDescriptor contrib) {
         versioningRestrictionsRegistry.removeContribution(contrib);
-        log.info("Unregistered versioning restriction: " + contrib.getType());
+        log.info("Unregistered versioning restriction: {}", contrib::getType);
         recompute();
     }
 

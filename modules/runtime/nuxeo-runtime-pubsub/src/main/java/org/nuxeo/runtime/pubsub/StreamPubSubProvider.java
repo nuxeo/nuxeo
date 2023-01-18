@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
@@ -43,7 +43,8 @@ import org.nuxeo.runtime.stream.StreamService;
  * @since 10.1
  */
 public class StreamPubSubProvider extends AbstractPubSubProvider {
-    private static final Log log = LogFactory.getLog(StreamPubSubProvider.class);
+
+    private static final Logger log = LogManager.getLogger(StreamPubSubProvider.class);
 
     public static final String GROUP_PREFIX = "pubsub/pubSub-";
 
@@ -73,7 +74,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
 
     @Override
     public void initialize(Map<String, String> options, Map<String, List<BiConsumer<String, byte[]>>> subscribers) {
-        log.debug("Initializing ");
+        log.debug("Initializing");
         super.initialize(options, subscribers);
         logConfig = options.getOrDefault(LOG_CONFIG_OPT, DEFAULT_LOG_CONFIG);
         logName = Name.ofUrn(options.get(LOG_NAME_OPT));
@@ -89,7 +90,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
     protected void startConsumerThread() {
         Subscriber subscriber = new Subscriber();
         thread = new Thread(subscriber, "Nuxeo-PubSub-Stream");
-        thread.setUncaughtExceptionHandler((t, e) -> log.error("Uncaught error on thread " + t.getName(), e));
+        thread.setUncaughtExceptionHandler((t, e) -> log.error("Uncaught error on thread: {}", t.getName(), e));
         thread.setPriority(Thread.NORM_PRIORITY);
         thread.setDaemon(true);
         thread.start();
@@ -116,7 +117,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         public void run() {
             // using different group name enable fan out
             Name group = Name.ofUrn(GROUP_PREFIX + nodeId);
-            log.debug("Starting subscriber thread with group: " + group);
+            log.debug("Starting subscriber thread with group: {}", group);
             try (LogTailer<Record> tailer = Framework.getService(StreamService.class)
                                                      .getLogManager(logConfig)
                                                      .createTailer(group, logName, codec)) {

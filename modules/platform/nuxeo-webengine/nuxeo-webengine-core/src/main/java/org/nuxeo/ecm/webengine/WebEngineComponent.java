@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
@@ -39,9 +39,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class WebEngineComponent extends DefaultComponent { // implements
-    // ConfigurationChangedListener
-    // {
+public class WebEngineComponent extends DefaultComponent {
+
+    private static final Logger log = LogManager.getLogger(WebEngineComponent.class);
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -54,8 +54,6 @@ public class WebEngineComponent extends DefaultComponent { // implements
     public static final String GUARD_XP = "guard"; // global guards
 
     public static final String FORM_XP = "form";
-
-    private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
     private WebEngine engine;
 
@@ -75,7 +73,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("Using web root: " + root);
+        log.info("Using web root: {}", root);
 
         engine = new WebEngine(new File(root, "root.war"));
     }
@@ -124,7 +122,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
             // Form form = (Form)contribution;
             // engine.getFormManager().registerForm(form);
         } else if (extensionPoint.equals(REQUEST_CONFIGURATION_XP)) {
-            log.warn("Extension point " + REQUEST_CONFIGURATION_XP + " is obsolete since 8.4, transactions are always active");
+            log.warn("Extension point: {} is obsolete since 8.4, transactions are always active",
+                    REQUEST_CONFIGURATION_XP);
         }
     }
 

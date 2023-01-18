@@ -27,8 +27,8 @@ import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Helper for common JDBC-related operations.
@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JDBCUtils {
 
-    private static final Log log = LogFactory.getLog(JDBCUtils.class);
+    private static final Logger log = LogManager.getLogger(JDBCUtils.class);
 
     /**
      * Maximum number of times we retry a call if the server says it's overloaded.
@@ -69,10 +69,9 @@ public class JDBCUtils {
                 // Listener refused the connection with the following error:
                 // ORA-12519, TNS:no appropriate service handler found
                 // ORA-12516, TNS:listener could not find available handler with matching protocol stack
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Connections open too fast, retrying in %ds: %s", Integer.valueOf(tryNo),
-                            e.getMessage().replace("\n", " ")));
-                }
+                var tryNoF = tryNo;
+                log.debug("Connections open too fast, retrying in {}s: {}", () -> tryNoF,
+                        () -> e.getMessage().replace("\n", " "));
                 try {
                     Thread.sleep(1000 * tryNo);
                 } catch (InterruptedException ie) { // deals with interrupt below

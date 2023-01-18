@@ -37,19 +37,19 @@ import java.util.zip.ZipEntry;
 
 import javax.management.JMException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FrameworkBootstrap implements LoaderConstants {
 
+    private static final Logger log = LogManager.getLogger(FrameworkBootstrap.class);
+
     protected static final String DEFAULT_BUNDLES_CP = "bundles/*:plugins/*";
 
     protected static final String DEFAULT_LIBS_CP = "lib/*:.:config";
-
-    private static final Log log = LogFactory.getLog(FrameworkBootstrap.class);
 
     protected File home;
 
@@ -119,7 +119,8 @@ public class FrameworkBootstrap implements LoaderConstants {
         startTime = System.currentTimeMillis();
         List<File> bundleFiles = buildClassPath();
         frameworkLoaderClass = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.FrameworkLoader");
-        Method init = frameworkLoaderClass.getMethod("initialize", ClassLoader.class, File.class, List.class, Map.class);
+        Method init = frameworkLoaderClass.getMethod("initialize", ClassLoader.class, File.class, List.class,
+                Map.class);
         init.invoke(null, loader.getClassLoader(), home, bundleFiles, env);
     }
 
@@ -175,7 +176,7 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     protected void printStartedMessage() {
-        log.info("Framework started in " + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
+        log.info("Framework started in {} sec.", () -> (System.currentTimeMillis() - startTime) / 1000);
     }
 
     protected File newFile(String path) throws IOException {

@@ -27,17 +27,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "commands")
 /**
  * @since 5.6
  */
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name = "commands")
 public class CommandSetInfo {
 
-    static final Log log = LogFactory.getLog(CommandSetInfo.class);
+    private static final Logger log = LogManager.getLogger(CommandSetInfo.class);
 
     public CommandSetInfo() {
     }

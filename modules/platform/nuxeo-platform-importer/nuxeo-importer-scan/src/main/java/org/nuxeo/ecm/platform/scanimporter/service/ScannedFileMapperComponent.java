@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ScannedFileMapperComponent extends DefaultComponent implements ScannedFileMapperService {
 
-    private static final Log log = LogFactory.getLog(ScannedFileMapperComponent.class);
+    private static final Logger log = LogManager.getLogger(ScannedFileMapperComponent.class);
 
     public static final String MAPPING_EP = "mapping";
 
@@ -123,11 +123,11 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
                     data.put(target, Boolean.valueOf(value));
                     continue;
                 }
-                log.error("Unknown target type, please look the scan importer configuration: "
-                        + fieldMap.getTargetType());
+                log.error("Unknown target type, please look the scan importer configuration: {}",
+                        fieldMap::getTargetType);
             }
-            log.error("Mulliple or no element(s) found for: " + fieldMap.sourceXPath + " for "
-                    + xmlFile.getAbsolutePath());
+            log.error("Multiple or no element(s) found for: {} for: {}", () -> fieldMap.sourceXPath,
+                    xmlFile::getAbsolutePath);
 
         }
 
@@ -161,8 +161,8 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
                         data.put(target, (Serializable) blob);
                     }
                 } else {
-                    log.error("File " + file.getAbsolutePath() + " is referenced by " + xmlFile.getAbsolutePath()
-                            + " but was not found");
+                    log.error("File: {} is referenced by: {} but was not found", file::getAbsolutePath,
+                            xmlFile::getAbsoluteFile);
                 }
             }
         }

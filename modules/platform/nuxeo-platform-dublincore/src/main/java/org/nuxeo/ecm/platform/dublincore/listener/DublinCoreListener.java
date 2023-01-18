@@ -36,8 +36,8 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -55,7 +55,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class DublinCoreListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(DublinCoreListener.class);
+    private static final Logger log = LogManager.getLogger(DublinCoreListener.class);
 
     public static final String DISABLE_DUBLINCORE_LISTENER = "disableDublinCoreListener";
 
@@ -70,7 +70,7 @@ public class DublinCoreListener implements EventListener {
      */
     @Override
     public void handleEvent(Event event) {
-        if (!(event.getContext() instanceof DocumentEventContext docCtx)) {
+        if (!(event.getContext()instanceof DocumentEventContext docCtx)) {
             return;
         }
 

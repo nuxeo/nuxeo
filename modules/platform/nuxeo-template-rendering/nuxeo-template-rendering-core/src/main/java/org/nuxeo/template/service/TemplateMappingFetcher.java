@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -36,8 +34,6 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
 
     protected static String repoName;
-
-    protected static final Log log = LogFactory.getLog(TemplateMappingFetcher.class);
 
     protected static String getRepoName() {
         if (repoName == null) {

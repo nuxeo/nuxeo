@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class PictureConversionRegistry extends ContributionFragmentRegistry<PictureConversion> {
 
-    private static final Log log = LogFactory.getLog(PictureConversionRegistry.class);
+    private static final Logger log = LogManager.getLogger(PictureConversionRegistry.class);
 
     protected final Map<String, PictureConversion> pictureConversions = new HashMap<>();
 
@@ -70,8 +70,7 @@ public class PictureConversionRegistry extends ContributionFragmentRegistry<Pict
             if (!StringUtils.isBlank(id)) {
                 pictureConversions.put(id, pictureConversion);
             } else {
-                log.warn(String.format("Missing 'id' for picture conversion %s, not registering it.",
-                        pictureConversion));
+                log.warn("Missing 'id' for picture conversion: {}, not registering it.", pictureConversion);
             }
 
         }

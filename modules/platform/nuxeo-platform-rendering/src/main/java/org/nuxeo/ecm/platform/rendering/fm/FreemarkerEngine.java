@@ -26,8 +26,8 @@ import java.io.Writer;
 import java.net.SocketException;
 import java.util.ResourceBundle;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -56,7 +56,7 @@ import freemarker.template.TemplateModelException;
  */
 public class FreemarkerEngine implements RenderingEngine {
 
-    private static final Log log = LogFactory.getLog(FreemarkerEngine.class);
+    private static final Logger log = LogManager.getLogger(FreemarkerEngine.class);
 
     public static final String RENDERING_ENGINE_KEY = "NX_RENDERING_ENGINE";
 
@@ -188,7 +188,7 @@ public class FreemarkerEngine implements RenderingEngine {
             env.process();
             bw.copyTo(writer);
         } catch (SocketException e) {
-            log.debug("Output closed while rendering " + template);
+            log.debug("Output closed while rendering: {}", template);
         } catch (IOException | TemplateException e) {
             throw new RenderingException(e);
         }

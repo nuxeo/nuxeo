@@ -34,8 +34,8 @@ import javax.servlet.ServletException;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Enable remote hot deploy and getting configuration from remote Nuxeo SDK servers
@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DevValve extends ValveBase {
 
-    Log log = LogFactory.getLog(DevValve.class);
+    private static final Logger log = LogManager.getLogger(DevValve.class);
 
     @Override
     public void invoke(Request req, Response resp) throws IOException, ServletException {
@@ -96,7 +96,7 @@ public class DevValve extends ValveBase {
                 out.flush();
             } catch (IOException e) {
                 resp.setStatus(500);
-                log.error("Failed to send file: " + file, e);
+                log.error("Failed to send file: {}", file, e);
             }
         }
     }

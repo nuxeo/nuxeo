@@ -30,8 +30,8 @@ import javax.el.BeanELResolver;
 import javax.el.ELContext;
 import javax.el.PropertyNotFoundException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -58,7 +58,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  */
 public class DocumentModelResolver extends BeanELResolver {
 
-    private static final Log log = LogFactory.getLog(DocumentModelResolver.class);
+    private static final Logger log = LogManager.getLogger(DocumentModelResolver.class);
 
     // XXX AT: see if getFeatureDescriptor needs to be overloaded to return
     // datamodels descriptors.
@@ -155,7 +155,7 @@ public class DocumentModelResolver extends BeanELResolver {
             context.setPropertyResolved(true);
         } else if (base instanceof Blob) {
             value = super.getValue(context, base, getBlobMapping(property));
-         }
+        }
 
         return value;
     }

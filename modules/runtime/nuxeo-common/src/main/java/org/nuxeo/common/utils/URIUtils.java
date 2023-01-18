@@ -32,8 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Helper class to parse a URI or build one given parameters.
@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class URIUtils {
 
-    private static final Log log = LogFactory.getLog(URIUtils.class);
+    private static final Logger log = LogManager.getLogger(URIUtils.class);
 
     // This is an utility class.
     private URIUtils() {
@@ -113,8 +113,7 @@ public final class URIUtils {
                     for (String item : items) {
                         String[] param = item.split("=");
                         if (param.length == 2) {
-                            parameters.put(URLDecoder.decode(param[0], "UTF-8"),
-                                    URLDecoder.decode(param[1], "UTF-8"));
+                            parameters.put(URLDecoder.decode(param[0], "UTF-8"), URLDecoder.decode(param[1], "UTF-8"));
                         } else if (param.length == 1) {
                             parameters.put(URLDecoder.decode(param[0], "UTF-8"), null);
                         }

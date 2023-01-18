@@ -41,8 +41,8 @@ import javax.mail.Session;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -56,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class RFC822ToTextConverter implements Converter {
 
-    private static final Log log = LogFactory.getLog(RFC822ToTextConverter.class);
+    private static final Logger log = LogManager.getLogger(RFC822ToTextConverter.class);
 
     private static final String MESSAGE_RFC822_MIMETYPE = "message/rfc822";
 

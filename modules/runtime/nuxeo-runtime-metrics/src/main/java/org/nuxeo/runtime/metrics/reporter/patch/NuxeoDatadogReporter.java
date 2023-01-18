@@ -42,8 +42,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.coursera.metrics.datadog.AwsHelper;
 import org.coursera.metrics.datadog.DefaultMetricNameFormatter;
 import org.coursera.metrics.datadog.MetricNameFormatter;
@@ -69,7 +69,8 @@ import io.dropwizard.metrics5.Timer;
  * @since 11.1
  */
 public class NuxeoDatadogReporter extends ScheduledReporter {
-    protected static final Log log = LogFactory.getLog(NuxeoDatadogReporter.class);
+
+    private static final Logger log = LogManager.getLogger(NuxeoDatadogReporter.class);
 
     private static final Expansion[] STATS_EXPANSIONS = { Expansion.MAX, Expansion.MEAN, Expansion.MIN,
             Expansion.STD_DEV, Expansion.MEDIAN, Expansion.P75, Expansion.P95, Expansion.P98, Expansion.P99,
@@ -95,8 +96,8 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
     private Transport.Request request;
 
     private NuxeoDatadogReporter(MetricRegistry metricRegistry, Transport transport, MetricFilter filter, Clock clock,
-                                 String host, EnumSet<Expansion> expansions, TimeUnit rateUnit, TimeUnit durationUnit,
-                                 MetricNameFormatter metricNameFormatter, List<String> tags, String prefix) {
+            String host, EnumSet<Expansion> expansions, TimeUnit rateUnit, TimeUnit durationUnit,
+            MetricNameFormatter metricNameFormatter, List<String> tags, String prefix) {
         super(metricRegistry, "datadog-reporter", filter, rateUnit, durationUnit);
         this.clock = clock;
         this.host = host;
@@ -229,9 +230,9 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
                 request.addGauge(new DatadogGauge(metricNameFormatter.format(name), value, timestamp, host, tags));
             }
         } catch (Exception e) {
-            String errorMessage = String.format("Error reporting gauge metric (name: %s, tags: %s) to Datadog, "
-                    + "continuing reporting other metrics.", name, tags);
-            log.error(errorMessage, e);
+            log.error(
+                    "Error reporting gauge metric (name: {}, tags: {}) to Datadog, continuing reporting other metrics.",
+                    name, tags, e);
         }
     }
 
@@ -255,9 +256,10 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
     }
 
     public static enum Expansion {
-        COUNT("count"), RATE_MEAN("meanRate"), RATE_1_MINUTE("1MinuteRate"), RATE_5_MINUTE("5MinuteRate"),
-        RATE_15_MINUTE("15MinuteRate"), MIN("min"), MEAN("mean"), MAX("max"), STD_DEV("stddev"),
-        MEDIAN("median"), P75("p75"), P95("p95"), P98("p98"), P99("p99"), P999("p999"), SUM("sum");
+        COUNT("count"), RATE_MEAN("meanRate"), RATE_1_MINUTE("1MinuteRate"), RATE_5_MINUTE(
+                "5MinuteRate"), RATE_15_MINUTE("15MinuteRate"), MIN("min"), MEAN("mean"), MAX("max"), STD_DEV(
+                        "stddev"), MEDIAN(
+                                "median"), P75("p75"), P95("p95"), P98("p98"), P99("p99"), P999("p999"), SUM("sum");
 
         public static EnumSet<Expansion> ALL = EnumSet.allOf(Expansion.class);
 

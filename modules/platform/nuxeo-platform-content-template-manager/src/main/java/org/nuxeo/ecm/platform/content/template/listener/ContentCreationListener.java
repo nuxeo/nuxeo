@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.platform.content.template.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ContentCreationListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(ContentCreationListener.class);
+    private static final Logger log = LogManager.getLogger(ContentCreationListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -52,7 +52,7 @@ public class ContentCreationListener implements EventListener {
             try {
                 Framework.getService(ContentTemplateService.class).executeFactoryForType(createdDocument);
             } catch (NuxeoException e) {
-                log.error("Error while executing content factory for type " + createdDocument.getType(), e);
+                log.error("Error while executing content factory for type: {}", createdDocument.getType(), e);
             }
         }
     }

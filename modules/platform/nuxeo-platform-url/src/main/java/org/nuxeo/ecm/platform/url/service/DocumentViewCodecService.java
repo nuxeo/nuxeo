@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
@@ -42,7 +42,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
 
     private static final long serialVersionUID = -4521897334653742494L;
 
-    private static final Log log = LogFactory.getLog(DocumentViewCodecService.class);
+    private static final Logger log = LogManager.getLogger(DocumentViewCodecService.class);
 
     public static final String NAME = DocumentViewCodecService.class.getName();
 
@@ -108,7 +108,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
                 descriptors.put(codecName, desc);
                 codecs.put(codecName, codec);
             }
-            log.debug("Added URL codec: " + codecName);
+            log.debug("Added URL codec: {}", codecName);
         }
     }
 
@@ -119,7 +119,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
             String codecName = codecDesc.getName();
             descriptors.remove(codecName);
             codecs.remove(codecName);
-            log.debug("Removed URL codec: " + codecName);
+            log.debug("Removed URL codec: {}", codecName);
         }
     }
 

@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class PropertyDecoder {
 
-    private static final Log log = LogFactory.getLog(PropertyDecoder.class);
+    private static final Logger log = LogManager.getLogger(PropertyDecoder.class);
 
     private static final Map<String, PropertyDecoder> decoders = new HashMap<>();
 

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -47,7 +47,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     private static final long serialVersionUID = -5256555810901945824L;
 
-    private static final Log log = LogFactory.getLog(ActionService.class);
+    private static final Logger log = LogManager.getLogger(ActionService.class);
 
     private ActionContributionHandler actions;
 
@@ -130,19 +130,13 @@ public class ActionService extends DefaultComponent implements ActionManager {
         if (action == null) {
             return false;
         }
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("Checking access for action '%s'...", action.getId()));
-        }
+        log.trace("Checking access for action '{}'...", action::getId);
 
         boolean granted = checkFilters(action, action.getFilterIds(), context);
         if (granted) {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Granting access for action '%s'", action.getId()));
-            }
+            log.trace("Granting access for action '{}'", action::getId);
         } else {
-            if (log.isTraceEnabled()) {
-                log.trace(String.format("Denying access for action '%s'", action.getId()));
-            }
+            log.trace("Denying access for action '{}'", action::getId);
         }
         return granted;
     }
@@ -304,14 +298,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 }
                 if (!filter.accept(action, context)) {
                     // denying filter found => ignore following filters
-                    if (log.isTraceEnabled()) {
-                        log.trace(String.format("Filter '%s' denied access", filterId));
-                    }
+                    log.trace("Filter '{}' denied access", filterId);
                     return false;
                 }
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format("Filter '%s' granted access", filterId));
-                }
+                log.trace("Filter '{}' granted access", filterId);
             }
             return true;
         } finally {

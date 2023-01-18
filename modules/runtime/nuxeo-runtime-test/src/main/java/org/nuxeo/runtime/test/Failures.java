@@ -22,8 +22,8 @@ package org.nuxeo.runtime.test;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -36,7 +36,8 @@ import junit.framework.AssertionFailedError;
  * @since 5.9.5
  */
 public class Failures {
-    private static final Log log = LogFactory.getLog(Failures.class);
+
+    private static final Logger log = LogManager.getLogger(Failures.class);
 
     private List<Failure> failures;
 

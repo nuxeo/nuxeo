@@ -23,14 +23,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggestionHandlerDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 public class SuggestionHandlerRegistry extends ContributionFragmentRegistry<SuggestionHandlerDescriptor> {
 
-    private static final Log log = LogFactory.getLog(SuggestionHandlerRegistry.class);
+    private static final Logger log = LogManager.getLogger(SuggestionHandlerRegistry.class);
 
     protected final Map<String, SuggestionHandlerDescriptor> suggestionHandlerDescriptors = new LinkedHashMap<>();
 
@@ -44,7 +44,7 @@ public class SuggestionHandlerRegistry extends ContributionFragmentRegistry<Sugg
 
     @Override
     public void contributionRemoved(String id, SuggestionHandlerDescriptor descriptor) {
-        log.trace(String.format("Removing contribution with id %s from suggestion handler descriptors", id));
+        log.trace("Removing contribution with id: {} from suggestion handler descriptors", id);
         suggestionHandlerDescriptors.remove(id);
     }
 
@@ -57,12 +57,10 @@ public class SuggestionHandlerRegistry extends ContributionFragmentRegistry<Sugg
     public void contributionUpdated(String id, SuggestionHandlerDescriptor contrib,
             SuggestionHandlerDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
-            log.trace(
-                    String.format("Putting contribution %s with id %s in suggestion handler descriptors", contrib, id));
+            log.trace("Putting contribution: {} with id: {} in suggestion handler descriptors", contrib, id);
             suggestionHandlerDescriptors.put(id, contrib);
         } else {
-            log.trace(
-                    String.format("Removing disabled contribution with id %s from suggestion handler descriptors", id));
+            log.trace("Removing disabled contribution with id: {} from suggestion handler descriptors", id);
             suggestionHandlerDescriptors.remove(id);
         }
     }
@@ -79,8 +77,7 @@ public class SuggestionHandlerRegistry extends ContributionFragmentRegistry<Sugg
 
     @Override
     public void merge(SuggestionHandlerDescriptor src, SuggestionHandlerDescriptor dst) {
-        log.trace(String.format("Merging contribution with id %s to contribution with id %s", src.getName(),
-                dst.getName()));
+        log.trace("Merging contribution with id: {} to contribution with id: {}", src::getName, dst::getName);
         // Enabled
         if (src.isEnabled() != dst.isEnabled()) {
             dst.setEnabled(src.isEnabled());

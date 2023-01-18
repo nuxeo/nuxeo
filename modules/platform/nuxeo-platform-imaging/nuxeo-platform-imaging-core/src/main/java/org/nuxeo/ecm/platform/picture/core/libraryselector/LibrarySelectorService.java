@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.platform.picture.core.libraryselector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -31,9 +31,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class LibrarySelectorService extends DefaultComponent implements LibrarySelector {
 
-    public static final String LIBRARY_SELECTOR = "LibrarySelector";
+    private static final Logger log = LogManager.getLogger(LibrarySelectorService.class);
 
-    private static final Log log = LogFactory.getLog(LibrarySelectorService.class);
+    public static final String LIBRARY_SELECTOR = "LibrarySelector";
 
     protected ImageUtils imageUtils;
 
@@ -52,7 +52,7 @@ public class LibrarySelectorService extends DefaultComponent implements LibraryS
             LibrarySelectorServiceDescriptor libraryDescriptor = (LibrarySelectorServiceDescriptor) contribution;
             registerLibrarySelector(libraryDescriptor);
         } else {
-            log.error("Extension point " + extensionPoint + "is unknown");
+            log.error("Extension point: {} is unknown", extensionPoint);
         }
     }
 
@@ -66,7 +66,7 @@ public class LibrarySelectorService extends DefaultComponent implements LibraryS
             return;
         }
         imageUtils = imageUtilsDescriptor.getNewInstance();
-        log.debug("Using " + imageUtils.getClass().getName() + " for ImageUtils.");
+        log.debug("Using: {} for ImageUtils.", imageUtils.getClass().getName());
     }
 
     protected void registerMetadataUtils(MetadataUtilsDescriptor metadataUtilsDescriptor) {
@@ -74,7 +74,7 @@ public class LibrarySelectorService extends DefaultComponent implements LibraryS
             return;
         }
         metadataUtils = metadataUtilsDescriptor.getNewInstance();
-        log.debug("Using " + metadataUtils.getClass().getName() + " for MetadataUtils.");
+        log.debug("Using: {} for MetadataUtils.", metadataUtils.getClass().getName());
     }
 
     @Override

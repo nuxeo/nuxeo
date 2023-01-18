@@ -24,8 +24,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class EmailBasedUserResolver extends UserResolver {
 
-    private static final Log log = LogFactory.getLog(EmailBasedUserResolver.class);
+    private static final Logger log = LogManager.getLogger(EmailBasedUserResolver.class);
 
     public EmailBasedUserResolver(OpenIDConnectProvider provider) {
         super(provider);
@@ -65,7 +65,7 @@ public class EmailBasedUserResolver extends UserResolver {
             return (String) user.getPropertyValue(userManager.getUserIdField());
 
         } catch (NuxeoException e) {
-            log.error("Error while search user in UserManager using email " + userInfo.getEmail(), e);
+            log.error("Error while search user in UserManager using email: {}", userInfo.getEmail(), e);
             return null;
         }
     }
@@ -78,7 +78,7 @@ public class EmailBasedUserResolver extends UserResolver {
 
             Framework.doPrivileged(() -> userManager.updateUser(user));
         } catch (NuxeoException e) {
-            log.error("Error while search user in UserManager using email " + userInfo.getEmail(), e);
+            log.error("Error while search user in UserManager using email: {}", userInfo.getEmail(), e);
             return null;
         }
         return user;

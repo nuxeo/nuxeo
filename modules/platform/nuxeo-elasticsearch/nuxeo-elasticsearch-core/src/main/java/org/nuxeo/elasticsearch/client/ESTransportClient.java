@@ -23,8 +23,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.elasticsearch.api.ESClient;
 import org.opensearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.opensearch.action.admin.indices.alias.IndicesAliasesRequestBuilder;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -51,15 +54,13 @@ import org.opensearch.common.collect.ImmutableOpenMap;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.index.engine.VersionConflictEngineException;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.elasticsearch.api.ESClient;
 
 /**
  * @since 9.3
  */
 public class ESTransportClient implements ESClient {
-    private static final Log log = LogFactory.getLog(ESTransportClient.class);
+
+    private static final Logger log = LogManager.getLogger(ESTransportClient.class);
 
     protected Client client;
 
@@ -70,7 +71,7 @@ public class ESTransportClient implements ESClient {
     @Override
     public boolean waitForYellowStatus(String[] indexNames, int timeoutSecond) {
         String timeout = timeoutSecond + "s";
-        log.debug("Waiting for cluster yellow health status, indexes: " + Arrays.toString(indexNames));
+        log.debug("Waiting for cluster yellow health status, indexes: {}", () -> Arrays.toString(indexNames));
         try {
             ClusterHealthResponse response = client.admin()
                                                    .cluster()
@@ -83,10 +84,10 @@ public class ESTransportClient implements ESClient {
                         "Elasticsearch Cluster health status not Yellow after " + timeout + " give up: " + response);
             }
             if (response.getStatus() != ClusterHealthStatus.GREEN) {
-                log.warn("Elasticsearch Cluster ready but not GREEN: " + response);
+                log.warn("Elasticsearch Cluster ready but not GREEN: {}", response);
                 return false;
             }
-            log.info("Elasticsearch Cluster ready: " + response);
+            log.info("Elasticsearch Cluster ready: {}", response);
         } catch (NoNodeAvailableException e) {
             throw new NuxeoException(
                     "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage());
@@ -145,11 +146,7 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public void createMapping(String indexName, String type, String jsonMapping) {
-        client.admin()
-              .indices()
-              .preparePutMapping(indexName)
-              .setSource(jsonMapping, XContentType.JSON)
-              .get();
+        client.admin().indices().preparePutMapping(indexName).setSource(jsonMapping, XContentType.JSON).get();
     }
 
     @Override

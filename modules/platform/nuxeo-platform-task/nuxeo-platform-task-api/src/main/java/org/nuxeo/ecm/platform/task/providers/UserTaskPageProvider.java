@@ -26,8 +26,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -57,7 +57,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(UserTaskPageProvider.class);
+    private static final Logger log = LogManager.getLogger(UserTaskPageProvider.class);
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
@@ -125,8 +125,8 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
                         userTasks.add(new DashBoardItemImpl(task, doc, getLocale()));
                     }
                 } else {
-                    log.warn(String.format("User '%s' has a task of type '%s' on a missing or deleted document",
-                            pal.getName(), task.getName()));
+                    log.warn("User: {} has a task of type: {} on a missing or deleted document", pal::getName,
+                            task::getName);
                 }
             }
         }

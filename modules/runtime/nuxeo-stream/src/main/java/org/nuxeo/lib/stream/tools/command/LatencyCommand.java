@@ -26,8 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
@@ -41,7 +40,8 @@ import org.nuxeo.lib.stream.log.Name;
  * @since 9.3
  */
 public class LatencyCommand extends Command {
-    private static final Log log = LogFactory.getLog(LatencyCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(LatencyCommand.class);
 
     protected static final String NAME = "latency";
 
@@ -83,14 +83,14 @@ public class LatencyCommand extends Command {
     }
 
     protected void latency(LogManager manager, Codec<Record> codec) {
-        log.info("# " + manager);
+        log.info("# {}", manager);
         for (Name name : manager.listAllNames()) {
             latency(manager, name, codec);
         }
     }
 
     protected void latency(LogManager manager, Name name, Codec<Record> codec) {
-        log.info("## Log: " + name + " partitions: " + manager.size(name));
+        log.info("## Log: {} partitions: {}", name, manager.size(name));
         List<Name> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions
@@ -106,20 +106,20 @@ public class LatencyCommand extends Command {
     }
 
     protected void renderLatency(Name group, List<Latency> latencies) {
-        log.info(String.format("### Group: %s", group));
+        log.info("### Group: {}", group);
         log.info(
                 "| partition | lag | latencyMs | latency | posTimestamp | posDate | curDate | pos | end | posOffset | endOffset | posKey |\n"
                         + "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |");
         Latency all = Latency.of(latencies);
-        log.info(String.format("|All|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|", all.lag().lag(), all.latency(),
+        log.info("|All|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", all.lag().lag(), all.latency(),
                 formatInterval(all.latency()), all.lower(), formatDate(all.lower()), formatDate(all.upper()),
-                all.lag().lower(), all.lag().upper(), all.lag().lowerOffset(), all.lag().upperOffset(), all.key()));
+                all.lag().lower(), all.lag().upper(), all.lag().lowerOffset(), all.lag().upperOffset(), all.key());
         if (verbose && latencies.size() > 1) {
             AtomicInteger i = new AtomicInteger();
-            latencies.forEach(lat -> log.info(String.format("|%d|%d|%d|%s|%d|%s|%s|%d|%d|%d|%d|%s|",
-                    i.getAndIncrement(), lat.lag().lag(), lat.latency(), formatInterval(lat.latency()), lat.lower(),
-                    formatDate(lat.lower()), formatDate(lat.upper()), lat.lag().lower(), lat.lag().upper(),
-                    lat.lag().lowerOffset(), lat.lag().upperOffset(), lat.key())));
+            latencies.forEach(lat -> log.info("|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|", i.getAndIncrement(),
+                    lat.lag().lag(), lat.latency(), formatInterval(lat.latency()), lat.lower(), formatDate(lat.lower()),
+                    formatDate(lat.upper()), lat.lag().lower(), lat.lag().upper(), lat.lag().lowerOffset(),
+                    lat.lag().upperOffset(), lat.key()));
         }
     }
 

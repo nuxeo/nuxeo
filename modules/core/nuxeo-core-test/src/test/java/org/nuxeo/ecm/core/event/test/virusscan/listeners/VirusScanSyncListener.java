@@ -23,8 +23,6 @@ package org.nuxeo.ecm.core.event.test.virusscan.listeners;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -48,8 +46,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class VirusScanSyncListener implements EventListener {
-
-    protected static final Log log = LogFactory.getLog(VirusScanSyncListener.class);
 
     @Override
     public void handleEvent(Event event) {

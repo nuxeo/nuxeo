@@ -36,8 +36,8 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.osgi.util.EntryFilter;
 import org.osgi.framework.Constants;
@@ -47,7 +47,7 @@ import org.osgi.framework.Constants;
  */
 public class JarBundleFile implements BundleFile {
 
-    private static final Log log = LogFactory.getLog(JarBundleFile.class);
+    private static final Logger log = LogManager.getLogger(JarBundleFile.class);
 
     protected JarFile jarFile;
 
@@ -63,8 +63,8 @@ public class JarBundleFile implements BundleFile {
         try {
             urlBase = "jar:" + new File(jarFile.getName()).toURI().toURL() + "!/";
         } catch (MalformedURLException e) {
-            log.error("Failed to convert bundle location to an URL: " + jarFile.getName()
-                    + ". Bundle getEntry will not work.", e);
+            log.error("Failed to convert bundle location to an URL: {}. Bundle getEntry will not work.",
+                    jarFile.getName(), e);
         }
     }
 
@@ -195,7 +195,7 @@ public class JarBundleFile implements BundleFile {
                 extractNestedJar(jarFile, path, dest);
                 nested.add(new NestedJarBundleFile(location, dest));
             } catch (FileNotFoundException e) {
-                log.error("A nested jar is referenced in manifest but not found: " + location);
+                log.error("A nested jar is referenced in manifest but not found: {}", location);
             } catch (IOException e) {
                 log.error(e);
             }

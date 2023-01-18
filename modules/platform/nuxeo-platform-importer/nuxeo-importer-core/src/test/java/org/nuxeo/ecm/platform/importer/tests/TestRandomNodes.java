@@ -24,28 +24,29 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class TestRandomNodes {
 
-    private static final Log log = LogFactory.getLog(TestRandomNodes.class);
+    private static final Logger log = LogManager.getLogger(TestRandomNodes.class);
 
     protected int nbDataNodes = 0;
 
     protected int nbFolderishNodes = 0;
 
-    protected int defaultSmallNbNodes = 1 + RandomTextSourceNode.DEFAULT_NB_DATA_NODES_PER_FOLDER
-            / RandomTextSourceNode.SMALL_NB_BODES_DIVIDER;
+    protected int defaultSmallNbNodes = 1
+            + RandomTextSourceNode.DEFAULT_NB_DATA_NODES_PER_FOLDER / RandomTextSourceNode.SMALL_NB_BODES_DIVIDER;
 
-    protected int defaultBigNbNodes = 1 + RandomTextSourceNode.DEFAULT_NB_DATA_NODES_PER_FOLDER
-            * RandomTextSourceNode.BIG_NB_NODES_FACTOR;
+    protected int defaultBigNbNodes = 1
+            + RandomTextSourceNode.DEFAULT_NB_DATA_NODES_PER_FOLDER * RandomTextSourceNode.BIG_NB_NODES_FACTOR;
 
     protected boolean isSmallNbNodes = false;
 
@@ -55,7 +56,7 @@ public class TestRandomNodes {
     public void testRandomWithProperties() throws Exception {
         RandomTextSourceNode root = RandomTextSourceNode.init(1000, 0, true, false, true, "en_US");
         List<SourceNode> children = root.getChildren();
-        for (SourceNode child: children) {
+        for (SourceNode child : children) {
             if (child.isFolderish()) {
                 assertNull(child.getBlobHolder().getBlob());
             } else {
@@ -80,7 +81,6 @@ public class TestRandomNodes {
         assertFalse(isBigNbNodes);
     }
 
-
     @Test
     public void testNonUniformDistribution() throws IOException {
 
@@ -100,15 +100,15 @@ public class TestRandomNodes {
         }
         int childrenCount = children.size();
         if (!isSmallNbNodes && childrenCount > 0 && childrenCount < defaultSmallNbNodes + 1) {
-            log.info("Found a node with a small number of children: " + childrenCount);
+            log.info("Found a node with a small number of children: {}", childrenCount);
             isSmallNbNodes = true;
         }
         if (!isBigNbNodes && childrenCount > defaultBigNbNodes - 1) {
-            log.info("Found a node with a big number of children: " + childrenCount);
+            log.info("Found a node with a big number of children: {}", childrenCount);
             isBigNbNodes = true;
         }
-        log.info("Number of visited nodes = " + (nbDataNodes + nbFolderishNodes) + "; Browsing folderish node number "
-                + nbFolderishNodes + ": " + node.getName() + " (" + childrenCount + " children)");
+        log.info("Number of visited nodes = {}; Browsing folderish node number {}: {} ({} children)",
+                nbDataNodes + nbFolderishNodes, nbFolderishNodes, node.getName(), childrenCount);
         for (SourceNode child : children) {
             if (child.isFolderish()) {
                 nbFolderishNodes++;
@@ -122,8 +122,8 @@ public class TestRandomNodes {
     }
 
     protected void logReport() {
-        log.info("Browsing completed: " + (nbDataNodes + nbFolderishNodes) + " nodes visited");
-        log.info("   Folderish nodes: " + (nbFolderishNodes));
-        log.info("        Data nodes: " + (nbDataNodes));
+        log.info("Browsing completed: {} nodes visited", nbDataNodes + nbFolderishNodes);
+        log.info("   Folderish nodes: {}", nbFolderishNodes);
+        log.info("        Data nodes: {}", nbDataNodes);
     }
 }

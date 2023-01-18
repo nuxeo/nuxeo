@@ -24,12 +24,16 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.task.Task;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestCopyUninstallValidation extends TestCopy {
+
+    private static final Logger log = LogManager.getLogger(TestCopyUninstallValidation.class);
 
     @Override
     protected void installDone(Task task, Throwable error) throws Exception {

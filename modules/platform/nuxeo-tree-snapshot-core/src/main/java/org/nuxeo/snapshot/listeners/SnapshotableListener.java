@@ -20,8 +20,8 @@ package org.nuxeo.snapshot.listeners;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -39,7 +39,7 @@ import org.nuxeo.snapshot.Snapshotable;
  */
 public class SnapshotableListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(SnapshotableListener.class);
+    private static final Logger log = LogManager.getLogger(SnapshotableListener.class);
 
     public static final String SNAPSHOT_VERSIONING_OPTION_KEY = "snapshotVersioningOption";
 
@@ -68,7 +68,7 @@ public class SnapshotableListener implements EventListener {
         try {
             option = VersioningOption.valueOf(versioningOption);
         } catch (IllegalArgumentException e) {
-            log.error(String.format("Unknown versioning option value '%s': %s", versioningOption, e.getMessage()));
+            log.error("Unknown versioning option value {}: {}", versioningOption, e.getMessage());
             log.debug(e, e);
             return;
         }

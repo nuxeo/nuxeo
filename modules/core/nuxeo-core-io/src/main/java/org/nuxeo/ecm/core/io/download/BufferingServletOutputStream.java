@@ -33,9 +33,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BufferingServletOutputStream extends ServletOutputStream {
 
-    private static final Log log = LogFactory.getLog(BufferingServletOutputStream.class);
+    private static final Logger log = LogManager.getLogger(BufferingServletOutputStream.class);
 
     /** Initial memory buffer size. */
     public static final int INITIAL = 4 * 1024; // 4 KB
@@ -231,7 +230,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
             } else {
                 len = 0;
             }
-            log.debug("buffered bytes: " + len);
+            log.debug("buffered bytes: {}", len);
         }
         boolean clientAbort = false;
         try {

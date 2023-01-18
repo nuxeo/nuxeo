@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -81,6 +81,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
 public class TestThreeDRenditions {
 
+    private static final Logger log = LogManager.getLogger(TestThreeDRenditions.class);
+
     public static final List<String> OVERRIDDEN_RENDITION_DEFINITION_NAMES = Arrays.asList("mini_top", "mini_left",
             "mini_front", "geo_100_tex_100", "geo_100_tex_050", "geo_050_tex_050", "geo_025_tex_025", "not_visible");
 
@@ -97,8 +99,6 @@ public class TestThreeDRenditions {
 
     @Inject
     protected ThreeDService threeDService;
-
-    private static final Log log = LogFactory.getLog(TestThreeDRenditions.class);
 
     protected void updateThreeDDocument(DocumentModel doc, ThreeD threeD) {
         BlobHolder results = threeDService.batchConvert(threeD);
@@ -169,10 +169,10 @@ public class TestThreeDRenditions {
         List<RenditionDefinition> renditionDefinitions = getThreeDRenditionDefinitions(doc);
         long timeDelta = (new Date()).getTime() - timeBefore.getTime();
         if (renditionDefinitions.size() == 0) {
-            log.warn(String.format("[NXP-21450] memory max: %dMB", Runtime.getRuntime().maxMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] memory total: %dMB", Runtime.getRuntime().totalMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] memory free: %dMB", Runtime.getRuntime().freeMemory() / 1024 / 1024));
-            log.warn(String.format("[NXP-21450] duration: %dms", timeDelta));
+            log.warn("[NXP-21450] memory max: {}MB", Runtime.getRuntime().maxMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] memory total: {}MB", Runtime.getRuntime().totalMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] memory free: {}MB", Runtime.getRuntime().freeMemory() / 1024 / 1024);
+            log.warn("[NXP-21450] duration: {}ms", timeDelta);
         }
         assertEquals(8, renditionDefinitions.size());
         for (RenditionDefinition definition : renditionDefinitions) {

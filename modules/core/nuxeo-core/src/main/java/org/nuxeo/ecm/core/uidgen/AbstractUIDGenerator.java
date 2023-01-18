@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.core.uidgen;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractUIDGenerator implements UIDGenerator {
 
-    private static final Log log = LogFactory.getLog(AbstractUIDGenerator.class);
+    private static final Logger log = LogManager.getLogger(AbstractUIDGenerator.class);
 
     private UIDSequencer sequencer;
 

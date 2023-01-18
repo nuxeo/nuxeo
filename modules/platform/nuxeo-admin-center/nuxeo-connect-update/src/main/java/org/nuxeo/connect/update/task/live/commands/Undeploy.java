@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
@@ -43,7 +43,7 @@ import org.osgi.framework.BundleException;
  */
 public class Undeploy extends UndeployPlaceholder {
 
-    private static final Log log = LogFactory.getLog(Undeploy.class);
+    private static final Logger log = LogManager.getLogger(Undeploy.class);
 
     public Undeploy() {
         super();
@@ -86,7 +86,7 @@ public class Undeploy extends UndeployPlaceholder {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
-            log.warn("Can't undeploy file " + file + ". File is missing.");
+            log.warn("Can't undeploy a non existing file: {}", file);
             return null;
         }
         boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);

@@ -18,8 +18,9 @@
  */
 package org.nuxeo.importer.stream.consumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.lib.stream.codec.Codec;
@@ -30,15 +31,14 @@ import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
-
 /**
  * Consumer Pool that block Nuxeo listeners during import.
  *
  * @since 9.1
  */
 public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
-    private static final Log log = LogFactory.getLog(DocumentConsumerPool.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(DocumentConsumerPool.class);
 
     protected static final String NOTIF_LISTENER = "notificationListener";
 
@@ -162,15 +162,15 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
         }
         if (policy.blockAsyncListeners()) {
             eventAdmin.setBlockAsyncHandlers(blockAsync);
-            log.debug("Restore asynchronous listeners blocking state: " + blockAsync);
+            log.debug("Restore asynchronous listeners blocking state: {}", blockAsync);
         }
         if (policy.blockPostCommitListeners()) {
             eventAdmin.setBlockSyncPostCommitHandlers(blockPostCommit);
-            log.debug("Restore post commit listeners blocking state: " + blockPostCommit);
+            log.debug("Restore post commit listeners blocking state: {}", blockPostCommit);
         }
         if (policy.bulkMode()) {
             eventAdmin.setBulkModeEnabled(bulkMode);
-            log.debug("Restore bulk mode: " + bulkMode);
+            log.debug("Restore bulk mode: {}", bulkMode);
         }
         if (policy.blockIndexing() && listenerIndexingEnabled) {
             eventAdmin.setListenerEnabledFlag(INDEXING_LISTENER, true);

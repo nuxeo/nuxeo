@@ -27,14 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.opensearch.action.bulk.BulkRequest;
-import org.opensearch.action.index.IndexRequest;
-import org.opensearch.common.bytes.BytesReference;
-import org.opensearch.common.io.stream.BytesStreamOutput;
-import org.opensearch.common.xcontent.XContentType;
-import org.opensearch.index.VersionType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -50,6 +44,12 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.common.io.stream.BytesStreamOutput;
+import org.opensearch.common.xcontent.XContentType;
+import org.opensearch.index.VersionType;
 
 /**
  * Build elasticsearch requests to index documents.
@@ -57,7 +57,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 10.3
  */
 public class IndexRequestComputation extends AbstractBulkComputation {
-    private static final Log log = LogFactory.getLog(IndexRequestComputation.class);
+
+    private static final Logger log = LogManager.getLogger(IndexRequestComputation.class);
 
     protected static final long MAX_RECORD_SIZE = 900_000;
 
@@ -90,12 +91,12 @@ public class IndexRequestComputation extends AbstractBulkComputation {
             try {
                 append(new IndexRequest(indexName).id(doc.getId())
                                                   .source(esi.source(doc), XContentType.JSON)
-                                                                         .versionType(VersionType.EXTERNAL)
-                                                                         .version(now));
+                                                  .versionType(VersionType.EXTERNAL)
+                                                  .version(now));
             } catch (IOException e) {
                 throw new NuxeoException("Cannot build source for document: " + doc.getId(), e);
             } catch (PropertyConversionException e) {
-                log.error("Skipping indexing of corrupted doc: " + doc.getId(), e);
+                log.error("Skipping indexing of corrupted doc: {}", doc.getId(), e);
             }
         }
     }
@@ -109,8 +110,8 @@ public class IndexRequestComputation extends AbstractBulkComputation {
             }
             if (indexRequest.source().length() > MAX_RECORD_SIZE) {
                 // Record overflow is handled by stream filter, warn because it is a performance concern
-                log.warn(String.format("Indexing request for doc: %s, is very large: %d", indexRequest.id(),
-                        indexRequest.source().length()));
+                log.warn("Indexing request for doc: {}, is very large: {}", indexRequest.id(),
+                        indexRequest.source().length());
             }
         }
         bulkRequest.add(indexRequest);
@@ -132,8 +133,8 @@ public class IndexRequestComputation extends AbstractBulkComputation {
         }
         if (count < bucketSize) {
             // documents might have been deleted otherwise there are warning logs (corrupted docs)
-            log.warn(String.format("Command: %s offset: %s created %d documents out of %d, %d not accessible",
-                    commandId, context.getLastOffset(), count, bucketSize, bucketSize - count));
+            log.warn("Command: {} offset: {} created {} documents out of {}, {} not accessible", commandId,
+                    context.getLastOffset(), count, bucketSize, bucketSize - count);
             DataBucket dataBucket = new DataBucket(commandId, bucketSize - count, toBytes(new BulkRequest()));
             context.produceRecord(OUTPUT_2,
                     Record.of(bucketKey + "-missing", BulkCodecs.getDataBucketCodec().encode(dataBucket)));

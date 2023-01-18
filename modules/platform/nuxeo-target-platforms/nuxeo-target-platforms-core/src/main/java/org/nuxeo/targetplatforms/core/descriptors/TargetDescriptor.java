@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -39,7 +39,7 @@ import org.w3c.dom.DocumentFragment;
 @SuppressWarnings("deprecation")
 public class TargetDescriptor {
 
-    private static final Log log = LogFactory.getLog(TargetDescriptor.class);
+    private static final Logger log = LogManager.getLogger(TargetDescriptor.class);
 
     @XNode("@id")
     String id;

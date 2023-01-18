@@ -24,8 +24,8 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DAT
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -40,7 +40,7 @@ public class MongoDBDocumentHistoryPageProvider extends MongoDBAuditPageProvider
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(MongoDBDocumentHistoryPageProvider.class);
+    private static final Logger log = LogManager.getLogger(MongoDBDocumentHistoryPageProvider.class);
 
     public static final String SINGLE_QUERY = String.format("{ \"%s\": \"?\" }", LOG_DOC_UUID);
 
@@ -74,8 +74,8 @@ public class MongoDBDocumentHistoryPageProvider extends MongoDBAuditPageProvider
         if (newParams == null) {
             Object[] params = super.getParameters();
             if (params.length != 1) {
-                log.error(this.getClass().getSimpleName()
-                        + " Expect only one parameter the document uuid, unexpected behavior may occur");
+                log.error("{} Expect only one parameter the document uuid, unexpected behavior may occur",
+                        getClass().getSimpleName());
             }
             CoreSession session;
             String uuid;

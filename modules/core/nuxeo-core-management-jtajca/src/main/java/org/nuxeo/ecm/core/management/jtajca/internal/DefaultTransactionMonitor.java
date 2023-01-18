@@ -29,12 +29,12 @@ import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
 import org.apache.geronimo.transaction.manager.XidImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DefaultTransactionMonitor implements TransactionManagerMonitor, TransactionMonitor, Synchronization {
 
-    protected static final Log log = LogFactory.getLog(DefaultTransactionMonitor.class);
+    private static final Logger log = LogManager.getLogger(DefaultTransactionMonitor.class);
 
     protected TransactionManagerImpl tm;
 
@@ -145,9 +145,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
         if (TransactionStatistics.Status.ACTIVE == info.status) {
             tm.registerInterposedSynchronization(this); // register end status
         }
-        if (log.isTraceEnabled()) {
-            log.trace(info.toString());
-        }
+        log.trace(info);
     }
 
     @Override
@@ -159,14 +157,12 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
                 stats = activeStatistics.remove(key);
             }
             if (stats == null) {
-                log.debug(key + " not found in active statistics map");
+                log.debug("{} not found in active statistics map", key);
                 return;
             }
             stats.split.stop();
             stats.split = null;
-            if (log.isTraceEnabled()) {
-                log.trace(stats);
-            }
+            log.trace(stats);
             if (TransactionStatistics.Status.COMMITTED.equals(stats.status)) {
                 lastCommittedStatistics = stats;
             } else if (TransactionStatistics.Status.ROLLEDBACK.equals(stats.status)) {
@@ -216,7 +212,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
             stats = activeStatistics.get(key);
         }
         if (stats == null) {
-            log.debug(key + " not found in active statistics map");
+            log.debug("{} not found in active statistics map", key);
         }
         return stats;
     }

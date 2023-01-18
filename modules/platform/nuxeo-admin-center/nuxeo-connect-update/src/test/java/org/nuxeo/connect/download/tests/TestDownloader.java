@@ -32,12 +32,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadingPackage;
@@ -54,7 +53,7 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 @Features(DownloadFeature.class)
 public class TestDownloader {
 
-    protected static final Log log = LogFactory.getLog(TestDownloader.class);
+    private static final Logger log = LogManager.getLogger(TestDownloader.class);
 
     @Inject
     protected ServletContainerFeature servletContainerFeature;
@@ -105,10 +104,10 @@ public class TestDownloader {
                     assertEquals("Fake package\nFake line\nFake line\nFake line\nFake line\n" //
                             + "Fake line\nFake line\nFake line\nFake line\nFake line\n", //
                             content);
-                    log.info(pkg.getId() + ":complete  - ");
+                    log.info("{}:complete  - ", pkg::getId);
                 } else {
                     downloadInProgress = true;
-                    log.info(pkg.getId() + ":in progress - ");
+                    log.info("{}:in progress - ", pkg::getId);
                 }
             }
             nbLoop++;

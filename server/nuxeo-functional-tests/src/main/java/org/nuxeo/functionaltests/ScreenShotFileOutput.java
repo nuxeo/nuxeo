@@ -24,8 +24,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriverException;
 
@@ -39,7 +39,7 @@ import org.openqa.selenium.WebDriverException;
  */
 public class ScreenShotFileOutput implements OutputType<File> {
 
-    private static final Log log = LogFactory.getLog(ScreenShotFileOutput.class);
+    private static final Logger log = LogManager.getLogger(ScreenShotFileOutput.class);
 
     protected String targetDir;
 
@@ -82,7 +82,7 @@ public class ScreenShotFileOutput implements OutputType<File> {
                 outputFolder.mkdir();
             }
             File tmpFile = File.createTempFile(screenshotFilePrefix, ".png", outputFolder);
-            log.trace(String.format("Created screenshot file named '%s'", tmpFile.getPath()));
+            log.trace("Created screenshot file named: {}", tmpFile::getPath);
             fos = new FileOutputStream(tmpFile);
             fos.write(data);
             return tmpFile;

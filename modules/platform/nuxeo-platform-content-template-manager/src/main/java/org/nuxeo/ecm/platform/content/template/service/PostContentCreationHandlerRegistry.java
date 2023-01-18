@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -35,10 +35,10 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class PostContentCreationHandlerRegistry extends
-        ContributionFragmentRegistry<PostContentCreationHandlerDescriptor> {
+public class PostContentCreationHandlerRegistry
+        extends ContributionFragmentRegistry<PostContentCreationHandlerDescriptor> {
 
-    private static final Log log = LogFactory.getLog(PostContentCreationHandlerRegistry.class);
+    private static final Logger log = LogManager.getLogger(PostContentCreationHandlerRegistry.class);
 
     protected Map<String, PostContentCreationHandlerDescriptor> postContentCreationHandlerDescriptors = new HashMap<>();
 
@@ -96,7 +96,7 @@ public class PostContentCreationHandlerRegistry extends
             try {
                 handlers.add(desc.getClazz().getDeclaredConstructor().newInstance());
             } catch (ReflectiveOperationException e) {
-                log.error("Unable to instantiate class for handler: " + desc.getName(), e);
+                log.error("Unable to instantiate class for handler: {}", desc.getName(), e);
             }
         }
         return handlers;

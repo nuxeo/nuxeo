@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class LoginScreenHelper {
 
-    protected static final Log log = LogFactory.getLog(LoginScreenHelper.class);
+    private static final Logger log = LogManager.getLogger(LoginScreenHelper.class);
 
     /**
      * @since 8.4
@@ -119,14 +119,14 @@ public class LoginScreenHelper {
     public static String getStartupPagePath() {
         LoginScreenConfig config = getConfig();
         if (config == null) {
-            log.debug("No <loginScreenConfig> contribution found, startup page path = " + DEFAULT_STARTUP_PAGE_PATH);
+            log.debug("No <loginScreenConfig> contribution found, startup page path: {}", DEFAULT_STARTUP_PAGE_PATH);
             return DEFAULT_STARTUP_PAGE_PATH;
         }
         LoginStartupPage defaultStartupPage = getDefaultStartupPage(config);
-        log.debug("Default <startupPage> contribution: " + defaultStartupPage);
+        log.debug("Default <startupPage> contribution: {}", defaultStartupPage);
         // No <startupPage> contributions, return home.html
         if (defaultStartupPage == null) {
-            log.debug("No <startupPage> contribution found, startup page path = " + DEFAULT_STARTUP_PAGE_PATH);
+            log.debug("No <startupPage> contribution found, startup page path: {}", DEFAULT_STARTUP_PAGE_PATH);
             return DEFAULT_STARTUP_PAGE_PATH;
         }
         // Return the path of the <startupPage> contribution with the highest priority
@@ -134,7 +134,7 @@ public class LoginScreenHelper {
         if (startupPagePath.startsWith("/")) {
             startupPagePath = startupPagePath.substring(1);
         }
-        log.debug("Startup page path = " + startupPagePath);
+        log.debug("Startup page path: {}", startupPagePath);
         return startupPagePath;
     }
 

@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Describes an operation chain execution.
@@ -37,6 +38,8 @@ import org.apache.commons.logging.LogFactory;
 public class OperationChain implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = LogManager.getLogger(OperationChain.class);
 
     protected final String id;
 
@@ -134,8 +137,7 @@ public class OperationChain implements Serializable {
      */
     public void addChainParameters(Map<String, Object> chainParameter) {
         if (chainParameter == null) {
-            LogFactory.getLog(OperationChain.class).warn("null parameters given to " + id,
-                    new Throwable("stack trace"));
+            log.warn("null parameters given to " + id, new Throwable("stack trace"));
             return;
         }
         chainParameters.putAll(chainParameter);

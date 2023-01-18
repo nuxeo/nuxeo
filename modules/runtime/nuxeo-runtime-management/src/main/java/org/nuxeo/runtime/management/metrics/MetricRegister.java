@@ -22,15 +22,11 @@ package org.nuxeo.runtime.management.metrics;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ResourcePublisher;
 
 public class MetricRegister {
-
-    protected static final Log log = LogFactory.getLog(MetricRegister.class);
 
     protected final HashMap<String, String> cnames = new HashMap<>();
 

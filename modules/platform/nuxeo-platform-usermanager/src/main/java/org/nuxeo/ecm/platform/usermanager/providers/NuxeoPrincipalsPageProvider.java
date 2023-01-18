@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.usermanager.providers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -37,8 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoPrincipalsPageProvider extends AbstractUsersPageProvider<NuxeoPrincipal> {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(NuxeoPrincipalsPageProvider.class);
 
     protected List<NuxeoPrincipal> pagePrincipals;
 

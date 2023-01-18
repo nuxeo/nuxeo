@@ -38,8 +38,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.jaxrs.io.InputStreamDataSource;
 import org.nuxeo.ecm.automation.jaxrs.io.SharedFileInputStream;
@@ -63,7 +63,7 @@ import com.fasterxml.jackson.core.JsonParser;
 @Deprecated
 public class MultiPartRequestReader implements MessageBodyReader<ExecutionRequest> {
 
-    private static final Log log = LogFactory.getLog(MultiPartRequestReader.class);
+    private static final Logger log = LogManager.getLogger(MultiPartFormRequestReader.class);
 
     @Context
     protected HttpServletRequest request;
@@ -113,8 +113,8 @@ public class MultiPartRequestReader implements MessageBodyReader<ExecutionReques
                 } else {
                     log.error("Not all parts received.");
                     for (int i = 0; i < cnt; i++) {
-                        log.error("Received parts: " + mp.getBodyPart(i).getHeader("Content-ID")[0] + " -> "
-                                + mp.getBodyPart(i).getContentType());
+                        log.error("Received parts: {} -> {}", mp.getBodyPart(i).getHeader("Content-ID")[0],
+                                mp.getBodyPart(i).getContentType());
                     }
                     throw new NuxeoException(
                             new IllegalStateException("Received only " + cnt + " part in a multipart request"));

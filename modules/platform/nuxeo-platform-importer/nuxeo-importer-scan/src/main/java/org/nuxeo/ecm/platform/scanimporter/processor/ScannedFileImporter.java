@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ScannedFileImporter {
 
-    private static final Log log = LogFactory.getLog(ScannedFileImporter.class);
+    private static final Logger log = LogManager.getLogger(ScannedFileImporter.class);
 
     protected static List<String> processedDescriptors;
 
@@ -97,7 +97,7 @@ public class ScannedFileImporter {
                     try {
                         Files.move(source, target);
                     } catch (IOException e) {
-                        log.error("An exception occured while moving " + source.getFileName(), e);
+                        log.error("An exception occurred while moving {}", source.getFileName(), e);
                     }
                 }
             }
@@ -133,8 +133,7 @@ public class ScannedFileImporter {
             return;
         }
 
-        log.info("Starting import process on path " + config.getTargetPath() + " from source "
-                + folder.getAbsolutePath());
+        log.info("Starting import process on path: {} from source: {}", config::getTargetPath, folder::getAbsolutePath);
         SourceNode src = initSourceNode(folder);
 
         ScanedFileSourceNode.useXMLMapping = config.useXMLMapping();
@@ -142,8 +141,7 @@ public class ScannedFileImporter {
                 !config.isCreateInitialFolder(), config.getBatchSize(), config.getNbThreads(), new BasicLogger(log));
 
         ImporterDocumentModelFactory factory = initDocumentModelFactory(config);
-        importer.setEnablePerfLogging(Framework.getService(
-                DefaultImporterService.class).getEnablePerfLogging());
+        importer.setEnablePerfLogging(Framework.getService(DefaultImporterService.class).getEnablePerfLogging());
         importer.setFactory(factory);
         importer.setTransactionTimeout(config.getTransactionTimeout());
         importer.run();
@@ -158,8 +156,8 @@ public class ScannedFileImporter {
      * @since 5.7.3
      */
     private ImporterDocumentModelFactory initDocumentModelFactory(ImporterConfig config) {
-        Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getService(
-                DefaultImporterService.class).getDocModelFactoryClass();
+        Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getService(DefaultImporterService.class)
+                                                                              .getDocModelFactoryClass();
         // Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
         Constructor<? extends ImporterDocumentModelFactory> cst = null;
 

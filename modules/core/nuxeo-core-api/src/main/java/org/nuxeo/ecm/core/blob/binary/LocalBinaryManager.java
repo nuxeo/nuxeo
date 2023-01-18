@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.LocalBlobStoreConfiguration;
 import org.nuxeo.runtime.trackers.files.FileEventTracker;
@@ -57,7 +57,7 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
  */
 public class LocalBinaryManager extends AbstractBinaryManager {
 
-    private static final Log log = LogFactory.getLog(LocalBinaryManager.class);
+    private static final Logger log = LogManager.getLogger(LocalBinaryManager.class);
 
     /** @deprecated since 11.1, use {@link LocalBlobStoreConfiguration} instead */
     @Deprecated
@@ -88,9 +88,9 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         super.initialize(blobProviderId, properties);
         LocalBlobStoreConfiguration config = new LocalBlobStoreConfiguration(properties);
 
-        log.info("Registering binary manager '" + blobProviderId + "' using "
-                + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))
-                + "binary store: " + config.storageDir.getParent());
+        log.info("Registering binary manager: {} using {} binary store: {}", () -> blobProviderId,
+                () -> getClass().equals(LocalBinaryManager.class) ? "" : getClass().getSimpleName() + " and",
+                config.storageDir::getParent);
         storageDir = config.storageDir.toFile();
         tmpDir = config.tmpDir.toFile();
         storageDir.mkdirs();
@@ -135,7 +135,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             return null;
         }
         if (!file.exists()) {
-            log.warn("cannot fetch content at " + file.getPath() + " (file does not exist), check your configuration");
+            log.warn("cannot fetch content at {} (file does not exist), check your configuration", file::getPath);
             return null;
         }
         return new Binary(file, digest, blobProviderId);
@@ -282,7 +282,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         public void mark(String digest) {
             File file = binaryManager.getFileForDigest(digest, false);
             if (!file.exists()) {
-                log.error("Unknown file digest: " + digest);
+                log.error("Unknown file digest: {}", digest);
                 return;
             }
             touch(file);
@@ -308,12 +308,12 @@ public class LocalBinaryManager extends AbstractBinaryManager {
                 long lastModified = file.lastModified();
                 long length = file.length();
                 if (lastModified == 0) {
-                    log.error("Cannot read last modified for file: " + file);
+                    log.error("Cannot read last modified for file: {}", file);
                 } else if (lastModified < minTime) {
                     status.sizeBinariesGC += length;
                     status.numBinariesGC++;
                     if (delete && !file.delete()) {
-                        log.warn("Cannot gc file: " + file);
+                        log.warn("Cannot gc file: {}", file);
                     }
                 } else {
                     status.sizeBinaries += length;
@@ -345,7 +345,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
                 r.setLength(r.length());
             }
         } catch (IOException e) {
-            log.error("Cannot set last modified for file: " + file, e);
+            log.error("Cannot set last modified for file: {}", file, e);
         }
     }
 

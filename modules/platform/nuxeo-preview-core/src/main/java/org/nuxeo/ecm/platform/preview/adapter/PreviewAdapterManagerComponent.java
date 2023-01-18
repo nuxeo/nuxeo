@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.preview.adapter.factories.BlobHolderPreviewAdapterFactory;
@@ -39,13 +39,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class PreviewAdapterManagerComponent extends DefaultComponent implements PreviewAdapterManager {
 
+    private static final Logger log = LogManager.getLogger(PreviewAdapterManagerComponent.class);
+
     public static final String ADAPTER_FACTORY_EP = "AdapterFactory";
 
     public static final String PREVIEWED_MIME_TYPE = "MimeTypePreviewer";
 
     public static final String BLOB_POST_PROCESSOR_EP = "blobPostProcessor";
-
-    private static final Log log = LogFactory.getLog(PreviewAdapterManagerComponent.class);
 
     protected Map<String, PreviewAdapterFactory> factoryRegistry = new HashMap<>();
 
@@ -115,7 +115,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
 
         String docType = doc.getType();
 
-        log.debug("Looking for HTMLPreviewAdapter for type " + docType);
+        log.debug("Looking for HTMLPreviewAdapter for type: {}", docType);
 
         if (factoryRegistry.containsKey(docType)) {
             log.debug("dedicated HTMLPreviewAdapter factory found");

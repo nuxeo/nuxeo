@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -59,8 +57,6 @@ public class SecurityService extends DefaultComponent {
 
     private static final String POLICIES_EXTENSION_POINT = "policies";
 
-    private static final Log log = LogFactory.getLog(SecurityService.class);
-
     private PermissionProviderLocal permissionProvider;
 
     private SecurityPolicyService securityPolicyService;
@@ -88,7 +84,8 @@ public class SecurityService extends DefaultComponent {
         } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionVisibilityDescriptor) {
             permissionProvider.registerDescriptor((PermissionVisibilityDescriptor) contribution);
-        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof SecurityPolicyDescriptor) {
+        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint)
+                && contribution instanceof SecurityPolicyDescriptor) {
             securityPolicyService.registerDescriptor((SecurityPolicyDescriptor) contribution);
         }
     }
@@ -100,7 +97,8 @@ public class SecurityService extends DefaultComponent {
         } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionVisibilityDescriptor) {
             permissionProvider.unregisterDescriptor((PermissionVisibilityDescriptor) contribution);
-        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint) && contribution instanceof SecurityPolicyDescriptor) {
+        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint)
+                && contribution instanceof SecurityPolicyDescriptor) {
             securityPolicyService.unregisterDescriptor((SecurityPolicyDescriptor) contribution);
         }
     }
@@ -168,10 +166,10 @@ public class SecurityService extends DefaultComponent {
         ACP acp = doc.getSession().getMergedACP(doc);
 
         List<String> result = new ArrayList<>();
-        for(String permission : permissions) {
+        for (String permission : permissions) {
             String[] resolvedPermissions = getPermissionsToCheck(permission);
             Access access = securityPolicyService.checkPermission(doc, acp, principal, permission, resolvedPermissions,
-                additionalPrincipals);
+                    additionalPrincipals);
             if (access == null || Access.UNKNOWN.equals(access)) {
                 access = acp == null ? null : acp.getAccess(additionalPrincipals, resolvedPermissions);
             }

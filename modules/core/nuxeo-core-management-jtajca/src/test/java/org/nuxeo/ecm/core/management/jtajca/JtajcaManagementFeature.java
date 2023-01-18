@@ -28,7 +28,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -56,6 +57,8 @@ import com.google.inject.name.Names;
 @Features(ManagementFeature.class)
 @Deploy("org.nuxeo.ecm.core.management.jtajca")
 public class JtajcaManagementFeature implements RunnerFeature {
+
+    private static final Logger log = LogManager.getLogger(JtajcaManagementFeature.class);
 
     protected static ObjectName nameOf(Class<?> itf) {
         try {
@@ -126,7 +129,7 @@ public class JtajcaManagementFeature implements RunnerFeature {
         void assertNoTransactions() {
             long count = monitor.getActiveCount();
             if (count == 0) {
-                LogFactory.getLog(JtajcaManagementFeature.class).debug(target + " was successful");
+                log.debug("{} was successful", target);
                 return;
             }
             throw new AssertionError(

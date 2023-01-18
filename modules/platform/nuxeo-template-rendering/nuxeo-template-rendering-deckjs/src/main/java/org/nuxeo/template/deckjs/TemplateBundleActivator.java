@@ -25,8 +25,8 @@ import java.net.URL;
 import java.util.Enumeration;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -41,11 +41,11 @@ import org.osgi.framework.BundleContext;
  */
 public class TemplateBundleActivator implements BundleActivator {
 
+    private static final Logger log = LogManager.getLogger(TemplateBundleActivator.class);
+
     protected static TemplateBundleActivator instance;
 
     private BundleContext context;
-
-    protected static final Log log = LogFactory.getLog(TemplateBundleActivator.class);
 
     private static File tmpDir;
 
@@ -106,7 +106,7 @@ public class TemplateBundleActivator implements BundleActivator {
     }
 
     public void expandResources() {
-        log.info("Deploying templates for bundle " + context.getBundle().getSymbolicName());
+        log.info("Deploying templates for bundle: {}", () -> context.getBundle().getSymbolicName());
 
         URL sampleRootURL = getResource(getTemplateResourcesRootPath());
         if (sampleRootURL == null) {

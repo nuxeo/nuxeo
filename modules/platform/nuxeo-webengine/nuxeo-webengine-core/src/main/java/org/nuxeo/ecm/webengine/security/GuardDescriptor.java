@@ -25,8 +25,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
 @XObject("permission")
 public class GuardDescriptor {
 
-    private static final Log log = LogFactory.getLog(GuardDescriptor.class);
+    private static final Logger log = LogManager.getLogger(GuardDescriptor.class);
 
     @XNode("@id")
     protected String id;

@@ -20,8 +20,6 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -32,8 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  */
 public class UserAdapterImpl implements UserAdapter {
-
-    private static final Log log = LogFactory.getLog(UserAdapterImpl.class);
 
     protected final DocumentModel doc;
 

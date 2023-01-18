@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -46,7 +46,7 @@ import com.ibm.icu.text.CharsetMatch;
  */
 public class NoteImporter extends AbstractFileImporter {
 
-    private static final Log log = LogFactory.getLog(NoteImporter.class);
+    private static final Logger log = LogManager.getLogger(NoteImporter.class);
 
     private static final String NOTE_TYPE = "Note";
 
@@ -71,7 +71,7 @@ public class NoteImporter extends AbstractFileImporter {
     @Override
     public boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
         if (!doc.hasSchema(NOTE_SCHEMA)) {
-            log.warn("Schema '" + NOTE_SCHEMA + "' is not available for document " + doc);
+            log.warn("Schema: {} is not available for document: {}", NOTE_SCHEMA, doc);
             return false;
         }
         return super.updateDocumentIfPossible(doc, content);
@@ -143,8 +143,9 @@ public class NoteImporter extends AbstractFileImporter {
         for (String charset : charsets) {
             try {
                 Charset cs = Charset.forName(charset);
-                CharsetDecoder d = cs.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(
-                        CodingErrorAction.REPORT);
+                CharsetDecoder d = cs.newDecoder()
+                                     .onMalformedInput(CodingErrorAction.REPORT)
+                                     .onUnmappableCharacter(CodingErrorAction.REPORT);
                 CharBuffer cb = d.decode(ByteBuffer.wrap(bytes));
                 if (cb.length() != 0 && cb.charAt(0) == '\ufeff') {
                     // remove BOM

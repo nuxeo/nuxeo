@@ -20,8 +20,8 @@ package org.nuxeo.ecm.webengine.jaxrs;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistry;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -38,7 +38,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  */
 public class Activator implements BundleActivator, ServiceTrackerCustomizer {
 
-    private static final Log log = LogFactory.getLog(Activator.class);
+    private static final Logger log = LogManager.getLogger(Activator.class);
 
     private static Activator instance;
 

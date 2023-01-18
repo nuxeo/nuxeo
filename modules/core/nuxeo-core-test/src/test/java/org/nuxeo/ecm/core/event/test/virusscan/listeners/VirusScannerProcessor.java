@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -48,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class VirusScannerProcessor extends AbstractLongRunningListener {
+
+    private static final Logger log = LogManager.getLogger(VirusScannerProcessor.class);
 
     @Override
     public boolean acceptEvent(Event event) {

@@ -25,8 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @SuppressWarnings("PackageAccessibility")
 public class AsyncEventExecutor {
 
-    private static final Log log = LogFactory.getLog(AsyncEventExecutor.class);
+    private static final Logger log = LogManager.getLogger(AsyncEventExecutor.class);
 
     public AsyncEventExecutor() {
     }
@@ -93,7 +93,7 @@ public class AsyncEventExecutor {
             TransactionHelper.runInTransaction(() -> {
                 EventBundle connectedBundle = new EventBundleImpl();
 
-                List<Event> events = ((ReconnectedEventBundleImpl)tmpBundle).getReconnectedEvents();
+                List<Event> events = ((ReconnectedEventBundleImpl) tmpBundle).getReconnectedEvents();
                 for (Event event : events) {
                     connectedBundle.push(event);
                 }
@@ -214,7 +214,7 @@ public class AsyncEventExecutor {
             super.cleanUp(ok, e);
             bundle.disconnect();
             if (e != null && !ExceptionUtils.hasInterruptedCause(e) && !(e instanceof ConcurrentUpdateException)) {
-                log.error("Failed to execute async event " + bundle.getName() + " on listener " + listenerName, e);
+                log.error("Failed to execute async event: {} on listener: {}", bundle.getName(), listenerName, e);
             }
             if (listener != null) {
                 EventStats stats = Framework.getService(EventStats.class);

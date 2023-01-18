@@ -27,18 +27,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.runtime.api.Framework;
 
 public class VirtualHostHelper {
 
+    private static final Logger log = LogManager.getLogger(VirtualHostHelper.class);
+
     private static final int HTTP_PORT_NUMBER = 80;
 
     private static final int HTTPS_PORT_NUMBER = 443;
-
-    private static final Log log = LogFactory.getLog(VirtualHostHelper.class);
 
     private static final String X_FORWARDED_HOST = "x-forwarded-host";
 
@@ -81,8 +81,8 @@ public class VirtualHostHelper {
         sbaseURL.append("://");
         sbaseURL.append(serverName);
         if (serverPort != 0) {
-            if ("http".equals(scheme) && serverPort != HTTP_PORT_NUMBER || "https".equals(scheme)
-                    && serverPort != HTTPS_PORT_NUMBER) {
+            if ("http".equals(scheme) && serverPort != HTTP_PORT_NUMBER
+                    || "https".equals(scheme) && serverPort != HTTPS_PORT_NUMBER) {
                 sbaseURL.append(':');
                 sbaseURL.append(serverPort);
             }

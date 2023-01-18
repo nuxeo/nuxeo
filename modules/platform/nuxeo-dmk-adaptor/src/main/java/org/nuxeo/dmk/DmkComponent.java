@@ -29,8 +29,8 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -42,6 +42,8 @@ import com.sun.jdmk.comm.internal.JDMKServerConnector;
 
 public class DmkComponent extends DefaultComponent {
 
+    private static final Logger log = LogManager.getLogger(DmkComponent.class);
+
     protected final Map<String, DmkProtocol> configs = new HashMap<>();
 
     protected HtmlAdaptorServer htmlAdaptor;
@@ -49,8 +51,6 @@ public class DmkComponent extends DefaultComponent {
     protected JDMKServerConnector httpConnector;
 
     protected JDMKServerConnector httpsConnector;
-
-    protected final Log log = LogFactory.getLog(DmkComponent.class);
 
     protected final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
@@ -122,13 +122,13 @@ public class DmkComponent extends DefaultComponent {
         }
         if (configs.containsKey("http")) {
             httpConnector = newConnector(configs.get("http"));
-            log.info("JMX HTTP connector available at " + httpConnector.getAddress()
-                    + " (not active, to be started in JMX console)");
+            log.info("JMX HTTP connector available at {} (not active, to be started in JMX console)",
+                    httpConnector::getAddress);
         }
         if (configs.containsKey("https")) {
             httpsConnector = newConnector(configs.get("https"));
-            log.info("JMX HTTPS connector available at " + httpConnector.getAddress()
-                    + " (not active, to be started in JMX console)");
+            log.info("JMX HTTPS connector available at {} (not active, to be started in JMX console)",
+                    httpConnector::getAddress);
         }
     }
 

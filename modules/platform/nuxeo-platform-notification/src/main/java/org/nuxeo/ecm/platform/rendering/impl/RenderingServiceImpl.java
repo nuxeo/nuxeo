@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.rendering.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.RenderingException;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class RenderingServiceImpl extends DefaultComponent implements RenderingService {
 
-    private static final Log log = LogFactory.getLog(RenderingServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(RenderingServiceImpl.class);
 
     public static final String EP_RENDER_ENGINES = "engines";
 
@@ -51,9 +51,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("register: " + contribution + ", ep: " + extensionPoint);
-        }
+        log.debug("register: {}, ep: {}", contribution, extensionPoint);
 
         if (extensionPoint.equals(EP_RENDER_ENGINES)) {
             RenderingEngineDescriptor desc = (RenderingEngineDescriptor) contribution;
@@ -62,7 +60,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
                 RenderingEngine engine = desc.newInstance();
                 engines.put(desc.getFormat(), engine);
             } catch (ReflectiveOperationException e) {
-                log.error("Cannot register rendering engine for " + desc.getFormat(), e);
+                log.error("Cannot register rendering engine for: {}", desc.getFormat(), e);
             }
         }
     }
@@ -89,8 +87,8 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
                 RenderingResult result = engine.process(renderingCtx);
                 if (result != null) {
                     ret.add(result);
-                } else if (log.isDebugEnabled()) {
-                    log.debug("rendering ignored by the engine " + engine.getFormatName());
+                } else {
+                    log.debug("rendering ignored by the engine: {}", engine::getFormatName);
                 }
             }
         }
@@ -101,9 +99,9 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
     public void registerEngine(RenderingEngine engine) {
         RenderingEngine existing = engines.put(engine.getFormatName(), engine);
         if (existing != null) {
-            log.debug("Replaced existing RenderingEngine " + engine.getFormatName());
-        } else if (log.isDebugEnabled()) {
-            log.debug("Registered RenderingEngine " + engine.getFormatName());
+            log.debug("Replaced existing RenderingEngine: {}", engine::getFormatName);
+        } else {
+            log.debug("Registered RenderingEngine: {}", engine::getFormatName);
         }
     }
 

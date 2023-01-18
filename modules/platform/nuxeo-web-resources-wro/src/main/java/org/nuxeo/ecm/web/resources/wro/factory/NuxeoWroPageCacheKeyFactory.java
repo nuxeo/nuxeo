@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 
 import ro.isdc.wro.cache.CacheKey;
@@ -47,7 +47,7 @@ import ro.isdc.wro.model.resource.ResourceType;
  */
 public class NuxeoWroPageCacheKeyFactory extends DefaultCacheKeyFactory {
 
-    private static final Log log = LogFactory.getLog(NuxeoWroPageCacheKeyFactory.class);
+    private static final Logger log = LogManager.getLogger(NuxeoWroPageCacheKeyFactory.class);
 
     protected static final String URI_MARKER = "/resource/page/";
 
@@ -111,10 +111,7 @@ public class NuxeoWroPageCacheKeyFactory extends DefaultCacheKeyFactory {
                 }
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Cache key for request '%s' '%s': %s", request.getRequestURL(),
-                    request.getQueryString(), key));
-        }
+        log.debug("Cache key for request: {} {}: {}", request.getRequestURL(), request.getQueryString(), key);
         return key;
     }
 

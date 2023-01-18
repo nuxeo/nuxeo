@@ -21,8 +21,8 @@
 
 package org.nuxeo.ecm.platform.mail.action;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentURLAction implements MessageAction {
 
-    private static final Log log = LogFactory.getLog(DocumentURLAction.class);
+    private static final Logger log = LogManager.getLogger(DocumentURLAction.class);
 
     protected DocumentViewCodecManager documentViewCodecManager;
 
@@ -52,9 +52,7 @@ public class DocumentURLAction implements MessageAction {
     @Override
     public boolean execute(ExecutionContext context) {
         DocumentModel documentModel = (DocumentModel) context.get("document");
-        if (log.isDebugEnabled()) {
-            log.debug("Document url computing for doc: " + documentModel);
-        }
+        log.debug("Document url computing for doc: {}", documentModel);
         documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         DocumentView docView = new DocumentViewImpl(documentModel);
         String url = documentViewCodecManager.getUrlFromDocumentView(docView, true, baseUrl);

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.video.extension;
 
 import static org.nuxeo.ecm.platform.video.service.VideoConversionWork.VIDEO_CONVERSIONS_DONE_EVENT;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -39,7 +39,7 @@ import org.nuxeo.runtime.kv.KeyValueStore;
  */
 public class VideoConversionDoneListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(VideoConversionDoneListener.class);
+    private static final Logger log = LogManager.getLogger(VideoConversionDoneListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -59,6 +59,6 @@ public class VideoConversionDoneListener implements EventListener {
     protected void incrementEventCount(String id) {
         KeyValueStore kv = Framework.getService(KeyValueService.class).getKeyValueStore("default");
         long count = kv.addAndGet(id, 1);
-        log.info(String.format("Increment conversion done for doc: %s, count: %d", id, count));
+        log.info("Increment conversion done for doc: {}, count: {}", id, count);
     }
 }

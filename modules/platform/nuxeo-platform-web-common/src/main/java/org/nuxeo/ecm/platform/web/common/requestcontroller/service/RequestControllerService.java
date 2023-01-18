@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -45,6 +45,8 @@ import com.thetransactioncompany.cors.CORSFilter;
  */
 public class RequestControllerService extends DefaultComponent implements RequestControllerManager {
 
+    private static final Logger log = LogManager.getLogger(RequestControllerService.class);
+
     public static final String FILTER_CONFIG_EP = "filterConfig";
 
     public static final String CORS_CONFIG_EP = "corsConfig";
@@ -53,8 +55,6 @@ public class RequestControllerService extends DefaultComponent implements Reques
      * @since 6.0
      */
     public static final String HEADERS_CONFIG_EP = "responseHeaders";
-
-    private static final Log log = LogFactory.getLog(RequestControllerService.class);
 
     protected final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<>();
 
@@ -77,7 +77,7 @@ public class RequestControllerService extends DefaultComponent implements Reques
         } else if (HEADERS_CONFIG_EP.equals(extensionPoint)) {
             headersRegistry.addContribution((NuxeoHeaderDescriptor) contribution);
         } else {
-            log.error("Unknown ExtensionPoint " + extensionPoint);
+            log.error("Unknown ExtensionPoint: {}", extensionPoint);
         }
     }
 

@@ -38,8 +38,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A LRU cache of {@link File}s with maximum filesystem size.
@@ -50,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class LRUFileCache implements FileCache {
 
-    private static final Log log = LogFactory.getLog(LRUFileCache.class);
+    private static final Logger log = LogManager.getLogger(LRUFileCache.class);
 
     /** Allowed key pattern, used as file path. */
     public static final Pattern SIMPLE_ASCII = Pattern.compile("[-_.@;a-zA-Z0-9]+");

@@ -19,8 +19,8 @@
  */
 package org.nuxeo.ecm.directory.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CoreDirectory extends AbstractDirectory {
 
-    private static final Log log = LogFactory.getLog(CoreDirectory.class);
+    private static final Logger log = LogManager.getLogger(CoreDirectory.class);
 
     protected final Schema schema;
 
@@ -89,9 +89,9 @@ public class CoreDirectory extends AbstractDirectory {
                     }
                     String createFolder = createPath.substring(createPath.lastIndexOf("/") + 1, createPath.length());
 
-                    log.info(String.format(
-                            "Root folder '%s' has not been found for the directory '%s' on the repository '%s', will create it with given ACL",
-                            createPath, getName(), descriptor.getRepositoryName()));
+                    log.info(
+                            "Root folder: {} has not been found for the directory: {} on the repository: {}, will create it with given ACL",
+                            createPath, getName(), descriptor.getRepositoryName());
                     if (descriptor.canCreateRootFolder()) {
                         try {
                             DocumentModel doc = session.createDocumentModel(parentFolder, createFolder, "Folder");
@@ -115,9 +115,9 @@ public class CoreDirectory extends AbstractDirectory {
                     }
 
                 } else {
-                    log.info(String.format(
-                            "Root folder '%s' has been found for the directory '%s' on the repository '%s', ACL will not be set",
-                            createPath, getName(), descriptor.getRepositoryName()));
+                    log.info(
+                            "Root folder: {} has been found for the directory: {} on the repository: {}, ACL will not be set",
+                            createPath, getName(), descriptor.getRepositoryName());
                 }
 
             }
@@ -132,11 +132,8 @@ public class CoreDirectory extends AbstractDirectory {
         localACL.add(new ACE(userOrGroupName, privilege, granted));
         rootFolder.setACP(acp, true);
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Set ACL on root folder '%s' : userOrGroupName = '%s', privilege = '%s' , granted = '%s' ",
-                    rootFolder.getPathAsString(), userOrGroupName, privilege, granted));
-        }
+        log.debug("Set ACL on root folder: {} : userOrGroupName: {}, privilege: {}, granted: {}",
+                rootFolder.getPathAsString(), userOrGroupName, privilege, granted);
 
         return rootFolder.getCoreSession().saveDocument(rootFolder);
     }

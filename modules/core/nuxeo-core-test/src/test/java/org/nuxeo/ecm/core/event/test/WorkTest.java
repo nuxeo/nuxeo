@@ -28,7 +28,8 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +57,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgreSQL.class)
 public class WorkTest {
+
+    private static final Logger log = LogManager.getLogger(WorkTest.class);
 
     @Inject
     protected WorkManagerFeature workManagerFeature;
@@ -227,9 +230,9 @@ public class WorkTest {
                 }
             } catch (Exception cause) {
                 if (!(cause instanceof ConcurrentUpdateException)) {
-                    LogFactory.getLog(WorkTest.class).error("non concurrent error caught (no retry)", cause);
+                    log.error("non concurrent error caught (no retry)", cause);
                 } else {
-                    LogFactory.getLog(WorkTest.class).info("concurrent error caught (should retry)", cause);
+                    log.info("concurrent error caught (should retry)", cause);
                 }
                 throw cause;
             } finally {

@@ -32,8 +32,7 @@ import org.apache.avro.reflect.ReflectDatumWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -48,7 +47,8 @@ import org.nuxeo.lib.stream.log.Name;
  * @since 10.2
  */
 public class DumpCommand extends Command {
-    private static final Log log = LogFactory.getLog(DumpCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(DumpCommand.class);
 
     protected static final String NAME = "dump";
 
@@ -107,9 +107,9 @@ public class DumpCommand extends Command {
         return true;
     }
 
-    protected void dump(LogManager manager, Name name, int partition, Name group, int limit, String codec,
-            Path output) throws InterruptedException {
-        log.info("Dump record to file: " + output);
+    protected void dump(LogManager manager, Name name, int partition, Name group, int limit, String codec, Path output)
+            throws InterruptedException {
+        log.info("Dump record to file: {}", output);
         Schema schema = ReflectData.get().getSchema(Record.class);
         DatumWriter<Record> datumWriter = new ReflectDatumWriter<>(schema);
         int count = 0;
@@ -129,7 +129,7 @@ public class DumpCommand extends Command {
         } catch (IOException e) {
             throw new StreamRuntimeException(e);
         }
-        log.info(String.format("%d record(s) dumped", count));
+        log.info("{} record(s) dumped", count);
     }
 
     protected LogTailer<Record> getTailer(LogManager manager, Name name, int partition, Name group, String codec) {

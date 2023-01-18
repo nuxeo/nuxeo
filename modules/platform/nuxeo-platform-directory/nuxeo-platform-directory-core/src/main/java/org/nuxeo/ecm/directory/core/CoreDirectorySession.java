@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -53,6 +53,8 @@ import com.google.common.collect.Collections2;
  */
 public class CoreDirectorySession extends BaseSession {
 
+    private static final Logger log = LogManager.getLogger(CoreDirectorySession.class);
+
     protected final String schemaIdField;
 
     protected final String schemaPasswordField;
@@ -64,8 +66,6 @@ public class CoreDirectorySession extends BaseSession {
     protected final String docType;
 
     protected static final String UUID_FIELD = "ecm:uuid";
-
-    private final static Log log = LogFactory.getLog(CoreDirectorySession.class);
 
     public CoreDirectorySession(CoreDirectory directory) {
         super(directory, null);
@@ -109,8 +109,7 @@ public class CoreDirectorySession extends BaseSession {
         if (!listDoc.isEmpty()) {
             // Should have only one
             if (listDoc.size() > 1) {
-                log.warn(String.format(
-                        "Found more than one result in getEntry, the first result only will be returned"));
+                log.warn("Found more than one result in getEntry, the first result only will be returned");
             }
             DocumentModel docResult = listDoc.get(0);
             if (isReadOnly()) {
@@ -155,8 +154,7 @@ public class CoreDirectorySession extends BaseSession {
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap) {
         if (isReadOnly()) {
-            log.warn(String.format("The directory '%s' is in read-only mode, could not create entry.",
-                    directory.getName()));
+            log.warn("The directory: {} is in read-only mode, could not create entry.", directory::getName);
             return null;
         }
         // TODO : deal with auto-versionning
@@ -193,8 +191,7 @@ public class CoreDirectorySession extends BaseSession {
     @Override
     public void updateEntry(DocumentModel docModel) {
         if (isReadOnly()) {
-            log.warn(String.format("The directory '%s' is in read-only mode, could not update entry.",
-                    directory.getName()));
+            log.warn("The directory: {} is in read-only mode, could not update entry.", directory::getName);
         } else {
 
             if (!isReadOnlyEntry(docModel)) {
@@ -251,8 +248,7 @@ public class CoreDirectorySession extends BaseSession {
     @Override
     public void deleteEntry(String id) {
         if (isReadOnly()) {
-            log.warn(String.format("The directory '%s' is in read-only mode, could not delete entry.",
-                    directory.getName()));
+            log.warn("The directory: {} is in read-only mode, could not delete entry.", directory::getName);
         } else {
             if (id == null) {
                 throw new DirectoryException("Can not update entry with a null id ");
@@ -269,8 +265,7 @@ public class CoreDirectorySession extends BaseSession {
     @Override
     public void deleteEntry(String id, Map<String, String> map) {
         if (isReadOnly()) {
-            log.warn(String.format("The directory '%s' is in read-only mode, could not delete entry.",
-                    directory.getName()));
+            log.warn("The directory: {} is in read-only mode, could not delete entry.", directory::getName);
         }
 
         Map<String, Serializable> props = new HashMap<>(map);
@@ -279,8 +274,7 @@ public class CoreDirectorySession extends BaseSession {
         DocumentModelList docList = query(props);
         if (!docList.isEmpty()) {
             if (docList.size() > 1) {
-                log.warn(
-                        String.format("Found more than one result in getEntry, the first result only will be deleted"));
+                log.warn("Found more than one result in getEntry, the first result only will be deleted");
             }
             deleteEntry(docList.get(0));
         } else {

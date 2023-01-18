@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
@@ -41,7 +41,7 @@ import org.nuxeo.launcher.config.ConfigurationException;
  */
 public class ConnectRegistrationBroker {
 
-    private static final Log log = LogFactory.getLog(ConnectRegistrationBroker.class);
+    private static final Logger log = LogManager.getLogger(ConnectRegistrationBroker.class);
 
     protected static ConnectRegistrationService registration() {
         return NuxeoConnectClient.getConnectRegistrationService();

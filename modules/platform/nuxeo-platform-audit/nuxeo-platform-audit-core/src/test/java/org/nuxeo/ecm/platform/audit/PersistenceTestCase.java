@@ -23,10 +23,8 @@ import java.net.URL;
 
 import javax.persistence.EntityManager;
 
-import org.junit.Before;
 import org.junit.After;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 
@@ -36,8 +34,6 @@ import org.nuxeo.ecm.core.persistence.PersistenceProvider;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public abstract class PersistenceTestCase {
-
-    protected static final Log log = LogFactory.getLog(PersistenceTestCase.class);
 
     protected PersistenceProvider persistenceProvider;
 

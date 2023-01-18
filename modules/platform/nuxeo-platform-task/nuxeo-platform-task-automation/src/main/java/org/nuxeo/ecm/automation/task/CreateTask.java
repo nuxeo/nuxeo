@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -62,9 +62,9 @@ import org.nuxeo.ecm.platform.task.TaskService;
                 "Workflow.CreateTask" })
 public class CreateTask {
 
-    public static final String ID = "Task.Create";
+    private static final Logger log = LogManager.getLogger(CreateTask.class);
 
-    private static final Log log = LogFactory.getLog(CreateTask.class);
+    public static final String ID = "Task.Create";
 
     public enum OperationTaskVariableName {
         acceptOperationChain, rejectOperationChain, createdFromCreateTaskOperation, taskDocument

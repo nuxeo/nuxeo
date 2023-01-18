@@ -20,8 +20,8 @@ package org.nuxeo.ecm.platform.importer.service;
 
 import static java.util.Objects.requireNonNullElseGet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.service.ImporterConfigurationDescriptor.DocumentModelFactory;
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DefaultImporterComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(DefaultImporterComponent.class);
+    private static final Logger log = LogManager.getLogger(DefaultImporterComponent.class);
 
     protected DefaultImporterService importerService;
 

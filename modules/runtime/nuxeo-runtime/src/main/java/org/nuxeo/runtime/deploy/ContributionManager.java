@@ -21,18 +21,18 @@
 
 package org.nuxeo.runtime.deploy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ContributionManager extends DependencyTree<String, Contribution> {
 
-    private static final Log log = LogFactory.getLog(ContributionManager.class);
+    private static final Logger log = LogManager.getLogger(ContributionManager.class);
 
     private final ManagedComponent component;
 

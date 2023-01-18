@@ -24,7 +24,7 @@ package org.nuxeo.ecm.platform.importer.log;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author Thierry Delprat
@@ -39,11 +39,11 @@ public class BufferredLogger extends BasicLogger {
 
     protected LinkedList<String> logStack = new LinkedList<>();
 
-    public BufferredLogger(Log javaLogger) {
+    public BufferredLogger(Logger javaLogger) {
         super(javaLogger);
     }
 
-    public BufferredLogger(Log javaLogger, int bufferSize) {
+    public BufferredLogger(Logger javaLogger, int bufferSize) {
         super(javaLogger);
         this.bufferSize = bufferSize;
     }

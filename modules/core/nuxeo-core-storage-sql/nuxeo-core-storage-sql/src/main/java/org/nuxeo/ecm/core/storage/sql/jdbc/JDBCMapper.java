@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-
 import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
 
 import java.io.Serializable;
@@ -47,8 +46,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -79,7 +78,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
-    private static final Log log = LogFactory.getLog(JDBCMapper.class);
+    private static final Logger log = LogManager.getLogger(JDBCMapper.class);
 
     protected static Map<String, CursorResult> cursorResults = new ConcurrentHashMap<>();
 
@@ -685,7 +684,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             long now = System.currentTimeMillis();
             if (now - lastCallTimestamp > (keepAliveSeconds * 1000)) {
                 if (unregisterCursor(scrollId)) {
-                    log.warn("Scroll " + scrollId + " timed out");
+                    log.warn("Scroll {} timed out", scrollId);
                 }
                 return true;
             }
@@ -718,7 +717,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 cursor.close();
                 return true;
             } catch (SQLException e) {
-                log.error("Failed to close cursor for scroll: " + scrollId, e);
+                log.error("Failed to close cursor for scroll: {}", scrollId, e);
                 // do not propagate exception on cleaning
             }
         }
@@ -887,9 +886,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (!dialect.supportsReadAcl()) {
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("updateReadAcls: updating");
-        }
+        log.debug("updateReadAcls: updating");
         try (Statement st = connection.createStatement()) {
             String sql = dialect.getUpdateReadAclsSql();
             if (logger.isLogEnabled()) {
@@ -901,9 +898,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             checkConcurrentUpdate(e);
             throw new NuxeoException("Failed to update read acls", e);
         }
-        if (log.isDebugEnabled()) {
-            log.debug("updateReadAcls: done.");
-        }
+        log.debug("updateReadAcls: done.");
     }
 
     @Override

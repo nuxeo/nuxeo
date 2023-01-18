@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Blob based on a string.
@@ -34,7 +34,7 @@ public class StringBlob extends AbstractBlob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(StringBlob.class);
+    private static final Logger log = LogManager.getLogger(StringBlob.class);
 
     protected final String string;
 
@@ -65,7 +65,7 @@ public class StringBlob extends AbstractBlob implements Serializable {
         try {
             return getByteArray().length;
         } catch (IOException e) {
-            log.error("Error while getting byte array from blob, returning -1: " + getFilename());
+            log.error("Error while getting byte array from blob, returning -1: {}", getFilename());
             return -1;
         }
     }

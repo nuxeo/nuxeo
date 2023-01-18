@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -48,7 +48,7 @@ import org.nuxeo.ecm.platform.types.SubType;
 public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITypesConfiguration>
         implements UITypesConfiguration {
 
-    private static final Log log = LogFactory.getLog(UITypesConfigurationAdapter.class);
+    private static final Logger log = LogManager.getLogger(UITypesConfiguration.class);
 
     protected DocumentRef documentRef;
 
@@ -101,7 +101,7 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
         try {
             value = (String) doc.getPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE);
         } catch (PropertyException e) {
-            log.debug("can't get default type for:" + doc.getPathAsString(), e);
+            log.debug("can't get default type for: {}", doc.getPathAsString(), e);
         }
         return value;
     }

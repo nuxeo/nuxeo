@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
-    private static final Log log = LogFactory.getLog(DigestAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(DigestAuthenticator.class);
 
     protected static final String DEFAULT_REALMNAME = "NUXEO";
 
@@ -163,7 +163,7 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
         try {
             String storedHA1 = getStoredHA1(username);
             if (StringUtils.isEmpty(storedHA1)) {
-                log.warn("Digest authentication failed, stored HA1 is empty for user: " + username);
+                log.warn("Digest authentication failed, stored HA1 is empty for user: {}", username);
                 return null;
             }
             String computedDigest = computeDigest(storedHA1, //
@@ -176,11 +176,11 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
             );
             String digest = headerMap.get("response");
             if (!computedDigest.equals(digest)) {
-                log.warn("Digest authentication failed for user: " + username + ", realm: " + headerMap.get(REALM));
+                log.warn("Digest authentication failed for user: {}, realm: {}", username, headerMap.get(REALM));
                 return null;
             }
         } catch (IllegalArgumentException | DirectoryException e) {
-            log.error("Digest authentication failed for user: " + username, e);
+            log.error("Digest authentication failed for user: {}", username, e);
             return null;
         }
         return username;

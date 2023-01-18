@@ -21,8 +21,8 @@ package org.nuxeo.ecm.collections.core.worker;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -37,7 +37,7 @@ public class RemoveFromCollectionWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(RemoveFromCollectionWork.class);
+    private static final Logger log = LogManager.getLogger(RemoveFromCollectionWork.class);
 
     public static final String CATEGORY = "removeFromCollection";
 
@@ -80,8 +80,8 @@ public class RemoveFromCollectionWork extends AbstractWork {
             }
             final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             for (int i = 0; i < collectionMemberIds.size(); i++) {
-                log.trace(String.format("Worker %s, deleting from Collection %s, processing CollectionMember %s",
-                        getId(), collectionId, collectionMemberIds.get(i)));
+                log.trace("Worker: {}, deleting from Collection: {}, processing CollectionMember: {}", getId(),
+                        collectionId, collectionMemberIds.get(i));
                 if (collectionMemberIds.get(i) != null) {
                     final DocumentRef collectionMemberRef = new IdRef(collectionMemberIds.get(i));
                     if (session.exists(collectionMemberRef)) {

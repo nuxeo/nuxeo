@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class NuxeoOAuth2Authenticator implements NuxeoAuthenticationPlugin {
 
-    private static final Log log = LogFactory.getLog(NuxeoOAuth2Authenticator.class);
+    private static final Logger log = LogManager.getLogger(NuxeoOAuth2Authenticator.class);
 
     public static final String ACCESS_TOKEN = "access_token";
 
@@ -97,14 +97,12 @@ public class NuxeoOAuth2Authenticator implements NuxeoAuthenticationPlugin {
             return null;
         }
         if (!clientService.hasClient(token.getClientId())) {
-            if (log.isTraceEnabled()) {
-                log.trace("OAuth2 token for unknown client: " + token.getClientId());
-            }
+            log.trace("OAuth2 token for unknown client: {}", token::getClientId);
             return null;
         }
 
         String username = token.getNuxeoLogin();
-        log.trace("OAuth2 token found for user: " + username);
+        log.trace("OAuth2 token found for user: {}", username);
         return new UserIdentificationInfo(username);
     }
 

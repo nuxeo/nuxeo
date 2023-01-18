@@ -35,8 +35,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.DummyServletOutputStream;
@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpS
 
 public class TestBufferingServletResponse {
 
-    private static final Log log = LogFactory.getLog(TestBufferingServletResponse.class);
+    private static final Logger log = LogManager.getLogger(TestBufferingServletResponse.class);
 
     protected OutputStream bout;
 

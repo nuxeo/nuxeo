@@ -45,8 +45,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -75,7 +75,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DialectPostgreSQL extends Dialect {
 
-    private static final Log log = LogFactory.getLog(DialectPostgreSQL.class);
+    private static final Logger log = LogManager.getLogger(DialectPostgreSQL.class);
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "english";
 
@@ -127,7 +127,7 @@ public class DialectPostgreSQL extends Dialect {
                         : repositoryDescriptor.getFulltextAnalyzer();
         pathOptimizationsEnabled = repositoryDescriptor != null && repositoryDescriptor.getPathOptimizationsEnabled();
         if (repositoryDescriptor != null) {
-            log.info("Path optimizations " + (pathOptimizationsEnabled ? "enabled" : "disabled"));
+            log.info("Path optimizations {}", () -> pathOptimizationsEnabled ? "enabled" : "disabled");
         }
         arrayColumnsEnabled = repositoryDescriptor != null && repositoryDescriptor.getArrayColumns();
         childNameUniqueConstraintEnabled = repositoryDescriptor != null

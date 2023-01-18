@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.work;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 @Features(CoreEventFeature.class)
 public class WorkManagerFeature implements RunnerFeature {
 
-    private static final Log log = LogFactory.getLog(WorkManagerFeature.class);
+    private static final Logger log = LogManager.getLogger(WorkManagerFeature.class);
 
     public static final String BUNDLE_TEST_NAME = "org.nuxeo.ecm.core.event.test";
 
@@ -123,7 +123,7 @@ public class WorkManagerFeature implements RunnerFeature {
         return WORK_MANAGER_STREAM.equals(workManagerType);
     }
 
-    public class WorksWaiter implements Waiter {
+    public static class WorksWaiter implements Waiter {
 
         @Override
         public boolean await(Duration duration) throws InterruptedException {

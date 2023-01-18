@@ -22,8 +22,8 @@ package org.nuxeo.launcher.connect;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.update.PackageException;
@@ -32,7 +32,7 @@ import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 
 public class StandaloneCallbackHolder implements CallbackHolder {
 
-    static final Log log = LogFactory.getLog(StandaloneCallbackHolder.class);
+    private static final Logger log = LogManager.getLogger(StandaloneCallbackHolder.class);
 
     protected PackageUpdateService pus = null;
 

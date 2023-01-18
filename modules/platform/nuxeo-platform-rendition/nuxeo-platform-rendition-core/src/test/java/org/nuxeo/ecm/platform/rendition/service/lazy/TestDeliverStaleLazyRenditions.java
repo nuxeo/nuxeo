@@ -31,8 +31,8 @@ import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -67,7 +67,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml")
 public class TestDeliverStaleLazyRenditions {
 
-    private static Log log = LogFactory.getLog(TestDeliverStaleLazyRenditions.class);
+    private static final Logger log = LogManager.getLogger(TestDeliverStaleLazyRenditions.class);
 
     protected static final String RENDITION_FILENAME = "testDoc.txt";
 
@@ -225,7 +225,7 @@ public class TestDeliverStaleLazyRenditions {
      */
     protected void checkStaleRenditions(boolean store) {
         IntStream.rangeClosed(1, STALE_RENDITION_COUNT).forEach(index -> {
-            log.debug(String.format("Check stale rendition #%d", index));
+            log.debug("Check stale rendition: #{}", index);
             checkStaleRendition(store);
         });
     }
@@ -250,7 +250,7 @@ public class TestDeliverStaleLazyRenditions {
     protected String checkStaleRendition(boolean store, boolean wait) {
         try {
             String latestRenditionDigest = DummyDocToTxt.getDigest(doc);
-            log.debug(String.format("Saved latest rendition digest: %s", latestRenditionDigest));
+            log.debug("Saved latest rendition digest: {}", latestRenditionDigest);
 
             log.debug("Update dc:issued on test document");
             Thread.sleep(1000);
@@ -312,8 +312,8 @@ public class TestDeliverStaleLazyRenditions {
         assertEquals(expectedFilename, blob.getFilename());
         assertTrue(blob.getLength() > 0);
         String digest = blob.getDigest();
-        log.debug(String.format("Comparing expected digest %s and %s rendition blob digest %s", expectedDigest,
-                isStale ? "stale" : "up-to-date", digest));
+        log.debug("Comparing expected digest: {} and {} rendition blob digest: {}", expectedDigest,
+                isStale ? "stale" : "up-to-date", digest);
         assertEquals(expectedDigest, digest);
     }
 

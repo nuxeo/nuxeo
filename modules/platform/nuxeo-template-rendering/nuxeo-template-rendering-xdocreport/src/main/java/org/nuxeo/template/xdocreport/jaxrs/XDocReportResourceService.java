@@ -27,8 +27,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -57,7 +57,7 @@ import fr.opensagres.xdocreport.remoting.resources.services.jaxrs.JAXRSResources
  */
 public class XDocReportResourceService extends AbstractResourceService implements JAXRSResourcesService {
 
-    protected static final Log log = LogFactory.getLog(XDocReportResourceService.class);
+    private static final Logger log = LogManager.getLogger(XDocReportResourceService.class);
 
     public XDocReportResourceService(CoreSession session) {
         super(session);

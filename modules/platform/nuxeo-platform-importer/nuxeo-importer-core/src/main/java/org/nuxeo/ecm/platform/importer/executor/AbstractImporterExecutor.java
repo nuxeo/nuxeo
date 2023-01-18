@@ -21,7 +21,7 @@
 
 package org.nuxeo.ecm.platform.importer.executor;
 
-import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
  */
 public abstract class AbstractImporterExecutor {
 
-    protected abstract Log getJavaLogger();
+    protected abstract Logger getJavaLogger();
 
     protected static ImporterLogger log;
 

@@ -38,8 +38,8 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -71,7 +71,7 @@ public class IOManagerImpl implements IOManager {
 
     private static final long serialVersionUID = 5789086884484295921L;
 
-    private static final Log log = LogFactory.getLog(IOManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(IOManagerImpl.class);
 
     protected final Map<String, IOResourceAdapter> adaptersRegistry;
 
@@ -87,7 +87,7 @@ public class IOManagerImpl implements IOManager {
     @Override
     public void addAdapter(String name, IOResourceAdapter adapter) {
         if (DOCUMENTS_ADAPTER_NAME.equals(name)) {
-            log.error("Cannot register adapter with name " + DOCUMENTS_ADAPTER_NAME);
+            log.error("Cannot register adapter with name: {}", DOCUMENTS_ADAPTER_NAME);
             return;
         }
         adaptersRegistry.put(name, adapter);
@@ -150,11 +150,11 @@ public class IOManagerImpl implements IOManager {
                 String filename = adapterName + ".xml";
                 IOResourceAdapter adapter = getAdapter(adapterName);
                 if (adapter == null) {
-                    log.warn("Adapter " + adapterName + " not found");
+                    log.warn("Adapter: {} not found", adapterName);
                     continue;
                 }
                 if (doneAdapters.contains(adapterName)) {
-                    log.warn("Export for adapter " + adapterName + " already done");
+                    log.warn("Export for adapter: {} already done", adapterName);
                     continue;
                 }
                 IOResources resources = adapter.extractResources(repo, allSources);
@@ -234,21 +234,21 @@ public class IOManagerImpl implements IOManager {
                 String ioAdapterName = entryName.substring(0, entryName.length() - 4);
                 IOResourceAdapter adapter = getAdapter(ioAdapterName);
                 if (adapter == null) {
-                    log.warn("Adapter " + ioAdapterName + " not available. Unable to import associated resources.");
+                    log.warn("Adapter: {} not available. Unable to import associated resources.", ioAdapterName);
                     continue;
                 }
                 IOResources resources = adapter.loadResourcesFromXML(zip);
                 IOResources newResources = adapter.translateResources(repo, resources, map);
-                log.info("store resources with adapter " + ioAdapterName);
+                log.info("store resources with adapter: {}", ioAdapterName);
                 adapter.storeResources(newResources);
             } else {
-                log.warn("skip entry: " + entryName);
+                log.warn("skip entry: {}", entryName);
             }
             try {
                 // we might have an undesired stream close in the client
                 zip.closeEntry();
             } catch (IOException e) {
-                log.error("Please check code handling entry " + entryName, e);
+                log.error("Please check code handling entry: {}", entryName, e);
             }
         }
         zip.close();
@@ -293,7 +293,7 @@ public class IOManagerImpl implements IOManager {
                 for (String adapterName : ioAdapters) {
                     IOResourceAdapter adapter = getAdapter(adapterName);
                     if (adapter == null) {
-                        log.warn("Adapter " + adapterName + " not found");
+                        log.warn("Adapter: {} not found", adapterName);
                         continue;
                     }
                     IOResources resources = adapter.extractResources(repo, allSources);

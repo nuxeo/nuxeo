@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.dbs.DBSHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;
@@ -54,7 +54,7 @@ import com.mongodb.client.MongoDatabase;
  */
 public class StorageConfiguration {
 
-    private static final Log log = LogFactory.getLog(StorageConfiguration.class);
+    private static final Logger log = LogManager.getLogger(StorageConfiguration.class);
 
     public static final String CORE_PROPERTY = "nuxeo.test.core";
 
@@ -280,7 +280,7 @@ public class StorageConfiguration {
     public List<String> getExternalBundles() {
         if (isDBSExternal()) {
             return Arrays.asList(String.format("org.nuxeo.ecm.core.storage.%s", coreType),
-                                 String.format("org.nuxeo.ecm.core.storage.%s.test", coreType));
+                    String.format("org.nuxeo.ecm.core.storage.%s.test", coreType));
         }
         return Collections.emptyList();
     }

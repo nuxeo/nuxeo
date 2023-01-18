@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Application;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -64,11 +64,11 @@ import freemarker.ext.servlet.ServletContextHashModel;
  */
 public class WebEngine implements ResourceLocator {
 
+    private static final Logger log = LogManager.getLogger(WebEngine.class);
+
     public static final String SKIN_PATH_PREFIX_KEY = "org.nuxeo.ecm.webengine.skinPathPrefix";
 
     protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
-
-    private static final Log log = LogFactory.getLog(WebEngine.class);
 
     static Map<Object, Object> loadMimeTypes() {
         Properties p = new Properties();

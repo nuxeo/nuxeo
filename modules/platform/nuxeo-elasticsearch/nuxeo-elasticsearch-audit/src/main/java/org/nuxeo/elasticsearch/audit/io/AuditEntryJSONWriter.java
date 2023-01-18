@@ -38,8 +38,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class AuditEntryJSONWriter {
 
-    protected static final Log log = LogFactory.getLog(AuditEntryJSONWriter.class);
+    private static final Logger log = LogManager.getLogger(AuditEntryJSONWriter.class);
 
     public static void asJSON(JsonGenerator jg, LogEntry logEntry) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -87,8 +87,7 @@ public class AuditEntryJSONWriter {
             ExtendedInfo ei = extended.get(key);
             if (ei != null && ei.getSerializableValue() != null) {
                 Serializable value = ei.getSerializableValue();
-                if (value instanceof String) {
-                    String strValue = (String) value;
+                if (value instanceof String strValue) {
                     if (isJsonContent(strValue)) {
                         jg.writeFieldName(key);
                         jg.writeRawValue(strValue);
@@ -141,8 +140,8 @@ public class AuditEntryJSONWriter {
     static class MapEntrySerializer extends JsonSerializer<Map> {
 
         @Override
-        public void serialize(Map map, JsonGenerator jgen, SerializerProvider provider) throws IOException,
-                JsonProcessingException {
+        public void serialize(Map map, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException, JsonProcessingException {
             jgen.writeStartObject();
             for (Object key : map.keySet()) {
                 jgen.writeObjectField((String) key, map.get(key));

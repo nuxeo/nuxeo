@@ -88,8 +88,6 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntry
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -117,7 +115,6 @@ import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -132,14 +129,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
-//required for JsonFactoryManager service used indirectly in #testComplexProperties by NuxeoPropertyData.convertComplexPropertyToCMIS
+// required for JsonFactoryManager service used indirectly in #testComplexProperties by
+// NuxeoPropertyData.convertComplexPropertyToCMIS
 @Deploy("org.nuxeo.ecm.webengine.core")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class CmisSuiteSession {
-
-    private static final Log log = LogFactory.getLog(CmisSuiteSession.class);
 
     public static final String NUXEO_ROOT_TYPE = "Root"; // from Nuxeo
 
@@ -184,8 +180,9 @@ public class CmisSuiteSession {
         setUpData();
         session.clear(); // clear cache
 
-        RepositoryInfo rid = session.getBinding().getRepositoryService().getRepositoryInfo(
-                coreSession.getRepositoryName(), null);
+        RepositoryInfo rid = session.getBinding()
+                                    .getRepositoryService()
+                                    .getRepositoryInfo(coreSession.getRepositoryName(), null);
         assertNotNull(rid);
         rootFolderId = rid.getRootFolderId();
         assertNotNull(rootFolderId);
@@ -348,8 +345,8 @@ public class CmisSuiteSession {
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         try {
-            session.getRootFolder().createDocument(properties, null, null, null, null, null,
-                    NuxeoSession.DEFAULT_CONTEXT);
+            session.getRootFolder()
+                   .createDocument(properties, null, null, null, null, null, NuxeoSession.DEFAULT_CONTEXT);
             fail("Creation without cmis:name should fail");
         } catch (CmisConstraintException e) {
             // ok
@@ -845,8 +842,9 @@ public class CmisSuiteSession {
         assertEquals("new title", copy.getPropertyValue("dc:title"));
 
         // copy is also available from the folder
-        Document copy2 = session.getRootFolder().createDocumentFromSource(doc,
-                Collections.singletonMap("dc:title", "other title"), null);
+        Document copy2 = session.getRootFolder()
+                                .createDocumentFromSource(doc, Collections.singletonMap("dc:title", "other title"),
+                                        null);
         assertNotSame(copy.getId(), copy2.getId());
         assertNotSame(doc.getId(), copy2.getId());
         assertEquals("other title", copy2.getPropertyValue("dc:title"));
@@ -1035,8 +1033,8 @@ public class CmisSuiteSession {
         props.put("dc:title", "newtitle");
         byte[] bytes = "foo-bar".getBytes("UTF-8");
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        ContentStream cs = session.getObjectFactory().createContentStream("test.pdf", bytes.length, "application/pdf",
-                in);
+        ContentStream cs = session.getObjectFactory()
+                                  .createContentStream("test.pdf", bytes.length, "application/pdf", in);
 
         ObjectId vid = ((Document) ob).checkIn(true, props, cs, "comment");
 
@@ -1290,8 +1288,8 @@ public class CmisSuiteSession {
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "throw_foo");
         try {
-            session.getRootFolder().createDocument(properties, null, null, null, null, null,
-                    NuxeoSession.DEFAULT_CONTEXT);
+            session.getRootFolder()
+                   .createDocument(properties, null, null, null, null, null, NuxeoSession.DEFAULT_CONTEXT);
             fail("should throw RecoverableClientException");
         } catch (CmisInvalidArgumentException e) {
             // ok, this is what we get for a 400
@@ -1336,15 +1334,15 @@ public class CmisSuiteSession {
         // date as long timestamp
         inputMap.put("dateProp", dateAsLong);
         properties.put("complexTest:complexItem", om.writeValueAsString(inputMap));
-        doc = session.getRootFolder().createDocument(properties, null, null, null, null, null,
-                NuxeoSession.DEFAULT_CONTEXT);
+        doc = session.getRootFolder()
+                     .createDocument(properties, null, null, null, null, null, NuxeoSession.DEFAULT_CONTEXT);
         docIds.add(doc.getId());
 
         // date as w3c string
         inputMap.put("dateProp", dateAsString);
         properties.put("complexTest:complexItem", om.writeValueAsString(inputMap));
-        doc = session.getRootFolder().createDocument(properties, null, null, null, null, null,
-                NuxeoSession.DEFAULT_CONTEXT);
+        doc = session.getRootFolder()
+                     .createDocument(properties, null, null, null, null, null, NuxeoSession.DEFAULT_CONTEXT);
         docIds.add(doc.getId());
 
         Map<String, Object> expectedMap = new HashMap<>();

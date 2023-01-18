@@ -20,8 +20,8 @@
 package org.nuxeo.runtime.server;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ServerComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(ServerComponent.class);
+    private static final Logger log = LogManager.getLogger(ServerComponent.class);
 
     public static final String XP_WEB_APP = "webapp";
 
@@ -68,7 +68,7 @@ public class ServerComponent extends DefaultComponent {
             try {
                 p = Integer.parseInt(configPort);
             } catch (NumberFormatException e) {
-                log.error("Invalid port for embedded servlet container: " + configPort);
+                log.error("Invalid port for embedded servlet container: {}", configPort);
             }
         }
         configurator.initialize(p);

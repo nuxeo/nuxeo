@@ -40,8 +40,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.collections.DependencyTree;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.Path;
@@ -61,6 +61,8 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
  */
 public class DeploymentPreprocessor {
 
+    private static final Logger log = LogManager.getLogger(DeploymentPreprocessor.class);
+
     public static final String FRAGMENT_FILE = "OSGI-INF/deployment-fragment.xml";
 
     public static final String CONTAINER_FILE = "META-INF/nuxeo-preprocessor.xml";
@@ -68,8 +70,6 @@ public class DeploymentPreprocessor {
     public static final String CONTAINER_FILE_COMPAT = "OSGI-INF/deployment-container.xml";
 
     private static final Pattern ARTIFACT_NAME_PATTERN = Pattern.compile("-[0-9]+");
-
-    private static final Log log = LogFactory.getLog(DeploymentPreprocessor.class);
 
     private final File dir;
 
@@ -115,7 +115,7 @@ public class DeploymentPreprocessor {
         // run container install instructions if any
         if (cd.install != null) {
             cd.install.setLogger(log);
-            log.info("Running custom installation for container: " + cd.name);
+            log.info("Running custom installation for container: {}", cd.name);
             cd.install.exec(cd.context);
         }
         if (cd.files != null) {
@@ -214,9 +214,9 @@ public class DeploymentPreprocessor {
     }
 
     protected void init(ContainerDescriptor cd, File dir) throws IOException {
-        log.info("Scanning directory: " + dir.getName());
+        log.info("Scanning directory: {}", dir::getName);
         if (!dir.exists()) {
-            log.warn("Directory doesn't exist: " + dir.getPath());
+            log.warn("Directory doesn't exist: {}", dir::getPath);
             return;
         }
         // sort input files in alphabetic order -> this way we are sure we get
@@ -308,7 +308,7 @@ public class DeploymentPreprocessor {
             // execute install instructions if any
             if (fd.install != null) {
                 fd.install.setLogger(log);
-                log.info("Running custom installation for fragment: " + fd.name);
+                log.info("Running custom installation for fragment: {}", fd.name);
                 fd.install.exec(cd.context);
             }
 
@@ -332,7 +332,7 @@ public class DeploymentPreprocessor {
                         td.template = TemplateParser.parse(file);
                     }
                 } else {
-                    log.warn("No template '" + tc.getTemplate() + "' found for deployment fragment:  " + fd.name);
+                    log.warn("No template: {} found for deployment fragment: {}", tc.getTemplate(), fd.name);
                     continue;
                 }
                 // get the marker where contribution should be inserted
@@ -394,8 +394,8 @@ public class DeploymentPreprocessor {
             FragmentDescriptor fd = (FragmentDescriptor) entry;
             assert fd != null;
             if (fd.name == null) {
-                log.error("Invalid fragments file: " + file.getName()
-                + ". Fragments declared in a -fragments.xml file must have names.");
+                log.error("Invalid fragments file: {}. Fragments declared in a -fragments.xml file must have names.",
+                        file::getName);
             } else {
                 cd.fragments.add(fd);
                 fd.fileName = fileName;
@@ -406,8 +406,9 @@ public class DeploymentPreprocessor {
 
     protected void processBundleForCompat(FragmentDescriptor fd, File file) {
         // TODO disable for now the warning
-        log.warn("Entering compatibility mode - Please update the deployment-fragment.xml in " + file.getName()
-        + " to use new dependency management");
+        log.warn(
+                "Entering compatibility mode - Please update the deployment-fragment.xml in {} to use new dependency management",
+                file::getName);
         Manifest mf = JarUtils.getManifest(file);
         if (mf != null) {
             fd.name = file.getName();

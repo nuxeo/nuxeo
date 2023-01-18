@@ -44,8 +44,8 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -62,7 +62,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class IndexingCommandsStacker {
 
-    protected static final Log log = LogFactory.getLog(IndexingCommandsStacker.class);
+    private static final Logger log = LogManager.getLogger(IndexingCommandsStacker.class);
 
     protected abstract Map<String, IndexingCommands> getAllCommands();
 
@@ -78,13 +78,9 @@ public abstract class IndexingCommandsStacker {
             return;
         }
         if ("/".equals(doc.getPathAsString())) {
-            if (log.isDebugEnabled()) {
-                log.debug("Skip indexing command for root document");
-            }
+            log.debug("Skip indexing command for root document");
             if (eventId.equals(DOCUMENT_SECURITY_UPDATED)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Indexing root document children to update their permissions");
-                }
+                log.debug("Indexing root document children to update their permissions");
                 DocumentModelList children = doc.getCoreSession().getChildren(doc.getRef());
                 children.forEach(child -> stackCommand(child, docCtx, eventId));
             }
@@ -96,9 +92,7 @@ public abstract class IndexingCommandsStacker {
     protected void stackCommand(DocumentModel doc, DocumentEventContext docCtx, String eventId) {
         Boolean block = (Boolean) docCtx.getProperty(ElasticSearchConstants.DISABLE_AUTO_INDEXING);
         if (block != null && block) {
-            if (log.isDebugEnabled()) {
-                log.debug("Indexing is disable, skip indexing command for doc " + doc);
-            }
+            log.debug("Indexing is disable, skip indexing command for doc: {}", doc);
             return;
         }
         boolean sync = isSynchronous(docCtx, doc);

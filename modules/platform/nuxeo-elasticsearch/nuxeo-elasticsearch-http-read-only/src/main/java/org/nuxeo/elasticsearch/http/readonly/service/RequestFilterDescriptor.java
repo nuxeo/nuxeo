@@ -20,8 +20,6 @@
 
 package org.nuxeo.elasticsearch.http.readonly.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
@@ -31,8 +29,6 @@ import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
  */
 @XObject("requestFilter")
 public class RequestFilterDescriptor {
-
-    private static final Log log = LogFactory.getLog(RequestFilterDescriptor.class);
 
     @XNode("@index")
     String index;

@@ -41,8 +41,8 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -84,7 +84,7 @@ import com.lowagie.text.pdf.PdfStamper;
  */
 public class SignatureServiceImpl extends DefaultComponent implements SignatureService {
 
-    private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(SignatureServiceImpl.class);
 
     protected static final int SIGNATURE_FIELD_HEIGHT = 50;
 
@@ -329,7 +329,8 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             }
 
             PdfSignatureAppearance pdfSignatureAppearance = pdfStamper.getSignatureAppearance();
-            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), (X509Certificate) certificate, null, PdfSignatureAppearance.SELF_SIGNED);
+            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), (X509Certificate) certificate, null,
+                    PdfSignatureAppearance.SELF_SIGNED);
             if (StringUtils.isBlank(reason)) {
                 reason = getSigningReason();
             }
@@ -338,7 +339,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
 
             pdfStamper.close(); // closes the file
 
-            log.debug("File " + outputFile.getAbsolutePath() + " created and signed with " + reason);
+            log.debug("File: {} created and signed with: {}", outputFile.getAbsolutePath(), reason);
 
             return blob;
         } catch (IOException | DocumentException | ReflectiveOperationException e) {

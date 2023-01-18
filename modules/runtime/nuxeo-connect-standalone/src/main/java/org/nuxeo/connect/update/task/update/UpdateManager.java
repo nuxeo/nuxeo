@@ -27,9 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.FileVersion;
 import org.nuxeo.connect.update.PackageException;
@@ -52,7 +51,7 @@ import org.nuxeo.connect.update.task.update.JarUtils.Match;
  */
 public class UpdateManager {
 
-    private static final Log log = LogFactory.getLog(UpdateManager.class);
+    private static final Logger log = LogManager.getLogger(UpdateManager.class);
 
     public static final String STUDIO_SNAPSHOT_VERSION = "0.0.0-SNAPSHOT";
 
@@ -134,8 +133,9 @@ public class UpdateManager {
             // Existing Entry but all versions provided only by packages with upgradeOnly => check missing base
             // version...
             if (createBaseVersion(entry)) {
-                log.warn("Registry repaired: JAR introduced without corresponding entry in the registry (copy task?) : "
-                        + key);
+                log.warn(
+                        "Registry repaired: JAR introduced without corresponding entry in the registry (copy task?) : {}",
+                        key);
             }
         }
         Version v = entry.getVersion(opt.version);
@@ -169,7 +169,7 @@ public class UpdateManager {
      */
     protected UpdateOptions shouldUpdate(String key, UpdateOptions opt, Match<File> currentJar)
             throws PackageException {
-        log.debug("Look for updating " + opt.file.getName());
+        log.debug("Look for updating {}", opt.file.getName());
         if (opt.upgradeOnly && currentJar == null) {
             log.debug("=> don't update (upgradeOnly)");
             return null;
@@ -191,13 +191,13 @@ public class UpdateManager {
         }
         FileVersion greatestFileVersion = greatestVersion.getFileVersion();
         if (currentJar == null) {
-            log.debug("=> update (new) " + greatestFileVersion);
+            log.debug("=> update (new) {}", greatestFileVersion);
             return optToUpdate;
         }
 
         // !opt.allowDowngrade && currentJar != null ...
         FileVersion currentVersion = new FileVersion(currentJar.version);
-        log.debug("=> comparing " + greatestFileVersion + " with " + currentVersion);
+        log.debug("=> comparing {} with {}", greatestFileVersion, currentVersion);
         if (greatestFileVersion.greaterThan(currentVersion)) {
             log.debug("=> update (greater)");
             return optToUpdate;
@@ -245,7 +245,7 @@ public class UpdateManager {
         if (m != null) {
             return m.object;
         } else {
-            log.trace("Could not find jar with key: " + entryKey);
+            log.trace("Could not find jar with key: {}", entryKey);
             return null;
         }
     }
@@ -259,7 +259,7 @@ public class UpdateManager {
     public void rollback(RollbackOptions opt) throws PackageException {
         Entry entry = registry.get(opt.getKey());
         if (entry == null) {
-            log.debug("Key not found in registry for: " + opt);
+            log.debug("Key not found in registry for: {}", opt);
             return;
         }
         Version v = entry.getVersion(opt.getVersion());
@@ -268,7 +268,7 @@ public class UpdateManager {
             v = entry.getVersion(STUDIO_SNAPSHOT_VERSION);
         }
         if (v == null) {
-            log.debug("Version not found in registry for: " + opt);
+            log.debug("Version not found in registry for: {}", opt);
             return;
         }
         // store current last version
@@ -338,7 +338,7 @@ public class UpdateManager {
     protected void rollbackVersion(Entry entry, Version version, RollbackOptions opt) throws PackageException {
         File versionFile = getBackup(version.getPath());
         if (!versionFile.isFile()) {
-            log.warn("Could not rollback version " + version.getPath() + " since the backup file was not found");
+            log.warn("Could not rollback version {} since the backup file was not found", version::getPath);
             return;
         }
         Match<File> m = findInstalledJar(entry.getKey());
@@ -356,7 +356,7 @@ public class UpdateManager {
             path = someFile.getCanonicalPath();
             serverPath = serverRoot.getCanonicalPath();
         } catch (IOException e) {
-            log.error("Failed to get a canonical path. " + "Fall back to absolute paths...", e);
+            log.error("Failed to get a canonical path. Fall back to absolute paths...", e);
             path = someFile.getAbsolutePath();
             serverPath = serverRoot.getAbsolutePath();
         }
@@ -481,7 +481,7 @@ public class UpdateManager {
     public void doUpdate(File oldFile, UpdateOptions opt) throws PackageException {
         deleteOldFile(opt.targetFile, oldFile, opt.deleteOnExit);
         copy(opt.file, opt.targetFile);
-        log.trace("Updated " + opt.targetFile);
+        log.trace("Updated: {}", opt.targetFile);
     }
 
 }

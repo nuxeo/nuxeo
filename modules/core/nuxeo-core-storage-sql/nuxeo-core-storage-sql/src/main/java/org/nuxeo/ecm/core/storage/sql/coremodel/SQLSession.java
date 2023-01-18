@@ -36,8 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -72,7 +72,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SQLSession extends BaseSession {
 
-    protected final Log log = LogFactory.getLog(SQLSession.class);
+    private static final Logger log = LogManager.getLogger(SQLSession.class);
 
     /**
      * Framework property to control whether negative ACLs (deny) are allowed.
@@ -488,10 +488,7 @@ public class SQLSession extends BaseSession {
         for (int index = 0; index < ids.size(); ++index) {
             Node eachNode = nodes.get(index);
             if (eachNode == null) {
-                if (log.isTraceEnabled()) {
-                    Serializable id = ids.get(index);
-                    log.trace("Cannot fetch document with id: " + id, new Throwable("debug stack trace"));
-                }
+                log.trace("Cannot fetch document with id: {}", ids.get(index), new Throwable("debug stack trace"));
                 continue;
             }
             Document doc;

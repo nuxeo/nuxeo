@@ -32,8 +32,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,9 +76,6 @@ public class TestProcessingWithFileNote {
     private DocumentModel testDoc;
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(TestProcessingWithFileNote.class);
 
     protected void setupTestDocs() throws Exception {
 

@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.collections.core.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RestoredCollectionListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(RestoredCollectionListener.class);
+    private static final Logger log = LogManager.getLogger(RestoredCollectionListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -56,8 +56,8 @@ public class RestoredCollectionListener implements EventListener {
         DocumentModel version = null;
         if (eventId.equals(DocumentEventTypes.BEFORE_DOC_RESTORE)) {
             doc = docCxt.getSourceDocument();
-            final String versionRefId = (String) docCxt.getProperties().get(
-                    VersioningDocument.RESTORED_VERSION_UUID_KEY);
+            final String versionRefId = (String) docCxt.getProperties()
+                                                       .get(VersioningDocument.RESTORED_VERSION_UUID_KEY);
             version = docCxt.getCoreSession().getDocument(new IdRef(versionRefId));
             if (!collectionManager.isCollection(doc)) {
                 return;
@@ -66,7 +66,7 @@ public class RestoredCollectionListener implements EventListener {
             return;
         }
 
-        log.trace(String.format("Collection %s restored", doc.getId()));
+        log.trace("Collection {} restored", doc::getId);
 
         collectionManager.processRestoredCollection(doc, version);
 

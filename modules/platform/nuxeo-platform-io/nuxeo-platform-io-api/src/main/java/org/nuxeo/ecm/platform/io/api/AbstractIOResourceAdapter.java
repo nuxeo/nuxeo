@@ -28,8 +28,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 
@@ -44,7 +44,7 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
 
     private static final long serialVersionUID = 4399167777434048174L;
 
-    private static final Log log = LogFactory.getLog(AbstractIOResourceAdapter.class);
+    private static final Logger log = LogManager.getLogger(AbstractIOResourceAdapter.class);
 
     protected Map<String, Serializable> properties;
 
@@ -94,8 +94,7 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
         if (propValue instanceof String) {
             properties.put(propName, Boolean.valueOf((String) propValue));
         } else {
-            log.error(String.format("Property %s needs a string representing a boolean:" + " invalid value %s",
-                    propName, propValue));
+            log.error("Property: {} needs a string representing a boolean, invalid value: {}", propName, propValue);
         }
     }
 
@@ -108,7 +107,7 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
             return;
         }
         if (!(propValue instanceof String)) {
-            log.error(String.format("Property %s needs a string value:" + " invalid value %s", propName, propValue));
+            log.error("Property: {} needs a string value, invalid value: {}", propName, propValue);
         }
         properties.put(propName, propValue);
     }
@@ -122,7 +121,7 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
             return;
         }
         if (!(propValue instanceof String[])) {
-            log.error(String.format("Property %s needs a string array, invalid value %s", propName, propValue));
+            log.error("Property: {} needs a string array, invalid value: {}", propName, propValue);
         }
         properties.put(propName, propValue);
     }

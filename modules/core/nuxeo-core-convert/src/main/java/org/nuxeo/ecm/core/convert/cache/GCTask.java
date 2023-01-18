@@ -23,8 +23,8 @@ package org.nuxeo.ecm.core.convert.cache;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 
 /**
@@ -34,9 +34,9 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
  */
 public class GCTask implements Runnable {
 
-    public boolean GCEnabled = true;
+    private static final Logger log = LogManager.getLogger(GCTask.class);
 
-    private static final Log log = LogFactory.getLog(GCTask.class);
+    public boolean GCEnabled = true;
 
     @Override
     public void run() {
@@ -48,10 +48,10 @@ public class GCTask implements Runnable {
 
                 if (gcInterval < 0) {
                     // for tests
-                    log.debug("GC sleeps for " + -gcInterval);
+                    log.debug("GC sleeps for {}", () -> -gcInterval);
                     Thread.sleep(-gcInterval);
                 } else {
-                    log.debug("GC sleeps for " + gcInterval * 60 * 1000);
+                    log.debug("GC sleeps for {}", () -> gcInterval * 60 * 1000);
                     // GC Interval is stored in minutes
                     Thread.sleep(TimeUnit.MILLISECONDS.convert(gcInterval, TimeUnit.MINUTES));
                 }

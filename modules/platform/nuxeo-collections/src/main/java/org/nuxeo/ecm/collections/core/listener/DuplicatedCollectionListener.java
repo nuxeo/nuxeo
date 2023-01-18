@@ -20,8 +20,8 @@ package org.nuxeo.ecm.collections.core.listener;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DuplicatedCollectionListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(DuplicatedCollectionListener.class);
+    private static final Logger log = LogManager.getLogger(DuplicatedCollectionListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -78,9 +78,9 @@ public class DuplicatedCollectionListener implements EventListener {
         if (collectionManager.isCollection(doc)) {
 
             if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY)) {
-                log.trace(String.format("Collection %s copied", doc.getId()));
+                log.trace("Collection {} copied", doc.getId());
             } else if (eventId.equals(DocumentEventTypes.DOCUMENT_CHECKEDIN)) {
-                log.trace(String.format("Collection %s checked in", doc.getId()));
+                log.trace("Collection {} checked in", doc.getId());
             }
 
             collectionManager.processCopiedCollection(doc);

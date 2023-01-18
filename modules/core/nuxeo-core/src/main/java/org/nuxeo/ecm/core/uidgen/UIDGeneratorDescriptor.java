@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core.uidgen;
 
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -32,7 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("generator")
 public class UIDGeneratorDescriptor {
 
-    private static final Log log = LogFactory.getLog(UIDGeneratorDescriptor.class);
+    private static final Logger log = LogManager.getLogger(UIDGeneratorDescriptor.class);
 
     private static final int DEFAULT_COUNTER_START = 1;
 

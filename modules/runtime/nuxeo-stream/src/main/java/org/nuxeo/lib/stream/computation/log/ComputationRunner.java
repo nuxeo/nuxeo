@@ -32,8 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.Log4jCorrelation;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
@@ -64,7 +64,6 @@ import io.opencensus.trace.Tracer;
 import io.opencensus.trace.Tracing;
 import io.opencensus.trace.propagation.BinaryFormat;
 import io.opencensus.trace.propagation.SpanContextParseException;
-
 import net.jodah.failsafe.Failsafe;
 
 /**
@@ -74,6 +73,9 @@ import net.jodah.failsafe.Failsafe;
  */
 @SuppressWarnings("EmptyMethod")
 public class ComputationRunner implements Runnable, RebalanceListener {
+
+    private static final Logger log = LogManager.getLogger(ComputationRunner.class);
+
     public static final Duration READ_TIMEOUT = Duration.ofMillis(25);
 
     protected static final long STARVING_TIMEOUT_MS = 1000;
@@ -88,8 +90,6 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     // @since 2021.15
     public static final long SLOW_COMPUTATION_THRESHOLD_NS = 10 * 60 * 1_000_000_000L;
-
-    private static final Log log = LogFactory.getLog(ComputationRunner.class);
 
     protected final LogStreamManager streamManager;
 
@@ -160,9 +160,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     // @since 2021.14
     protected enum ReturnCode {
-        CHECKPOINT_ERROR,
-        INTERRUPTED,
-        TERMINATE
+        CHECKPOINT_ERROR, INTERRUPTED, TERMINATE
     }
 
     @SuppressWarnings("unchecked")
@@ -182,7 +180,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             // create a spare context until the assignment is done
             this.context = new ComputationContextImpl(streamManager, metadata, policy, true);
         } else {
-            this.context = new ComputationContextImpl(streamManager, metadata, policy,  defaultAssignment.isEmpty());
+            this.context = new ComputationContextImpl(streamManager, metadata, policy, defaultAssignment.isEmpty());
             this.tailer = streamManager.createTailer(Name.ofUrn(metadata.name()), defaultAssignment);
             assignmentLatch.countDown();
         }
@@ -190,7 +188,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     public void stop() {
-        log.debug(metadata.name() + ": Receives Stop signal");
+        log.debug("{}: Receives Stop signal", metadata::name);
         stop = true;
         if (computation != null) {
             computation.signalStop();
@@ -198,13 +196,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     public void drain() {
-        log.debug(metadata.name() + ": Receives Drain signal");
+        log.debug("{}: Receives Drain signal", metadata::name);
         drain = true;
     }
 
     public boolean waitForAssignments(Duration timeout) throws InterruptedException {
         if (!assignmentLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
-            log.warn(metadata.name() + ": Timeout waiting for assignment");
+            log.warn("{}: Timeout waiting for assignment", metadata::name);
             return false;
         }
         return true;
@@ -214,11 +212,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     public void run() {
         threadName = Thread.currentThread().getName();
         computation = supplier.get();
-        log.debug(metadata.name() + ": Init");
+        log.debug("{}: Init", metadata::name);
         registerMetrics();
         ReturnCode returnCode = ReturnCode.TERMINATE;
         computation.init(context);
-        log.debug(metadata.name() + ": Start");
+        log.debug("{}: Start", metadata::name);
         try {
             int checkpointErrorCounter = 0;
             long checkpointErrorOffset = -1;
@@ -232,11 +230,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
                     }
                     checkpointErrorCounter++;
                     if (checkpointErrorCounter <= CHECKPOINT_MAX_RETRY) {
-                        log.warn("Wait a bit after checkpoint error, retry #" + checkpointErrorCounter);
+                        log.warn("Wait a bit after checkpoint error, retry #{}", checkpointErrorCounter);
                         Thread.sleep(CHECKPOINT_PAUSE_MS);
                     } else {
-                        log.error(metadata.name() + ": Terminate computation because too many checkpoint errors on: "
-                                + context.getLastOffset());
+                        log.error("{}: Terminate computation because too many checkpoint errors on: {}", metadata::name,
+                                context::getLastOffset);
                     }
                 }
             } while (ReturnCode.CHECKPOINT_ERROR.equals(returnCode) && checkpointErrorCounter <= CHECKPOINT_MAX_RETRY);
@@ -258,7 +256,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         try {
             processLoop();
         } catch (CheckPointException e) {
-            log.error(metadata.name() + ": Error during checkpoint, processing will be duplicated: " + e.getMessage(),
+            log.error("{}: Error during checkpoint, processing will be duplicated: {}", metadata.name(), e.getMessage(),
                     e);
             return ReturnCode.CHECKPOINT_ERROR;
         } catch (InterruptedException e) {
@@ -274,11 +272,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             if (e instanceof ClosedByInterruptException || Thread.interrupted()) {
                 // clearing the interrupt flag is wanted as closeTailer method needs a non-interrupted thread
                 // ClosedByInterruptException can happen when pool is shutdownNow
-                log.info(metadata.name() + ": Interrupted", e);
+                log.info("{}: Interrupted", metadata.name(), e);
                 return ReturnCode.INTERRUPTED;
             }
-            log.error(metadata.name() + ": Terminate computation due to unexpected failure inside computation code: "
-                    + e.getMessage(), e);
+            log.error("{}: Terminate computation due to unexpected failure inside computation code: {}",
+                    metadata.name(), e.getMessage(), e);
             globalFailureCount.inc();
             failureCount.inc();
             throw e;
@@ -323,19 +321,19 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected boolean continueLoop() {
         if (stop || Thread.currentThread().isInterrupted()) {
-            log.debug(metadata.name() + ": Stop processing " + (stop ? "stop required" : " interrupted"));
+            log.debug("{}: Stop processing {}", metadata.name(), stop ? "stop required" : " interrupted");
             return false;
         } else if (drain) {
             long now = System.currentTimeMillis();
             if (metadata.inputStreams().isEmpty()) {
                 // for a source we take lastTimerExecution starvation
                 if (lastTimerExecution > 0 && (now - lastTimerExecution) > STARVING_TIMEOUT_MS) {
-                    log.info(metadata.name() + ": End of source drain, last timer " + STARVING_TIMEOUT_MS + " ms ago");
+                    log.info("{}: End of source drain, last timer {} ms ago", metadata.name(), STARVING_TIMEOUT_MS);
                     return false;
                 }
             } else if (!recordActivity && (now - lastReadTime) > STARVING_TIMEOUT_MS) {
-                log.info(metadata.name() + ": End of drain no more input after " + (now - lastReadTime) + " ms, "
-                            + inRecords + " records read, " + counter + " reads attempt");
+                log.info("{}: End of drain no more input after {} ms, {} records read, {} reads attempt",
+                        metadata.name(), now - lastReadTime, inRecords, counter);
                 return false;
             }
         }
@@ -441,9 +439,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         Name stream = logRecord.offset().partition().name();
         Record filteredRecord = streamManager.getFilter(stream).afterRead(record, logRecord.offset());
         if (filteredRecord == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Filtering skip record: " + record);
-            }
+            log.debug("Filtering skip record: {}", record);
             return false;
         } else if (filteredRecord != record) {
             logRecord = new LogRecord<>(filteredRecord, logRecord.offset());
@@ -483,8 +479,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         try {
             // Build a span that has a follows from relationship with the parent span to denote an async processing
             lastSpanContext = binaryFormat.fromByteArray(traceContext);
-            Span span = tracer.spanBuilderWithRemoteParent("comp/" + computation.metadata().name() + "/record", lastSpanContext)
-                              .startSpan();
+            Span span = tracer.spanBuilderWithRemoteParent("comp/" + computation.metadata().name() + "/record",
+                    lastSpanContext).startSpan();
             span.addLink(Link.fromSpanContext(lastSpanContext, Link.Type.PARENT_LINKED_SPAN));
 
             HashMap<String, AttributeValue> map = new HashMap<>();
@@ -499,7 +495,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             span.putAttributes(map);
             return span;
         } catch (SpanContextParseException e) {
-            log.warn("Invalid span context in record: " + record.getKey() + " length: " + traceContext.length);
+            log.warn("Invalid span context in record: {} length: {}", record.getKey(), traceContext.length);
             return BlankSpan.INSTANCE;
         }
     }
@@ -515,8 +511,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             long duration = ignored.stop();
             if (duration > SLOW_COMPUTATION_THRESHOLD_NS && processRecordTimer.getCount() > 100
                     && duration >= processRecordTimer.getSnapshot().getMax()) {
-                log.warn("Slow computation: " + metadata.name() + ", on " + context.getLastOffset() + ", took: "
-                        + duration / 1_000_000_000L + "s, record: " + record.toString());
+                log.warn("Slow computation: {}, on {}, took: {}s, record: {}", metadata.name(), context.getLastOffset(),
+                        duration / 1_000_000_000L, record.toString());
             }
         } finally {
             runningCount.dec();
@@ -525,16 +521,16 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void processFallback(ComputationContextImpl context) {
         if (policy.continueOnFailure()) {
-            log.error(String.format("%s: Skip record after failure: %s", metadata.name(), context.getLastOffset()));
+            log.error("{}: Skip record after failure: {}", metadata.name(), context.getLastOffset());
             context.askForCheckpoint();
             recordSkippedCount.inc();
         } else if (skipFailureForRecovery()) {
-            log.error(String.format("%s: Skip record after failure instead of terminating because of recovery mode: %s",
-                    metadata.name(), context.getLastOffset()));
+            log.error("{}: Skip record after failure instead of terminating because of recovery mode: {}",
+                    metadata.name(), context.getLastOffset());
             context.askForCheckpoint();
             recordSkippedCount.inc();
         } else {
-            log.error(String.format("%s: Terminate computation due to previous failure", metadata.name()));
+            log.error("{}: Terminate computation due to previous failure", metadata.name());
             context.cancelAskForCheckpoint();
             context.askForTermination();
             globalFailureCount.inc();
@@ -569,7 +565,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void checkRecordFlags(Record record) {
         if (record.getFlags().contains(Record.Flag.POISON_PILL)) {
-            log.info(metadata.name() + ": Receive POISON PILL");
+            log.info("{}: Receive POISON PILL", metadata::name);
             context.askForCheckpoint();
             stop = true;
         } else if (record.getFlags().contains(Record.Flag.COMMIT)) {
@@ -604,7 +600,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         context.removeCheckpointFlag();
         inCheckpointRecords = inRecords;
         setThreadName("checkpoint");
-        log.debug(metadata.name() + ": Checkpoint done");
+        log.debug("{}: Checkpoint done", metadata::name);
     }
 
     protected void saveTimers() {
@@ -672,7 +668,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         setThreadName("rebalance assigned");
         // reset the context
         this.context = new ComputationContextImpl(streamManager, metadata, policy, partitions.isEmpty());
-        log.debug(metadata.name() + ": Init isSpare=" + isSpare);
+        log.debug("{}: Init isSpare={}", metadata.name(), isSpare);
         computation.init(context);
         lastReadTime = System.currentTimeMillis();
         lastTimerExecution = 0;

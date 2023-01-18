@@ -31,8 +31,8 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.nuxeo.common.collections.PrimitiveArrays;
@@ -70,7 +70,7 @@ import org.nuxeo.runtime.api.Framework;
 // modify core session to add a batch create method and use it
 public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter {
 
-    private static final Log log = LogFactory.getLog(AbstractDocumentModelWriter.class);
+    private static final Logger log = LogManager.getLogger(AbstractDocumentModelWriter.class);
 
     protected CoreSession session;
 
@@ -218,12 +218,10 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             CompositeType facetType = schemaManager.getFacet(facet);
 
             if (facetType == null) {
-                log.warn("The document " + docModel.getName() + " with id=" + docModel.getId() + " and type="
-                        + docModel.getDocumentType().getName() + " contains the facet '" + facet
-                        + "', which is not registered as available in the schemaManager. This facet will be ignored.");
-                if (log.isDebugEnabled()) {
-                    log.debug("Available facets: " + Arrays.toString(schemaManager.getFacets()));
-                }
+                log.warn(
+                        "The document: {} with id: {} and type: {} contains the facet: {}, which is not registered as available in the schemaManager. This facet will be ignored.",
+                        docModel::getName, docModel::getId, () -> docModel.getDocumentType().getName(), () -> facet);
+                log.debug("Available facets: {}", () -> Arrays.toString(schemaManager.getFacets()));
                 continue;
             }
 
@@ -299,12 +297,10 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             String schemaName = element.attributeValue(ExportConstants.NAME_ATTR);
             Schema schema = schemaMgr.getSchema(schemaName);
             if (schema == null) {
-                log.warn("The document " + docModel.getName() + " with id=" + docModel.getId() + " and type="
-                        + docModel.getDocumentType() + " contains the schema '" + schemaName
-                        + "', which is not registered as available in the schemaManager. This schema will be ignored.");
-                if (log.isDebugEnabled()) {
-                    log.debug("Available schemas: " + Arrays.toString(schemaMgr.getSchemas()));
-                }
+                log.warn(
+                        "The document: {} with id: {} and type: {} contains the schema: {}, which is not registered as available in the schemaManager. This schema will be ignored.",
+                        docModel::getName, docModel::getId, docModel::getDocumentType, () -> schemaName);
+                log.debug("Available schemas: {}", () -> Arrays.toString(schemaMgr.getSchemas()));
                 continue;
             }
             loadSchema(xdoc, schema, docModel, element);
@@ -388,11 +384,8 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                         bytes = Base64.decodeBase64(content);
                     } catch (IllegalArgumentException e) {
                         // example invalid base64: fd7b9e4.blob
-                        if (log.isDebugEnabled()) {
-                            log.warn("Invalid blob base64 in document: " + xdoc.getId() + ": " + StringUtils.abbreviate(content, 50));
-                        } else {
-                            log.warn("Invalid blob base64 in document: " + xdoc.getId());
-                        }
+                        log.warn("Invalid blob base64 in document: {}{}", xdoc::getId,
+                                () -> log.isDebugEnabled() ? ": " + StringUtils.abbreviate(content, 50) : "");
                         bytes = new byte[0];
                     }
                     blob = Blobs.createBlob(bytes);

@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract implementation of {@link PubSubProvider}.
@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractPubSubProvider implements PubSubProvider {
 
-    private final Log log = LogFactory.getLog(AbstractPubSubProvider.class);
+    private static final Logger log = LogManager.getLogger(AbstractPubSubProvider.class);
 
     protected String namespace;
 
@@ -66,7 +66,7 @@ public abstract class AbstractPubSubProvider implements PubSubProvider {
                         throw e;
                     }
                     // don't break everything if a subscriber is ill-behaved
-                    log.error("Exception in subscriber for topic: " + topic, e);
+                    log.error("Exception in subscriber for topic: {}", topic, e);
                 }
             }
         }

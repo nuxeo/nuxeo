@@ -28,8 +28,8 @@ import java.util.Set;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourceExtension;
 import org.nuxeo.ecm.webengine.jaxrs.views.BundleResource;
@@ -44,7 +44,7 @@ import org.osgi.framework.Bundle;
  */
 public class ApplicationHost extends Application {
 
-    private static final Log log = LogFactory.getLog(ApplicationHost.class);
+    private static final Logger log = LogManager.getLogger(ApplicationHost.class);
 
     protected final String name;
 

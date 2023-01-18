@@ -30,8 +30,7 @@ import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
@@ -44,7 +43,8 @@ import org.nuxeo.lib.stream.log.Name;
  * @since 10.2
  */
 public class AppendCommand extends Command {
-    private static final Log log = LogFactory.getLog(AppendCommand.class);
+
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(AppendCommand.class);
 
     protected static final String NAME = "append";
 
@@ -96,7 +96,7 @@ public class AppendCommand extends Command {
     }
 
     protected void append(LogManager manager, Name name, int partition, String codec, Path input) {
-        log.info(String.format("Append records from %s to stream: %s, partition: %d", input, name, partition));
+        log.info("Append records from {} to stream: {}, partition: {}", input, name, partition);
         Schema schema = ReflectData.get().getSchema(Record.class);
         DatumReader<Record> datumReader = new ReflectDatumReader<>(schema);
         LogAppender<Record> appender = manager.getAppender(name, getRecordCodec(codec));
@@ -110,7 +110,7 @@ public class AppendCommand extends Command {
         } catch (IOException e) {
             throw new StreamRuntimeException(e);
         }
-        log.info(String.format("%d record(s) appended", count));
+        log.info("{} record(s) appended", count);
     }
 
 }

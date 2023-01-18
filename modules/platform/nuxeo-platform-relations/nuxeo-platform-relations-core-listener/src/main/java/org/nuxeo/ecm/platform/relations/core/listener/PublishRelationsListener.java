@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -56,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PublishRelationsListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(PublishRelationsListener.class);
+    private static final Logger log = LogManager.getLogger(PublishRelationsListener.class);
 
     public static final String RENDITION_PROXY_PUBLISHED = "renditionProxyPublished";
 
@@ -124,19 +124,21 @@ public class PublishRelationsListener implements EventListener {
                     // document getting published)
                     copyRelationsFromWorkingCopy(rmanager, sourceResource, publishedResource);
                 } catch (DocumentSecurityException e) {
-                    log.warn("working copy of the proxy is no longer available or not readable by the current user, cannot copy the source relations");
+                    log.warn(
+                            "working copy of the proxy is no longer available or not readable by the current user, cannot copy the source relations");
                 }
             }
 
             // Copy relations from replaced proxies
             @SuppressWarnings("unchecked")
-            List<String> replacedProxyIds = (List<String>) ctx.getProperties().get(
-                    CoreEventConstants.REPLACED_PROXY_IDS);
+            List<String> replacedProxyIds = (List<String>) ctx.getProperties()
+                                                              .get(CoreEventConstants.REPLACED_PROXY_IDS);
             if (replacedProxyIds != null) {
                 for (String replacedProxyId : replacedProxyIds) {
-                    DocumentLocationImpl docLoc = new DocumentLocationImpl(ctx.getRepositoryName(), new IdRef(
-                            replacedProxyId), null);
-                    Resource replacedResource = rmanager.getResource(RelationConstants.DOCUMENT_NAMESPACE, docLoc, null);
+                    DocumentLocationImpl docLoc = new DocumentLocationImpl(ctx.getRepositoryName(),
+                            new IdRef(replacedProxyId), null);
+                    Resource replacedResource = rmanager.getResource(RelationConstants.DOCUMENT_NAMESPACE, docLoc,
+                            null);
                     copyRelationsFromReplacedProxy(rmanager, replacedResource, publishedResource, sourceResource);
                 }
             }

@@ -24,8 +24,8 @@ package org.nuxeo.ecm.platform.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -35,9 +35,9 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class LocationManagerService extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.util.LocationManagerService");
+    private static final Logger log = LogManager.getLogger(LocationManagerService.class);
 
-    private static final Log log = LogFactory.getLog(LocationManagerService.class);
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.util.LocationManagerService");
 
     private Map<String, RepositoryLocation> locations = new HashMap<>();
 
@@ -53,7 +53,7 @@ public class LocationManagerService extends DefaultComponent {
         String locationName = pluginExtension.getLocationName();
         boolean locationEnabled = pluginExtension.getLocationEnabled();
 
-        log.info("Registering location manager: " + locationName + (locationEnabled ? "" : " (disabled)"));
+        log.info("Registering location manager: {}{}", () -> locationName, () -> locationEnabled ? "" : " (disabled)");
 
         RepositoryLocation locationTempPlugin = new RepositoryLocation(locationName);
 

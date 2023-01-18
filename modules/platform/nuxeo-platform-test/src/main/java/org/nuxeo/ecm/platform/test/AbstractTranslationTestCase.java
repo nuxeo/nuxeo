@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.platform.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,12 +29,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Base test class with helpers for translation files.
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public abstract class AbstractTranslationTestCase {
 
-    private static final Log log = LogFactory.getLog(AbstractTranslationTestCase.class);
+    private static final Logger log = LogManager.getLogger(AbstractTranslationTestCase.class);
 
     protected InputStream getFromContext(String path) throws IOException {
         String file = FileUtils.getResourcePathFromContext(path);
@@ -71,10 +71,8 @@ public abstract class AbstractTranslationTestCase {
         // maybe refine when dealing with long labels, just warn in case labels are not well chosen
         Set<String> single = p.getSingleLabels();
         if (single.size() > 0) {
-            log.warn(String.format("%s single translation keys in file at '%s'.", single.size(), path));
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Single keys: '%s'", single));
-            }
+            log.warn("{} single translation keys in file at: {}", single.size(), path);
+            log.debug("Single keys: {}", single);
         }
     }
 

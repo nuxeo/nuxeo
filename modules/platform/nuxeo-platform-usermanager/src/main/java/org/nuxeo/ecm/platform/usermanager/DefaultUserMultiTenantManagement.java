@@ -24,8 +24,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultUserMultiTenantManagement implements UserMultiTenantManagement {
 
-    protected static final Log log = LogFactory.getLog(DefaultUserMultiTenantManagement.class);
+    private static final Logger log = LogManager.getLogger(DefaultUserMultiTenantManagement.class);
 
     protected static final String SUFFIX_SEPARATOR = "-";
 
@@ -79,16 +79,16 @@ public class DefaultUserMultiTenantManagement implements UserMultiTenantManageme
         String groupIdSuffix = getDirectorySuffix(context);
 
         if (!filter.containsKey(groupId)) {
-            log.debug("no filter on group id, need to filter with the directory local " + "configuration suffix : "
-                    + groupId + " = %" + groupIdSuffix);
+            log.debug("No filter on group id, need to filter with the directory local configuration suffix: {} = %{}",
+                    groupId, groupIdSuffix);
             filter.put(groupId, "%" + groupIdSuffix);
             fulltext.add(groupId);
             return;
         }
 
         if (!(filter.get(groupId) instanceof String)) {
-            throw new UnsupportedOperationException("Filter value on " + "group id is not a string : "
-                    + filter.get(groupId));
+            throw new UnsupportedOperationException(
+                    "Filter value on " + "group id is not a string : " + filter.get(groupId));
         }
 
         String filterIdValue = (String) filter.get(um.getGroupIdField());
@@ -183,8 +183,7 @@ public class DefaultUserMultiTenantManagement implements UserMultiTenantManageme
     }
 
     @Override
-    public DocumentModel groupTransformer(UserManager um, DocumentModel group, DocumentModel context)
-            {
+    public DocumentModel groupTransformer(UserManager um, DocumentModel group, DocumentModel context) {
         if (context == null) {
             return group;
         }

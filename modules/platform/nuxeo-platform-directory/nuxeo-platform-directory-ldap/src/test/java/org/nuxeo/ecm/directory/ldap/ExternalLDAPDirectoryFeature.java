@@ -30,10 +30,10 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -55,7 +55,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml")
 public class ExternalLDAPDirectoryFeature implements RunnerFeature {
 
-    private static final Log log = LogFactory.getLog(ExternalLDAPDirectoryFeature.class);
+    private static final Logger log = LogManager.getLogger(ExternalLDAPDirectoryFeature.class);
 
     // change this flag in case the external LDAP server considers the
     // posixGroup class structural
@@ -83,14 +83,14 @@ public class ExternalLDAPDirectoryFeature implements RunnerFeature {
 
     protected void loadDataFromLdif(String ldif, DirContext ctx) {
         List<LdifLoadFilter> filters = new ArrayList<>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters, Thread.currentThread()
-                                                                                       .getContextClassLoader());
+        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters,
+                Thread.currentThread().getContextClassLoader());
         loader.execute();
     }
 
     protected void destroyRecursively(String dn, DirContext ctx, int limit) throws NamingException {
         if (limit == 0) {
-            log.warn("Reach recursion limit, stopping deletion at" + dn);
+            log.warn("Reach recursion limit, stopping deletion at: {}", dn);
             return;
         }
         SearchControls scts = new SearchControls();
@@ -105,7 +105,7 @@ public class ExternalLDAPDirectoryFeature implements RunnerFeature {
                 destroyRecursively(subDn, ctx, limit);
             }
         } catch (SizeLimitExceededException e) {
-            log.warn("SizeLimitExceededException: trying again on partial results " + dn);
+            log.warn("SizeLimitExceededException: trying again on partial results: {}", dn);
             if (limit == -1) {
                 limit = 100;
             }

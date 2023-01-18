@@ -29,8 +29,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "downloadHandler")
 public class DownloadHandler extends DefaultObject {
 
-    protected static final Log log = LogFactory.getLog(DownloadHandler.class);
+    private static final Logger log = LogManager.getLogger(DownloadHandler.class);
 
     @GET
     @Produces("text/plain")
@@ -173,7 +173,7 @@ public class DownloadHandler extends DefaultObject {
                 String[] pkgs = pkgList.split("/");
                 PackageManager pm = Framework.getService(PackageManager.class);
                 try {
-                    log.info("Starting download for packages " + Arrays.toString(pkgs));
+                    log.info("Starting download for packages {}", () -> Arrays.toString(pkgs));
                     pm.download(Arrays.asList(pkgs));
                 } catch (ConnectServerError e) {
                     log.error(e, e);
@@ -187,11 +187,7 @@ public class DownloadHandler extends DefaultObject {
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append("{ \"pkgid\" : ")
-                      .append("\"")
-                      .append(pkgs[i])
-                      .append("\",")
-                      .append(" \"progress\" : 0}");
+                    sb.append("{ \"pkgid\" : ").append("\"").append(pkgs[i]).append("\",").append(" \"progress\" : 0}");
                 }
                 sb.append("]");
                 return sb.toString();

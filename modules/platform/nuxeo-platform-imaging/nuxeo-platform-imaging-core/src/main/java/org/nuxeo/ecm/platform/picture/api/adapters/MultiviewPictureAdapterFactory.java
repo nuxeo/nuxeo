@@ -24,14 +24,10 @@ package org.nuxeo.ecm.platform.picture.api.adapters;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.MULTIVIEW_PICTURE_FACET;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 public class MultiviewPictureAdapterFactory implements DocumentAdapterFactory {
-
-    private static final Log log = LogFactory.getLog(MultiviewPictureAdapterFactory.class);
 
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {

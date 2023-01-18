@@ -37,8 +37,8 @@ import java.util.zip.ZipFile;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -63,9 +63,9 @@ public class CSVZipImporter extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String MARKER = "meta-data.csv";
+    private static final Logger log = LogManager.getLogger(CSVZipImporter.class);
 
-    private static final Log log = LogFactory.getLog(CSVZipImporter.class);
+    private static final String MARKER = "meta-data.csv";
 
     public static ZipFile getArchiveFileIfValid(File file) throws IOException {
         ZipFile zip;
@@ -111,7 +111,7 @@ public class CSVZipImporter extends AbstractFileImporter {
 
             ZipEntry index = zip.getEntry(MARKER);
             try (Reader reader = new InputStreamReader(zip.getInputStream(index));
-                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
+                    CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
 
                 Map<String, Integer> header = csvParser.getHeaderMap();
                 for (CSVRecord csvRecord : csvParser) {
@@ -230,7 +230,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                     } else if (stringValue.length() == 8) {
                         date = new SimpleDateFormat("dd/MM/yy").parse(stringValue);
                     } else {
-                        log.warn("Unknown date format :" + stringValue);
+                        log.warn("Unknown date format: {}", stringValue);
                         return null;
                     }
                     fieldValue = date;
@@ -238,7 +238,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                     log.error("Error during date parsing", e);
                 }
             } else {
-                log.warn(String.format("Unsupported field type '%s'", type));
+                log.warn("Unsupported field type: {}", type);
                 return null;
             }
         } else if (type.isComplexType() && TypeConstants.CONTENT.equals(field.getName().getLocalName())) {

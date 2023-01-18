@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
@@ -40,11 +40,11 @@ import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
  */
 public class FileWithMetadataSourceNode extends FileSourceNode {
 
+    private static final Logger log = LogManager.getLogger(FileWithIndividualMetadasSourceNode.class);
+
     protected static MetadataCollector collector = new MetadataCollector();
 
     public static final String METADATA_FILENAME = "metadata.properties";
-
-    private static final Log log = LogFactory.getLog(FileWithMetadataSourceNode.class);
 
     public FileWithMetadataSourceNode(File file) {
         super(file);
@@ -56,7 +56,8 @@ public class FileWithMetadataSourceNode extends FileSourceNode {
 
     @Override
     public BlobHolder getBlobHolder() throws IOException {
-        BlobHolder bh = new SimpleBlobHolderWithProperties(Blobs.createBlob(file), collector.getProperties(file.getPath()));
+        BlobHolder bh = new SimpleBlobHolderWithProperties(Blobs.createBlob(file),
+                collector.getProperties(file.getPath()));
         return bh;
     }
 

@@ -18,12 +18,12 @@
  */
 package org.nuxeo.functionaltests;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class WaitUntil {
 
-    public static final Log log = LogFactory.getLog(WaitUntil.class);
+    private static final Logger log = LogManager.getLogger(WaitUntil.class);
 
     long timeout;
 

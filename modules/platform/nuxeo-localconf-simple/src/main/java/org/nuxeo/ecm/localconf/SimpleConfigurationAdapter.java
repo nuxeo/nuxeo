@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -40,10 +40,10 @@ import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<SimpleConfiguration> implements
-        SimpleConfiguration {
+public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<SimpleConfiguration>
+        implements SimpleConfiguration {
 
-    private static final Log log = LogFactory.getLog(SimpleConfigurationAdapter.class);
+    private static final Logger log = LogManager.getLogger(SimpleConfigurationAdapter.class);
 
     protected DocumentModel detachedDocument;
 
@@ -62,7 +62,8 @@ public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<Simpl
     protected Map<String, String> computeParametersFromDocument(DocumentModel doc) {
         Map<String, String> parameters = new HashMap<>();
         try {
-            List<Map<String, String>> parametersFromDocument = (List<Map<String, String>>) doc.getPropertyValue(SIMPLE_CONFIGURATION_PARAMETERS_PROPERTY);
+            List<Map<String, String>> parametersFromDocument = (List<Map<String, String>>) doc.getPropertyValue(
+                    SIMPLE_CONFIGURATION_PARAMETERS_PROPERTY);
             if (parametersFromDocument != null) {
                 for (Map<String, String> parameter : parametersFromDocument) {
                     parameters.put(parameter.get(SIMPLE_CONFIGURATION_PARAMETER_KEY),
@@ -70,7 +71,7 @@ public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<Simpl
                 }
             }
         } catch (PropertyException e) {
-            log.warn("Unable to retrieve SimpleConfiguration parameters: " + e);
+            log.warn("Unable to retrieve SimpleConfiguration parameters: {}", e.toString());
             log.debug(e, e);
         }
         return parameters;

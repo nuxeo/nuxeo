@@ -22,8 +22,8 @@ package org.nuxeo.ecm.core.schema.types.resolver;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ObjectResolverServiceImpl extends DefaultComponent implements ObjectResolverService {
 
-    private static final Log log = LogFactory.getLog(ObjectResolverServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(ObjectResolverServiceImpl.class);
 
     private Map<String, Class<? extends ObjectResolver>> resolvers;
 
@@ -67,19 +67,18 @@ public class ObjectResolverServiceImpl extends DefaultComponent implements Objec
         if (resolverClass == null) {
             return null;
         }
-        ObjectResolver resolver = null;
+        ObjectResolver resolver;
         try {
             resolver = resolverClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
-            log.warn(String.format("Unable to instanciate %s - missing public constructor with no param",
-                    resolverClass.getCanonicalName()));
+            log.warn("Unable to instantiate: {} - missing public constructor with no param",
+                    resolverClass::getCanonicalName);
             return null;
         }
         try {
             resolver.configure(parameters);
         } catch (IllegalArgumentException e) {
-            log.info(String.format("Unable to configure %s with parameters %s", resolverClass.getCanonicalName(),
-                    parameters));
+            log.info("Unable to configure: {} with parameters: {}", resolverClass::getCanonicalName, () -> parameters);
             return null;
         }
         return resolver;

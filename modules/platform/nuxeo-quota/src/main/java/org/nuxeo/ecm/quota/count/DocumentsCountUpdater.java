@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
 
-    private static final Log log = LogFactory.getLog(DocumentsCountUpdater.class);
+    private static final Logger log = LogManager.getLogger(DocumentsCountUpdater.class);
 
     public static final int BATCH_SIZE = 50;
 

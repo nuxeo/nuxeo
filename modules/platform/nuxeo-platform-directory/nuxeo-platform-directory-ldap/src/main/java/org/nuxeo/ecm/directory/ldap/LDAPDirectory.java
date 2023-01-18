@@ -48,8 +48,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
@@ -64,7 +64,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class LDAPDirectory extends AbstractDirectory {
 
-    private static final Log log = LogFactory.getLog(LDAPDirectory.class);
+    private static final Logger log = LogManager.getLogger(LDAPDirectory.class);
 
     // special field key to be able to read the DN of an LDAP entry
     public static final String DN_SPECIAL_ATTRIBUTE_KEY = "dn";
@@ -125,9 +125,9 @@ public class LDAPDirectory extends AbstractDirectory {
         idSearchControls = computeIdSearchControls();
         searchControls = computeSearchControls();
 
-        log.debug(String.format("initialized LDAP directory %s with fields [%s] and references [%s]", getName(),
-                StringUtils.join(getSchemaFieldMap().keySet().toArray(), ", "),
-                StringUtils.join(references.keySet().toArray(), ", ")));
+        log.debug("initialized LDAP directory: {} with fields: [{}] and references: [{}]", this::getName,
+                () -> StringUtils.join(getSchemaFieldMap().keySet().toArray(), ", "),
+                () -> StringUtils.join(references.keySet().toArray(), ", "));
     }
 
     /**

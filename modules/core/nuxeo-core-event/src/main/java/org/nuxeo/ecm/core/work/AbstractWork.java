@@ -33,8 +33,8 @@ import java.util.Random;
 
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -50,11 +50,11 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.lib.stream.Log4jCorrelation;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.metrics.MetricsService;
-import org.nuxeo.lib.stream.Log4jCorrelation;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -62,15 +62,9 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.opencensus.common.Scope;
 import io.opencensus.trace.AttributeValue;
-import io.opencensus.trace.BlankSpan;
-import io.opencensus.trace.Link;
 import io.opencensus.trace.Span;
-import io.opencensus.trace.SpanContext;
 import io.opencensus.trace.Status;
-import io.opencensus.trace.Tracer;
 import io.opencensus.trace.Tracing;
-import io.opencensus.trace.propagation.BinaryFormat;
-import io.opencensus.trace.propagation.SpanContextParseException;
 
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the details around state change.
@@ -91,7 +85,7 @@ public abstract class AbstractWork implements Work {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(AbstractWork.class);
+    private static final Logger log = LogManager.getLogger(AbstractWork.class);
 
     protected static final Random RANDOM = new SecureRandom();
 
@@ -255,9 +249,7 @@ public abstract class AbstractWork implements Work {
     @Override
     public void setWorkInstanceState(State state) {
         this.state = state;
-        if (log.isTraceEnabled()) {
-            log.trace(this + " state=" + state);
-        }
+        log.trace("{} state: {}", this, state);
     }
 
     @Override
@@ -268,9 +260,7 @@ public abstract class AbstractWork implements Work {
     @Override
     public void setProgress(Progress progress) {
         this.progress = progress;
-        if (log.isTraceEnabled()) {
-            log.trace(String.valueOf(this));
-        }
+        log.trace("{} progress: {}", this, progress);
     }
 
     @Override
@@ -376,11 +366,11 @@ public abstract class AbstractWork implements Work {
             for (int i = 0; i <= retryCount; i++) {
                 if (i > 0) {
                     span.addAnnotation("AbstractWork#run Retrying " + i);
-                    log.debug("Retrying work due to concurrent update (" + i + "): " + this);
+                    log.debug("Retrying work due to concurrent update ({}): {}", i, this);
                     log.trace("Concurrent update", suppressed);
                 }
                 if (ExceptionUtils.hasInterruptedCause(suppressed)) {
-                    log.debug("No need to retry the work with id=" + getId() + ", work manager is shutting down");
+                    log.debug("No need to retry the work with id: {}, work manager is shutting down", this::getId);
                     break;
                 }
                 try {
@@ -406,7 +396,8 @@ public abstract class AbstractWork implements Work {
 
     protected Span getSpanFromContext(byte[] traceContext) {
         // traceContext is propagated by the Stream Service
-        String spanName = "work/" + (getCategory() == getClass().getSimpleName() ? getCategory() : getCategory() + "/" + getClass().getSimpleName());
+        String spanName = "work/" + (getCategory() == getClass().getSimpleName() ? getCategory()
+                : getCategory() + "/" + getClass().getSimpleName());
         Span span = Tracing.getTracer().spanBuilder(spanName).startSpan();
         Map<String, AttributeValue> map = new HashMap<>();
         map.put("tx.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
@@ -430,14 +421,15 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
-     * Builds failure event properties. Work implementations can override this method to inject
-     * more event properties than the default.
+     * Builds failure event properties. Work implementations can override this method to inject more event properties
+     * than the default.
+     * 
      * @since 10.1
      */
     public Map<String, Serializable> buildWorkFailureEventProps(RuntimeException exception) {
 
         Map<String, Serializable> eventProps = new HashMap<>();
-        eventProps.put(WORK_INSTANCE, this);  // Work objects are serializable so send the whole thing
+        eventProps.put(WORK_INSTANCE, this); // Work objects are serializable so send the whole thing
 
         if (session != null) {
             eventProps.put(REPOSITORY_NAME, session.getRepositoryName());
@@ -452,6 +444,7 @@ public abstract class AbstractWork implements Work {
 
     /**
      * Called when the worker failed to run successfully even after retrying.
+     * 
      * @since 10.1
      * @param exception the exception that occurred
      */
@@ -464,8 +457,9 @@ public abstract class AbstractWork implements Work {
         service.fireEvent(event);
         if (exception != null) {
             appendWorkToDeadLetterQueue();
-            String msg = "Work failed after " + getRetryCount() + " " + (getRetryCount() == 1 ? "retry" : "retries") + ", class="
-                    + getClass() + " id=" + getId() + " category=" + getCategory() + " title=" + getTitle();
+            String msg = "Work failed after " + getRetryCount() + " " + (getRetryCount() == 1 ? "retry" : "retries")
+                    + ", class=" + getClass() + " id=" + getId() + " category=" + getCategory() + " title="
+                    + getTitle();
             // all retries have been done, throw the exception
             throw new NuxeoException(msg, exception);
         }
@@ -523,9 +517,7 @@ public abstract class AbstractWork implements Work {
             setStartTime();
             work(); // may throw ConcurrentUpdateException
             if (isGroupJoin() && WorkStateHelper.removeGroupJoinWork(getPartitionKey())) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Detecting GroupJoin %s completion Work: %s", getPartitionKey(), getId()));
-                }
+                log.debug("Detecting GroupJoin: {} completion Work: {}", this::getPartitionKey, this::getId);
                 onGroupJoinCompletion();
             }
             ok = true;
@@ -547,7 +539,7 @@ public abstract class AbstractWork implements Work {
             } finally {
                 if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                     if (!ok || isSuspending()) {
-                        log.trace(this + " is suspending, rollbacking");
+                        log.trace("{} is suspending, rollbacking", this);
                         TransactionHelper.setTransactionRollbackOnly();
                     }
                     TransactionHelper.commitOrRollbackTransaction();
@@ -581,11 +573,11 @@ public abstract class AbstractWork implements Work {
     public void cleanUp(boolean ok, Exception e) {
         if (!ok) {
             if (ExceptionUtils.hasInterruptedCause(e)) {
-                log.debug("Interrupted work: " + this);
+                log.debug("Interrupted work: {}", this);
             } else {
                 if (!(e instanceof ConcurrentUpdateException)) {
                     if (!isSuspending()) {
-                        log.error("Exception during work: " + this, e);
+                        log.error("Exception during work: {}", this, e);
                         if (WorkSchedulePath.isCaptureStackEnabled()) {
                             WorkSchedulePath.log.error("Work schedule path", getSchedulePath().getStack());
                         }

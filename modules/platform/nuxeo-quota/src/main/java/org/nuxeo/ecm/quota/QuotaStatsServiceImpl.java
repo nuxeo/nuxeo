@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStatsService {
 
-    private static final Log log = LogFactory.getLog(QuotaStatsServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(QuotaStatsServiceImpl.class);
 
     public static final String STATUS_INITIAL_COMPUTATION_QUEUED = "status.quota.initialComputationQueued";
 
@@ -92,11 +92,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             public void run() {
                 List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
                 for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
-                    if (log.isTraceEnabled()) {
-                        DocumentModel doc = docCtx.getSourceDocument();
-                        log.trace("Calling updateStatistics of " + updater.getName() + " for " + event.getName()
-                                + " on " + doc.getId() + " (" + doc.getPathAsString() + ")");
-                    }
+                    DocumentModel doc = docCtx.getSourceDocument();
+                    log.trace("Calling updateStatistics of: {} for: {} on: {} ({})", updater.getName(), event.getName(),
+                            doc.getId(), doc.getPathAsString());
                     updater.updateStatistics(session, docCtx, event);
                 }
             }
@@ -213,24 +211,22 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
         }.getsQuotaSetOnUserWorkspaces();
     }
 
-    protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc, CoreSession session)
-            {
+    protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc, CoreSession session) {
         UnrestrictedParentsFetcher parentsFetcher = new UnrestrictedParentsFetcher(doc, session);
         return parentsFetcher.getParents();
     }
 
     @Override
-    public void launchSetMaxQuotaOnUserWorkspaces(final long maxSize, DocumentModel context, CoreSession session)
-            {
+    public void launchSetMaxQuotaOnUserWorkspaces(final long maxSize, DocumentModel context, CoreSession session) {
         final String userWorkspacesId = getUserWorkspaceRootId(context, session);
         new UnrestrictedSessionRunner(session) {
 
             @Override
             public void run() {
-                try (IterableQueryResult results = session.queryAndFetch(String.format(
-                        "Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
-                                + "AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
-                        userWorkspacesId), "NXQL")) {
+                try (IterableQueryResult results = session.queryAndFetch(
+                        String.format("Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
+                                + "AND ecm:isVersion = 0 AND ecm:isTrashed = 0", userWorkspacesId),
+                        "NXQL")) {
                     int size = 0;
                     List<String> allIds = new ArrayList<>();
                     for (Map<String, Serializable> map : results) {
@@ -261,8 +257,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     public String getUserWorkspaceRootId(DocumentModel context, CoreSession session) {
         // get only the userworkspaces root under the first domain
         // it should be only one
-        DocumentModel currentUserWorkspace = Framework.getService(UserWorkspaceService.class).getUserPersonalWorkspace(
-                session.getPrincipal().getName(), context);
+        DocumentModel currentUserWorkspace = Framework.getService(UserWorkspaceService.class)
+                                                      .getUserPersonalWorkspace(session.getPrincipal().getName(),
+                                                              context);
 
         return ((IdRef) currentUserWorkspace.getParentRef()).value;
     }

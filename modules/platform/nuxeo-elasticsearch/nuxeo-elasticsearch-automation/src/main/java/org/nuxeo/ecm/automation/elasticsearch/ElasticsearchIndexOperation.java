@@ -18,8 +18,9 @@
  */
 package org.nuxeo.ecm.automation.elasticsearch;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -33,21 +34,15 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
-import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-
 /**
  * Run Elasticsearch indexing operation
  *
  * @since 8.1
  */
-@Operation(id = ElasticsearchIndexOperation.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "8.1",
-        description = "Enable to index Nuxeo documents.")
+@Operation(id = ElasticsearchIndexOperation.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "8.1", description = "Enable to index Nuxeo documents.")
 public class ElasticsearchIndexOperation {
 
     public static final String ID = "Elasticsearch.Index";
-
-    private static final Log log = LogFactory.getLog(Log.class);
 
     @Context
     protected OperationContext ctx;
@@ -69,7 +64,7 @@ public class ElasticsearchIndexOperation {
 
     private void checkAccess() {
         NuxeoPrincipal principal = ctx.getPrincipal();
-        if (principal == null || ! principal.isAdministrator()) {
+        if (principal == null || !principal.isAdministrator()) {
             throw new NuxeoException("Unauthorized access: " + principal);
         }
     }

@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -47,6 +47,8 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 public class PDF2TextConverter implements Converter {
+
+    private static final Logger log = LogManager.getLogger(PDF2TextConverter.class);
 
     public static class PatchedPDFTextStripper extends PDFTextStripper {
 
@@ -73,8 +75,6 @@ public class PDF2TextConverter implements Converter {
         }
 
     }
-
-    private static final Log log = LogFactory.getLog(PDF2TextConverter.class);
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {

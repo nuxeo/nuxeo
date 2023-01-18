@@ -27,8 +27,8 @@ import java.lang.reflect.Proxy;
 import javax.naming.ServiceUnavailableException;
 import javax.naming.directory.DirContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Wrapper to encapsulate the calls to LDAP and retry the requests in case of ServiceUnavailableException errors
@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class LdapRetryHandler implements InvocationHandler {
 
-    private static final Log log = LogFactory.getLog(LdapRetryHandler.class);
+    private static final Logger log = LogManager.getLogger(LdapRetryHandler.class);
 
     protected DirContext dirContext;
 

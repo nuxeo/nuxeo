@@ -122,10 +122,8 @@ import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.server.support.wrapper.AbstractCmisServiceWrapper;
 import org.apache.chemistry.opencmis.server.support.wrapper.CallContextAwareCmisService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.opensearch.action.search.SearchResponse;
-import org.opensearch.search.SearchHits;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -179,12 +177,16 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.search.SearchHits;
 
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
 public class NuxeoCmisService extends AbstractCmisService
         implements CallContextAwareCmisService, ProgressControlCmisService {
+
+    private static final Logger log = LogManager.getLogger(NuxeoCmisService.class);
 
     public static final int DEFAULT_TYPE_LEVELS = 2;
 
@@ -212,8 +214,6 @@ public class NuxeoCmisService extends AbstractCmisService
     public static final String ES_AUDIT_EVENT_ID = "eventId";
 
     public static final String ERROR_ON_CANCEL_CHECK_OUT_OF_DRAFT_VERSION_PROP = "org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion";
-
-    private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
     protected final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
@@ -1057,7 +1057,7 @@ public class NuxeoCmisService extends AbstractCmisService
                 if (doc == null) {
                     doc = d;
                 } else {
-                    log.warn(String.format("Path '%s' returns several documents for '%s'", path, name));
+                    log.warn("Path '{}' returns several documents for '{}'", path, name);
                     break;
                 }
             }

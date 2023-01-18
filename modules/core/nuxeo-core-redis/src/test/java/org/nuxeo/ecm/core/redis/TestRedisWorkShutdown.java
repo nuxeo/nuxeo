@@ -33,8 +33,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 public class TestRedisWorkShutdown {
 
-    static Log log = LogFactory.getLog(TestRedisWorkShutdown.class);
+    private static final Logger log = LogManager.getLogger(TestRedisWorkShutdown.class);
 
     static CountDownLatch canShutdown = new CountDownLatch(2);
 
@@ -85,7 +85,7 @@ public class TestRedisWorkShutdown {
             Progress progress = nextProgress();
             if (progress.getCurrent() < progress.getTotal()) {
                 try {
-                    log.debug(id + " waiting for shutdown");
+                    log.debug("{} waiting for shutdown", id);
                     canShutdown.countDown();
                     canProceed.await(1, TimeUnit.MINUTES);
                     Assert.assertTrue(isSuspending());

@@ -30,8 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class DatabaseHelper {
 
-    private static final Log log = LogFactory.getLog(DatabaseHelper.class);
+    private static final Logger log = LogManager.getLogger(DatabaseHelper.class);
 
     public static final String DB_PROPERTY = "nuxeo.test.vcs.db";
 
@@ -198,7 +198,7 @@ public abstract class DatabaseHelper {
     }
 
     protected static void executeSql(Statement st, String sql) throws SQLException {
-        log.trace("SQL: " + sql);
+        log.trace("SQL: {}", sql);
         st.execute(sql);
     }
 

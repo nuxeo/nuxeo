@@ -32,8 +32,8 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -44,7 +44,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
  */
 public class StatusServletClient {
 
-    private static final Log log = LogFactory.getLog(StatusServletClient.class);
+    private static final Logger log = LogManager.getLogger(StatusServletClient.class);
 
     protected static final String URL_PATTERN = "runningstatus";
 
@@ -82,7 +82,7 @@ public class StatusServletClient {
         try {
             url = new URL(servletURL);
         } catch (MalformedURLException e) {
-            log.error("Malformed URL: " + servletURL, e);
+            log.error("Malformed URL: {}", servletURL, e);
         }
     }
 
