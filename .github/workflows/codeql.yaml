@@ -66,3 +66,29 @@ jobs:
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:${{matrix.language}}"
+
+      - name: Slack notification
+        if: failure() && (github.event_name == 'push' || github.event_name == 'schedule')
+        uses: slackapi/slack-github-action@v1.23.0
+        env:
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          channel-id: 'platform-notifs'
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "#A30200",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "<${{ env.REPO_URL }}/actions/runs/${{ github.run_id }}|Code scanning> failed in nuxeo/nuxeo-lts <${{ env.REPO_URL }}/commit/${{ github.sha }}|${{ github.ref_name }}>"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
