@@ -4053,7 +4053,7 @@
       <dependency>
         <groupId>org.concordion</groupId>
         <artifactId>concordion</artifactId>
-        <version>1.3.0</version>
+        <version>1.5.1</version>
         <exclusions>
           <exclusion>
             <groupId>jboss</groupId>
