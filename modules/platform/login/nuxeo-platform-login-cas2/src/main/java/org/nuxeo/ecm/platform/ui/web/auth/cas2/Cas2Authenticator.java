@@ -58,6 +58,10 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
 public class Cas2Authenticator
         implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension, LoginResponseHandler {
 
+    /**
+     * @deprecated since 2023, no used anymore for security reasons
+     */
+    @Deprecated(since = "2023")
     protected static final String CAS_SERVER_HEADER_KEY = "CasServer";
 
     protected static final String CAS_SERVER_PATTERN_KEY = "$CASSERVER";
@@ -130,14 +134,7 @@ public class Cas2Authenticator
         }
 
         if (url.contains(CAS_SERVER_PATTERN_KEY)) {
-            String serverURL = httpRequest.getHeader(CAS_SERVER_HEADER_KEY);
-            if (serverURL != null) {
-                url = url.replace(CAS_SERVER_PATTERN_KEY, serverURL);
-            } else {
-                if (url.contains(CAS_SERVER_PATTERN_KEY)) {
-                    url = url.replace(CAS_SERVER_PATTERN_KEY, defaultCasServer);
-                }
-            }
+            url = url.replace(CAS_SERVER_PATTERN_KEY, defaultCasServer);
         }
         log.debug("serviceUrl: " + url);
         return url;
