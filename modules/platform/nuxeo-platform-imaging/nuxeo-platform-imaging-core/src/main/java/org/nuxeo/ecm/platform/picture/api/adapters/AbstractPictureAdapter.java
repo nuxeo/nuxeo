@@ -23,58 +23,10 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_CROP_Y;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BY_LINE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BY_LINE_TITLE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CAPTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CATEGORY;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CITY;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COLORSPACE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COMMENT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT_NOTICE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COUNTRY_OR_PRIMARY_LOCATION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CREDIT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DATE_CREATED;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DESCRIPTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EQUIPMENT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EXPOSURE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_FNUMBER;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_FOCALLENGTH;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEADLINE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEIGHT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HRESOLUTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ICCPROFILE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ISOSPEED;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_KEYWORDS;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_LANGUAGE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_OBJECT_NAME;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIENTATION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINALDATE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINAL_TRANSMISSION_REFERENCE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINATING_PROGRAM;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PIXEL_XDIMENSION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PIXEL_YDIMENSION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PROVINCE_OR_STATE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_RECORD_VERSION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_RELEASE_DATE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_RELEASE_TIME;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SOURCE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SPECIAL_INSTRUCTIONS;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SUPPLEMENTAL_CATEGORIES;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_TIME_CREATED;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_URGENCY;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_VRESOLUTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBALANCE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WRITER;
 
-import java.awt.color.ICC_Profile;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,99 +124,6 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             session = doc.getCoreSession();
         }
         return session;
-    }
-
-    protected void setMetadata() throws IOException {
-        boolean imageInfoUsed = false;
-        ImageInfo imageInfo = getImageInfo();
-        if (imageInfo != null) {
-            width = imageInfo.getWidth();
-            height = imageInfo.getHeight();
-            depth = imageInfo.getDepth();
-            imageInfoUsed = true;
-        }
-        Map<String, Object> metadata = getImagingService().getImageMetadata(fileContent);
-        description = (String) metadata.get(META_DESCRIPTION);
-        if (!imageInfoUsed) {
-            width = (Integer) metadata.get(META_WIDTH);
-            height = (Integer) metadata.get(META_HEIGHT);
-        }
-        doc.setPropertyValue("picture:" + FIELD_BYLINE, (String) metadata.get(META_BY_LINE));
-        doc.setPropertyValue("picture:" + FIELD_CAPTION, (String) metadata.get(META_CAPTION));
-        doc.setPropertyValue("picture:" + FIELD_CREDIT, (String) metadata.get(META_CREDIT));
-        if (metadata.containsKey(META_DATE_CREATED)) {
-            doc.setPropertyValue("picture:" + FIELD_DATELINE, metadata.get(META_DATE_CREATED).toString());
-        }
-        doc.setPropertyValue("picture:" + FIELD_HEADLINE, (String) metadata.get(META_HEADLINE));
-        doc.setPropertyValue("picture:" + FIELD_LANGUAGE, (String) metadata.get(META_LANGUAGE));
-        doc.setPropertyValue("picture:" + FIELD_ORIGIN, (String) metadata.get(META_OBJECT_NAME));
-        doc.setPropertyValue("picture:" + FIELD_SOURCE, (String) metadata.get(META_SOURCE));
-
-        // Set EXIF info
-        doc.setPropertyValue("imd:image_description", (String) metadata.get(META_DESCRIPTION));
-        doc.setPropertyValue("imd:user_comment", (String) metadata.get(META_COMMENT));
-        doc.setPropertyValue("imd:equipment", (String) metadata.get(META_EQUIPMENT));
-        Date dateTimeOriginal = (Date) metadata.get(META_ORIGINALDATE);
-        if (dateTimeOriginal != null) {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTime(dateTimeOriginal);
-            doc.setPropertyValue("imd:date_time_original", calendar);
-        }
-        doc.setPropertyValue("imd:xresolution", (Integer) metadata.get(META_HRESOLUTION));
-        doc.setPropertyValue("imd:yresolution", (Integer) metadata.get(META_VRESOLUTION));
-        doc.setPropertyValue("imd:pixel_xdimension", (Integer) metadata.get(META_PIXEL_XDIMENSION));
-        doc.setPropertyValue("imd:pixel_ydimension", (Integer) metadata.get(META_PIXEL_YDIMENSION));
-        doc.setPropertyValue("imd:copyright", (String) metadata.get(META_COPYRIGHT));
-        doc.setPropertyValue("imd:exposure_time", (String) metadata.get(META_EXPOSURE));
-        doc.setPropertyValue("imd:iso_speed_ratings", (String) metadata.get(META_ISOSPEED));
-        doc.setPropertyValue("imd:focal_length", (Double) metadata.get(META_FOCALLENGTH));
-        doc.setPropertyValue("imd:color_space", (String) metadata.get(META_COLORSPACE));
-        doc.setPropertyValue("imd:white_balance", (String) metadata.get(META_WHITEBALANCE));
-        ICC_Profile iccProfile = (ICC_Profile) metadata.get(META_ICCPROFILE);
-        if (iccProfile != null) {
-            doc.setPropertyValue("imd:icc_profile", iccProfile.toString());
-        }
-        doc.setPropertyValue("imd:orientation", (String) metadata.get(META_ORIENTATION));
-        doc.setPropertyValue("imd:fnumber", (Double) metadata.get(META_FNUMBER));
-
-        // Set IPTC info
-        doc.setPropertyValue("iptc:by_line", (String) metadata.get(META_BY_LINE));
-        doc.setPropertyValue("iptc:by_line_title", (String) metadata.get(META_BY_LINE_TITLE));
-        doc.setPropertyValue("iptc:caption", (String) metadata.get(META_CAPTION));
-        doc.setPropertyValue("iptc:category", (String) metadata.get(META_CATEGORY));
-        doc.setPropertyValue("iptc:city", (String) metadata.get(META_CITY));
-        doc.setPropertyValue("iptc:copyright_notice", (String) metadata.get(META_COPYRIGHT_NOTICE));
-        doc.setPropertyValue("iptc:country_or_primary_location",
-                (String) metadata.get(META_COUNTRY_OR_PRIMARY_LOCATION));
-        doc.setPropertyValue("iptc:credit", (String) metadata.get(META_CREDIT));
-        Date dateCreated = (Date) metadata.get(META_DATE_CREATED);
-        if (dateCreated != null) {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTime(dateCreated);
-            doc.setPropertyValue("iptc:date_created", calendar);
-        }
-        doc.setPropertyValue("iptc:headline", (String) metadata.get(META_HEADLINE));
-        doc.setPropertyValue("iptc:keywords", (String) metadata.get(META_KEYWORDS));
-        doc.setPropertyValue("iptc:language", (String) metadata.get(META_LANGUAGE));
-        doc.setPropertyValue("iptc:object_name", (String) metadata.get(META_OBJECT_NAME));
-        doc.setPropertyValue("iptc:original_transmission_ref",
-                (String) metadata.get(META_ORIGINAL_TRANSMISSION_REFERENCE));
-        doc.setPropertyValue("iptc:originating_program", (String) metadata.get(META_ORIGINATING_PROGRAM));
-        doc.setPropertyValue("iptc:province_or_state", (String) metadata.get(META_PROVINCE_OR_STATE));
-        doc.setPropertyValue("iptc:record_version", (String) metadata.get(META_RECORD_VERSION));
-        Date releaseDate = (Date) metadata.get(META_RELEASE_DATE);
-        if (releaseDate != null) {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTime(releaseDate);
-            doc.setPropertyValue("iptc:release_date", calendar);
-        }
-        doc.setPropertyValue("iptc:release_time", (String) metadata.get(META_RELEASE_TIME));
-        doc.setPropertyValue("iptc:source", (String) metadata.get(META_SOURCE));
-        doc.setPropertyValue("iptc:special_instructions", (String) metadata.get(META_SPECIAL_INSTRUCTIONS));
-        doc.setPropertyValue("iptc:supplemental_categories", (String) metadata.get(META_SUPPLEMENTAL_CATEGORIES));
-        doc.setPropertyValue("iptc:time_created", (String) metadata.get(META_TIME_CREATED));
-        doc.setPropertyValue("iptc:urgency", (String) metadata.get(META_URGENCY));
-        doc.setPropertyValue("iptc:writer", (String) metadata.get(META_WRITER));
     }
 
     protected void clearViews() {

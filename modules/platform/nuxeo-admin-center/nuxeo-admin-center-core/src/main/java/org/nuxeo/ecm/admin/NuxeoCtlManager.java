@@ -46,14 +46,6 @@ public class NuxeoCtlManager {
 
     private ConfigurationGenerator cg;
 
-    /**
-     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
-     */
-    @Deprecated
-    public static boolean isWindows() {
-        return SystemUtils.IS_OS_WINDOWS;
-    }
-
     private static String winEscape(String command) {
         return command.replaceAll("([ ()<>&])", "^$1");
     }

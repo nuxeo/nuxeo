@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
-import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author tiry
  */
-public class ImageIdentifier extends MagickExecutor {
+public class ImageIdentifier {
 
     private static final Logger log = LogManager.getLogger(ImageIdentifier.class);
 

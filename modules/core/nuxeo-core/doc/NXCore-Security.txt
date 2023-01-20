@@ -300,10 +300,10 @@ A first draft of these methods would include::
        * @permission the permission to check
        *
        * @return true if permission is allowed
-       * @throws DocumentException
+       * @throws DocumentSecurityException
        */
       public boolean checkPermission(String permission)
-          throws DocumentException;
+          throws DocumentSecurityException;
   }
 
   public interface IDocument extends IDocumentAccessControl ...

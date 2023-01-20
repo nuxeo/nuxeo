@@ -41,15 +41,6 @@ public class ManageTabSubPage extends DocumentBasePage {
         super(driver);
     }
 
-    /**
-     * @deprecated since 7.10. Use {@link PermissionsSubPage} instead.
-     */
-    @Deprecated
-    public AccessRightsSubPage getAccessRightsSubTab() {
-        clickOnDocumentTabLink(accessRightsLink);
-        return asPage(AccessRightsSubPage.class);
-    }
-
     public TrashSubPage getTrashSubTab() {
         clickOnDocumentTabLink(trashLink);
         return asPage(TrashSubPage.class);

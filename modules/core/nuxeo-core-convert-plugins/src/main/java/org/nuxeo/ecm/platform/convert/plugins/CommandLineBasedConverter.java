@@ -60,14 +60,6 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     protected Map<String, String> initParameters;
 
-    /**
-     * @deprecated Since 7.4. Useless.
-     */
-    @Deprecated
-    protected CommandLineExecutorService getCommandLineService() {
-        return Framework.getService(CommandLineExecutorService.class);
-    }
-
     public String getTmpDirectory(Map<String, Serializable> parameters) {
         String tmp = initParameters.get(TMP_PATH_PARAMETER);
         if (parameters != null && parameters.containsKey(TMP_PATH_PARAMETER)) {

@@ -238,20 +238,6 @@ public abstract class AbstractDirectory implements Directory {
         return fieldMapper;
     }
 
-    @Deprecated
-    @Override
-    public Reference getReference(String referenceFieldName) {
-        List<Reference> refs = getReferences(referenceFieldName);
-        if (refs == null || refs.isEmpty()) {
-            return null;
-        } else if (refs.size() == 1) {
-            return refs.get(0);
-        } else {
-            throw new DirectoryException(
-                    "Unexpected multiple references for " + referenceFieldName + " in directory " + getName());
-        }
-    }
-
     @Override
     public List<Reference> getReferences(String referenceFieldName) {
         return references.get(referenceFieldName);

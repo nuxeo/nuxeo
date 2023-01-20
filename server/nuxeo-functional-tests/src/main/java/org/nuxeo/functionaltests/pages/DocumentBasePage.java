@@ -268,14 +268,6 @@ public class DocumentBasePage extends AbstractPage {
                                                                .collect(Collectors.toList());
     }
 
-    /**
-     * @deprecated since 7.3: use {@link #goToWorkspaces()} instead
-     */
-    @Deprecated
-    public DocumentBasePage getDocumentManagement() {
-        return goToWorkspaces();
-    }
-
     public EditTabSubPage getEditTab() {
         return getEditTab(EditTabSubPage.class);
     }

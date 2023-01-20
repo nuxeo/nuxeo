@@ -122,15 +122,6 @@ public interface Directory {
     Session getSession();
 
     /**
-     * Lookup a Reference by field name.
-     *
-     * @return the matching reference implementation or null
-     * @deprecated since 7.4, kept for compatibility with old code, use {@link #getReferences(String)} instead
-     */
-    @Deprecated(since = "7.4")
-    Reference getReference(String referenceFieldName);
-
-    /**
      * Lookup the References by field name.
      *
      * @return the matching references implementation or null

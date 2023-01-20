@@ -114,7 +114,7 @@ public class TestShibbolethGroupHelper {
         session.save();
 
         Directory dir = directoryService.getDirectory(userManager.getGroupDirectoryName());
-        assertNotNull(dir.getReference(userManager.getGroupSubGroupsField()));
+        assertNotNull(dir.getReferences(userManager.getGroupSubGroupsField()).get(0));
 
         try (Session ses = directoryService.open(userManager.getGroupDirectoryName())) {
             DocumentModel tmp = ses.getEntry("testRef");
@@ -125,7 +125,7 @@ public class TestShibbolethGroupHelper {
             assertEquals(1, subs.size());
         }
 
-        Reference dirRef = dir.getReference(userManager.getGroupSubGroupsField());
+        Reference dirRef = dir.getReferences(userManager.getGroupSubGroupsField()).get(0);
 
         assertTrue(dirRef.getTargetIdsForSource("testRef").size() > 0);
         assertTrue(dirRef.getSourceIdsForTarget("refShib").size() > 0);

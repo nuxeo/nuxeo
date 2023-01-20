@@ -42,14 +42,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractConverterTest {
 
-    /**
-     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
-     */
-    @Deprecated(since = "7.4")
-    protected final boolean isWindows() {
-        return SystemUtils.IS_OS_WINDOWS;
-    }
-
     protected final BlobHolder getBlobFromPath(String path) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);

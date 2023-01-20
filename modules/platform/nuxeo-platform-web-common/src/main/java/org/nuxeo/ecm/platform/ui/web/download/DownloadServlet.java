@@ -41,10 +41,6 @@ public class DownloadServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    /** @deprecated since 7.4, use nxfile instead */
-    @Deprecated
-    public static final String NXBIGFILE = DownloadService.NXBIGFILE;
-
     @Override
     public void doHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         doGet(req, resp); // downstream methods will deal with HEAD and avoid sending a body

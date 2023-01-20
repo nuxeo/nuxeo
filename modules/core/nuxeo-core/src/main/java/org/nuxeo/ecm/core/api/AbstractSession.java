@@ -705,7 +705,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         Map<String, Serializable> options = new HashMap<>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
-        options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
         options.put(CoreEventConstants.DESTINATION_NAME, name);
         return createDocumentModelFromTypeName(typeName, options);
     }
@@ -2809,7 +2808,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String parentPath = parentRef == null ? null : resolveReference(parentRef).getPath();
         Map<String, Serializable> options = new HashMap<>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
-        options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
         options.put(CoreEventConstants.DESTINATION_NAME, name);
         return createDocumentModelFromParentAndType(parentRef, typeName, options);
     }

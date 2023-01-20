@@ -98,14 +98,6 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         return detachedRendition;
     }
 
-    /**
-     * @deprecated since 7.10, misspelled, use {@link #getDetachedRendition} instead.
-     */
-    @Deprecated
-    public DocumentModel getDetachedDendition() {
-        return detachedRendition;
-    }
-
     @Override
     public void run() {
         DocumentModel liveDocument = session.getDocument(new IdRef(liveDocumentId));

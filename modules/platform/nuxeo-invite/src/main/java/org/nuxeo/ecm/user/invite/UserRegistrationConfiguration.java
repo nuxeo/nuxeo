@@ -61,13 +61,6 @@ public class UserRegistrationConfiguration {
     @XNode("userInfo/companyField")
     private String userInfoCompanyField = "userinfo:company";
 
-    /**
-     * @deprecated since 7.3. Not used anymore, the password is not stored.
-     */
-    @Deprecated
-    @XNode("userInfo/passwordField")
-    private String userInfoPasswordField = "userinfo:password";
-
     @XNode("userInfo/groupsField")
     private String userInfoGroupsField = "userinfo:groups";
 
@@ -210,10 +203,6 @@ public class UserRegistrationConfiguration {
         return userInfoCompanyField;
     }
 
-    public String getUserInfoPasswordField() {
-        return userInfoPasswordField;
-    }
-
     public String getUserInfoGroupsField() {
         return userInfoGroupsField;
     }
@@ -345,10 +334,6 @@ public class UserRegistrationConfiguration {
 
         if (!StringUtils.isEmpty(other.userInfoEmailField)) {
             this.userInfoEmailField = other.userInfoEmailField;
-        }
-
-        if (!StringUtils.isEmpty(other.userInfoPasswordField)) {
-            this.userInfoPasswordField = other.userInfoPasswordField;
         }
 
         if (!StringUtils.isEmpty(other.userInfoCompanyField)) {

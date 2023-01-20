@@ -129,22 +129,6 @@ public class ACPImpl implements ACP {
     }
 
     @Override
-    public void addACL(String afterMe, ACL acl) {
-        if (afterMe == null) {
-            addACL(0, acl);
-        } else {
-            int i;
-            int len = acls.size();
-            for (i = 0; i < len; i++) {
-                if (acls.get(i).getName().equals(afterMe)) {
-                    break;
-                }
-            }
-            addACL(i + 1, acl);
-        }
-    }
-
-    @Override
     public ACL getACL(String name) {
         String localName = name == null ? ACL.LOCAL_ACL : name;
         return acls.stream().filter(acl -> acl.getName().equals(localName)).findFirst().orElse(null);

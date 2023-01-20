@@ -181,11 +181,16 @@ public class CoreDirectorySession extends BaseSession {
         DocumentModel createdDoc = coreSession.createDocument(docModel);
 
         for (String referenceFieldName : createdRefs) {
-            Reference reference = directory.getReference(referenceFieldName);
-            List<String> targetIds = toStringList(createdDoc.getProperty(schemaName, referenceFieldName));
-            reference.setTargetIdsForSource(docModel.getId(), targetIds);
+            setReferenceTargetIds(docModel, createdDoc, referenceFieldName);
         }
         return docModel;
+    }
+
+    protected void setReferenceTargetIds(DocumentModel docModel, DocumentModel targetHolderDoc, String referenceFieldName) {
+        for (Reference reference : directory.getReferences(referenceFieldName)) {
+            List<String> targetIds = toStringList(targetHolderDoc.getProperty(schemaName, referenceFieldName));
+            reference.setTargetIdsForSource(docModel.getId(), targetIds);
+        }
     }
 
     @Override
@@ -226,9 +231,7 @@ public class CoreDirectorySession extends BaseSession {
 
                         // update reference fields
                         for (String referenceFieldName : updatedRefs) {
-                            Reference reference = directory.getReference(referenceFieldName);
-                            List<String> targetIds = toStringList(docModel.getProperty(schemaName, referenceFieldName));
-                            reference.setTargetIdsForSource(docModel.getId(), targetIds);
+                            setReferenceTargetIds(docModel, docModel, referenceFieldName);
                         }
 
                         coreSession.saveDocument(docModel);

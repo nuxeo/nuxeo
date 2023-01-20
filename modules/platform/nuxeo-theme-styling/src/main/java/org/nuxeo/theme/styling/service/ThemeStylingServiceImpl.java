@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,16 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.web.resources.api.Resource;
-import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
-import org.nuxeo.ecm.web.resources.core.ResourceDescriptor;
-import org.nuxeo.runtime.RuntimeMessage.Level;
-import org.nuxeo.runtime.RuntimeMessage.Source;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.styling.negotiation.Negotiator;
@@ -54,7 +47,6 @@ import org.nuxeo.theme.styling.service.descriptors.NegotiatorDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 import org.nuxeo.theme.styling.service.descriptors.SassImport;
-import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.palettes.PaletteParseException;
 import org.nuxeo.theme.styling.service.palettes.PaletteParser;
 import org.nuxeo.theme.styling.service.registries.FlavorRegistry;
@@ -94,19 +86,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             log.info("Register flavor: {}", flavor::getName);
             registerFlavor(flavor, contributor.getContext());
             log.info("Done registering flavor: {}", flavor::getName);
-        } else if (contribution instanceof SimpleStyle style) {
-            log.info("Register style: {}", style::getName);
-            ComponentName compName = contributor.getName();
-            String message = String.format(
-                    "Style '%s' on component %s should now be contributed to extension "
-                            + "point '%s': a compatibility registration was performed but it may not be "
-                            + "accurate. Note that the 'flavor' processor should be used with this resource.",
-                    style.getName(), compName, WR_EX);
-            DeprecationLogger.log(message, "7.4");
-            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
-            ResourceDescriptor resource = getResourceFromStyle(style);
-            registerResource(resource, contributor.getContext());
-            log.info("Done registering style: {}", style::getName);
         } else if (contribution instanceof PageDescriptor page) {
             log.info("Register page: {}", page::getName);
             if (page.hasResources()) {
@@ -116,23 +95,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             }
             pageReg.addContribution(page);
             log.info("Done registering page: {}", page::getName);
-        } else if (contribution instanceof ResourceDescriptor resource) {
-            log.info("Register resource: {}", resource::getName);
-            ComponentName compName = contributor.getName();
-            String message = String.format(
-                    "Resource '%s' on component %s should now be contributed to extension "
-                            + "point '%s': a compatibility registration was performed but it may not be accurate.",
-                    resource.getName(), compName, WR_EX);
-            DeprecationLogger.log(message, "7.4");
-            addRuntimeMessage(Level.WARNING, message, Source.EXTENSION, compName.getName());
-            // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it
-            // directly to the WRM endpoint
-            String path = resource.getPath();
-            if (path != null && !path.startsWith("/")) {
-                resource.setUri("/" + path);
-            }
-            registerResource(resource, contributor.getContext());
-            log.info("Done registering resource: {}", resource::getName);
         } else if (contribution instanceof NegotiationDescriptor neg) {
             log.info("Register negotiation for: {}", neg::getTarget);
             negReg.addContribution(neg);
@@ -149,8 +111,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             flavorReg.removeContribution(flavor);
         } else if (contribution instanceof Resource resource) {
             unregisterResource(resource);
-        } else if (contribution instanceof SimpleStyle style) {
-            unregisterResource(getResourceFromStyle(style));
         } else if (contribution instanceof PageDescriptor page) {
             if (page.hasResources()) {
                 WebResourceManager wrm = Framework.getService(WebResourceManager.class);
@@ -249,20 +209,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         // unregister directly to the WebResourceManager service
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         wrm.unregisterResource(resource);
-    }
-
-    protected ResourceDescriptor getResourceFromStyle(SimpleStyle style) {
-        // turn style into a resource
-        ResourceDescriptor resource = new ResourceDescriptor();
-        resource.setPath(style.getSrc());
-        String name = style.getName();
-        if (name.endsWith(ResourceType.css.name())) {
-            resource.setName(name);
-        } else {
-            resource.setName(name + "." + ResourceType.css.name());
-        }
-        resource.setProcessors(Collections.singletonList("flavor"));
-        return resource;
     }
 
     protected URL getUrlFromPath(String path, RuntimeContext extensionContext) {
@@ -536,7 +482,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             PageDescriptor clone = globalPage.clone();
             clone.setAppendFlavors(true);
             clone.setAppendResources(true);
-            clone.setAppendStyles(true);
             page.merge(clone);
         }
     }

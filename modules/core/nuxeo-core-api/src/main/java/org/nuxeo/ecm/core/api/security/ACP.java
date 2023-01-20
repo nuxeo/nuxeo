@@ -105,13 +105,6 @@ public interface ACP extends Serializable, Cloneable {
 
     void addACL(int pos, ACL acl);
 
-    /**
-     * @deprecated since 7.4. Always use {@link #addACL(ACL)} to have correctly ordered acls. To force by-passing the
-     *             order, use {@link #addACL(int, ACL)}.
-     */
-    @Deprecated
-    void addACL(String afterMe, ACL acl);
-
     ACL removeACL(String name);
 
     ACL getACL(String name);

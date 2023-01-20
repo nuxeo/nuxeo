@@ -947,37 +947,6 @@ public class NuxeoCmisService extends AbstractCmisService
         response.setHeader(headerName, digest);
     }
 
-    /**
-     * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
-     */
-    @Deprecated
-    protected ContentStream getIconRenditionStream(String objectId) {
-        DocumentModel doc = getDocumentModel(objectId);
-        String iconPath;
-        try {
-            iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
-        } catch (PropertyException e) {
-            iconPath = null;
-        }
-        InputStream is = NuxeoObjectData.getIconStream(iconPath, callContext);
-        if (is == null) {
-            throw new CmisConstraintException("No icon content stream: " + objectId);
-        }
-
-        int slash = iconPath.lastIndexOf('/');
-        String filename = slash == -1 ? iconPath : iconPath.substring(slash + 1);
-
-        SimpleImageInfo info;
-        try {
-            info = new SimpleImageInfo(is);
-        } catch (IOException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
-        // refetch now-consumed stream
-        is = NuxeoObjectData.getIconStream(iconPath, callContext);
-        return new ContentStreamImpl(filename, BigInteger.valueOf(info.getLength()), info.getMimeType(), is);
-    }
-
     /** @deprecated since 11.1, now unused */
     @Deprecated
     protected ContentStream getRenditionServiceStream(String objectId, String renditionName) {

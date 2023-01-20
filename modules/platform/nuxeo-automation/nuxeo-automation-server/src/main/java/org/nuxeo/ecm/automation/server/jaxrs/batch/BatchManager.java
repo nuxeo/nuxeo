@@ -131,16 +131,6 @@ public interface BatchManager {
     String initBatch();
 
     /**
-     * Initializes a batch with a given batchId and Context Name. If batchId is not provided, it will be automatically
-     * generated.
-     *
-     * @return the batchId
-     * @deprecated since 7.10, use {@link BatchManager#initBatch()} instead.
-     */
-    @Deprecated
-    String initBatch(String batchId, String contextName);
-
-    /**
      * Initiates a new batch with the given handler.
      *
      * @param handlerName the batch handler name

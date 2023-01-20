@@ -156,14 +156,6 @@ public class TestFileUtils {
         assertFalse(FileUtils.areFilesContentEquals(fileContent2, fileContent3));
     }
 
-    /**
-     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
-     */
-    @Deprecated
-    public static boolean isWindows() {
-        return SystemUtils.IS_OS_WINDOWS;
-    }
-
     @Test
     public void testGetSafeFilename() {
         assertEquals("my-image.png", FileUtils.getSafeFilename("my-image.png"));

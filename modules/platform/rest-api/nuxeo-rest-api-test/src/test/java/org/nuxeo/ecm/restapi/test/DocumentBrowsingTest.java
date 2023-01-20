@@ -65,7 +65,6 @@ import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.tag.io.TagsJsonEnricher;
 import org.nuxeo.ecm.platform.thumbnail.io.ThumbnailJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
-import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -359,28 +358,6 @@ public class DocumentBrowsingTest extends BaseTest {
                 // will be NULL for Oracle, where empty string and NULL are the same thing
                 assertNull(value);
             }
-        }
-    }
-
-    @Test
-    public void itCanSetPropertyToNullLegacyModeHeader() {
-        DocumentModel note = RestServerInit.getNote(0, session);
-        note.setPropertyValue("dc:format", "a value that will be set to null");
-        session.saveDocument(note);
-
-        fetchInvalidations();
-
-        // When i do a PUT request on the document with modified data
-        Map<String, String> headers = new HashMap<>();
-        headers.put(DocumentModelJsonReaderLegacy.HEADER_DOCUMENT_JSON_LEGACY, Boolean.TRUE.toString());
-        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}", headers)) {
-
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            // Then the document is updated
-            fetchInvalidations();
-            note = RestServerInit.getNote(0, session);
-            assertNull(note.getPropertyValue("dc:format"));
         }
     }
 

@@ -24,12 +24,10 @@ import static org.nuxeo.ecm.core.io.download.DownloadService.BLOBHOLDER_PREFIX;
 
 import java.io.Serializable;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
@@ -43,7 +41,6 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -173,34 +170,6 @@ public class BlobObject extends DefaultObject {
             }
             return blob;
         }
-    }
-
-    /**
-     * @deprecated since 7.3. Now returns directly the Blob and use default {@code BlobWriter}.
-     */
-    @Deprecated
-    public static Response buildResponseFromBlob(Request request, HttpServletRequest httpServletRequest, Blob blob,
-            String filename) {
-        if (filename == null) {
-            filename = blob.getFilename();
-        }
-
-        String digest = blob.getDigest();
-        EntityTag etag = digest == null ? null : new EntityTag(digest);
-        if (etag != null) {
-            Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
-            if (builder != null) {
-                return builder.build();
-            }
-        }
-        String contentDisposition = ServletHelper.getRFC2231ContentDisposition(httpServletRequest, filename);
-        // cached resource did change or no ETag -> serve updated content
-        Response.ResponseBuilder builder = Response.ok(blob).header("Content-Disposition", contentDisposition).type(
-                blob.getMimeType());
-        if (etag != null) {
-            builder.tag(etag);
-        }
-        return builder.build();
     }
 
     @DELETE

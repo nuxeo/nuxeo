@@ -126,11 +126,6 @@ public class PictureViewImpl implements PictureView {
     }
 
     @Override
-    public Blob getContent() {
-        return blob;
-    }
-
-    @Override
     public int getHeight() {
         return height;
     }

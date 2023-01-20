@@ -128,13 +128,6 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         return batch.getKey();
     }
 
-    @Override
-    @Deprecated
-    public String initBatch(String batchId, String contextName) {
-        Batch batch = initBatchInternal(batchId);
-        return batch.getKey();
-    }
-
     protected Batch initBatchInternal(String batchId) {
         BatchHandler batchHandler = handlers.get(DEFAULT_BATCH_HANDLER);
         return batchHandler.newBatch(batchId);

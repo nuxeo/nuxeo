@@ -147,21 +147,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         return new ArrayList<>(renditionDefinitionRegistry.descriptors.values());
     }
 
-    /**
-     * @deprecated since 7.2 because unused
-     */
-    @Override
-    @Deprecated(since = "7.2")
-    public List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(String providerType) {
-        List<RenditionDefinition> defs = new ArrayList<>();
-        for (RenditionDefinition def : getDeclaredRenditionDefinitions()) {
-            if (def.getProviderType().equals(providerType)) {
-                defs.add(def);
-            }
-        }
-        return defs;
-    }
-
     @Override
     public List<RenditionDefinition> getAvailableRenditionDefinitions(DocumentModel doc) {
 

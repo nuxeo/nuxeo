@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -33,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author btatar
  */
-public class ImageRotater extends MagickExecutor {
+public class ImageRotater {
 
     public static void rotate(String inputFile, String outputFile, int angle) throws CommandNotAvailable,
             CommandException {

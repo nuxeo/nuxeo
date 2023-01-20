@@ -18,7 +18,6 @@
  */
 package org.nuxeo.connect.update.task.guards;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
@@ -71,22 +70,6 @@ public class PlatformHelper {
     @Deprecated(since = "11.1")
     public boolean isJetty() {
         return false;
-    }
-
-    /**
-     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
-     */
-    @Deprecated
-    public boolean isWindows() {
-        return SystemUtils.IS_OS_WINDOWS;
-    }
-
-    /**
-     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
-     */
-    @Deprecated
-    public boolean isNotWindows() {
-        return !isWindows();
     }
 
     public static String getFullName(String platform) {

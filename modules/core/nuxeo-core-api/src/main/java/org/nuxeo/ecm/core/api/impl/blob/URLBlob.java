@@ -50,15 +50,6 @@ public class URLBlob extends AbstractBlob implements Serializable {
         this.encoding = encoding;
     }
 
-    /**
-     * @deprecated since 7.2, use a separate {@link #setFilename} call
-     */
-    @Deprecated
-    public URLBlob(URL url, String mimeType, String encoding, String filename) {
-        this(url, mimeType, encoding);
-        this.filename = filename;
-    }
-
     @Override
     public InputStream getStream() throws IOException {
         return url.openStream();

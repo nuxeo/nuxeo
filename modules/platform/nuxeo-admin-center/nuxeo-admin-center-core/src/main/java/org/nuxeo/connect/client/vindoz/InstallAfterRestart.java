@@ -73,14 +73,6 @@ public class InstallAfterRestart {
         return Framework.isDevModeSet();
     }
 
-    /**
-     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
-     */
-    @Deprecated
-    protected static boolean isVindozBox() {
-        return SystemUtils.IS_OS_WINDOWS;
-    }
-
     public static void addPackageForInstallation(String pkgNameOrId) {
         if (!pkgNameOrIds.contains(pkgNameOrId)) {
             pkgNameOrIds.add(pkgNameOrId);

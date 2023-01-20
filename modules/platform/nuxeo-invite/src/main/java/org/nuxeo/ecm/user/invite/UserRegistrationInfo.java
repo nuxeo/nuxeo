@@ -24,12 +24,6 @@ public class UserRegistrationInfo {
 
     protected String login;
 
-    /**
-     * @deprecated since 7.3. The password should not be stored.
-     */
-    @Deprecated
-    protected String password;
-
     protected String firstName;
 
     protected String lastName;
@@ -68,22 +62,6 @@ public class UserRegistrationInfo {
 
     public void setLogin(String login) {
         this.login = login;
-    }
-
-    /**
-     * @deprecated since 7.3.
-     */
-    @Deprecated
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @deprecated since 7.3.
-     */
-    @Deprecated
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getFirstName() {

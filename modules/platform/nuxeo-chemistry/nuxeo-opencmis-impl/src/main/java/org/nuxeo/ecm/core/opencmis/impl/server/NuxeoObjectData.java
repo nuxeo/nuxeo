@@ -394,54 +394,6 @@ public class NuxeoObjectData implements ObjectData {
         }
     }
 
-    /**
-     * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
-     */
-    @Deprecated
-    protected static List<RenditionData> getIconRendition(DocumentModel doc, CallContext callContext)
-            throws IOException {
-        String iconPath;
-        try {
-            iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
-        } catch (PropertyException e) {
-            iconPath = null;
-        }
-        InputStream is = getIconStream(iconPath, callContext);
-        if (is == null) {
-            return Collections.emptyList();
-        }
-        RenditionDataImpl ren = new RenditionDataImpl();
-        ren.setStreamId(REND_STREAM_ICON);
-        ren.setKind(REND_KIND_CMIS_THUMBNAIL);
-        int slash = iconPath.lastIndexOf('/');
-        String filename = slash == -1 ? iconPath : iconPath.substring(slash + 1);
-        ren.setTitle(filename);
-        SimpleImageInfo info = new SimpleImageInfo(is);
-        ren.setBigLength(BigInteger.valueOf(info.getLength()));
-        ren.setBigWidth(BigInteger.valueOf(info.getWidth()));
-        ren.setBigHeight(BigInteger.valueOf(info.getHeight()));
-        ren.setMimeType(info.getMimeType());
-        return Collections.<RenditionData> singletonList(ren);
-    }
-
-    /**
-     * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
-     */
-    @Deprecated
-    public static InputStream getIconStream(String iconPath, CallContext context) {
-        if (iconPath == null || iconPath.length() == 0) {
-            return null;
-        }
-        if (!iconPath.startsWith("/")) {
-            iconPath = '/' + iconPath;
-        }
-        ServletContext servletContext = (ServletContext) context.get(CallContext.SERVLET_CONTEXT);
-        if (servletContext == null) {
-            throw new CmisRuntimeException("Cannot get servlet context");
-        }
-        return servletContext.getResourceAsStream(iconPath);
-    }
-
     protected static List<RenditionData> getRenditionServiceRenditions(DocumentModel doc, CallContext callContext)
             throws IOException {
         RenditionService renditionService = Framework.getService(RenditionService.class);

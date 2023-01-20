@@ -123,7 +123,9 @@ public abstract class AbstractDirectoryTest {
 
     @Test
     public void testReference() throws Exception {
-        Reference membersRef = directoryService.getDirectory(GROUP_DIR).getReference("members");
+        List<Reference> references = directoryService.getDirectory(GROUP_DIR).getReferences("members");
+        assertEquals(1, references.size());
+        Reference membersRef = references.get(0);
 
         // test initial configuration
         List<String> administrators = membersRef.getTargetIdsForSource("administrators");

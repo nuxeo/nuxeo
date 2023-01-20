@@ -56,10 +56,6 @@ public interface DownloadService {
 
     String NXBIGBLOB = "nxbigblob";
 
-    /** @deprecated since 7.4, use nxfile instead */
-    @Deprecated
-    String NXBIGFILE = "nxbigfile";
-
     String BLOBHOLDER_PREFIX = "blobholder:";
 
     String BLOBHOLDER_0 = "blobholder:0";

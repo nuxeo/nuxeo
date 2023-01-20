@@ -21,9 +21,6 @@
       <schema name="image_metadata"/>
     </facet>
 
-    <!-- deprecated since 7.1, here for compat -->
-    <facet name="MultiviewPicture"/>
-
     <doctype name="Picture" extends="Document">
       <schema name="common"/>
       <schema name="uid"/>

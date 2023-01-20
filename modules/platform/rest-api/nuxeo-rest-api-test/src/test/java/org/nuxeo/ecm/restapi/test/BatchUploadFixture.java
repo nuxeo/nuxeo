@@ -109,7 +109,7 @@ public class BatchUploadFixture extends BaseTest {
     private void itCanUseBatchUpload(boolean noDrop) throws IOException {
 
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         // Upload a file
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
@@ -254,7 +254,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testObeyFileTypeHeader() throws IOException {
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         // Upload a file without the X-File-Type header
         String data1 = "File without explicit file type";
@@ -447,7 +447,7 @@ public class BatchUploadFixture extends BaseTest {
     public void testChunkedUpload() throws IOException {
 
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         // Upload chunks in desorder
         String fileName = URLEncoder.encode("Fichier accentué.txt", UTF_8);
@@ -881,7 +881,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testRemoveFile() throws IOException {
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         int numfiles = 5;
 
@@ -965,7 +965,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testEmptyFileUpload() throws IOException {
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         // Upload an empty file
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
@@ -1018,7 +1018,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testDefaultProviderAsLegacyFallback() throws Exception {
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         try (CloseableClientResponse response = getResponse(RequestType.GET, "upload/" + batchId + "/info")) {
             assertEquals(Status.OK.getStatusCode(), response.getStatus());
@@ -1042,7 +1042,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testErrorOnRefreshedTokenError() throws Exception {
         // The default batch handler does not support token renewal.
-        String batchId = initializeNewBatch();
+        String batchId = initializeNewBatchWithHandler();
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/refreshToken")) {
             assertEquals(SC_NOT_IMPLEMENTED, response.getStatus());
@@ -1052,7 +1052,7 @@ public class BatchUploadFixture extends BaseTest {
     /** NXP-29246: Fix import of MHTML file using Chrome */
     @Test
     public void testUploadMHTML() throws Exception {
-        String batchId = initializeNewBatch();
+        String batchId = initializeNewBatchWithHandler();
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0", "dummy",
                 Map.of("Content-Type", "multipart/related", "X-File-Name", "dummy.mhtml"))) {
             assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
@@ -1067,7 +1067,7 @@ public class BatchUploadFixture extends BaseTest {
     /** NXP-31123: Reject multipart uploads */
     @Test
     public void testRejectMultipartFormDataUpload() throws IOException {
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + initializeNewBatch() + "/0",
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + initializeNewBatchWithHandler() + "/0",
                 "dummy", Map.of("Content-Type", MULTIPART_FORM_DATA))) {
             assertEquals(SC_BAD_REQUEST, response.getStatus());
         }
@@ -1075,7 +1075,7 @@ public class BatchUploadFixture extends BaseTest {
 
     @Test
     public void testConflictOnCompleteUploadError() throws Exception {
-        String batchId = initializeNewBatch();
+        String batchId = initializeNewBatchWithHandler();
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0/complete",
                 "{}")) {
@@ -1085,7 +1085,7 @@ public class BatchUploadFixture extends BaseTest {
 
     @Test
     public void testBatchUploadRemoveFileEntryWithProvider() throws Exception {
-        String batchId = initializeNewBatch();
+        String batchId = initializeNewBatchWithHandler();
 
         // Upload a file not in multipart
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
@@ -1157,7 +1157,7 @@ public class BatchUploadFixture extends BaseTest {
     public void testBatchUploadWithMultivaluedBlobProperty() throws Exception {
 
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         // Upload a file not in multipart
         String fileName1 = URLEncoder.encode("File.txt", UTF_8);
@@ -1214,7 +1214,7 @@ public class BatchUploadFixture extends BaseTest {
         }
 
         // Get batch id, used as a session id
-        String batchId = initializeDeprecatedNewBatch();
+        String batchId = initializeNewBatch();
 
         // Upload a file not in multipart
         String fileName1 = URLEncoder.encode("File.txt", UTF_8);
@@ -1265,10 +1265,7 @@ public class BatchUploadFixture extends BaseTest {
         assertFalse(txtFile.exists());
     }
 
-    /**
-     * Deprecated since 7.10, but it seems we leverage it at several places.
-     */
-    protected String initializeDeprecatedNewBatch() throws IOException {
+    protected String initializeNewBatch() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
             assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -1278,7 +1275,7 @@ public class BatchUploadFixture extends BaseTest {
         }
     }
 
-    protected String initializeNewBatch() throws IOException {
+    protected String initializeNewBatchWithHandler() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/new/dummy")) {
             assertEquals(Status.OK.getStatusCode(), response.getStatus());
             JsonNode responseJson = mapper.readTree(response.getEntityInputStream());

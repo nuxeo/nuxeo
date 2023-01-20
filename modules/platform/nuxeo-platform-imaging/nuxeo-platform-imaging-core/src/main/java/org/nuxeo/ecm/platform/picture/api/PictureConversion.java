@@ -117,16 +117,6 @@ public class PictureConversion implements Comparable<PictureConversion> {
         return chainId;
     }
 
-    /**
-     * For compat with {@link org.nuxeo.ecm.platform.picture.api.PictureTemplate}.
-     *
-     * @deprecated since 7.1. Use {@link #getId()}.
-     */
-    @Deprecated
-    public String getTitle() {
-        return id;
-    }
-
     public Integer getMaxSize() {
         return maxSize;
     }

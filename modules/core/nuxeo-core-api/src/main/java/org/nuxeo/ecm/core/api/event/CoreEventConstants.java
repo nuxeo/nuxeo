@@ -42,12 +42,6 @@ public final class CoreEventConstants {
      */
     public static final String PARENT_PATH = "parentPath";
 
-    /**
-     * @deprecated since 7.1, use {@link CoreEventConstants#DESTINATION_NAME} instead.
-     */
-    @Deprecated
-    public static final String DOCUMENT_MODEL_ID = "documentModelId";
-
     public static final String REPOSITORY_NAME = "repositoryName";
 
     /** @deprecated since 11.1 */

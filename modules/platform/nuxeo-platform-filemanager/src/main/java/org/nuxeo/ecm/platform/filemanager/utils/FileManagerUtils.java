@@ -19,15 +19,11 @@
 package org.nuxeo.ecm.platform.filemanager.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 
-import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,18 +34,6 @@ public final class FileManagerUtils {
 
     // This is an utility class
     private FileManagerUtils() {
-    }
-
-    /**
-     * Returns the contents of the file in a byte array.
-     *
-     * @deprecated since 7.2, use {@link IOUtils#toByteArray} instead
-     */
-    @Deprecated
-    public static byte[] getBytesFromFile(File file) throws IOException {
-        try (InputStream in = new FileInputStream(file)) {
-            return IOUtils.toByteArray(in);
-        }
     }
 
     /**

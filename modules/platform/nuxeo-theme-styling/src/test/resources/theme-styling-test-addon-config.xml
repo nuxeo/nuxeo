@@ -4,17 +4,14 @@
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <!-- extension with an addon that has to impact all pages -->
-    <themePage name="*">
-      <styles append="true">
-        <style>addon_style</style>
-      </styles>
+    <page name="*">
       <flavors append="true">
         <flavor>addon_flavor</flavor>
       </flavors>
       <resources append="true">
         <resource>jquery.addon.js</resource>
       </resources>
-    </themePage>
+    </page>
 
   </extension>
 
@@ -24,13 +21,7 @@
     </flavor>
   </extension>
 
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="addon_style">
-      <src>themes/css/addon_style.css</src>
-    </style>
-  </extension>
-
-  <extension target="org.nuxeo.theme.styling.service" point="resources">
+  <extension target="org.nuxeo.ecm.web.resources.api.service.WebResourceManage" point="resources">
     <resource name="jquery.addon.js">
       <path>scripts/jquery/jquery.addon.js</path>
     </resource>

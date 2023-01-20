@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.web.resources.api.ResourceBundle;
-import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor;
 
 /**
@@ -50,20 +49,6 @@ public class PageDescriptor {
 
     @XNode("defaultFlavor")
     String defaultFlavor;
-
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    @XNode("styles@append")
-    boolean appendStyles;
-
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    @XNodeList(value = "styles/style", type = ArrayList.class, componentType = String.class)
-    List<String> styles;
 
     @XNode("flavors@append")
     boolean appendFlavors;
@@ -95,22 +80,6 @@ public class PageDescriptor {
         this.defaultFlavor = defaultFlavor;
     }
 
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    public boolean getAppendStyles() {
-        return appendStyles;
-    }
-
-    /**
-     * @deprecated since 7.4: use resources instead
-     */
-    @Deprecated
-    public List<String> getStyles() {
-        return styles;
-    }
-
     public boolean getAppendFlavors() {
         return appendFlavors;
     }
@@ -121,10 +90,6 @@ public class PageDescriptor {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setStyles(List<String> styles) {
-        this.styles = styles;
     }
 
     public void setFlavors(List<String> flavors) {
@@ -141,19 +106,6 @@ public class PageDescriptor {
 
     public List<String> getResources() {
         List<String> res = new ArrayList<>();
-        // BBB
-        if (styles != null) {
-            for (String style : styles) {
-                if (style == null) {
-                    continue;
-                }
-                if (style.endsWith(ResourceType.css.name())) {
-                    res.add(style);
-                } else {
-                    res.add(style + "." + ResourceType.css.name());
-                }
-            }
-        }
         if (resources != null) {
             res.addAll(resources);
         }
@@ -203,10 +155,6 @@ public class PageDescriptor {
         this.bundles = bundles;
     }
 
-    public void setAppendStyles(boolean appendStyles) {
-        this.appendStyles = appendStyles;
-    }
-
     public void setAppendFlavors(boolean appendFlavors) {
         this.appendFlavors = appendFlavors;
     }
@@ -238,21 +186,6 @@ public class PageDescriptor {
         String newCharset = src.getCharset();
         if (newCharset != null) {
             setCharset(newCharset);
-        }
-
-        List<String> newStyles = src.getStyles();
-        if (newStyles != null) {
-            List<String> merged = new ArrayList<>();
-            merged.addAll(newStyles);
-            boolean keepOld = src.getAppendStyles() || (newStyles.isEmpty() && !src.getAppendStyles());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldStyles = getStyles();
-                if (oldStyles != null) {
-                    merged.addAll(0, oldStyles);
-                }
-            }
-            setStyles(merged);
         }
 
         List<String> newFlavors = src.getFlavors();
@@ -307,11 +240,6 @@ public class PageDescriptor {
         clone.setName(getName());
         clone.setCharset(getCharset());
         clone.setDefaultFlavor(getDefaultFlavor());
-        clone.setAppendStyles(getAppendStyles());
-        List<String> styles = getStyles();
-        if (styles != null) {
-            clone.setStyles(new ArrayList<>(styles));
-        }
         clone.setAppendFlavors(getAppendFlavors());
         List<String> flavors = getFlavors();
         if (flavors != null) {
@@ -336,10 +264,15 @@ public class PageDescriptor {
             return true;
         }
         PageDescriptor p = (PageDescriptor) obj;
-        return new EqualsBuilder().append(name, p.name).append(charset, p.charset).append(defaultFlavor,
-                p.defaultFlavor).append(appendStyles, p.appendStyles).append(styles, p.styles).append(appendFlavors,
-                p.appendFlavors).append(flavors, p.flavors).append(appendResources, p.appendResources).append(
-                resources, p.resources).append(bundles, p.bundles).isEquals();
+        return new EqualsBuilder().append(name, p.name)
+                                  .append(charset, p.charset)
+                                  .append(defaultFlavor, p.defaultFlavor)
+                                  .append(appendFlavors, p.appendFlavors)
+                                  .append(flavors, p.flavors)
+                                  .append(appendResources, p.appendResources)
+                                  .append(resources, p.resources)
+                                  .append(bundles, p.bundles)
+                                  .isEquals();
     }
 
 }

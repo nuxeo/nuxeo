@@ -24,7 +24,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -32,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author tiry
  */
-public class ImageCropperAndResizer extends MagickExecutor {
+public class ImageCropperAndResizer {
 
     public static final String DEFAULT_MAP_COMPONENTS = "rgb";
 

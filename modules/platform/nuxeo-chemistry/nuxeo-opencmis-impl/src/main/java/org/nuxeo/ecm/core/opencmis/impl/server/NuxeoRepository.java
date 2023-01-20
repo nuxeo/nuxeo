@@ -112,12 +112,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoRepository {
 
-    /**
-     * @deprecated Since 7.10. Use {@link Environment#DISTRIBUTION_VERSION}
-     */
-    @Deprecated
-    public static final String NUXEO_VERSION_PROP = Environment.DISTRIBUTION_VERSION;
-
     public static final String NUXEO_URL_PROP = "nuxeo.url";
 
     public static final String SUPPORTS_JOINS_PROP = "org.nuxeo.cmis.joins";

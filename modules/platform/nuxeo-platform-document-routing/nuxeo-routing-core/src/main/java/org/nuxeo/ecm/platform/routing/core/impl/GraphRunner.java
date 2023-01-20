@@ -389,10 +389,10 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         // we may get several tasks if there's one per actor when the node
         // has the property
         // hasMultipleTasks set to true
-        List<Task> tasks = taskService.createTask(session, session.getPrincipal(), docs, node.getTaskDocType(),
-                node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
-                new ArrayList<>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate, taskVariables,
-                null, node.getWorkflowContextualInfo(session, true));
+        List<Task> tasks = taskService.createTaskForProcess(session, session.getPrincipal(), docs,
+                node.getTaskDocType(), node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
+                taskNotiftemplate, new ArrayList<>(actors), node.hasMultipleTasks(), node.getTaskDirective(),
+                null, dueDate, taskVariables, null, node.getWorkflowContextualInfo(session, true));
 
         // Audit task assignment
         for (Task task : tasks) {

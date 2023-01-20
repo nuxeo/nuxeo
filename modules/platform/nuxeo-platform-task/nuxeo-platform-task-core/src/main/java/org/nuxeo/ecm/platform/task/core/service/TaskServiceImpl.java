@@ -639,23 +639,6 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     /**
-     * @since 5.8
-     * @deprecated since 7.4 use
-     *             {@link #createTaskForProcess(CoreSession, NuxeoPrincipal, List, String, String, String, String, String, List, boolean, String, String, Date, Map, String, Map)}
-     *             instead
-     */
-    @Override
-    @Deprecated
-    public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType, String processId, List<String> actorIds,
-            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo) {
-        return createTaskForProcess(coreSession, principal, documents, taskDocumentType, taskName, taskType, processId,
-                null, actorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath,
-                eventInfo);
-    }
-
-    /**
      * @since 7.4
      */
     @Override

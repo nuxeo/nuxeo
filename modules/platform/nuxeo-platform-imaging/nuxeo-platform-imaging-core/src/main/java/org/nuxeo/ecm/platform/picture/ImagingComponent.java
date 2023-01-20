@@ -116,13 +116,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     @Override
-    public Map<String, Object> getImageMetadata(Blob blob) {
-        log.warn("org.nuxeo.ecm.platform.picture.ImagingComponent.getImageMetadata is deprecated. Please use "
-                + "org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(org.nuxeo.ecm.core.api.Blob)");
-        return Collections.emptyMap();
-    }
-
-    @Override
     public String getImageMimeType(File file) {
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);

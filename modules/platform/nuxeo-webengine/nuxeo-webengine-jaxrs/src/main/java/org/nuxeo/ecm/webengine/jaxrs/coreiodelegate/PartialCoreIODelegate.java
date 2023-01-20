@@ -86,12 +86,7 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
             RenderingContext ctx = RenderingContextWebUtils.getContext(request);
             MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
             Reader<?> reader = registry.getReader(ctx, type, genericType, mediaType);
-            if (reader != null) {
-                // backward compatibility for json document model marshalling
-                DocumentModelJsonReaderLegacy.pushInstanceIfNeeded(ctx, request, headers.getRequestHeaders());
-                return true;
-            }
-            return false;
+            return reader != null;
         }
         return false;
     }

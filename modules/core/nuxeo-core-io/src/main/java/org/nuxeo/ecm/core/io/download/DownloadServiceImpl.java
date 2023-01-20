@@ -263,7 +263,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         return switch (type) {
             // used by nxdropout.js
             case NXDOWNLOADINFO -> Pair.of(downloadPath, Action.INFO);
-            case NXFILE, NXBIGFILE -> Pair.of(downloadPath, Action.DOWNLOAD_FROM_DOC);
+            case NXFILE -> Pair.of(downloadPath, Action.DOWNLOAD_FROM_DOC);
             case NXBIGBLOB -> Pair.of(downloadPath, Action.DOWNLOAD);
             case NXBLOBSTATUS -> Pair.of(downloadPath, Action.BLOBSTATUS);
             default -> null;

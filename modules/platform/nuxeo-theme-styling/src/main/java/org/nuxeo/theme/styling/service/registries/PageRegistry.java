@@ -72,14 +72,6 @@ public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
         return pageResources.get(id);
     }
 
-    /**
-     * @deprecated since 7.4: use {@link #getPage(String)} instead.
-     */
-    @Deprecated
-    public PageDescriptor getThemePage(String id) {
-        return getPage(id);
-    }
-
     public List<PageDescriptor> getPages() {
         List<PageDescriptor> res = new ArrayList<>();
         for (PageDescriptor page : pageResources.values()) {
@@ -99,24 +91,7 @@ public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
         return new ArrayList<>(pageResources.keySet());
     }
 
-    /**
-     * @deprecated since 7.4: use {@link #getPages()} instead.
-     */
-    @Deprecated
-    public List<PageDescriptor> getThemePages() {
-        return getPages();
-    }
-
     public PageDescriptor getConfigurationApplyingToAll() {
         return pageResources.get("*");
     }
-
-    /**
-     * @deprecated since 7.4: use {@link #getConfigurationApplyingToAll()} instead.
-     */
-    @Deprecated
-    public PageDescriptor getConfigurationApplyingToAllThemes() {
-        return getConfigurationApplyingToAll();
-    }
-
 }
