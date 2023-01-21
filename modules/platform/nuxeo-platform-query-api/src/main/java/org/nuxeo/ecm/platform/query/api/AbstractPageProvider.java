@@ -411,8 +411,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         if (sortInfos == null) {
             setSortInfo(sortInfo);
         } else {
-            sortInfos.add(sortInfo);
-            setSortInfos(sortInfos);
+            List<SortInfo> res = new ArrayList<>();
+            res.addAll(sortInfos);
+            res.add(sortInfo);
+            setSortInfos(res);
         }
     }
 

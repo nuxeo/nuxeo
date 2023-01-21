@@ -213,6 +213,9 @@ public class TestPageProviderCurrentPage {
                           .collect(Collectors.toList());
         pp = pps.getPageProvider(pageProviderName, sortInfos, 0L, 0L, props, null, quickFilters, rootFolder.getId());
         assertSortedTitles(pp, mapper, "Folder", "File 2", "File 1");
+
+        // NXP-31627
+        pp.addSortInfo("dc:created", true);
     }
 
     @SuppressWarnings("unchecked")
