@@ -21,11 +21,11 @@ package org.nuxeo.drive.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import com.typesafe.scalalogging.Logger
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 
 object RecursiveRemoteScan {
 
-  val logger = Logger(LoggerFactory.getLogger(getClass))
+  val log = LogManager.getLogger(getClass)
 
   /**
    * Let's simultate Nuxeo Drive recursive remote scan.
@@ -46,12 +46,12 @@ object RecursiveRemoteScan {
         .exec(session => session.set("nodeIds", List(session("topLevelFolderId").as[String])))
         .asLongAs(session => session("nodeIds").as[List[String]].nonEmpty) {
           exec(session => {
-            logger.debug("nodeIds = " + session("nodeIds").as[List[String]])
+            log.debug("nodeIds = " + session("nodeIds").as[List[String]])
             session})
           // Pop nodeId from nodeIds list and get its children nodes
           .exec(session => session.set("nodeId", session("nodeIds").as[List[String]].head))
           .exec(session => {
-            logger.debug("Calling GetChildren on nodeId " + session("nodeId").as[String])
+            log.debug("Calling GetChildren on nodeId " + session("nodeId").as[String])
             session})
           .exec(Actions.getChildren("${nodeId}").asJson
             .check(jsonPath("$[*]").ofType[Map[String, Any]].findAll

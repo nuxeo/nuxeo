@@ -34,10 +34,10 @@ import org.apache.chemistry.opencmis.server.shared.Dispatcher;
 import org.apache.chemistry.opencmis.server.shared.ExceptionHelper;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisErrorHelper.ErrorInfo;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Subclass CmisAtomPubServlet to inject a virtual-hosted base URL if needed.
@@ -46,7 +46,7 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(NuxeoCmisAtomPubServlet.class);
+    private static final Logger log = LogManager.getLogger(NuxeoCmisAtomPubServlet.class);
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
@@ -75,7 +75,7 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
     protected void printError(Exception ex, HttpServletRequest request, HttpServletResponse response) {
         ErrorInfo errorInfo = extractError(ex);
         if (response.isCommitted()) {
-            LOG.warn("Failed to send error message to client. " + "Response is already committed.", ex);
+            log.warn("Failed to send error message to client. Response is already committed.", ex);
             return;
         }
 
@@ -105,7 +105,7 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
 
             pw.print("</body></html>");
         } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             try {
                 response.sendError(errorInfo.statusCode, errorInfo.message);
             } catch (IOException en) {

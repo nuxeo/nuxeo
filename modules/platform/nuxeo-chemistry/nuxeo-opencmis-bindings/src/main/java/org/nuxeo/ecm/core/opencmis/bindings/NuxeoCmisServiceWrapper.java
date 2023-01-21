@@ -29,19 +29,19 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.support.wrapper.ConformanceCmisServiceWrapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * CMIS Conformance Service Wrapper that has better exception handling than the default.
  */
 public class NuxeoCmisServiceWrapper extends ConformanceCmisServiceWrapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NuxeoCmisServiceWrapper.class);
+    private static final Logger log = LogManager.getLogger(NuxeoCmisServiceWrapper.class);
 
     public NuxeoCmisServiceWrapper(CmisService service) {
         super(service);
@@ -70,7 +70,7 @@ public class NuxeoCmisServiceWrapper extends ConformanceCmisServiceWrapper {
         } else {
             // should not happen if the connector works correctly
             // it's alarming enough to log the exception
-            LOG.warn(e.toString(), e);
+            log.warn(e.toString(), e);
             return new CmisRuntimeException(e.getMessage(), e);
         }
     }

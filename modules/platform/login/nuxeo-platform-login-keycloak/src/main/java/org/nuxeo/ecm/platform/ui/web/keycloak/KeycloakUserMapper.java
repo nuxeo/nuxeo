@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -32,8 +34,6 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.usermapper.extension.UserMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Plugin for the UserMapper to manage mapping between Ketcloack user and Nuxeo counterpart
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KeycloakUserMapper implements UserMapper {
 
-    private static final Logger log = LoggerFactory.getLogger(KeycloakUserMapper.class);
+    private static final Logger log = LogManager.getLogger(KeycloakUserMapper.class);
 
     protected static String userSchemaName = "user";
 
@@ -58,7 +58,7 @@ public class KeycloakUserMapper implements UserMapper {
     @Override
     public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update,
             Map<String, Serializable> params) {
-        return  Framework.doPrivileged(() -> {
+        return Framework.doPrivileged(() -> {
             KeycloakUserInfo userInfo = (KeycloakUserInfo) userObject;
             for (String role : userInfo.getRoles()) {
                 findOrCreateGroup(role, userInfo.getUserName());
@@ -150,7 +150,8 @@ public class KeycloakUserMapper implements UserMapper {
     }
 
     @Override
-    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params) {
+    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object nativePrincipal,
+            Map<String, Serializable> params) {
         throw new UnsupportedOperationException();
     }
 

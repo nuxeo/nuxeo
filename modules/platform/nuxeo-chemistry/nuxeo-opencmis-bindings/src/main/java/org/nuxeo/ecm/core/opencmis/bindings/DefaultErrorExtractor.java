@@ -45,11 +45,11 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedEx
 import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisVersioningException;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisErrorHelper.ErrorExtractor;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisErrorHelper.ErrorInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Helper to deal with HTTP errors.
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultErrorExtractor implements ErrorExtractor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultErrorExtractor.class);
+    private static final Logger log = LogManager.getLogger(DefaultErrorExtractor.class);
 
     // see CmisAtomPubServlet.printError
     // see CmisBrowserBindingServlet.ErrorServiceCall.printError
@@ -73,19 +73,19 @@ public class DefaultErrorExtractor implements ErrorExtractor {
                 // don't log something harsh in that case
                 statusCode = getHttpStatus((RecoverableClientException) cause);
             } else {
-                LOG.error(ex.getMessage(), ex);
+                log.error(ex.getMessage(), ex);
             }
         } else if (ex instanceof CmisStorageException) {
-            LOG.error(ex.getMessage(), ex);
+            log.error(ex.getMessage(), ex);
             statusCode = getErrorCode((CmisStorageException) ex);
             exceptionName = ((CmisStorageException) ex).getExceptionName();
         } else if (ex instanceof CmisBaseException) {
             statusCode = getErrorCode((CmisBaseException) ex);
             exceptionName = ((CmisBaseException) ex).getExceptionName();
         } else if (ex instanceof IOException) {
-            LOG.warn(ex.getMessage(), ex);
+            log.warn(ex.getMessage(), ex);
         } else {
-            LOG.error(ex.getMessage(), ex);
+            log.error(ex.getMessage(), ex);
         }
 
         String message = ex.getMessage();

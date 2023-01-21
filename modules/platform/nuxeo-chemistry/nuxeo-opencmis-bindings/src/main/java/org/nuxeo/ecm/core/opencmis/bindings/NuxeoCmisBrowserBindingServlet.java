@@ -42,10 +42,10 @@ import org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServl
 import org.apache.chemistry.opencmis.server.shared.Dispatcher;
 import org.apache.chemistry.opencmis.server.shared.ExceptionHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisErrorHelper.ErrorInfo;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Subclass NuxeoCmisBrowserBindingServlet to inject a virtual-hosted base URL if needed.
@@ -54,13 +54,13 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(NuxeoCmisBrowserBindingServlet.class);
+    private static final Logger log = LogManager.getLogger(NuxeoCmisBrowserBindingServlet.class);
 
     public static final NuxeoBrowserServiceCall CALL = new NuxeoBrowserServiceCall();
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String baseUrl = VirtualHostHelper.getBaseURL(request);
         if (baseUrl != null) {
             baseUrl = StringUtils.stripEnd(baseUrl, "/") + request.getServletPath() + "/"
@@ -82,10 +82,11 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
     }
 
     @Override
-    public void printError(CallContext context, Exception ex, HttpServletRequest request, HttpServletResponse response) {
+    public void printError(CallContext context, Exception ex, HttpServletRequest request,
+            HttpServletResponse response) {
         ErrorInfo errorInfo = extractError(ex);
         if (response.isCommitted()) {
-            LOG.warn("Failed to send error message to client. " + "Response is already committed.", ex);
+            log.warn("Failed to send error message to client. Response is already committed.", ex);
             return;
         }
 
@@ -113,7 +114,7 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
             try {
                 CALL.writeJSON(jsonResponse, request, response);
             } catch (IOException e) {
-                LOG.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 try {
                     response.sendError(errorInfo.statusCode, message);
                 } catch (IOException en) {

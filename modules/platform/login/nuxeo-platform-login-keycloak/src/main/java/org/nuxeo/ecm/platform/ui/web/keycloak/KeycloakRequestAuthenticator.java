@@ -28,15 +28,17 @@ import javax.servlet.http.HttpSession;
 import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.realm.GenericPrincipal;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.AdapterTokenStore;
-import org.keycloak.adapters.spi.AuthChallenge;
-import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.OAuthRequestAuthenticator;
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
 import org.keycloak.adapters.RequestAuthenticator;
+import org.keycloak.adapters.spi.AuthChallenge;
+import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.tomcat.CatalinaCookieTokenStore;
 import org.keycloak.adapters.tomcat.CatalinaHttpFacade;
 import org.keycloak.adapters.tomcat.CatalinaSessionTokenStore;
@@ -45,16 +47,13 @@ import org.keycloak.adapters.tomcat.GenericPrincipalFactory;
 import org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve;
 import org.keycloak.enums.TokenStore;
 import org.keycloak.representations.AccessToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @since 7.4
  */
-
 public class KeycloakRequestAuthenticator extends RequestAuthenticator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakRequestAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(KeycloakRequestAuthenticator.class);
 
     public static final String KEYCLOAK_ACCESS_TOKEN = "KEYCLOAK_ACCESS_TOKEN";
 
@@ -112,7 +111,7 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
             method.invoke(this, request, response, config);
         } catch (Exception e) {
             String message = "Error occurred during Keycloak authentication";
-            LOGGER.error(message, e);
+            log.error(message, e);
             throw new RuntimeException(message, e);
         }
         return true;
@@ -158,7 +157,8 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
     }
 
     @Override
-    protected void completeBearerAuthentication(KeycloakPrincipal<RefreshableKeycloakSecurityContext> skp, String method) {
+    protected void completeBearerAuthentication(KeycloakPrincipal<RefreshableKeycloakSecurityContext> skp,
+            String method) {
         completeOAuthAuthentication(skp);
     }
 

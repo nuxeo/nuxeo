@@ -21,12 +21,12 @@ package org.nuxeo.drive.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import com.typesafe.scalalogging.Logger
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import scala.concurrent.duration.Duration
 
 object BatchedRemoteScan {
 
-  val logger = Logger(LoggerFactory.getLogger(getClass))
+  val log = LogManager.getLogger(getClass)
 
   /**
    * Let's simultate Nuxeo Drive batched remote scan.
@@ -50,7 +50,7 @@ object BatchedRemoteScan {
           "canScrollDescendants" -> session("canScrollDescendants").as[Boolean]))))
         .asLongAs(session => session("nodes").as[List[Map[String, Any]]].nonEmpty) {
           exec(session => {
-            logger.debug("nodes = " + session("nodes").as[List[Map[String, Any]]])
+            log.debug("nodes = " + session("nodes").as[List[Map[String, Any]]])
             session})
           // Pop node from nodes list
           .exec(session => session.set("nodeId", session("nodes").as[List[Map[String, Any]]].head("id"))
@@ -60,7 +60,7 @@ object BatchedRemoteScan {
             exec(session => session.set("scrollId", ""))
             .asLongAs(session => session("scrollId").asOption[String].isDefined) {
               exec(session => {
-                logger.debug("Calling ScrollDescendants on nodeId " + session("nodeId").as[String] + " with scroll id [" + session("scrollId").as[String] + "] and batch size [" + batchSize + "]")
+                log.debug("Calling ScrollDescendants on nodeId " + session("nodeId").as[String] + " with scroll id [" + session("scrollId").as[String] + "] and batch size [" + batchSize + "]")
                 session})
               .exec(
                 Actions.scrollDescendants("${nodeId}", "${scrollId}", batchSize.toString).asJson
@@ -79,7 +79,7 @@ object BatchedRemoteScan {
           } {
             // Get node children
             exec(session => {
-              logger.debug("Calling GetChildren on nodeId " + session("nodeId").as[String])
+              log.debug("Calling GetChildren on nodeId " + session("nodeId").as[String])
               session})
             .exec(Actions.getChildren("${nodeId}").asJson
               .check(jsonPath("$[*]").ofType[Map[String, Any]].findAll
