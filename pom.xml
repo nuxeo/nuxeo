@@ -2772,6 +2772,12 @@
         <groupId>org.jxls</groupId>
         <artifactId>jxls</artifactId>
         <version>${jxls2.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jxls</groupId>
@@ -4847,6 +4853,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -4860,11 +4871,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -5531,6 +5537,15 @@
                   <exclude>jakarta.activation:jakarta.activation-api</exclude> <!-- part of the default Nuxeo Tomcat server -->
                 </excludes>
                 <message>jakarta.activation:jakarta.activation-api must not be used, it's already part of the default Nuxeo Tomcat server</message>
+              </bannedDependencies>
+              <!-- logging exclusions -->
+              <bannedDependencies>
+                <excludes>
+                  <exclude>log4j:log4j</exclude>
+                  <exclude>ch.qos.logback:logback-classic</exclude>
+                  <exclude>ch.qos.logback:logback-core</exclude>
+                </excludes>
+                <message>log4j2-core is used as logging framework</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
