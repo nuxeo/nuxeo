@@ -2638,7 +2638,7 @@
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.27.0-GA</version>
+        <version>3.29.2-GA</version>
       </dependency>
       <!-- NXP-10566: EL implementation chosen, set as the default
         implementation in Tomcat by nuxeo-platform-el in file at
