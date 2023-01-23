@@ -7,7 +7,7 @@
 ARG ROCKY_LINUX_VERSION=9.1
 # ------------------------------------------------------------------------
 # RPM download stage
-FROM rockylinux/rockylinux:$ROCKY_LINUX_VERSION as rpm-download
+FROM rockylinux:$ROCKY_LINUX_VERSION as rpm-download
 
 ARG EXIFTOOL_VERSION=12.42-1.el9
 
@@ -19,7 +19,7 @@ RUN dnf -y install --downloadonly --downloaddir=/rpms \
 
 # ------------------------------------------------------------------------
 # Target stage
-FROM rockylinux/rockylinux:$ROCKY_LINUX_VERSION
+FROM rockylinux:$ROCKY_LINUX_VERSION
 
 ARG BUILD_TAG
 ARG SCM_REF
