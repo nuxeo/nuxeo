@@ -107,6 +107,8 @@ updates:
         versions: [">0.9.7"]
       - dependency-name: "io.dropwizard.metrics5:metrics-bom"
         versions: [">5.0.0-rc3"]
+      - dependency-name: "org.apache.geronimo.components:geronimo-transaction"
+        versions: ["3.1.4-NX1"]
 
       # Nuxeo patch needed
       - dependency-name: "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer"
