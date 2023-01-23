@@ -836,6 +836,18 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
+    public String[] getBlobKeys() {
+        Object[] blobKeys = (Object[]) getStateOrTarget().get(KEY_BLOB_KEYS);
+        if (blobKeys == null) {
+            return EMPTY_STRING_ARRAY;
+        } else {
+            String[] res = new String[blobKeys.length];
+            System.arraycopy(blobKeys, 0, res, 0, blobKeys.length);
+            return res;
+        }
+    }
+
+    @Override
     public String getLifeCycleState() {
         DBSDocumentState docState = getStateOrTarget();
         return (String) docState.get(KEY_LIFECYCLE_STATE);

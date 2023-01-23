@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.test-blob-delete">
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.core.blob.InMemoryBlobProvider</class>
+      <property name="path">test</property>
+      <property name="emulateLocalFile">true</property>
+    </blobprovider>
+    <blobprovider name="test2">
+      <class>org.nuxeo.ecm.core.blob.InMemoryBlobProvider</class>
+      <property name="path">test2</property>
+      <property name="emulateLocalFile">true</property>
+    </blobprovider>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" point="repository">
+    <repository name="test2" label="MongoDB Repository 2">
+      <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}"
+                storedInBlob="${nuxeo.test.fulltext.storedInBlob}"
+                searchDisabled="${nuxeo.test.fulltext.search.disabled}">
+        <index name="title">
+          <field>dc:title</field>
+        </index>
+      </fulltext>
+    </repository>
+  </extension>
+</component>

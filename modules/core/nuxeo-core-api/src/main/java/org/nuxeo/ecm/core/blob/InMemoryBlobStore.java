@@ -73,6 +73,9 @@ public class InMemoryBlobStore extends AbstractBlobStore {
 
     protected final boolean allowByteRange;
 
+    // used by unit tests to simulate shared storage situation
+    protected final String path;
+
     public InMemoryBlobStore(String name, KeyStrategy keyStrategy) {
         this(name, null, keyStrategy, false, false);
     }
@@ -91,6 +94,7 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         super(name, keyStrategy);
         this.emulateNoStream = emulateNoStream;
         this.emulateLocalFile = emulateLocalFile;
+        this.path = config != null ? config.getProperty("path") : null;
         emulateVersioning = config != null && config.getBooleanProperty("emulateVersioning");
         allowByteRange = config != null && config.getBooleanProperty(ALLOW_BYTE_RANGE);
     }
@@ -269,7 +273,7 @@ public class InMemoryBlobStore extends AbstractBlobStore {
 
         @Override
         public String getId() {
-            return toString();
+            return path != null ? path : toString();
         }
 
         @Override

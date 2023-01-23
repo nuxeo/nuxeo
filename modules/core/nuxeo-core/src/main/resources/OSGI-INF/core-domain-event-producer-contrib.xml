@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.stream.blobs">
+
+  <require>org.nuxeo.ecm.core.bulk</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="domainEventProducer">
+    <domainEventProducer name="blobDomain" class="org.nuxeo.ecm.core.blob.stream.BlobDomainEventProducer">
+      <stream name="source/blob" partitions="1" codec="avro" />
+      <option name="hard">${nuxeo.stream.blobs.delete.hard:=false}</option>
+    </domainEventProducer>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="blobGC"
+      defaultCodec="avro" class="org.nuxeo.ecm.core.blob.stream.StreamOrphanBlobGC"
+      defaultConcurrency="${nuxeo.bulk.action.blobGC.defaultConcurrency:=1}"
+      defaultPartitions="${nuxeo.bulk.action.blobGC.defaultPartitions:=1}"
+      enabled="true">
+      <policy name="default" maxRetries="3" delay="3s" maxDelay="60s"
+        continueOnFailure="true" />
+    </streamProcessor>
+  </extension>
+
+</component>

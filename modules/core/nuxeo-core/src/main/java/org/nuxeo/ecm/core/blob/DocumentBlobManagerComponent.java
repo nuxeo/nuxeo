@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import static java.util.stream.Collectors.toSet;
 import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
 import java.io.IOException;
@@ -33,26 +32,34 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.BlobEventContext;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -70,6 +77,23 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     protected static final String XP = "configuration";
 
     protected static final int BINARY_GC_TX_TIMEOUT_SEC = 86_400; // 1 day
+
+    /**
+     * Event fired to GC blobs candidates for deletion.
+     *
+     * @since 2023
+     */
+    public static final String BLOBS_CANDIDATE_FOR_DELETION_EVENT = "blobCandidateForDeletion";
+
+    /**
+     * Event fired to record blob deletion.
+     *
+     * @since 2023
+     */
+    public static final String BLOBS_DELETED_DOMAIN_EVENT = "blobDeleted";
+
+    protected static final String DOC_WITH_BLOB_KEYS_QUERY = "SELECT " + NXQL.ECM_UUID + " FROM Document WHERE "
+            + NXQL.ECM_BLOBKEYS + " = '%s'";
 
     // in these low-level APIs we deal with unprefixed xpaths, so not file:content
     public static final String MAIN_BLOB_XPATH = "content";
@@ -467,14 +491,96 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     }
 
     @Override
+    public boolean deleteBlob(String repositoryName, String key, boolean dryRun) throws IOException {
+        if (StringUtils.isBlank(repositoryName)) {
+            // Even with a full GC we should be able to provide the repository name.
+            // Else it probably means there must are shared storages.
+            throw new IllegalArgumentException("Repository name cannot be null or empty");
+        }
+        Repository repository = Framework.getService(RepositoryService.class).getRepository(repositoryName);
+        if (repository == null) {
+            throw new IllegalArgumentException("Unkonwn repository: " + repositoryName);
+        }
+        if (!repository.hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS)) {
+            throw new UnsupportedOperationException(
+                    "Repository does not have QUERY_BLOB_KEYS capability: " + repositoryName);
+        }
+        if (hasSharedStorage()) {
+            throw new UnsupportedOperationException("Cannot perform delete on shared storage.");
+        }
+        int colon = key.indexOf(':');
+        String providerId;
+        if (colon < 0) {
+            providerId = getBlobDispatcher().getBlobProvider(repositoryName);
+            if (providerId == null) {
+                throw new IllegalArgumentException("No registered blob provider for key: " + key);
+            }
+        } else {
+            providerId = key.substring(0, colon);
+        }
+        BlobProvider blobProvider = getBlobProvider(providerId);
+        if (blobProvider == null) {
+            throw new IllegalArgumentException("Unknown blob provider: " + providerId + " for blob marked for deletion: " + key);
+        }
+        if (!(blobProvider instanceof BlobStoreBlobProvider blobStoreProvider)) {
+            log.debug("Unsupported blob provider class: {} for provider: {} for blob marked for deletion: {}",
+                    blobProvider.getClass().getName(), providerId, key);
+            return false;
+        }
+
+        boolean canBeDeleted = TransactionHelper.runInTransaction(
+                () -> CoreInstance.doPrivileged(repositoryName, (CoreSession session) -> {
+                    // We need READ on all the repo to do not miss a reference
+                    String docWithBlobKey = String.format(DOC_WITH_BLOB_KEYS_QUERY, key);
+                    PartialList<Map<String, Serializable>> res = session.queryProjection(docWithBlobKey, 1, 0);
+                    return res.isEmpty();
+                }));
+        if (!canBeDeleted) {
+            log.info("Blob: {} from repository: {}, provider: {} cannot be deleted", key, repositoryName, providerId);
+            return false;
+        }
+        if (!dryRun) {
+            BlobInfo blobInfo = new BlobInfo();
+            blobInfo.key = key;
+            ManagedBlob managedBlob = (ManagedBlob) blobProvider.readBlob(blobInfo);
+            EventService es = Framework.getService(EventService.class);
+            log.debug("Deleting blob: {} from provider: {}", key, providerId);
+            String k = colon > 0 ? key.substring(colon + 1) : key;
+            BlobStore blobStore = blobStoreProvider.store;
+            blobStore.deleteBlob(k);
+            es.fireEvent(new BlobEventContext(repositoryName, managedBlob).newEvent(
+                    BLOBS_DELETED_DOMAIN_EVENT));
+        } else {
+            log.info("Blob: {} from repository: {}, provider: {} can be deleted", key, repositoryName, providerId);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean hasSharedStorage() {
+        List<String> sharedStorages = getGarbageCollectors().stream()
+                .map(BinaryGarbageCollector::getId)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .filter(p -> p.getValue() > 1)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        if (!sharedStorages.isEmpty()) {
+            log.warn ("Shared storages detected: {}", sharedStorages);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public BinaryManagerStatus garbageCollectBinaries(boolean delete) {
         // do the GC in a long-running transaction to avoid timeouts
         return runInTransaction(() -> {
             log.warn("GC Binaries starting, delete: {}", delete);
             List<BinaryGarbageCollector> gcs = getGarbageCollectors();
             // check whether two GCs share storage
-            Set<String> ids = gcs.stream().map(BinaryGarbageCollector::getId).collect(toSet());
-            boolean sharedStorage = ids.size() < gcs.size();
+            boolean sharedStorage = hasSharedStorage();
             // start gc
             long start = System.currentTimeMillis();
             for (BinaryGarbageCollector gc : gcs) {

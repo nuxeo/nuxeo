@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import static java.util.stream.Collectors.toList;
+import static org.nuxeo.ecm.core.blob.DocumentBlobManagerComponent.BLOBS_CANDIDATE_FOR_DELETION_EVENT;
 import static org.nuxeo.ecm.core.blob.DocumentBlobManagerComponent.MAIN_BLOB_XPATH;
 
 import java.time.Instant;
@@ -43,11 +44,16 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.BlobEventContext;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -472,8 +478,10 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         // re-dispatch blob to new blob provider
         // this calls back into blobProvider.writeBlob for the expected blob provider
         accessor.setBlob(blob);
-        // if old blob provider is in record mode, delete from it
-        deleteBlobIfRecord(previousProviderId, doc, xpath);
+        // Notify blob candidate for deletion
+        EventService es = Framework.getService(EventService.class);
+        es.fireEvent(new BlobEventContext(NuxeoPrincipal.getCurrent(), doc.getRepositoryName(), doc.getUUID(), xpath,
+                managedBlob).newEvent(BLOBS_CANDIDATE_FOR_DELETION_EVENT));
     }
 
     @Override
@@ -490,18 +498,38 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     @Override
     public void notifyBeforeRemove(Document doc) {
-        String xpath = MAIN_BLOB_XPATH;
-        Blob blob;
-        try {
-            blob = (Blob) doc.getValue(xpath);
-        } catch (PropertyNotFoundException e) {
-            return;
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        Repository repository = repositoryService.getRepository(doc.getRepositoryName());
+        if (repository.hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS)) {
+            EventService es = Framework.getService(EventService.class);
+            try {
+                doc.visitBlobs(accessor -> {
+                    Blob blob = accessor.getBlob();
+                    if (blob instanceof ManagedBlob managedBlob) {
+                        es.fireEvent(new BlobEventContext(NuxeoPrincipal.getCurrent(), doc.getRepositoryName(),
+                                doc.getUUID(), accessor.getXPath(), managedBlob).newEvent(
+                                        BLOBS_CANDIDATE_FOR_DELETION_EVENT));
+                    }
+                });
+            } catch (PropertyConversionException e) {
+                log.error("Cannot visit blobs for doc: {}", doc.getUUID(), e);
+            }
+        } else {
+            // Legacy: VCS does not support ecm:blobKeys
+            // Let's handle record's main blob deletion
+            String xpath = MAIN_BLOB_XPATH;
+            Blob blob;
+            try {
+                blob = (Blob) doc.getValue(xpath);
+            } catch (PropertyNotFoundException e) {
+                return;
+            }
+            if (!(blob instanceof ManagedBlob managedBlob)) {
+                return;
+            }
+            String blobProviderId = managedBlob.getProviderId();
+            deleteBlobIfRecord(blobProviderId, doc, xpath);
         }
-        if (!(blob instanceof ManagedBlob)) {
-            return;
-        }
-        String blobProviderId = ((ManagedBlob) blob).getProviderId();
-        deleteBlobIfRecord(blobProviderId, doc, xpath);
     }
 
     protected void deleteBlobIfRecord(String blobProviderId, Document doc, String xpath) {

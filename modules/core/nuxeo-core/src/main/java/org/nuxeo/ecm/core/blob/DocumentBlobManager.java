@@ -36,6 +36,33 @@ import org.nuxeo.ecm.core.model.Document;
 public interface DocumentBlobManager {
 
     /**
+     * Deletes the blob associated to the given key. The method checks that the blob key is not referenced by any
+     * document of the given repository.
+     * <p>
+     * The repositories must have the {@link org.nuxeo.ecm.core.model.Repository#CAPABILITY_QUERY_BLOB_KEYS} capability
+     * (i.e. ecm:blobKeys populated).
+     *
+     * @param repositoryName the repository where the blob key comes from
+     * @param key the blob key
+     * @param dryRun if false, effectively deletes the blob, dry run otherwise
+     * @return true if the blob has been deleted, false if the blob is referenced and cannot be deleted
+     * @throws IOException when reading/deleting the blob from the underlying blob provider
+     * @throws UnsupportedOperationException if the repository does not have the
+     *             {@link org.nuxeo.ecm.core.model.Repository#CAPABILITY_QUERY_BLOB_KEYS} capability or there is a
+     *             shared storage detected (by bad blob provider configurations)
+     * @since 2023
+     */
+    boolean deleteBlob(String repositoryName, String key, boolean dryRun) throws IOException;
+
+    /**
+     * Compute if there are shared storage.
+     *
+     * @return true if at least 2 providers points to the same store, false otherwise
+     * @since 2023
+     */
+    boolean hasSharedStorage();
+
+    /**
      * Reads a {@link Blob} from storage.
      *
      * @param blobInfo the blob information

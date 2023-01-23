@@ -214,6 +214,13 @@ public interface Document {
     void removeSingleton();
 
     /**
+     * @since 2023
+     */
+    default String[] getBlobKeys() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Turns the document into a record.
      * <p>
      * A record is a document with specific capabilities related to mandatory retention until a given date, and legal
