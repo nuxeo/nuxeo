@@ -35,6 +35,7 @@
         <parameter name="serviceValidateURL">${nuxeo.cas2.validate.url}</parameter>
         <parameter name="serviceKey">${nuxeo.cas2.service.key}</parameter>
         <parameter name="ticketKey">${nuxeo.cas2.ticket.key}</parameter>
+        <parameter name="serverHeaderEnabled">${nuxeo.cas2.server.header.enabled}</parameter>
       </parameters>
     </authenticationPlugin>
 

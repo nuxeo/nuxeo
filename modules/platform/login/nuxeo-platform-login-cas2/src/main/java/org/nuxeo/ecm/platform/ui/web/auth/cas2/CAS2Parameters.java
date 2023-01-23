@@ -48,6 +48,9 @@ public final class CAS2Parameters {
 
     public static final String DEFAULT_CAS_SERVER_KEY = "defaultCasServer";
 
+    /** @since 2021.32 */
+    public static final String SERVER_HEADER_ENABLED_KEY = "serverHeaderEnabled";
+
     public static final String SERVICE_VALIDATOR_CLASS = "serviceValidatorClass";
 
     public static final String PROXY_VALIDATOR_CLASS = "proxyValidatorClass";

@@ -11,8 +11,9 @@
         - serviceValidateURL : CAS url for ticket validation
           ( can use $CASSERVER to let nuxeo define url according to CasServer header)
         - serviceKey : name of the service parameter in the URL
-     - excludePromptURL : if requested url starts with this value, there will be no CAS authentication
-       (you can add multiple exclude path by adding different suffix to the parameter name)
+        - excludePromptURL : if requested url starts with this value, there will be no CAS authentication
+          (you can add multiple exclude path by adding different suffix to the parameter name)
+        - serverHeaderEnabled: if true, enables replacing $CASSERVER by the CasServer header
    </pre>
    </documentation>
    <extension
@@ -31,6 +32,7 @@
          <parameter name="serviceValidateURL">http://127.0.0.1:8080/cas/serviceValidate</parameter>
          <parameter name="proxyValidateURL">http://127.0.0.1:8080/cas/proxyValidate</parameter>
          <parameter name="serviceKey">service</parameter>
+         <parameter name="serverHeaderEnabled">false</parameter>
        </parameters>
       </authenticationPlugin>
   </extension>

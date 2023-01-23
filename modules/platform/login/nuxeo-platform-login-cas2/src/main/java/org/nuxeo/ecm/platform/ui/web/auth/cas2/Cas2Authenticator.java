@@ -101,6 +101,8 @@ public class Cas2Authenticator
 
     protected String defaultCasServer = "";
 
+    protected boolean serverHeaderEnabled = false;
+
     protected String ticketValidatorClassName = "edu.yale.its.tp.cas.client.ServiceTicketValidator";
 
     protected String proxyValidatorClassName = "edu.yale.its.tp.cas.client.ProxyTicketValidator";
@@ -130,14 +132,14 @@ public class Cas2Authenticator
         }
 
         if (url.contains(CAS_SERVER_PATTERN_KEY)) {
-            String serverURL = httpRequest.getHeader(CAS_SERVER_HEADER_KEY);
-            if (serverURL != null) {
-                url = url.replace(CAS_SERVER_PATTERN_KEY, serverURL);
-            } else {
-                if (url.contains(CAS_SERVER_PATTERN_KEY)) {
-                    url = url.replace(CAS_SERVER_PATTERN_KEY, defaultCasServer);
+            String casServer = defaultCasServer;
+            if (serverHeaderEnabled) {
+                String serverURL = httpRequest.getHeader(CAS_SERVER_HEADER_KEY);
+                if (serverURL != null) {
+                    casServer = serverURL;
                 }
             }
+            url = url.replace(CAS_SERVER_PATTERN_KEY, casServer);
         }
         log.debug("serviceUrl: " + url);
         return url;
@@ -279,6 +281,9 @@ public class Cas2Authenticator
         }
         if (parameters.containsKey(CAS2Parameters.DEFAULT_CAS_SERVER_KEY)) {
             defaultCasServer = parameters.get(CAS2Parameters.DEFAULT_CAS_SERVER_KEY);
+        }
+        if (parameters.containsKey(CAS2Parameters.SERVER_HEADER_ENABLED_KEY)) {
+            serverHeaderEnabled = Boolean.parseBoolean(parameters.get(CAS2Parameters.SERVER_HEADER_ENABLED_KEY));
         }
         if (parameters.containsKey(CAS2Parameters.SERVICE_VALIDATOR_CLASS)) {
             ticketValidatorClassName = parameters.get(CAS2Parameters.SERVICE_VALIDATOR_CLASS);
