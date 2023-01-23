@@ -104,6 +104,8 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
     protected MongoCollection<Document> filesColl;
 
+    protected String bucket;
+
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
@@ -117,7 +119,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         setDescriptor(descriptor);
 
         String namespace = properties.get(NAMESPACE);
-        String bucket = properties.get(BUCKET_PROPERTY);
+        bucket = properties.get(BUCKET_PROPERTY);
         if (StringUtils.isBlank(bucket)) {
             if (StringUtils.isNotBlank(namespace)) {
                 bucket = blobProviderId + "." + namespace.trim();
@@ -128,11 +130,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         } else if (StringUtils.isNotBlank(namespace)) {
             bucket = bucket + "." + namespace.trim();
         }
-
-        MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
-        MongoDatabase database = mongoService.getDatabase(BLOB_PROVIDER_CONNECTION_PREFIX + blobProviderId);
-        gridFSBucket = GridFSBuckets.create(database, bucket);
-        filesColl = database.getCollection(bucket + ".files");
         garbageCollector = new GridFSBinaryGarbageCollector(bucket);
     }
 
@@ -146,8 +143,23 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     }
 
     protected GridFSBucket getGridFSBucket() {
+        if (gridFSBucket == null) {
+            MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
+            MongoDatabase database = mongoService.getDatabase(BLOB_PROVIDER_CONNECTION_PREFIX + blobProviderId);
+            gridFSBucket = GridFSBuckets.create(database, bucket);
+        }
         return gridFSBucket;
     }
+
+    protected MongoCollection<Document> getFilesColl() {
+        if (filesColl == null) {
+            MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
+            MongoDatabase database = mongoService.getDatabase(BLOB_PROVIDER_CONNECTION_PREFIX + blobProviderId);
+            filesColl = database.getCollection(bucket + ".files");
+        }
+        return filesColl;
+    }
+
 
     /**
      * A binary backed by GridFS.
@@ -200,10 +212,10 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
             digest = DigestUtils.md5Hex(in);
         }
         // if the digest is not already known then save to GridFS
-        GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
+        GridFSFile dbFile = getGridFSBucket().find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
         if (dbFile == null) {
             try (InputStream in = new FileInputStream(file)) {
-                gridFSBucket.uploadFromStream(digest, in);
+                getGridFSBucket().uploadFromStream(digest, in);
             }
         }
         return new GridFSBinary(digest, blobProviderId, this);
@@ -215,25 +227,25 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         String inputName = "tmp-" + System.nanoTime();
         BsonValue id;
         String digest;
-        try (in; GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(inputName)) {
+        try (in; GridFSUploadStream uploadStream = getGridFSBucket().openUploadStream(inputName)) {
             id = uploadStream.getId();
             digest = storeAndDigest(in, uploadStream);
         }
         // if the digest is already known then reuse it instead
-        GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
+        GridFSFile dbFile = getGridFSBucket().find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
         if (dbFile == null) {
             // no existing file, set its filename as the digest
-            gridFSBucket.rename(id, digest);
+            getGridFSBucket().rename(id, digest);
         } else {
             // file already existed, no need for the temporary one
-            gridFSBucket.delete(id);
+            getGridFSBucket().delete(id);
         }
         return new GridFSBinary(digest, blobProviderId, this);
     }
 
     @Override
     public Binary getBinary(String digest) {
-        GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
+        GridFSFile dbFile = getGridFSBucket().find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
         if (dbFile != null) {
             return new GridFSBinary(digest, blobProviderId, this);
         }
@@ -295,7 +307,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
         @Override
         public void mark(String digest) {
-            Document dbFile = filesColl.findOneAndUpdate(Filters.eq(METADATA_PROPERTY_FILENAME, digest),
+            Document dbFile = getFilesColl().findOneAndUpdate(Filters.eq(METADATA_PROPERTY_FILENAME, digest),
                     Updates.set(String.format("%s.%s", METADATA_PROPERTY_METADATA, msKey), TRUE),
                     new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
             if (dbFile != null) {
@@ -316,12 +328,12 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
         @Override
         public void stop(boolean delete) {
-            gridFSBucket.find(Filters.exists(String.format("%s.%s", METADATA_PROPERTY_METADATA, msKey), false)) //
+            getGridFSBucket().find(Filters.exists(String.format("%s.%s", METADATA_PROPERTY_METADATA, msKey), false)) //
                         .forEach(file -> {
                             status.numBinariesGC += 1;
                             status.sizeBinariesGC += file.getLength();
                             if (delete) {
-                                gridFSBucket.delete(file.getId());
+                                getGridFSBucket().delete(file.getId());
                             }
                         });
             startTime = 0;
