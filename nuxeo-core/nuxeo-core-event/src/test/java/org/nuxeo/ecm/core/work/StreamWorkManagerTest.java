@@ -102,10 +102,6 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         tracker.assertDiff(0, 0, 4, 0);
     }
 
-    /**
-     * This test cannot be run with storeState enabled.<br>
-     * When the first work finishes, its status is not scheduled anymore and following works are not run.
-     */
     @Test
     @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-disable-storestate.xml")
     public void testWorkNonIdempotent() throws InterruptedException {
@@ -116,16 +112,22 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         assertTrue(service.awaitCompletion(getDurationMillis() * 10, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
-        // schedule again the exact same work 3 times
+        // schedule again the exact same work 3 times, they will be executed by the same computation thread (serialized)
         service.schedule(work);
         service.schedule(work);
         service.schedule(work);
 
         // works with the same id are not skipped we need to wait more
-        assertFalse(service.awaitCompletion(getDurationMillis() / 2, TimeUnit.MILLISECONDS));
+        assertFalse(service.awaitCompletion(getDurationMillis() * 3 / 2, TimeUnit.MILLISECONDS));
 
         assertTrue(service.awaitCompletion(getDurationMillis() * 10, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 0);
+    }
+
+    @Test
+    public void testWorkNonIdempotentWithStoreState() throws InterruptedException {
+        // non-idempotent Works are handled the same way with or without store state.
+        testWorkNonIdempotent();
     }
 
     @Test
