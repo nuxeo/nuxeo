@@ -35,7 +35,8 @@ public class InMemoryBlobProvider extends BlobStoreBlobProvider {
         digestConfiguration = new DigestConfiguration(null, properties);
         PropertyBasedConfiguration config = new PropertyBasedConfiguration(null, properties);
         KeyStrategy keyStrategy = getKeyStrategy();
-        BlobStore store = new InMemoryBlobStore("mem", config, keyStrategy);
+        BlobStore store = new InMemoryBlobStore("mem", config, keyStrategy, false,
+                config.getBooleanProperty("emulateLocalFile"));
         if (isTransactional()) {
             BlobStore transientStore;
             if (store.hasVersioning()) {

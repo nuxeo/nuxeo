@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import static org.nuxeo.ecm.core.blob.DocumentBlobManagerComponent.BLOBS_CANDIDATE_FOR_DELETION_EVENT;
 import static org.nuxeo.ecm.core.blob.DocumentBlobManagerComponent.MAIN_BLOB_XPATH;
 
 import java.io.IOException;
@@ -59,6 +60,9 @@ import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.BlobEventContext;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -686,6 +690,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     }
 
     protected void setValueBlob(T state, Blob blob, String xpath) throws PropertyException {
+        Blob oldValue = getValueBlob(state, xpath);
+        if (oldValue instanceof ManagedBlob) {
+            EventService es = Framework.getService(EventService.class);
+            es.fireEvent(new BlobEventContext(NuxeoPrincipal.getCurrent(), getRepositoryName(), getUUID(), xpath,
+                    (ManagedBlob) oldValue).newEvent(BLOBS_CANDIDATE_FOR_DELETION_EVENT));
+        }
         BlobInfo blobInfo = new BlobInfo();
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         try {
@@ -1087,8 +1097,13 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 blobVisitor.accept(new StateBlobAccessor(path, state, markDirty));
                 return;
             }
-            for (Field field : complexType.getFields()) {
-                visitBlobsField(state, field);
+            try {
+                for (Field field : complexType.getFields()) {
+                    visitBlobsField(state, field);
+                }
+            } catch (ClassCastException e) {
+                throw new PropertyConversionException(
+                        String.format("Unable to read property: %s for document: %s", path, getUUID()), e);
             }
         }
 

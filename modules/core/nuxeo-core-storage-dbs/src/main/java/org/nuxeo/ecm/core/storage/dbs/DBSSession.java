@@ -976,6 +976,15 @@ public class DBSSession extends BaseSession {
             }
         }
 
+        // notify blob manager before removal
+        try {
+            DBSDocument doc = getDocument(rootId);
+            getDocumentBlobManager().notifyBeforeRemove(doc);
+        } catch (DocumentNotFoundException e) {
+            // unknown type in db or null proxy target
+            // ignore blob manager notification
+        }
+
         // remove root doc
         transaction.removeStates(Collections.singleton(rootId));
         // Check that the ids to remove is not only the root id
