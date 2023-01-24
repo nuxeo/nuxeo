@@ -68,19 +68,6 @@ public interface AuditReader {
     }
 
     /**
-     * Returns the logs given a doc uuid, a map of filters and a default sort.
-     *
-     * @param uuid the document uuid
-     * @param filterMap the map of filters to apply
-     * @param doDefaultSort the default sort to set (eventDate desc)
-     * @return a list of log entries
-     * @deprecated since 9.3, this method doesn't take into account the document repository, use
-     *             {@link #queryLogs(QueryBuilder)} instead.
-     */
-    @Deprecated
-    List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
-
-    /**
      * Returns a given log entry given its id.
      *
      * @param id the log entry identifier

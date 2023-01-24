@@ -10,10 +10,6 @@
       <event>documentRemoved</event>
     </listener>
 
-    <listener name="checkedInDocumentListener" class="org.nuxeo.ecm.platform.tag.CheckedInDocumentListener">
-      <event>documentCheckedIn</event>
-    </listener>
-
   </extension>
 
 </component>

@@ -58,7 +58,7 @@ public interface Component extends Extensible, TimestampedService {
     void deactivate(ComponentContext context);
 
     /**
-     * The component notification order for {@link #applicationStarted}.
+     * The component notification order for {@link #start(ComponentContext)}.
      * <p>
      * Components are notified in increasing order. Order 1000 is the default order for components that don't care.
      * Order 100 is the repository initialization.
@@ -68,19 +68,6 @@ public interface Component extends Extensible, TimestampedService {
      */
     default int getApplicationStartedOrder() {
         return ComponentStartOrders.DEFAULT;
-    }
-
-    /**
-     * Notify the component that Nuxeo Framework finished starting all Nuxeo bundles. Implementors must migrate the code
-     * of the applicationStarted and move it to {@link Component#start(ComponentContext)} and
-     * {@link #stop(ComponentContext)} methods
-     *
-     * @deprecated since 9.2, since the introduction of {@link Component#start(ComponentContext)} and
-     *             {@link #stop(ComponentContext)} methods
-     */
-    @Deprecated
-    default void applicationStarted(ComponentContext context) {
-        // do nothing by default
     }
 
     /**

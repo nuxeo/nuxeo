@@ -127,12 +127,6 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     }
 
     @Override
-    @Deprecated
-    public NuxeoGroup getComputedGroup(String groupName) {
-        return getComputedGroup(groupName, GroupConfig.DEFAULT);
-    }
-
-    @Override
     public NuxeoGroup getComputedGroup(String groupName, GroupConfig groupConfig) {
         for (String name : computerNames) {
             GroupComputer computer = computers.get(name).getComputer();

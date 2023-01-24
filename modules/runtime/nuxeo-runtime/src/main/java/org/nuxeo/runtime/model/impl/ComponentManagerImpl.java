@@ -327,22 +327,6 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public synchronized boolean unregisterByLocation(String sourceId) {
-        ComponentName name = registry.deployedFiles.remove(sourceId);
-        if (name != null) {
-            unregister(name);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean hasComponentFromLocation(String sourceId) {
-        return registry.deployedFiles.containsKey(sourceId);
-    }
-
-    @Override
     public void addComponentListener(ComponentListener listener) {
         compListeners.add(listener);
     }

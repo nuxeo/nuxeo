@@ -107,18 +107,6 @@ public class TestNuxeoLauncher {
     }
 
     /**
-     * Command "register-trial" is deprecated since 9.3.
-     *
-     * @deprecated since 9.3
-     */
-    @Test
-    @Deprecated
-    public void testRegisterTrialIsDeprecated() {
-        assertThrows("https://connect.nuxeo.com/register", NuxeoLauncherException.class,
-                () -> NuxeoLauncher.createLauncher(new String[] { "register-trial" }).registerTrial());
-    }
-
-    /**
      * NXP-19071: avoid confusion with the command parameters when passing an argument to an option, or when calling
      * without argument an option which accepts optional arguments.
      *

@@ -241,7 +241,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         TransactionHelper.runInTransaction(() -> {
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {

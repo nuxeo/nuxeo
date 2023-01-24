@@ -440,31 +440,6 @@ public abstract class AbstractDirectoryTest {
             DocumentModel dm = session.createEntry(entryMap);
             assertNotNull(dm);
             assertEquals(3, session.getEntries().size());
-
-            // delete with nonexisting email
-            Map<String, String> map = new HashMap<>();
-            map.put("email", "nosuchemail");
-            session.deleteEntry("user_1", map);
-            // still there
-            assertEquals(3, session.getEntries().size());
-
-            // delete just one
-            map.put("email", "e@m");
-            session.deleteEntry("user_1", map);
-            // two more entries left
-            assertEquals(2, session.getEntries().size());
-
-            // other user_1 still present
-            dm = session.getEntry("user_1");
-            assertEquals("second@email", dm.getProperty(SCHEMA, "email"));
-
-            // delete it with a WHERE on a null key
-            map.clear();
-            map.put("company", null);
-            session.deleteEntry("user_1", map);
-            // entry is gone, only Administrator left
-            assertEquals(1, session.getEntries().size());
-
         }
     }
 

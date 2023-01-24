@@ -50,7 +50,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.JarUtils;
-import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.osgi.application.DevMutableClassLoader;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
@@ -79,8 +78,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * @since 9.3
      */
     public static final String RELOAD_STRATEGY_PARAMETER = "org.nuxeo.runtime.reload_strategy";
-
-    public static final String RELOAD_STRATEGY_VALUE_UNSTASH = "unstash";
 
     public static final String RELOAD_STRATEGY_VALUE_STANDBY = "standby";
 
@@ -119,35 +116,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     public void deactivate(ComponentContext context) {
         super.deactivate(context);
         bundle = null;
-    }
-
-    /**
-     * @deprecated since 9.3, this method is only used in deployBundles and undeployBundles which are deprecated. Keep
-     *             it for backward compatibility.
-     */
-    @Deprecated(since = "9.3")
-    protected void refreshComponents() {
-        String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
-        log.info("Refresh components. Strategy={}", reloadStrategy);
-        // reload components / contributions
-        ComponentManager mgr = Framework.getRuntime().getComponentManager();
-        switch (reloadStrategy) {
-        case RELOAD_STRATEGY_VALUE_UNSTASH:
-            // compat mode
-            mgr.unstash();
-            break;
-        case RELOAD_STRATEGY_VALUE_STANDBY:
-            // standby / resume
-            mgr.standby();
-            mgr.unstash();
-            mgr.resume();
-            break;
-        case RELOAD_STRATEGY_VALUE_RESTART:
-        default:
-            // restart mode
-            mgr.refresh(false);
-            break;
-        }
     }
 
     @Override
@@ -198,102 +166,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         log.info("Flush Seam components");
         Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
         setFlushedNow();
-    }
-
-    /**
-     * @deprecated since 9.3 use {@link #reloadBundles(ReloadContext)} instead.
-     */
-    @Override
-    @Deprecated(since = "9.3")
-    public void deployBundles(List<File> files, boolean reloadResources) throws BundleException {
-        long begin = System.currentTimeMillis();
-        List<String> missingNames = files.stream()
-                                         .filter(file -> getOSGIBundleName(file) == null)
-                                         .map(File::getAbsolutePath)
-                                         .collect(Collectors.toList());
-        if (!missingNames.isEmpty()) {
-            missingNames.forEach(name -> log.error("No Bundle-SymbolicName found in MANIFEST for jar at '{}'", name));
-            // TODO investigate why we need to exit here, getBundleContext().installBundle(path) will throw an exception
-            // unless, maybe tests ?
-            return;
-        }
-
-        log.info(() -> {
-            StringBuilder builder = new StringBuilder("Before deploy bundles\n");
-            Framework.getRuntime().getStatusMessage(builder);
-            return builder.toString();
-        });
-
-        // Reload resources
-        if (reloadResources) {
-            List<URL> urls = files.stream().map(this::toURL).collect(Collectors.toList());
-            Framework.reloadResourceLoader(urls, null);
-        }
-
-        // Deploy bundles
-        BundleException exc = TransactionHelper.runWithoutTransaction(() -> {
-            try {
-                _deployBundles(files);
-                refreshComponents();
-                return null;
-            } catch (BundleException e) {
-                return e;
-            }
-        });
-        if (exc != null) {
-            throw exc;
-        }
-
-        log.info(() -> {
-            StringBuilder builder = new StringBuilder("After deploy bundles.\n");
-            Framework.getRuntime().getStatusMessage(builder);
-            return builder.toString();
-        });
-        log.info("Hot deploy was done in {} ms.", System.currentTimeMillis() - begin);
-    }
-
-    /**
-     * @deprecated since 9.3 use {@link #reloadBundles(ReloadContext)} instead.
-     */
-    @Override
-    @Deprecated(since = "9.3")
-    public void undeployBundles(List<String> bundleNames, boolean reloadResources) throws BundleException {
-        long begin = System.currentTimeMillis();
-        log.info(() -> {
-            StringBuilder builder = new StringBuilder("Before undeploy bundles\n");
-            Framework.getRuntime().getStatusMessage(builder);
-            return builder.toString();
-        });
-
-        // Undeploy bundles
-        ReloadResult result = new ReloadResult();
-        BundleException exc = TransactionHelper.runWithoutTransaction(() -> {
-            try {
-                result.merge(_undeployBundles(bundleNames));
-                refreshComponents();
-                return null;
-            } catch (BundleException e) {
-                return e;
-            }
-        });
-        if (exc != null) {
-            throw exc;
-        }
-
-        // Reload resources
-        if (reloadResources) {
-            List<URL> undeployedBundleURLs = result.undeployedBundles.stream()
-                                                                     .map(this::toURL)
-                                                                     .collect(Collectors.toList());
-            Framework.reloadResourceLoader(null, undeployedBundleURLs);
-        }
-
-        log.info(() -> {
-            StringBuilder builder = new StringBuilder("After undeploy bundles.\n");
-            Framework.getRuntime().getStatusMessage(builder);
-            return builder.toString();
-        });
-        log.info("Hot undeploy was done in {} ms.", System.currentTimeMillis() - begin);
     }
 
     @Override
@@ -348,7 +220,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 log.info("Before undeploy bundles");
                 logComponentManagerStatus();
 
-                result.merge(_undeployBundles(bundlesNamesToUndeploy));
+                result.merge(undeployBundles(bundlesNamesToUndeploy));
                 clearJarFileFactoryCache(result);
                 componentManager.unstash();
 
@@ -390,7 +262,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 // Fill the class loader
                 classLoader.ifPresent(cl -> cl.addClassLoader(urlsToAdd.toArray(new URL[0])));
 
-                result.merge(_deployBundles(bundlesToDeploy));
+                result.merge(deployBundles(bundlesToDeploy));
                 componentManager.unstash();
 
                 log.info("After deploy bundles");
@@ -535,10 +407,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    /*
-     * TODO Change this method name when deployBundles will be removed.
-     */
-    protected ReloadResult _deployBundles(List<File> bundlesToDeploy) throws BundleException {
+    protected ReloadResult deployBundles(List<File> bundlesToDeploy) throws BundleException {
         ReloadResult result = new ReloadResult();
         BundleContext bundleContext = getBundleContext();
         for (File file : bundlesToDeploy) {
@@ -556,10 +425,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         return result;
     }
 
-    /*
-     * TODO Change this method name when undeployBundles will be removed.
-     */
-    protected ReloadResult _undeployBundles(List<String> bundleNames) throws BundleException {
+    protected ReloadResult undeployBundles(List<String> bundleNames) throws BundleException {
         ReloadResult result = new ReloadResult();
         BundleContext ctx = getBundleContext();
         ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
@@ -686,34 +552,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         lastFlushed = Long.valueOf(System.currentTimeMillis());
     }
 
-    /**
-     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead. Keep it as compatibility code until
-     *             NXP-9642 is done.
-     */
-    @Override
-    @Deprecated(since = "5.6")
-    public void installWebResources(File file) throws IOException {
-        log.info("Install web resources");
-        if (file.isDirectory()) {
-            File war = new File(file, "web");
-            war = new File(war, "nuxeo.war");
-            if (war.isDirectory()) {
-                org.nuxeo.common.utils.FileUtils.copyTree(war, getAppDir());
-            } else {
-                // compatibility mode with studio 1.5 - see NXP-6186
-                war = new File(file, "nuxeo.war");
-                if (war.isDirectory()) {
-                    org.nuxeo.common.utils.FileUtils.copyTree(war, getAppDir());
-                }
-            }
-        } else if (file.isFile()) { // a jar
-            File war = getWarDir();
-            ZipUtils.unzip("web/nuxeo.war", file, war);
-            // compatibility mode with studio 1.5 - see NXP-6186
-            ZipUtils.unzip("nuxeo.war", file, war);
-        }
-    }
-
     @Override
     public void runDeploymentPreprocessor() throws IOException {
         log.info("Start running deployment preprocessor");
@@ -752,10 +590,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         return bundleName;
     }
 
-    /**
-     * @deprecated since 9.3 should not be needed anymore
-     */
-    @Deprecated(since = "9.3")
     protected void triggerReloadWithNewTransaction(String eventId) {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
@@ -777,10 +611,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    /**
-     * @deprecated since 9.3 should not be needed anymore
-     */
-    @Deprecated(since = "9.3")
     protected void triggerReload(String eventId) {
         log.info("About to send reload event for id: {}", eventId);
         Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));

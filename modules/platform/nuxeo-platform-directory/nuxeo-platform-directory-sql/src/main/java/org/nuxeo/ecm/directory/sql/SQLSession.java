@@ -366,62 +366,6 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map) {
-        checkPermission(SecurityConstants.WRITE);
-        acquireConnection();
-
-        if (!canDeleteMultiTenantEntry(id)) {
-            throw new DirectoryException("Operation not allowed in the current tenant context");
-        }
-
-        // Assume in this case that there are no References to this entry.
-        Delete delete = new Delete(table);
-        StringBuilder whereClause = new StringBuilder();
-        List<Serializable> values = new ArrayList<>(1 + map.size());
-
-        whereClause.append(table.getPrimaryColumn().getQuotedName());
-        whereClause.append(" = ?");
-        values.add(id);
-        for (Entry<String, String> e : map.entrySet()) {
-            String key = e.getKey();
-            String value = e.getValue();
-            whereClause.append(" AND ");
-            Column col = table.getColumn(key);
-            if (col == null) {
-                throw new IllegalArgumentException("Unknown column " + key);
-            }
-            whereClause.append(col.getQuotedName());
-            if (value == null) {
-                whereClause.append(" IS NULL");
-            } else {
-                whereClause.append(" = ?");
-                values.add(value);
-            }
-        }
-        delete.setWhere(whereClause.toString());
-        String sql = delete.getStatement();
-
-        if (logger.isLogEnabled()) {
-            logger.logSQL(sql, values);
-        }
-
-        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
-            for (int i = 0; i < values.size(); i++) {
-                if (i == 0) {
-                    setFieldValue(ps, 1, table.getPrimaryColumn(), values.get(i));
-                } else {
-                    ps.setString(1 + i, (String) values.get(i));
-                }
-            }
-            ps.execute();
-        } catch (SQLException e) {
-            checkConcurrentUpdate(e);
-            throw new DirectoryException("deleteEntry failed", e);
-        }
-        getDirectory().invalidateCaches();
-    }
-
-    @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset) {
         if (!hasPermission(SecurityConstants.READ)) {

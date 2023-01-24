@@ -112,16 +112,6 @@ public interface FileSystemItemManager {
     boolean canMove(String srcId, String destId, NuxeoPrincipal principal);
 
     /*------------- Write operations ----------------*/
-    /**
-     * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the given principal.
-     *
-     * @see FolderItem#createFolder(String)
-     * @deprecated since 9.1, use {@link #createFolder(String, String, NuxeoPrincipal, boolean)} instead
-     */
-    @Deprecated
-    default FolderItem createFolder(String parentId, String name, NuxeoPrincipal principal) {
-        return createFolder(parentId, name, principal, false);
-    }
 
     /**
      * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the given principal.
@@ -131,17 +121,6 @@ public interface FileSystemItemManager {
      * @since 9.1
      */
     FolderItem createFolder(String parentId, String name, NuxeoPrincipal principal, boolean overwrite);
-
-    /**
-     * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
-     *
-     * @see FolderItem#createFile(Blob)
-     * @deprecated since 9.1, use {@link #createFile(String, Blob, NuxeoPrincipal, boolean)} instead
-     */
-    @Deprecated
-    default FileItem createFile(String parentId, Blob blob, NuxeoPrincipal principal) {
-        return createFile(parentId, blob, principal, false);
-    }
 
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.

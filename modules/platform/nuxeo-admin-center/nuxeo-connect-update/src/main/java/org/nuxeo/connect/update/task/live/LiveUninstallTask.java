@@ -18,8 +18,6 @@
  */
 package org.nuxeo.connect.update.task.live;
 
-import java.util.Map;
-
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.live.commands.Flush;
@@ -32,13 +30,6 @@ public class LiveUninstallTask extends UninstallTask {
 
     public LiveUninstallTask(PackageUpdateService pus) {
         super(pus);
-    }
-
-    @Override
-    protected void doRun(Map<String, String> params) throws PackageException {
-        super.doRun(params);
-        // reload components declared in 'reload' file
-        LiveInstallTask.reloadComponents(getPackage());
     }
 
     @Override

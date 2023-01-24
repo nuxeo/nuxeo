@@ -47,22 +47,6 @@ public class NuxeoDriveAttachBlob {
     @Param(name = "document", description = "The document to update.")
     protected DocumentModel doc;
 
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, this parameter is not used anymore
-     */
-    @Deprecated
-    @Param(name = "applyVersioningPolicy", required = false, values = "false")
-    protected boolean applyVersioningPolicy = false;
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, this parameter is not used anymore
-     */
-    @Deprecated
-    @Param(name = "factoryName", required = false, values = "defaultFileSystemItemFactory")
-    protected String factoryName = "defaultFileSystemItemFactory";
-
     @OperationMethod
     public Blob run(Blob blob) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);

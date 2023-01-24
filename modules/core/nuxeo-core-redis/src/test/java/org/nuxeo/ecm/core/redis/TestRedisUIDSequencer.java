@@ -54,9 +54,9 @@ public class TestRedisUIDSequencer {
 
         assertEquals(1L, sequencer.getNextLong("A"));
         assertEquals(2L, sequencer.getNextLong("A"));
-        assertEquals(1, sequencer.getNext("B"));
+        assertEquals(1, sequencer.getNextLong("B"));
         assertEquals(3L, sequencer.getNextLong("A"));
-        assertEquals(2, sequencer.getNext("B"));
+        assertEquals(2, sequencer.getNextLong("B"));
 
         sequencer.initSequence("A", 100000L);
         assertEquals(100001L, sequencer.getNextLong("A"));

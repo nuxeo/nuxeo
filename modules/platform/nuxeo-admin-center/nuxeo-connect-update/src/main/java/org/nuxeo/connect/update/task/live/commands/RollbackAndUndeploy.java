@@ -19,7 +19,6 @@
 package org.nuxeo.connect.update.task.live.commands;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
@@ -27,8 +26,6 @@ import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.update.Rollback;
 import org.nuxeo.connect.update.task.update.RollbackOptions;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 
 /**
  * @since 5.6
@@ -46,18 +43,10 @@ public class RollbackAndUndeploy extends Rollback {
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
-        Command res = null;
+        Command res;
         try {
             res = super.doRun(task, prefs);
-
-            // run deployment preprocessor only if server use former hot reload (this task is performed by new reload)
-            boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
-            if (useCompatReload) {
-                // then re-build the war now that jar is deleted
-                ReloadService srv = Framework.getService(ReloadService.class);
-                srv.runDeploymentPreprocessor();
-            }
-        } catch (PackageException | IOException e) {
+        } catch (PackageException e) {
             // ignore uninstall -> this may break the entire chain. Usually
             // uninstall is done only when rollbacking or uninstalling => force
             // restart required

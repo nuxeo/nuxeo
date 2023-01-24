@@ -129,7 +129,7 @@ public class RestServerInit implements RepositoryInit {
 
     public static String getSavedSearchId(int index, CoreSession session) {
         UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
-        DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+        DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
         return session.getDocument(new PathRef(uws.getPathAsString() + "/my saved search " + index)).getId();
     }
 

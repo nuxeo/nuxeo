@@ -260,32 +260,6 @@ public class ContentViewElement extends WebFragmentImpl {
     }
 
     /**
-     * @since 8.3
-     * @deprecated since 9.1 use {@link #selectByTitle(String...)} instead.
-     */
-    @Deprecated
-    public ContentViewElement checkByTitle(String... titles) {
-        // get id before element is detached from DOM (during next ajax calls)
-        String id = getId();
-        List<WebElement> items = getItems();
-        for (WebElement item : items) {
-            for (String title : titles) {
-                try {
-                    item.findElement(By.linkText(title));
-                    AjaxRequestManager arm = new AjaxRequestManager(driver);
-                    arm.begin();
-                    Locator.findElementWaitUntilEnabledAndClick(item, By.xpath(CHECK_BOX_XPATH));
-                    arm.end();
-                    break;
-                } catch (NoSuchElementException e) {
-                    // next
-                }
-            }
-        }
-        return reload(id);
-    }
-
-    /**
      * @since 9.1
      */
     public ContentViewSelectionActions selectByTitle(String... titles) {
@@ -338,23 +312,6 @@ public class ContentViewElement extends WebFragmentImpl {
     }
 
     /**
-     * @since 8.3
-     * @deprecated since 9.1 use {@link #selectByIndex(int...)}/{@link #unselectByIndex(int...)} instead.
-     */
-    @Deprecated
-    public ContentViewElement checkByIndex(int... indexes) {
-        // get id before element is detached from DOM (during next ajax calls)
-        String id = getId();
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        for (int i : indexes) {
-            arm.watchAjaxRequests();
-            getItems().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
-            arm.waitForAjaxRequests();
-        }
-        return reload(id);
-    }
-
-    /**
      * @since 9.1
      */
     public ContentViewSelectionActions selectByIndex(int... indexes) {
@@ -389,30 +346,6 @@ public class ContentViewElement extends WebFragmentImpl {
     }
 
     /**
-     * @since 8.3
-     * @deprecated since 9.1 use {@link #selectAll()}/{@link #unselectAll()} instead.
-     */
-    @Deprecated
-    public ContentViewElement checkAllItems() {
-        WebElement selectAll = null;
-        try {
-            selectAll = getResultsPanel().findElement(By.xpath(SELECT_ALL_BUTTON_XPATH));
-        } catch (NoSuchElementException e) {
-            // no item
-        }
-        if (selectAll != null) {
-            // get id before element is detached from DOM (during next ajax call)
-            String id = getId();
-            AjaxRequestManager arm = new AjaxRequestManager(driver);
-            arm.begin();
-            Locator.scrollAndForceClick(selectAll);
-            arm.end();
-            return reload(id);
-        }
-        return this;
-    }
-
-    /**
      * @since 9.1
      */
     public ContentViewSelectionActions selectAll() {
@@ -442,16 +375,6 @@ public class ContentViewElement extends WebFragmentImpl {
         Locator.scrollAndForceClick(selectAll);
         arm.end();
         return reload(id);
-    }
-
-    /**
-     * @since 8.3
-     * @deprecated since 9.1 use {@link #getUpperActions()} then
-     *             {@link ContentViewUpperActions#getActionByTitle(String)} instead. Or use select methods directly.
-     */
-    @Deprecated
-    public WebElement getSelectionActionByTitle(String title) {
-        return getUpperActions().getActionByTitle(title);
     }
 
     /**

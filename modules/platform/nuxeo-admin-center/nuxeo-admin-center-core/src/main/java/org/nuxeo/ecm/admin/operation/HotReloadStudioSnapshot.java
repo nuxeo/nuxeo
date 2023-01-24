@@ -189,66 +189,9 @@ public class HotReloadStudioSnapshot {
             }
         }
 
-        boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
-        if (!useCompatReload) {
-            log.info("Use hot reload update mechanism");
-            ReloadHelper.hotReloadPackage(remotePkg);
-            return jsonHelper(SUCCESS, "Studio package installed.", null);
-        }
-        // Install
-        try {
-            PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
-            String packageId = remotePkg.getId();
-            LocalPackage pkg = pus.getPackage(packageId);
-
-            // Uninstall and/or remove if needed
-            if (pkg != null) {
-                removePackage(pus, pkg);
-            }
-
-            // Download
-            DownloadingPackage downloadingPkg = pm.download(packageId);
-            while (!downloadingPkg.isCompleted()) {
-                log.debug("Downloading studio snapshot package: {}", packageId);
-                Thread.sleep(100);
-            }
-
-            log.info("Installing {}", packageId);
-            pkg = pus.getPackage(packageId);
-            if (pkg == null || PackageState.DOWNLOADED != pkg.getPackageState()) {
-                throw new NuxeoException("Error while downloading studio snapshot " + pkg);
-            }
-            Task installTask = pkg.getInstallTask();
-            try {
-                performTask(installTask);
-                return jsonHelper(SUCCESS, "Studio package installed.", null);
-            } catch (PackageException e) {
-                installTask.rollback();
-                throw e;
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new NuxeoException(e);
-        } catch (PackageException | ConnectServerError e) {
-            throw new NuxeoException("Error while installing studio snapshot", e);
-        }
-
-    }
-
-    protected static void removePackage(PackageUpdateService pus, LocalPackage pkg) throws PackageException {
-        log.info("Removing package {} before update...", pkg.getId());
-        if (pkg.getPackageState().isInstalled()) {
-            // First remove it to allow SNAPSHOT upgrade
-            log.info("Uninstalling {}", pkg.getId());
-            Task uninstallTask = pkg.getUninstallTask();
-            try {
-                performTask(uninstallTask);
-            } catch (PackageException e) {
-                uninstallTask.rollback();
-                throw e;
-            }
-        }
-        pus.removePackage(pkg.getId());
+        log.info("Use hot reload update mechanism");
+        ReloadHelper.hotReloadPackage(remotePkg);
+        return jsonHelper(SUCCESS, "Studio package installed.", null);
     }
 
     protected static void performTask(Task task) throws PackageException {

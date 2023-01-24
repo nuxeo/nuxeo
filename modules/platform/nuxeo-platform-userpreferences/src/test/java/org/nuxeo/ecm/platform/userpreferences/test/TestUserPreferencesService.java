@@ -64,7 +64,7 @@ public class TestUserPreferencesService {
     @Test
     public void testGetSimpleUserPreferences() throws Exception {
         SimpleUserPreferences simpleUserPref = userPreferencesService.getSimpleUserPreferences(session);
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
         assertEquals(userWorkspace.getRef(), simpleUserPref.getDocumentRef());
         simpleUserPref.put("foo", "bar");
         simpleUserPref.save(session);

@@ -53,53 +53,18 @@ public class Undeploy extends UndeployPlaceholder {
         super(file);
     }
 
-    /**
-     * @deprecated since 9.3, reload mechanism has changed, keep it for backward compatibility
-     */
-    @Deprecated
-    protected void undeployFile(File file, ReloadService service) throws PackageException {
-        String name = service.getOSGIBundleName(file);
-        if (name == null) {
-            // not an OSGI bundle => ignore
-            return;
-        }
-        try {
-            service.undeployBundle(name, true);
-        } catch (BundleException e) {
-            throw new PackageException("Failed to undeploy bundle " + file, e);
-        }
-    }
-
-    /**
-     * @deprecated since 9.3, reload mechanism has changed, keep it for backward compatibility
-     */
-    @Deprecated
-    protected void undeployDirectory(File dir, ReloadService service) throws PackageException {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File fileInDir : files) {
-                undeployFile(fileInDir, service);
-            }
-        }
-    }
-
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
         if (!file.exists()) {
             log.warn("Can't undeploy a non existing file: {}", file);
             return null;
         }
-        boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
-        if (useCompatReload) {
-            doCompatRun(task);
-            return new Deploy(file);
-        }
         try {
             ReloadService srv = Framework.getService(ReloadService.class);
             if (file.isDirectory()) {
-                _undeployDirectory(file, srv);
+                undeployDirectory(file, srv);
             } else {
-                _undeployFile(file, srv);
+                undeployFile(file, srv);
             }
         } catch (BundleException e) {
             // ignore uninstall -> this may break the entire chain. Usually
@@ -111,28 +76,7 @@ public class Undeploy extends UndeployPlaceholder {
         return new Deploy(file);
     }
 
-    /**
-     * @deprecated since 9.3, reload mechanism has changed, keep it for backward compatibility
-     */
-    @Deprecated
-    protected void doCompatRun(Task task) throws PackageException {
-        try {
-            ReloadService srv = Framework.getService(ReloadService.class);
-            if (file.isDirectory()) {
-                undeployDirectory(file, srv);
-            } else {
-                undeployFile(file, srv);
-            }
-        } catch (PackageException e) {
-            // ignore uninstall -> this may break the entire chain. Usually
-            // uninstall is done only when rollbacking or uninstalling => force
-            // restart required
-            task.setRestartRequired(true);
-            throw new PackageException("Failed to undeploy bundle " + file, e);
-        }
-    }
-
-    protected void _undeployFile(File file, ReloadService service) throws BundleException {
+    protected void undeployFile(File file, ReloadService service) throws BundleException {
         String name = service.getOSGIBundleName(file);
         if (name == null) {
             // not an OSGI bundle => ignore
@@ -141,7 +85,7 @@ public class Undeploy extends UndeployPlaceholder {
         service.reloadBundles(new ReloadContext().undeploy(name));
     }
 
-    protected void _undeployDirectory(File dir, ReloadService service) throws BundleException {
+    protected void undeployDirectory(File dir, ReloadService service) throws BundleException {
         File[] files = dir.listFiles();
         if (files != null) {
             ReloadContext reloadContext = new ReloadContext();

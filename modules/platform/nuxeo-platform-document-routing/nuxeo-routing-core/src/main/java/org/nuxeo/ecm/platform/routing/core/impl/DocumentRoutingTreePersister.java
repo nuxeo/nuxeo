@@ -166,7 +166,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     @Override
     public DocumentModel getParentFolderForNewModel(CoreSession session, DocumentModel instance) {
         UserWorkspaceService service = Framework.getService(UserWorkspaceService.class);
-        return service.getCurrentUserPersonalWorkspace(session, instance);
+        return service.getCurrentUserPersonalWorkspace(session);
     }
 
     @Override

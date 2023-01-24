@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.csv.core;
 
-import java.io.File;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -31,13 +30,6 @@ import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
  * @since 5.7
  */
 public interface CSVImporter {
-
-    /**
-     * @deprecated since 9.1 use {@link #launchImport(CoreSession, String, Blob, CSVImporterOptions)} instead.
-     */
-    @Deprecated
-    String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
-            CSVImporterOptions options);
 
     /**
      * @since 9.1

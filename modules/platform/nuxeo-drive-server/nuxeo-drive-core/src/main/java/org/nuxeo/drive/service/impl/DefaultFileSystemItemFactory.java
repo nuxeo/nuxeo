@@ -18,10 +18,8 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.util.Calendar;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -30,13 +28,11 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -48,48 +44,13 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
-        implements VersioningFileSystemItemFactory {
+public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory implements FileSystemItemFactory {
 
     private static final Logger log = LogManager.getLogger(DefaultFileSystemItemFactory.class);
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Deprecated
-    protected static final String VERSIONING_DELAY_PARAM = "versioningDelay";
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Deprecated
-    protected static final String VERSIONING_OPTION_PARAM = "versioningOption";
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Deprecated
-    // Versioning delay in seconds, default value: 1 hour
-    protected double versioningDelay = 3600;
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Deprecated
-    // Versioning option, default value: MINOR
-    protected VersioningOption versioningOption = VersioningOption.MINOR;
 
     /*--------------------------- AbstractFileSystemItemFactory -------------------------*/
     @Override
     public void handleParameters(Map<String, String> parameters) {
-        String versioningDelayParam = parameters.get(VERSIONING_DELAY_PARAM);
-        if (!StringUtils.isEmpty(versioningDelayParam)) {
-            versioningDelay = Double.parseDouble(versioningDelayParam);
-        }
-        String versioningOptionParam = parameters.get(DefaultFileSystemItemFactory.VERSIONING_OPTION_PARAM);
-        if (!StringUtils.isEmpty(versioningOptionParam)) {
-            versioningOption = VersioningOption.valueOf(versioningOptionParam);
-        }
     }
 
     /**
@@ -197,82 +158,6 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
                 return new DocumentBackedFileItem(this, doc, relaxSyncRootConstraint, getLockInfo);
             }
         }
-    }
-
-    /*--------------------------- FileSystemItemVersioning -------------------------*/
-    /**
-     * Need to version the doc if the current contributor is different from the last contributor or if the last
-     * modification was done more than {@link #versioningDelay} seconds ago.
-     *
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, this method is not used anymore
-     */
-    @Override
-    @Deprecated
-    public boolean needsVersioning(DocumentModel doc) {
-
-        String lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
-        NuxeoPrincipal principal = doc.getPrincipal();
-        boolean contributorChanged = !principal.getName().equals(lastContributor);
-        if (contributorChanged) {
-            log.debug(
-                    "Contributor {} is different from the last contributor {} => will create a version of the document.",
-                    principal, lastContributor);
-            return true;
-        }
-        Calendar lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
-        if (lastModificationDate == null) {
-            log.debug("Last modification date is null => will create a version of the document.");
-            return true;
-        }
-        long lastModified = System.currentTimeMillis() - lastModificationDate.getTimeInMillis();
-        long versioningDelayMillis = (long) getVersioningDelay() * 1000;
-        if (lastModified > versioningDelayMillis) {
-            log.debug(
-                    "Last modification was done {} milliseconds ago, this is more than the versioning delay {} milliseconds => will create a version of the document.",
-                    lastModified, versioningDelayMillis);
-            return true;
-        }
-        log.debug(
-                "Contributor {} is the last contributor and last modification was done {} milliseconds ago, this is less than the versioning delay {} milliseconds => will not create a version of the document.",
-                principal, lastModified, versioningDelayMillis);
-        return false;
-    }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Override
-    @Deprecated
-    public double getVersioningDelay() {
-        return versioningDelay;
-    }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Override
-    @Deprecated
-    public void setVersioningDelay(double versioningDelay) {
-        this.versioningDelay = versioningDelay;
-    }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Override
-    @Deprecated
-    public VersioningOption getVersioningOption() {
-        return versioningOption;
-    }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
-     */
-    @Override
-    @Deprecated
-    public void setVersioningOption(VersioningOption versioningOption) {
-        this.versioningOption = versioningOption;
     }
 
     /*--------------------------- Protected ---------------------------------*/

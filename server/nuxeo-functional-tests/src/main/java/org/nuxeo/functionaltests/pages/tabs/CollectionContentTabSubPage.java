@@ -18,8 +18,6 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import java.util.List;
-
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,24 +28,9 @@ import org.openqa.selenium.support.FindBy;
  */
 public class CollectionContentTabSubPage extends AbstractContentTabSubPage {
 
-    /**
-     * @deprecated since 9.1 not used
-     */
-    @Deprecated
-    @Required
-    @FindBy(id = "collection_content_contentview")
-    WebElement documentContentForm;
-
     @Required
     @FindBy(id = "cv_collection_content_contentview__panel")
     WebElement contentView;
-
-    /**
-     * @deprecated since 9.1 not used
-     */
-    @Deprecated
-    @FindBy(xpath = "//form[@id=\"collection_content_contentview\"]//tbody//tr")
-    List<WebElement> childDocumentRows;
 
     public CollectionContentTabSubPage(final WebDriver driver) {
         super(driver);

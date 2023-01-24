@@ -174,22 +174,6 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
-    /**
-     * @deprecated since 9.3, but in fact since 5.6, only usage in {@link RegistrationInfoImpl}
-     */
-    @Deprecated
-    @Override
-    public void reload() {
-        // activate the implementation instance
-        try {
-            MethodUtils.invokeMethod(instance, true, "reload", this);
-        } catch (NoSuchMethodException e) {
-            // ignore this exception since the reload method is not mandatory
-        } catch (ReflectiveOperationException e) {
-            handleError("Failed to reload component: " + getName(), Source.COMPONENT, getName().getName(), e);
-        }
-    }
-
     // TODO: cache info about implementation to avoid computing it each time
     @Override
     public void registerExtension(Extension extension) {

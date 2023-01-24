@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadEventNames;
+import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
@@ -43,7 +43,7 @@ public class DirectoryCacheFlusher implements EventListener {
             log.info("Do not flush the directory caches: dev mode is not set");
             return;
         }
-        if (!ReloadEventNames.FLUSH_EVENT_ID.equals(event.getId())) {
+        if (!ReloadService.FLUSH_EVENT_ID.equals(event.getId())) {
             return;
         }
         try {

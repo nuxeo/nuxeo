@@ -56,14 +56,6 @@ public class ConnectStatusHolder {
     }
 
     /**
-     * @deprecated Since 9.2, use {@link #isRegistered()} instead.
-     */
-    @Deprecated
-    public boolean isRegistred() {
-        return isRegistered();
-    }
-
-    /**
      * @since 9.2
      */
     public boolean isRegistered() {

@@ -396,12 +396,6 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map) {
-        log.warn("Calling deleteEntry extended on LDAP directory");
-        deleteEntry(id);
-    }
-
-    @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
         try {
             SearchResult result = getLdapEntry(id, false);

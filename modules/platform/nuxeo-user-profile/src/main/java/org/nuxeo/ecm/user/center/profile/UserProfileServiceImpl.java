@@ -79,7 +79,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     @Override
     public DocumentModel getUserProfileDocument(CoreSession session) {
         DocumentModel userWorkspace = Framework.getService(UserWorkspaceService.class)
-                                               .getCurrentUserPersonalWorkspace(session, null);
+                                               .getCurrentUserPersonalWorkspace(session);
         if (userWorkspace == null) {
             return null;
         }

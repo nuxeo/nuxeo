@@ -107,18 +107,6 @@ public interface Session extends AutoCloseable {
      */
     void deleteEntry(String id);
 
-    /**
-     * Deletes a directory entry by id and secondary ids.
-     * <p>
-     * This is used for hierarchical vocabularies, where the actual unique key is the couple (parent, id).
-     *
-     * @param id the id of the entry to delete.
-     * @param map a map of secondary key values.
-     * @deprecated since 9.2 (unused), use {@link #deleteEntry(String)} instead.
-     */
-    @Deprecated
-    void deleteEntry(String id, Map<String, String> map);
-
     /*
      * FIXME: Parses a query string and create a query object for this directory.
      * @param query the query string to parse @return a new query object @throws QueryException if the query cannot be

@@ -22,7 +22,6 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
-import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -37,24 +36,6 @@ public class DummyFileItem extends DocumentBackedFileItem {
     }
 
     public DummyFileItem(FileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc) {
-        super(factory, parentItem, doc);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DummyFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) {
-        super(factory, doc);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DummyFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc) {
         super(factory, parentItem, doc);
     }
 

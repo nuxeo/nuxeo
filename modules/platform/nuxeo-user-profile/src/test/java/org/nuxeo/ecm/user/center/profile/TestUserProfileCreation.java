@@ -71,7 +71,7 @@ public class TestUserProfileCreation {
         }
 
         CoreSession session = coreFeature.getCoreSession(user.getId());
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
         Assert.assertEquals(user.getId(), userWorkspace.getName());
 
         DocumentModel up = ups.getUserProfileDocument(session);

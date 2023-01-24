@@ -36,7 +36,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
 
     @Override
     public SimpleUserPreferences getSimpleUserPreferences(CoreSession session) {
-        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
+        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session);
         if (!userWorkspace.hasFacet(SIMPLE_CONFIGURATION_FACET)) {
             userWorkspace.addFacet(SIMPLE_CONFIGURATION_FACET);
             userWorkspace = session.saveDocument(userWorkspace);
@@ -52,7 +52,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     @SuppressWarnings("rawtypes")
     public <T extends UserPreferences> T getUserPreferences(CoreSession session, Class<T> userPrefClass,
             String userPrefFacet) {
-        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
+        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session);
         return getLocalConfigurationService().getConfiguration(userPrefClass, userPrefFacet, userWorkspace);
     }
 

@@ -80,18 +80,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
      */
     public static final String BLOB_PROVIDER_CONNECTION_PREFIX = "blobProvider/";
 
-    /**
-     * @deprecated since 9.3 use {@link MongoDBConnectionService} to provide access instead
-     */
-    @Deprecated
-    public static final String SERVER_PROPERTY = "server";
-
-    /**
-     * @deprecated since 9.3 use {@link MongoDBConnectionService} to provide access instead
-     */
-    @Deprecated
-    public static final String DBNAME_PROPERTY = "dbname";
-
     public static final String BUCKET_PROPERTY = "bucket";
 
     private static final String METADATA_PROPERTY_FILENAME = "filename";
@@ -107,11 +95,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
-        if (StringUtils.isNotBlank(properties.get(SERVER_PROPERTY))
-                || StringUtils.isNotBlank(properties.get(DBNAME_PROPERTY))) {
-            throw new NuxeoException("Unable to initialize GridFS Binary Manager, properties " + SERVER_PROPERTY
-                    + " and " + DBNAME_PROPERTY + " has been removed. Please configure a connection!");
-        }
         BinaryManagerRootDescriptor descriptor = new BinaryManagerRootDescriptor();
         descriptor.digest = getDefaultDigestAlgorithm();
         setDescriptor(descriptor);

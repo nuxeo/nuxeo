@@ -34,12 +34,4 @@ public class StringToDocRef implements TypeAdapter {
         String value = (String) objectToAdapt;
         return TypeAdapterHelper.createDocumentRef(ctx, value);
     }
-
-    /**
-     * @deprecated since 9.1, see {@link TypeAdapterHelper#createDocumentRef(String)} instead
-     */
-    @Deprecated
-    public static DocumentRef createRef(String value) {
-        return TypeAdapterHelper.createDocumentRef(value);
-    }
 }

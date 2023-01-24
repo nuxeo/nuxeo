@@ -20,7 +20,6 @@ Nuxeo-Component: OSGI-INF/TagService.xml,
   OSGI-INF/tag-operations-contrib.xml,
   OSGI-INF/json-enrichers-contrib.xml,
   OSGI-INF/faceted-tag-service-core-types.xml,
-  OSGI-INF/tag-migration.xml,
   OSGI-INF/faceted-tag-versioning-policy.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.resource,

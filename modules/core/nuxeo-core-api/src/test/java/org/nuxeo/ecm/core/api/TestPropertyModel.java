@@ -303,18 +303,6 @@ public class TestPropertyModel {
         assertEquals("blob/mime-type", prop.getXPath());
     }
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testPath() throws Exception {
-        String path = dp.get("file").get("fileName").getPath();
-        assertEquals("/book:file/fileName", path);
-
-        Author author = new Author();
-        dp.get("authors").addValue(author.getMap());
-        path = dp.resolvePath("book:authors/author[0]/name/firstName").getPath();
-        assertEquals("/book:authors/author[0]/name/firstName", path);
-    }
-
     @Test
     public void testPropertyAccess() throws Exception {
         // test complex property access

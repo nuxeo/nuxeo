@@ -43,7 +43,7 @@ public class FileManagerDocumentModelFactory extends AbstractDocumentModelFactor
     public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
             throws IOException {
         FileManager fileManager = getFileManager();
-        return fileManager.createFolder(session, node.getName(), parent.getPathAsString());
+        return fileManager.createFolder(session, node.getName(), parent.getPathAsString(), true);
     }
 
     @Override

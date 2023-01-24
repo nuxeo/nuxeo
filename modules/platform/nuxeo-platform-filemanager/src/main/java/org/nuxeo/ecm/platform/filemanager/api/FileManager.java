@@ -103,19 +103,6 @@ public interface FileManager {
      *
      * @param fullname the full name of the folder
      * @param path the path were to create the folder
-     * @return the Folder Created
-     * @deprecated since 9.1, use {@link #createFolder(CoreSession, String, String, boolean)} instead
-     */
-    @Deprecated
-    default DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException {
-        return createFolder(documentManager, fullname, path, true);
-    }
-
-    /**
-     * Creates a Folder.
-     *
-     * @param fullname the full name of the folder
-     * @param path the path were to create the folder
      * @param overwrite whether to overwrite an existing folder with the same title or not
      * @return the Folder Created
      * @since 9.1
@@ -149,25 +136,5 @@ public interface FileManager {
     String getDigestAlgorithm();
 
     boolean isDigestComputingEnabled();
-
-    /**
-     * Gets the versioning applied on an overwritten document before it is overwritten.
-     *
-     * @since 5.7
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Deprecated
-    VersioningOption getVersioningOption();
-
-    /**
-     * Checks whether versioning should also be applied after a document is added.
-     *
-     * @since 5.7
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Deprecated
-    boolean doVersioningAfterAdd();
 
 }

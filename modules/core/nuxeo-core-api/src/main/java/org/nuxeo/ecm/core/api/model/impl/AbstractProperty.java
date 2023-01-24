@@ -181,13 +181,6 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
-    @Override
-    @Deprecated
-    public String getPath() {
-        Path path = collectPath(new Path("/"));
-        return path.toString();
-    }
-
     protected Path collectPath(Path path) {
         String name = getName();
         if (parent != null) {

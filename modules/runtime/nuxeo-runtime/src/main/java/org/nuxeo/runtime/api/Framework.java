@@ -86,15 +86,6 @@ public final class Framework {
     public static final String NUXEO_TESTING_SYSTEM_PROP = "org.nuxeo.runtime.testing";
 
     /**
-     * Property to control strict runtime mode
-     *
-     * @since 5.6
-     * @deprecated since 9.1 This property is not documented and doesn't work.
-     */
-    @Deprecated(since = "9.1")
-    public static final String NUXEO_STRICT_RUNTIME_SYSTEM_PROP = "org.nuxeo.runtime.strict";
-
-    /**
      * The runtime instance.
      */
     private static RuntimeService runtime;
@@ -237,16 +228,6 @@ public final class Framework {
         checkRuntimeInitialized();
         // TODO impl a runtime service provider
         return runtime.getService(serviceClass);
-    }
-
-    /**
-     * Gets a service given its class.
-     *
-     * @deprecated since 9.10, use {@link #getService} instead
-     */
-    @Deprecated(since = "9.10")
-    public static <T> T getLocalService(Class<T> serviceClass) {
-        return getService(serviceClass);
     }
 
     /**

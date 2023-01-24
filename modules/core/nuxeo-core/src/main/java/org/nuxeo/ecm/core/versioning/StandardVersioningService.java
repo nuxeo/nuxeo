@@ -28,18 +28,13 @@ import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.DOC_LIFE_CYCLE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
-import static org.nuxeo.ecm.core.api.event.CoreEventConstants.SESSION_ID;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,41 +60,11 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     private static final Logger log = LogManager.getLogger(StandardVersioningService.class);
 
-    protected static final int DEFAULT_FORMER_RULE_ORDER = 10_000;
-
-    protected static final String COMPAT_ID_PREFIX = "compatibility-type-";
-
-    protected static final String COMPAT_DEFAULT_ID = "compatibility-default";
-
-    /**
-     * @deprecated since 9.1 seems unused
-     */
-    @Deprecated
-    public static final String FILE_TYPE = "File";
-
-    /**
-     * @deprecated since 9.1 seems unused
-     */
-    @Deprecated
-    public static final String NOTE_TYPE = "Note";
-
-    /**
-     * @deprecated since 9.1 seems unused
-     */
-    @Deprecated
-    public static final String PROJECT_STATE = "project";
-
     public static final String APPROVED_STATE = "approved";
 
     public static final String OBSOLETE_STATE = "obsolete";
 
     public static final String BACK_TO_PROJECT_TRANSITION = "backToProject";
-
-    /**
-     * @deprecated since 9.1 seems unused
-     */
-    @Deprecated
-    protected static final String AUTO_CHECKED_OUT = "AUTO_CHECKED_OUT";
 
     /** Key for major version in Document API. */
     protected static final String MAJOR_VERSION = "ecm:majorVersion";
@@ -382,90 +347,6 @@ public class StandardVersioningService implements ExtendableVersioningService {
                 }
             }
         }
-    }
-
-    @Override
-    @Deprecated
-    public Map<String, VersioningRuleDescriptor> getVersioningRules() {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    @Deprecated
-    public void setVersioningRules(Map<String, VersioningRuleDescriptor> versioningRules) {
-        // Convert former rules to new one - keep initial state and restriction
-        int order = DEFAULT_FORMER_RULE_ORDER - 1;
-        for (Entry<String, VersioningRuleDescriptor> rules : versioningRules.entrySet()) {
-            String documentType = rules.getKey();
-            VersioningRuleDescriptor versioningRule = rules.getValue();
-            // Compute policy and filter id
-            String compatId = COMPAT_ID_PREFIX + documentType;
-
-            // Convert the rule
-            if (versioningRule.isEnabled()) {
-                VersioningPolicyDescriptor policy = new VersioningPolicyDescriptor();
-                policy.id = compatId;
-                policy.order = order;
-                policy.initialState = versioningRule.initialState;
-                policy.filterIds = new ArrayList<>(Collections.singleton(compatId));
-
-                VersioningFilterDescriptor filter = new VersioningFilterDescriptor();
-                filter.id = compatId;
-                filter.types = Collections.singleton(documentType);
-
-                // Register rules
-                versioningPolicies.put(compatId, policy);
-                versioningFilters.put(compatId, filter);
-
-                // Convert save options
-                VersioningRestrictionDescriptor restriction = new VersioningRestrictionDescriptor();
-                restriction.type = documentType;
-                restriction.options = versioningRule.getOptions()
-                                                    .values()
-                                                    .stream()
-                                                    .map(SaveOptionsDescriptor::toRestrictionOptions)
-                                                    .collect(Collectors.toMap(
-                                                            VersioningRestrictionOptionsDescriptor::getLifeCycleState,
-                                                            Function.identity()));
-                versioningRestrictions.put(restriction.type, restriction);
-
-                order--;
-            } else {
-                versioningPolicies.remove(compatId);
-                versioningFilters.remove(compatId);
-            }
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule) {
-        if (defaultVersioningRule == null) {
-            return;
-        }
-        // Convert former rules to new one - keep initial state and restriction
-        VersioningPolicyDescriptor policy = new VersioningPolicyDescriptor();
-        policy.id = COMPAT_DEFAULT_ID;
-        policy.order = DEFAULT_FORMER_RULE_ORDER;
-        policy.initialState = defaultVersioningRule.initialState;
-
-        // Register rule
-        if (versioningPolicies == null) {
-            versioningPolicies = new HashMap<>();
-        }
-        versioningPolicies.put(policy.id, policy);
-
-        // Convert save options
-        VersioningRestrictionDescriptor restriction = new VersioningRestrictionDescriptor();
-        restriction.type = "*";
-        restriction.options = defaultVersioningRule.getOptions()
-                                                   .values()
-                                                   .stream()
-                                                   .map(SaveOptionsDescriptor::toRestrictionOptions)
-                                                   .collect(Collectors.toMap(
-                                                           VersioningRestrictionOptionsDescriptor::getLifeCycleState,
-                                                           Function.identity()));
-        versioningRestrictions.put(restriction.type, restriction);
     }
 
     @Override

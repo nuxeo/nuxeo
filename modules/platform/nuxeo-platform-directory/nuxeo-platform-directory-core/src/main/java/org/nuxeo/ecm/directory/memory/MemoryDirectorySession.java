@@ -223,14 +223,6 @@ public class MemoryDirectorySession extends BaseSession {
         return list;
     }
 
-    // given our storage model this doesn't even make sense, as id field is
-    // unique
-    @Override
-    public void deleteEntry(String id, Map<String, String> map) {
-        checkClose();
-        throw new DirectoryException("Not implemented");
-    }
-
     @Override
     public void deleteEntry(DocumentModel docModel) {
         checkClose();

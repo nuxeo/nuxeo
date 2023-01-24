@@ -439,24 +439,6 @@ public class DocumentBasePage extends AbstractPage {
         return getWebFragment(elt, AddToCollectionForm.class);
     }
 
-    /**
-     * @since 5.9.3
-     * @deprecated since 9.1 use actions from {@link ContentTabSubPage} instead.
-     */
-    @Deprecated
-    public AddAllToCollectionForm getAddAllToCollectionPopup() {
-        Locator.waitUntilGivenFunctionIgnoring(
-                driver -> StringUtils.isBlank(
-                        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled")),
-                StaleElementReferenceException.class);
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        arm.begin();
-        findElementWaitUntilEnabledAndClick(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID));
-        arm.end();
-        WebElement elt = AbstractPage.getFancyBoxContent();
-        return getWebFragment(elt, AddAllToCollectionForm.class);
-    }
-
     public boolean isAddToCollectionUpperActionAvailable() {
         try {
             driver.findElement(By.id(ADD_TO_COLLECTION_UPPER_ACTION_ID));

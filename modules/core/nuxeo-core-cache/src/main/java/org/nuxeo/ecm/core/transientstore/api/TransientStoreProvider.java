@@ -60,18 +60,6 @@ public interface TransientStoreProvider extends TransientStore {
     Stream<String> keyStream();
 
     /**
-     * Returns the size (in MB) of the disk storage used for blobs.
-     *
-     * @return the number of MB (rounded down) used by stored blobs
-     * @since 7.2
-     * @deprecated since 9.3 because it is imprecise, use {@link #getStorageSize} instead
-     */
-    @Deprecated
-    default int getStorageSizeMB() {
-        return (int) (getStorageSize() / 1024 / 1024);
-    }
-
-    /**
      * Returns the size (in bytes) of the disk storage used for blobs.
      *
      * @return the number of bytes used by stored blobs

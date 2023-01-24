@@ -31,24 +31,6 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
     public MongoDBRepositoryDescriptor() {
     }
 
-    /**
-     * @deprecated since 9.3 you should now use MongoDBConnectionService to define connections
-     * @see org.nuxeo.runtime.mongodb.MongoDBConnectionService
-     * @see org.nuxeo.runtime.mongodb.MongoDBComponent
-     */
-    @Deprecated
-    @XNode("server")
-    public String server;
-
-    /**
-     * @deprecated since 9.3 you should now use MongoDBConnectionService to define connections
-     * @see org.nuxeo.runtime.mongodb.MongoDBConnectionService
-     * @see org.nuxeo.runtime.mongodb.MongoDBComponent
-     */
-    @Deprecated
-    @XNode("dbname")
-    public String dbname;
-
     @XNode("nativeId")
     public Boolean nativeId;
 
@@ -76,12 +58,6 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
             return;
         }
         MongoDBRepositoryDescriptor other = (MongoDBRepositoryDescriptor) o;
-        if (other.server != null) {
-            server = other.server;
-        }
-        if (other.dbname != null) {
-            dbname = other.dbname;
-        }
         if (other.nativeId != null) {
             nativeId = other.nativeId;
         }

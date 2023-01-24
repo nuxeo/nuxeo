@@ -59,22 +59,6 @@ public class NuxeoComputedGroup implements ComputedGroup {
         model.setProperty(config.schemaName, config.labelField, label);
     }
 
-    /**
-     * @deprecated since 9.3. Use {@link #NuxeoComputedGroup(String, GroupConfig)}.
-     */
-    @Deprecated
-    public NuxeoComputedGroup(String name) {
-        this(name, GroupConfig.DEFAULT);
-    }
-
-    /**
-     * @deprecated since 9.3. Use {@link #NuxeoComputedGroup(String, String, GroupConfig)}.
-     */
-    @Deprecated
-    public NuxeoComputedGroup(String name, String label) {
-        this(name, label, GroupConfig.DEFAULT);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public List<String> getMemberUsers() {

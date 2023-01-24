@@ -120,8 +120,6 @@ public class DefaultComponent implements Component, Adaptable {
 
     @Override
     public void start(ComponentContext context) {
-        // delegate for now to applicationStarted
-        applicationStarted(context);
     }
 
     @Override

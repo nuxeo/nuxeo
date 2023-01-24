@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.tag;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
-import static org.nuxeo.ecm.platform.tag.TagService.Feature.TAGS_BELONG_TO_DOCUMENT;
 
 import java.util.Set;
 
@@ -30,7 +29,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -74,10 +72,6 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
 
         String docId = doc.getId();
         TagService tagService = Framework.getService(TagService.class);
-        if (doc instanceof DeletedDocumentModel && !tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
-            tagService.removeTags(session, docId);
-            return;
-        }
 
         switch (name) {
         case DOCUMENT_PROXY_PUBLISHED:
@@ -90,11 +84,6 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
             String versionUUID = (String) ctx.getProperty(VersioningDocument.RESTORED_VERSION_UUID_KEY);
             if (session.exists(new IdRef(docId))) {
                 tagService.replaceTags(session, versionUUID, docId);
-            }
-            break;
-        case DOCUMENT_REMOVED:
-            if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
-                tagService.removeTags(session, docId);
             }
             break;
         default:

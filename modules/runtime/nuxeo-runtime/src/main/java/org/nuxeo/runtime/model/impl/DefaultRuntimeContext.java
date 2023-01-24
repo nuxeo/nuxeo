@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,10 +61,6 @@ import org.osgi.framework.Bundle;
  * The code inside destroy method was removed too since the deployedFiles map was removed.
  * <p>
  * This map posed problems with the registry snapshot approaches since it was not kept in sync with the registry.
- * <p>
- * <p>
- * If unregistering components will be removed completely don't forget to remove
- * {@link ComponentManager#unregisterByLocation(String)} and the {@link ComponentRegistry#deployedFiles}.
  * <p>
  * <p>
  * Features like studio or IDE which needs unregistering components must use their own mechanism.
@@ -152,22 +149,30 @@ public class DefaultRuntimeContext implements RuntimeContext {
 
     @Override
     public void undeploy(URL url) {
-        runtime.getComponentManager().unregisterByLocation(url.toString());
+        getComponentFromSourceId(url.toString()).ifPresent(runtime.getComponentManager()::unregister);
     }
 
     @Override
     public void undeploy(StreamRef ref) {
-        runtime.getComponentManager().unregisterByLocation(ref.getId());
+        getComponentFromSourceId(ref.getId()).ifPresent(runtime.getComponentManager()::unregister);
     }
 
     @Override
     public boolean isDeployed(URL url) {
-        return runtime.getComponentManager().hasComponentFromLocation(url.toString());
+        return getComponentFromSourceId(url.toString()).isPresent();
     }
 
     @Override
     public boolean isDeployed(StreamRef ref) {
-        return runtime.getComponentManager().hasComponentFromLocation(ref.getId());
+        return getComponentFromSourceId(ref.getId()).isPresent();
+    }
+    
+    protected Optional<RegistrationInfo> getComponentFromSourceId(String sourceId) {
+        return runtime.getComponentManager()
+                      .getRegistrations()
+                      .stream()
+                      .filter(r -> sourceId.equals(r.getSourceId()))
+                      .findFirst();
     }
 
     @Override

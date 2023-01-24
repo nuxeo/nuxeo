@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -51,24 +50,6 @@ public class JsonWebengineWriter {
 
     private static JsonGenerator createGenerator(OutputStream out) throws IOException {
         return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
-    }
-
-    /**
-     * @deprecated since 9.3
-     */
-    @Deprecated
-    public static void writeException(OutputStream out, WebException webException, MediaType mediaType)
-            throws IOException {
-        writeException(createGenerator(out), webException, mediaType);
-    }
-
-    /**
-     * @deprecated since 9.3
-     */
-    @Deprecated
-    public static void writeException(JsonGenerator jg, WebException webException, MediaType mediaType)
-            throws IOException {
-        writeException(jg, webException, mediaType, webException.getStatus());
     }
 
     /**

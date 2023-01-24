@@ -64,7 +64,6 @@ public abstract class TargetExtensions {
             addTargetExtension("org.nuxeo.ecm.core.lifecycle.LifeCycleService", "types");
             addTargetExtension("org.nuxeo.ecm.core.lifecycle.LifeCycleService", "lifecycle");
             addTargetExtension("org.nuxeo.ecm.directory.GenericDirectory", "directories");
-            addTargetExtension("org.nuxeo.ecm.core.api.versioning.VersioningService", "versioningRules");
         }
     }
 

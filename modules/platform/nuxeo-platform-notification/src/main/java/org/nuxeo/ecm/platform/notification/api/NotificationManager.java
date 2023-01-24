@@ -24,8 +24,6 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
@@ -104,18 +102,6 @@ public interface NotificationManager {
      * @since 5.4.2
      */
     Set<String> getNotificationEventNames();
-
-    /**
-     * Returns the list of live docs the user is subscribed to.
-     *
-     * @since 7.3
-     * @deprecated since 9.1, use {@link #getSubscribedDocuments(String, String)} instead
-     */
-    @Deprecated
-    default List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName) {
-        return getSubscribedDocuments(prefixedPrincipalName,
-                Framework.getService(RepositoryManager.class).getDefaultRepositoryName());
-    }
 
     /**
      * Returns the list of live docs the user is subscribed to in the given repository .

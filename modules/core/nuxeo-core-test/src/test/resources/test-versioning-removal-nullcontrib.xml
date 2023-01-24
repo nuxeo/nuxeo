@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.versioning.VersioningService.test">
+<component name="org.nuxeo.ecm.core.api.versioning.VersioningService.test">
 
  <extension target="org.nuxeo.ecm.core.CoreService" point="versionRemovalPolicy">
   <policy class="org.nuxeo.ecm.core.versioning.NullVersionRemovalPolicy"/>

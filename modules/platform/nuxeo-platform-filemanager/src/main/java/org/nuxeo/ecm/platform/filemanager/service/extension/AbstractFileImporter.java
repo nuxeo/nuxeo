@@ -275,18 +275,6 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     /**
-     * Avoid checkin for a 0-length blob. Microsoft-WebDAV-MiniRedir first creates a 0-length file and then locks it
-     * before putting the real file. But we don't want this first placeholder to cause a versioning event.
-     *
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Deprecated(since = "9.1")
-    protected boolean skipCheckInForBlob(Blob blob) {
-        return blob == null || blob.getLength() == 0;
-    }
-
-    /**
      * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
      */
     @Deprecated(since = "10.3")
@@ -347,29 +335,6 @@ public abstract class AbstractFileImporter implements FileImporter {
             path = path.substring(0, path.lastIndexOf('/'));
         }
         return path;
-    }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Deprecated(since = "9.1")
-    protected void checkIn(DocumentModel doc) {
-        VersioningOption option = fileManagerService.getVersioningOption();
-        if (option != null && option != VersioningOption.NONE && doc.isCheckedOut()) {
-            doc.checkIn(option, null);
-        }
-    }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Deprecated(since = "9.1")
-    protected void checkInAfterAdd(DocumentModel doc) {
-        if (fileManagerService.doVersioningAfterAdd()) {
-            checkIn(doc);
-        }
     }
 
     /**

@@ -20,7 +20,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.download;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,12 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.common.Environment;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.io.download.DownloadService;
-import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -82,27 +77,4 @@ public class DownloadServlet extends HttpServlet {
         DownloadService downloadService = Framework.getService(DownloadService.class);
         downloadService.handleDownload(req, resp, baseUrl, path);
     }
-
-    /**
-     * @deprecated since 9.1. It was defined for ClipboardActionsBean but it seems not to be used anymore.
-     */
-    @Deprecated
-    protected void handleDownloadTemporaryZip(HttpServletRequest req, HttpServletResponse resp, String filePath)
-            throws IOException {
-        String[] pathParts = filePath.split("/");
-        String tmpFileName = pathParts[0];
-        File tmpZip = new File(Environment.getDefault().getTemp(), tmpFileName);
-        try {
-            Blob zipBlob = Blobs.createBlob(tmpZip);
-            DownloadContext context = DownloadContext.builder(req, resp)
-                                                     .blob(zipBlob)
-                                                     .filename("clipboard.zip")
-                                                     .reason("clipboardZip")
-                                                     .build();
-            Framework.getService(DownloadService.class).downloadBlob(context);
-        } finally {
-            tmpZip.delete();
-        }
-    }
-
 }

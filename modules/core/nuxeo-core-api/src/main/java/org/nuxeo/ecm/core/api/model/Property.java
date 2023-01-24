@@ -342,19 +342,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     String getXPath();
 
     /**
-     * Gets the path of this property relative to the owner document.
-     * <p>
-     * The path for top level properties is the same to the property name.
-     * <p>
-     * NOTE the path returned contains an initial {@code /} and expresses list indexes using an old syntax
-     *
-     * @return the path
-     * @deprecated since 9.1 as it's cumbersome to use; use {@link #getXPath} instead
-     */
-    @Deprecated
-    String getPath();
-
-    /**
      * Get the type of the field corresponding to this property.
      *
      * @return the property type

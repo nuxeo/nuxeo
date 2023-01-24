@@ -199,18 +199,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return component;
     }
 
-    /**
-     * Reload the underlying component if reload is supported
-     *
-     * @deprecated since 9.3, but in fact since 5.6, see only usage in LiveInstallTask#reloadComponent
-     */
-    @Deprecated
-    public synchronized void reload() {
-        if (component != null) {
-            component.reload();
-        }
-    }
-
     @Override
     public ComponentName getName() {
         return name;
@@ -335,16 +323,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         if (componentEvent > -1) {
             manager.sendEvent(new ComponentEvent(componentEvent, this));
         }
-    }
-
-    /**
-     * @deprecated since 9.2 seems unused
-     */
-    @Deprecated
-    public synchronized void restart() {
-        deactivate();
-        instantiate();
-        activate();
     }
 
     @Override

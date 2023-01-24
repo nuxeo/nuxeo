@@ -58,25 +58,8 @@ public interface UIDSequencer {
     void initSequence(String key, long id);
 
     /**
-     * Initializes the sequencer with the given key to at least the given id.
-     * @since 7.4
-     * @deprecated since 9.10 use {@link #initSequence(String, long)} instead.
-     */
-    @Deprecated
-    void initSequence(String key, int id);
-
-    /**
      * For the given key returns the incremented UID which is also stored in the same sequence entry. This is a
      * "one time use" function for a document.
-     *
-     * @deprecated since 9.10 use {@link #getNextLong(String)} instead.
-     */
-    @Deprecated
-    int getNext(String key);
-
-    /**
-     * Extends {@link UIDSequencer#getNext(java.lang.String)} to return a long value. This method is compatible
-     * with getNext in the integer range.
      *
      * @since 8.3
      */

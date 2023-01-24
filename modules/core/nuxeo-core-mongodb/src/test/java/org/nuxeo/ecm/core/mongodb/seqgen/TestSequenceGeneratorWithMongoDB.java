@@ -51,29 +51,29 @@ public class TestSequenceGeneratorWithMongoDB {
     protected UIDGeneratorService uidGeneratorService;
 
     @Test
-    public void testIncrement() throws Exception {
+    public void testIncrement() {
         UIDSequencer seq = uidGeneratorService.getSequencer();
         assertNotNull(seq);
         assertTrue(seq.getClass().isAssignableFrom(MongoDBUIDSequencer.class));
 
-        assertEquals(1, seq.getNext("myseq"));
-        assertEquals(2, seq.getNext("myseq"));
+        assertEquals(1L, seq.getNextLong("myseq"));
+        assertEquals(2L, seq.getNextLong("myseq"));
         assertEquals(3L, seq.getNextLong("myseq"));
-        assertEquals(1, seq.getNext("myseq2"));
-        assertEquals(4, seq.getNext("myseq"));
-        assertEquals(2, seq.getNext("myseq2"));
+        assertEquals(1L, seq.getNextLong("myseq2"));
+        assertEquals(4L, seq.getNextLong("myseq"));
+        assertEquals(2L, seq.getNextLong("myseq2"));
     }
 
     @Test
     public void testInitSequence() {
         UIDSequencer seq = uidGeneratorService.getSequencer();
 
-        seq.getNext("autoSequence");
-        seq.getNext("autoSequence");
-        assertTrue(seq.getNext("autoSequence") > 2);
+        seq.getNextLong("autoSequence");
+        seq.getNextLong("autoSequence");
+        assertTrue(seq.getNextLong("autoSequence") > 2);
 
         seq.initSequence("mySequence", 1);
-        assertTrue(seq.getNext("mySequence") > 1);
+        assertTrue(seq.getNextLong("mySequence") > 1);
         assertTrue(seq.getNextLong("mySequence") < 10L);
         seq.initSequence("mySequence", 10L);
         assertTrue("Sequence should skip ahead to 10", seq.getNextLong("mySequence") > 10L);
@@ -123,14 +123,14 @@ public class TestSequenceGeneratorWithMongoDB {
                 new LinkedBlockingQueue<>(nbCalls + 1));
 
         for (int i = 0; i < nbCalls; i++) {
-            tpe.submit(() -> seq.getNext(seqName));
+            tpe.submit(() -> seq.getNextLong(seqName));
         }
 
         tpe.shutdown();
         boolean finish = tpe.awaitTermination(20, TimeUnit.SECONDS);
         assertTrue("timeout", finish);
 
-        assertEquals(nbCalls + 1, seq.getNext(seqName));
+        assertEquals(nbCalls + 1, seq.getNextLong(seqName));
     }
 
     @Test

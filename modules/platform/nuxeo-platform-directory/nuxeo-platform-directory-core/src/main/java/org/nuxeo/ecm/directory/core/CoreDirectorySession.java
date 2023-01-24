@@ -262,27 +262,6 @@ public class CoreDirectorySession extends BaseSession {
         }
     }
 
-    @Override
-    public void deleteEntry(String id, Map<String, String> map) {
-        if (isReadOnly()) {
-            log.warn("The directory: {} is in read-only mode, could not delete entry.", directory::getName);
-        }
-
-        Map<String, Serializable> props = new HashMap<>(map);
-        props.put(schemaIdField, id);
-
-        DocumentModelList docList = query(props);
-        if (!docList.isEmpty()) {
-            if (docList.size() > 1) {
-                log.warn("Found more than one result in getEntry, the first result only will be deleted");
-            }
-            deleteEntry(docList.get(0));
-        } else {
-            throw new DirectoryException(String.format("Delete entry failed : Entry with id '%s' not found !", id));
-        }
-
-    }
-
     protected String getMappedPrefixedFieldName(String fieldName) {
         String backendFieldId = getDirectory().getFieldMapper().getBackendField(fieldName);
         return getPrefixedFieldName(backendFieldId);

@@ -25,23 +25,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.CopyOption;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -65,8 +52,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     public static final String WEB_RESOURCES_NAME = "org.nuxeo:type=sdk,name=web-resources";
 
-    public static final String USE_COMPAT_HOT_RELOAD = "nuxeo.hotreload.compat.mechanism";
-
     protected static final String DEV_BUNDLES_CP = "dev-bundles/*";
 
     protected DevBundle[] devBundles;
@@ -83,8 +68,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     protected final File webclasses;
 
-    protected boolean compatHotReload;
-
     public DevFrameworkBootstrap(MutableClassLoader cl, File home) throws IOException {
         super(cl, home);
         devBundlesFile = new File(home, "dev.bundles");
@@ -95,16 +78,11 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     @Override
     public void start(MutableClassLoader cl) throws ReflectiveOperationException, IOException, JMException {
-        // check if we have dev. bundles or libs to deploy and add them to the
-        // classpath
-        preloadDevBundles();
         // start the framework
         super.start(cl);
         ClassLoader loader = (ClassLoader) this.loader;
         reloadServiceInvoker = new ReloadServiceInvoker(loader);
-        compatHotReload = new FrameworkInvoker(loader).isBooleanPropertyTrue(USE_COMPAT_HOT_RELOAD);
         writeComponentIndex();
-        postloadDevBundles(); // start dev bundles if any
         String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
         if (installReloadTimerOption != null && Boolean.parseBoolean(installReloadTimerOption)) {
             toggleTimer();
@@ -167,43 +145,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         return devBundlesFile.getAbsolutePath();
     }
 
-    /**
-     * Load the development bundles and libs if any in the classpath before starting the framework.
-     *
-     * @deprecated since 9.3, we now have a new mechanism to hot reload bundles from {@link #devBundlesFile}. The new
-     *             mechanism copies bundles to nxserver/bundles, so it's now useless to preload dev bundles as they're
-     *             deployed as a regular bundle.
-     */
-    @Deprecated
-    protected void preloadDevBundles() throws IOException {
-        if (!compatHotReload) {
-            return;
-        }
-        if (!devBundlesFile.isFile()) {
-            return;
-        }
-        lastModified = devBundlesFile.lastModified();
-        devBundles = DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile));
-        if (devBundles.length > 0) {
-            installNewClassLoader(devBundles);
-        }
-    }
-
-    /**
-     * @deprecated since 9.3, we now have a new mechanism to hot reload bundles from {@link #devBundlesFile}. The new
-     *             mechanism copies bundles to nxserver/bundles, so it's now useless to postload dev bundles as they're
-     *             deployed as a regular bundle.
-     */
-    @Deprecated
-    protected void postloadDevBundles() throws ReflectiveOperationException {
-        if (!compatHotReload) {
-            return;
-        }
-        if (devBundles.length > 0) {
-            reloadServiceInvoker.hotDeployBundles(devBundles);
-        }
-    }
-
     @Override
     public void loadDevBundles() {
         long tm = devBundlesFile.lastModified();
@@ -236,40 +177,20 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     protected synchronized void reloadDevBundles(DevBundle[] bundles) throws ReflectiveOperationException, IOException {
         long begin = System.currentTimeMillis();
+        // symbolicName of bundlesToDeploy will be filled by hotReloadBundles before hot reload
+        // -> this allows server to be hot reloaded again in case of errors
+        // if everything goes fine, bundlesToDeploy will be replaced by result of hot reload containing symbolic
+        // name and the new bundle path
+        DevBundle[] bundlesToDeploy = bundles;
+        try {
+            bundlesToDeploy = reloadServiceInvoker.hotReloadBundles(devBundles, bundlesToDeploy);
 
-        if (compatHotReload) {
-            if (devBundles.length > 0) { // clear last context
-                try {
-                    reloadServiceInvoker.hotUndeployBundles(devBundles);
-                    clearClassLoader();
-                } finally {
-                    devBundles = new DevBundle[0];
-                }
-            }
-
-            if (bundles.length > 0) { // create new context
-                try {
-                    installNewClassLoader(bundles);
-                    reloadServiceInvoker.hotDeployBundles(bundles);
-                } finally {
-                    devBundles = bundles;
-                }
-            }
-        } else {
-            // symbolicName of bundlesToDeploy will be filled by hotReloadBundles before hot reload
-            // -> this allows server to be hot reloaded again in case of errors
-            // if everything goes fine, bundlesToDeploy will be replaced by result of hot reload containing symbolic
-            // name and the new bundle path
-            DevBundle[] bundlesToDeploy = bundles;
-            try {
-                bundlesToDeploy = reloadServiceInvoker.hotReloadBundles(devBundles, bundlesToDeploy);
-
-                // write the new dev bundles location to the file
-                writeDevBundles(bundlesToDeploy);
-            } finally {
-                devBundles = bundlesToDeploy;
-            }
+            // write the new dev bundles location to the file
+            writeDevBundles(bundlesToDeploy);
+        } finally {
+            devBundles = bundlesToDeploy;
         }
+
         log.info("Hot reload has been run in {}ms", System.currentTimeMillis() - begin);
     }
 
@@ -313,96 +234,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         }
     }
 
-    /**
-     * Zips recursively the content of {@code source} to the {@code target} zip file.
-     *
-     * @since 9.3
-     */
-    protected Path zipDirectory(Path source, Path target, CopyOption... options) throws IOException {
-        if (!source.toFile().isDirectory()) {
-            throw new IllegalArgumentException("Source argument must be a directory to zip");
-        }
-        // locate file system by using the syntax defined in java.net.JarURLConnection
-        URI uri = URI.create("jar:file:" + target.toString());
-
-        try (FileSystem zipfs = FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"))) {
-            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
-
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    if (source.equals(dir)) {
-                        // don't process root element
-                        return FileVisitResult.CONTINUE;
-                    }
-                    return visitFile(dir, attrs);
-                }
-
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    // retrieve the destination path in zip
-                    Path relativePath = source.relativize(file);
-                    Path pathInZipFile = zipfs.getPath(relativePath.toString());
-                    // copy a file into the zip file
-                    Files.copy(file, pathInZipFile, options);
-                    return FileVisitResult.CONTINUE;
-                }
-
-            });
-        }
-        return target;
-    }
-
-    /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
-     */
-    @Deprecated
-    protected void clearClassLoader() {
-        NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
-        devLoader.clear();
-    }
-
-    /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
-     */
-    @Deprecated
-    protected void installNewClassLoader(DevBundle[] bundles) {
-        List<URL> jarUrls = new ArrayList<>();
-        List<File> seamDirs = new ArrayList<>();
-        List<File> resourceBundleFragments = new ArrayList<>();
-        // filter dev bundles types
-        for (DevBundle bundle : bundles) {
-            if (bundle.devBundleType.isJar) {
-                try {
-                    jarUrls.add(bundle.url());
-                } catch (IOException e) {
-                    log.error("Cannot install: {}", bundle);
-                }
-            } else if (bundle.devBundleType == DevBundleType.Seam) {
-                seamDirs.add(bundle.file());
-            } else if (bundle.devBundleType == DevBundleType.ResourceBundleFragment) {
-                resourceBundleFragments.add(bundle.file());
-            }
-        }
-
-        // install class loader
-        NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
-        devLoader.createLocalClassLoader(jarUrls.toArray(new URL[jarUrls.size()]));
-
-        // install seam classes in hot sync folder
-        try {
-            installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
-        } catch (IOException e) {
-            log.error("Cannot install seam classes in hotsync folder", e);
-        }
-
-        // install l10n resources
-        try {
-            installResourceBundleFragments(resourceBundleFragments);
-        } catch (IOException e) {
-            log.error("Cannot install l10n resources", e);
-        }
-    }
-
     public void writeComponentIndex() {
         File file = new File(home.getParentFile(), "sdk");
         file.mkdirs();
@@ -415,47 +246,4 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
             // ignore
         }
     }
-
-    /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
-     */
-    @Deprecated
-    public void installSeamClasses(File[] dirs) throws IOException {
-        if (seamdev.exists()) {
-            IOUtils.deleteTree(seamdev);
-        }
-        seamdev.mkdirs();
-        for (File dir : dirs) {
-            IOUtils.copyTree(dir, seamdev);
-        }
-    }
-
-    /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
-     */
-    @Deprecated
-    public void installResourceBundleFragments(List<File> files) throws IOException {
-        Map<String, List<File>> fragments = new HashMap<>();
-
-        for (File file : files) {
-            String name = resourceBundleName(file);
-            if (!fragments.containsKey(name)) {
-                fragments.put(name, new ArrayList<>());
-            }
-            fragments.get(name).add(file);
-        }
-        for (String name : fragments.keySet()) {
-            IOUtils.appendResourceBundleFragments(name, fragments.get(name), webclasses);
-        }
-    }
-
-    /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
-     */
-    @Deprecated
-    protected static String resourceBundleName(File file) {
-        String name = file.getName();
-        return name.substring(name.lastIndexOf('-') + 1);
-    }
-
 }

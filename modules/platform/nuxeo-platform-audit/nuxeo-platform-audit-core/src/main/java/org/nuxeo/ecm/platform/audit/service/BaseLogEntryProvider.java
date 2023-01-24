@@ -34,26 +34,12 @@ public interface BaseLogEntryProvider {
     void addLogEntry(LogEntry entry);
 
     /**
-     * Returns the logs given a doc uuid and a repository id.
-     *
-     * @param uuid the document uuid
-     * @param repositoryId the repository id
-     * @return a list of log entries
-     * @since 8.4
-     * @deprecated since 9.3, use {@link AuditBackend} APIs instead.
-     */
-    @Deprecated
-    default List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
-    }
-
-    /**
      * Returns the logs given a doc uuid.
      *
      * @param uuid the document uuid
      * @return a list of log entries
      * @since 8.4
-     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String)} instead.
+     * @deprecated since 8.4
      */
     @Deprecated
     default List<LogEntry> getLogEntriesFor(String uuid) {

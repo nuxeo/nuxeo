@@ -246,7 +246,7 @@ public interface WorkManager {
 
     /**
      * @return {@code true} if active
-     * @see org.nuxeo.runtime.model.DefaultComponent#applicationStarted(org.nuxeo.runtime.model.ComponentContext)
+     * @see org.nuxeo.runtime.model.DefaultComponent#start(org.nuxeo.runtime.model.ComponentContext)
      * @see #init()
      * @see #shutdown(long, TimeUnit)
      * @since 6.0

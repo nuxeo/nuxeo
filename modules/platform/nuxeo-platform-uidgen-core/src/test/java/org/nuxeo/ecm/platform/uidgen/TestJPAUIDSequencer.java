@@ -52,15 +52,15 @@ public class TestJPAUIDSequencer {
         UIDSequencer seq = service.getSequencer("hibernateSequencer");
 
         // Test UIDSequencer#getNext
-        assertEquals(1, seq.getNext("mySequence"));
-        assertEquals(2, seq.getNext("mySequence"));
-        assertEquals(1, seq.getNext("mySequence2"));
+        assertEquals(1, seq.getNextLong("mySequence"));
+        assertEquals(2, seq.getNextLong("mySequence"));
+        assertEquals(1, seq.getNextLong("mySequence2"));
 
         // Test UIDSequencer#initSequence
         seq.initSequence("mySequence", 1);
-        assertTrue(seq.getNext("mySequence") > 1);
+        assertTrue(seq.getNextLong("mySequence") > 1);
         seq.initSequence("mySequence", 10L);
-        assertTrue(seq.getNext("mySequence") > 10);
+        assertTrue(seq.getNextLong("mySequence") > 10);
     }
 
 }

@@ -58,13 +58,6 @@ public interface UserWorkspaceService extends Serializable {
     DocumentModel getCurrentUserPersonalWorkspace(String userName, DocumentModel currentDocument);
 
     /**
-     * @deprecated since 9.3. User personal workspaces have always been stored in default domain. The context is
-     *             useless. Simply use {@link #getCurrentUserPersonalWorkspace(CoreSession)}.
-     */
-    @Deprecated
-    DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context);
-
-    /**
      * Gets a detached user workspace of a specified user.
      *
      * @param userName is the username of the wanted user's workspace owner

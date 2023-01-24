@@ -41,14 +41,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public class SectionContentTabSubPage extends AbstractContentTabSubPage {
 
-    /**
-     * @deprecated since 9.1 not used
-     */
-    @Deprecated
-    @Required
-    @FindBy(id = "section_content")
-    WebElement contentForm;
-
     @Required
     @FindBy(id = "cv_section_content_0_panel")
     WebElement contentView;

@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +35,6 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.osgi.framework.Bundle;
 
@@ -67,13 +65,6 @@ public class RuntimeDeployment {
      */
     @Deprecated
     SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, LinkedHashSet::new);
-
-    /**
-     * @deprecated since 9.2 we cannot undeploy components while they are started. So we don't need anymore to store the
-     *             contexts
-     */
-    @Deprecated
-    protected LinkedList<RuntimeContext> contexts = new LinkedList<>();
 
     protected void index(Class<?> clazz) {
         AnnotationScanner scanner = FeaturesRunner.getScanner();
@@ -165,7 +156,6 @@ public class RuntimeDeployment {
                     errors.addSuppressed(error);
                     continue;
                 }
-                contexts.add(runtime.getContext(bundle));
             }
             try {
                 // deploy bundle contribs
@@ -189,7 +179,7 @@ public class RuntimeDeployment {
                     if (url == null) {
                         throw new AssertionError("Cannot find " + resource + " in " + name);
                     }
-                    contexts.add(harness.deployTestContrib(name, url));
+                    harness.deployTestContrib(name, url);
                 }
             } catch (Exception error) {
                 errors.addSuppressed(error);
@@ -206,7 +196,7 @@ public class RuntimeDeployment {
         // this block is deprecated since 10.1 with @LocalDeploy
         for (Map.Entry<String, String> resource : localIndex.entries()) {
             try {
-                contexts.add(harness.deployTestContrib(resource.getKey(), resource.getValue()));
+                harness.deployTestContrib(resource.getKey(), resource.getValue());
             } catch (Exception error) {
                 errors.addSuppressed(error);
             }
@@ -214,7 +204,7 @@ public class RuntimeDeployment {
 
         for (Map.Entry<String, Set<TargetExtensions>> resource : partialBundles.entrySet()) {
             try {
-                contexts.add(harness.deployPartial(resource.getKey(), resource.getValue()));
+                harness.deployPartial(resource.getKey(), resource.getValue());
             } catch (Exception e) {
                 errors.addSuppressed(e);
             }

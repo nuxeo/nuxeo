@@ -487,12 +487,6 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    @Deprecated
-    public void deleteEntry(String id, Map<String, String> map) {
-        deleteEntry(id);
-    }
-
-    @Override
     public void deleteEntry(String id) {
 
         if (!canDeleteMultiTenantEntry(id)) {

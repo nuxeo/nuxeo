@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
@@ -60,11 +59,6 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
                 DocumentValidationException dve = (DocumentValidationException) cause;
                 return Response.status(dve.getStatusCode()).entity(dve.getReport()).build();
             }
-        }
-
-        // backward compatibility
-        if (cause instanceof WebException) {
-            return ((WebException) cause).toResponse();
         }
 
         // webengine custom error handling, if any
@@ -92,10 +86,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
     }
 
     protected static int getStatusCode(Throwable t) {
-        if (t instanceof WebException) {
-            WebException webException = (WebException) t;
-            return webException.getStatusCode();
-        } else if (t instanceof WebApplicationException) {
+        if (t instanceof WebApplicationException) {
             WebApplicationException e = (WebApplicationException) t;
             return e.getResponse().getStatus();
         } else if (t instanceof NuxeoException) {

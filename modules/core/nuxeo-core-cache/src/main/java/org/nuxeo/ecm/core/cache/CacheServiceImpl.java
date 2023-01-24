@@ -153,12 +153,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
-    @Deprecated
-    public void registerCache(String name, int maxSize, int timeout) {
-        registerCache(name);
-    }
-
-    @Override
     public void registerCache(String name) {
         CacheDescriptor defaultDescriptor = getCacheDescriptor(DEFAULT_CACHE_ID);
         if (defaultDescriptor == null) {

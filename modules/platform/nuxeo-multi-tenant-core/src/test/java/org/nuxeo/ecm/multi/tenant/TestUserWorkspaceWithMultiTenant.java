@@ -105,8 +105,7 @@ public class TestUserWorkspaceWithMultiTenant {
         assertEquals(yoshiWS.getId(), yoshiWS2.getId());
 
         // check admin WS
-        DocumentModel adminWS = userWorkspaceService.getCurrentUserPersonalWorkspace(session,
-                session.getRootDocument());
+        DocumentModel adminWS = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
         assertNotNull(adminWS);
         assertTrue(adminWS.getPathAsString().contains(defaultDomain.getPathAsString()));
 

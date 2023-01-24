@@ -21,14 +21,7 @@
 
 package org.nuxeo.ecm.platform.tag;
 
-import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_ID;
-import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_FACETS;
-import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_RELATIONS;
-import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STEP_RELATIONS_TO_FACETS;
-
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.migration.MigrationService;
-import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
 import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -40,8 +33,7 @@ public class TagServiceImpl extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.tag.TagService");
 
-    // @GuardedBy("this")
-    protected volatile TagService tagService;
+    protected TagService tagService = new FacetedTagService();
 
     @Override
     public int getApplicationStartedOrder() {
@@ -54,56 +46,12 @@ public class TagServiceImpl extends DefaultComponent {
         return component.getApplicationStartedOrder() - 1;
     }
 
-    // called under synchronized (this)
-    protected TagService recomputeTagService() {
-        MigrationService migrationService = Framework.getService(MigrationService.class);
-        MigrationStatus status = migrationService.getStatus(MIGRATION_ID);
-        if (status == null) {
-            throw new IllegalStateException("Unknown migration status for: " + MIGRATION_ID);
-        }
-        if (status.isRunning()) {
-            String step = status.getStep();
-            if (MIGRATION_STEP_RELATIONS_TO_FACETS.equals(step)) {
-                return new BridgeTagService(new RelationTagService(), new FacetedTagService());
-            } else {
-                throw new IllegalStateException("Unknown migration step: " + step);
-            }
-        } else {
-            String state = status.getState();
-            if (MIGRATION_STATE_RELATIONS.equals(state)) {
-                return new RelationTagService();
-            } else if (MIGRATION_STATE_FACETS.equals(state)) {
-                return new FacetedTagService();
-            } else {
-                throw new IllegalStateException("Unknown migration state: " + state);
-            }
-        }
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == TagServiceImpl.class) {
             return adapter.cast(this);
-        } else if (tagService == null) {
-            synchronized (this) {
-                if (tagService == null) {
-                    tagService = recomputeTagService();
-                }
-            }
         }
         return (T) tagService;
     }
-
-    /**
-     * Called when the migration status changes, to recompute the new service.
-     *
-     * @since 9.3
-     */
-    public void invalidateTagServiceImplementation() {
-        synchronized (this) {
-            tagService = recomputeTagService();
-        }
-    }
-
 }

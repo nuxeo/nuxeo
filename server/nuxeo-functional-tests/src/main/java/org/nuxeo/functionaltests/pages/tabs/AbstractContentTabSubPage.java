@@ -27,7 +27,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * All resolutions of sub element are made based on contentForm id.
@@ -35,27 +34,6 @@ import org.openqa.selenium.support.FindBy;
  * @since 9.1
  */
 public abstract class AbstractContentTabSubPage extends DocumentBasePage {
-
-    /**
-     * @deprecated since 9.1 use filter methods on {@link ContentViewElement}
-     */
-    @Deprecated
-    @FindBy(id = "cv_document_content_0_quickFilterForm:nxl_document_content_filter:nxw_search_title")
-    WebElement filterInput;
-
-    /**
-     * @deprecated since 9.1 use filter methods on {@link ContentViewElement}
-     */
-    @Deprecated
-    @FindBy(id = "cv_document_content_0_quickFilterForm:submitFilter")
-    WebElement filterButton;
-
-    /**
-     * @deprecated since 9.1 use filter methods on {@link ContentViewElement}
-     */
-    @Deprecated
-    @FindBy(id = "cv_document_content_0_resetFilterForm:resetFilter")
-    WebElement clearFilterButton;
 
     public AbstractContentTabSubPage(WebDriver driver) {
         super(driver);

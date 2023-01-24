@@ -36,7 +36,7 @@ if (httpSession!=null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY)
 
 Locale locale = request.getLocale();
 String selectedLanguage = locale.getLanguage();
-selectedLanguage = Framework.getLocalService(LocaleProvider.class).getLocaleWithDefault(selectedLanguage).getLanguage();
+selectedLanguage = Framework.getService(LocaleProvider.class).getLocaleWithDefault(selectedLanguage).getLanguage();
 
 boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
 String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();

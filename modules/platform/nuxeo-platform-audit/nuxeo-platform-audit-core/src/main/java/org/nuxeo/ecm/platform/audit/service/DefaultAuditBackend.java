@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
@@ -157,12 +156,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     @Override
     public List<LogEntry> getLogEntriesFor(final String uuid) {
         return apply(false, provider -> provider.getLogEntriesFor(uuid));
-    }
-
-    @Override
-    public List<LogEntry> getLogEntriesFor(final String uuid, final Map<String, FilterMapEntry> filterMap,
-            final boolean doDefaultSort) {
-        return apply(false, provider -> provider.getLogEntriesFor(uuid, filterMap, doDefaultSort));
     }
 
     @Override

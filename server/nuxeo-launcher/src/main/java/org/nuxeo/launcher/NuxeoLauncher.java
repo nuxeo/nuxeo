@@ -1080,8 +1080,6 @@ public class NuxeoLauncher {
             launcher.config();
         } else if (launcher.commandIs("register")) {
             commandSucceeded = launcher.register();
-        } else if (launcher.commandIs("register-trial")) {
-            commandSucceeded = launcher.registerTrial();
         } else {
             printLongHelp();
             throw new NuxeoLauncherException(
@@ -1398,27 +1396,6 @@ public class NuxeoLauncher {
         log.info("Server registered to {} for project {}\nType: {}\nDescription: {}", username, project, type,
                 description);
         return true;
-    }
-
-    /**
-     * Register a trial project. The command synopsis:
-     *
-     * <pre>
-     * <code>
-     * nuxeoctl register-trial [ &lt;first&gt; &lt;last&gt; &lt;email&gt; &lt;company&gt; &lt;project&gt; ]
-     * </code>
-     * </pre>
-     *
-     * @since 8.3
-     * @deprecated Since 9.3: To register for a free 30 day trial on Nuxeo Online Services, please visit
-     *             https://connect.nuxeo.com/register
-     */
-    @Deprecated
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    public boolean registerTrial() {
-        String msg = "This command is deprecated. To register for a free 30 day trial on Nuxeo Online Services,"
-                + " please visit https://connect.nuxeo.com/register";
-        throw new NuxeoLauncherException(msg, EXIT_CODE_UNIMPLEMENTED);
     }
 
     /**

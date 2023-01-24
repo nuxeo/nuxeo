@@ -10,7 +10,7 @@ response.setCharacterEncoding("UTF-8");
 
 Locale locale = request.getLocale();
 String selectedLanguage = locale.getLanguage();
-selectedLanguage = Framework.getLocalService(LocaleProvider.class).getLocaleWithDefault(selectedLanguage).getLanguage();
+selectedLanguage = Framework.getService(LocaleProvider.class).getLocaleWithDefault(selectedLanguage).getLanguage();
 
 TokenAuthenticationService tokenAuthService = Framework.getService(TokenAuthenticationService.class);
 String token = tokenAuthService.acquireToken(request);

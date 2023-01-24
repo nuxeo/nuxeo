@@ -83,12 +83,6 @@ public final class NXAuthConstants {
      */
     public static final String ORIGINAL_PATH_ATTRIBUTE = "ORIGINAL_PATH";
 
-    /**
-     * @deprecated since 9.3
-     */
-    @Deprecated
-    public static final String LANGUAGE_PARAMETER = "language";
-
     public static final String SESSION_TIMEOUT = "nxtimeout";
 
     /**

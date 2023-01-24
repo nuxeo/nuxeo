@@ -54,18 +54,6 @@ public interface TagService {
     void tag(CoreSession session, String docId, String label);
 
     /**
-     * Tags a document with a given tag.
-     *
-     * @param session the session
-     * @param docId the document id
-     * @param label the tag
-     * @param username the user associated to the tagging
-     * @deprecated since 9.3, username is not needed anymore
-     */
-    @Deprecated
-    void tag(CoreSession session, String docId, String label, String username);
-
-    /**
      * Untags a document of the given tag
      *
      * @param session the session
@@ -73,18 +61,6 @@ public interface TagService {
      * @param label the tag, or {@code null} for all tags
      */
     void untag(CoreSession session, String docId, String label);
-
-    /**
-     * Untags a document of the given tag
-     *
-     * @param session the session
-     * @param docId the document id
-     * @param label the tag, or {@code null} for all tags
-     * @param username the user associated to the tagging
-     * @deprecated since 9.3, username is not needed anymore
-     */
-    @Deprecated
-    void untag(CoreSession session, String docId, String label, String username);
 
     /**
      * Returns whether or not the current session can untag tag on provided document.
@@ -106,34 +82,6 @@ public interface TagService {
      * @since 9.3
      */
     Set<String> getTags(CoreSession session, String docId);
-
-    /**
-     * Gets the tags applied to a document by a given user, or by all users.
-     *
-     * @param session the session
-     * @param docId the document id
-     * @param username the user name, or {@code null} for all users
-     * @return the list of tags
-     * @deprecated since 9.3, username is not needed anymore
-     */
-    @Deprecated
-    List<Tag> getDocumentTags(CoreSession session, String docId, String username);
-
-    /**
-     * Gets the tags applied to a document by a given user, or by all users.
-     * <p>
-     * Alternative method allowing to specify whether the core should be used for this query.
-     *
-     * @param session the session
-     * @param docId the document id
-     * @param username the user name, or {@code null} for all users
-     * @param useCore if true, the core should be used to retrieve tags.
-     * @return the list of tags
-     * @since 6.0
-     * @deprecated since 9.3, username and useCore are not needed anymore
-     */
-    @Deprecated
-    List<Tag> getDocumentTags(CoreSession session, String docId, String username, boolean useCore);
 
     /**
      * Removes all the tags applied to a document.
@@ -173,36 +121,6 @@ public interface TagService {
     List<String> getTagDocumentIds(CoreSession session, String label);
 
     /**
-     * Gets the documents to which a tag is applied.
-     *
-     * @param session the session
-     * @param label the tag
-     * @param username the user name, or {@code null} for all users
-     * @return the set of document ids
-     * @deprecated since 9.3, username is not needed anymore
-     */
-    @Deprecated
-    List<String> getTagDocumentIds(CoreSession session, String label, String username);
-
-    /**
-     * Gets the tag cloud for a set of documents (tags with weight corresponding to their popularity).
-     * <p>
-     * If a docId is passed, only documents under it are considered, otherwise all documents in the database are used.
-     * <p>
-     * The cloud is returned unsorted.
-     *
-     * @param session the session
-     * @param docId the document id under which to look, or {@code null} for all documents
-     * @param username the user name, or {@code null} for all users
-     * @param normalize null for no weight normalization (a count is returned), {@code FALSE} for 0-100 normalization,
-     *            {@code TRUE} for logarithmic 0-100 normalization
-     * @return the cloud (a list of weighted tags)
-     * @deprecated since 9.3, seems unused
-     */
-    @Deprecated
-    List<Tag> getTagCloud(CoreSession session, String docId, String username, Boolean normalize);
-
-    /**
      * Gets suggestions for a given tag label prefix.
      *
      * @param session the session
@@ -211,36 +129,6 @@ public interface TagService {
      * @since 9.3
      */
     Set<String> getSuggestions(CoreSession session, String label);
-
-    /**
-     * Gets suggestions for a given tag label prefix.
-     *
-     * @param session the session
-     * @param label the tag label prefix
-     * @param username the user name, or {@code null} for all users
-     * @return a list of tags
-     * @deprecated since 9.3, username is not needed anymore
-     */
-    @Deprecated
-    List<Tag> getSuggestions(CoreSession session, String label, String username);
-
-    /**
-     * Features of the implementation of the service.
-     *
-     * @see TagService#hasFeature
-     * @since 9.3
-     */
-    enum Feature {
-        /** Tags are properties of the document itself. */
-        TAGS_BELONG_TO_DOCUMENT,
-    }
-
-    /**
-     * Checks if a feature is available.
-     *
-     * @since 9.3
-     */
-    boolean hasFeature(Feature feature);
 
     /**
      * Checks if document support tag.

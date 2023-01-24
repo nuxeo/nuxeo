@@ -69,22 +69,12 @@ public class ComponentRegistry {
      */
     protected MappedSet pendings;
 
-    /**
-     * Map deployment source ids to component names This was previously managed by DefaultRuntimeContext - but is no
-     * more usable in the original form. This map is only useful for unregister by location - which is used by some
-     * tests. Remove this if the unregister API will be removed.
-     *
-     * @since 9.2
-     */
-    protected Map<String, ComponentName> deployedFiles;
-
     public ComponentRegistry() {
         components = new HashMap<>();
         aliases = new HashMap<>();
         requirements = new MappedSet();
         pendings = new MappedSet();
         resolved = new LinkedHashMap<>();
-        deployedFiles = new HashMap<>();
     }
 
     public ComponentRegistry(ComponentRegistry reg) {
@@ -93,7 +83,6 @@ public class ComponentRegistry {
         requirements = new MappedSet(reg.requirements);
         pendings = new MappedSet(reg.pendings);
         resolved = new LinkedHashMap<>(reg.resolved);
-        deployedFiles = new HashMap<>(reg.deployedFiles);
     }
 
     public synchronized void destroy() {
@@ -101,7 +90,6 @@ public class ComponentRegistry {
         aliases = null;
         requirements = null;
         pendings = null;
-        deployedFiles = null;
     }
 
     public synchronized final boolean isResolved(ComponentName name) {
@@ -123,11 +111,6 @@ public class ComponentRegistry {
             ((RegistrationInfoImpl) ri).register();
         } else {
             ri.setState(RegistrationInfo.REGISTERED);
-        }
-        // map the source id with the component name - see ComponentManager.unregisterByLocation
-        String sourceId = ri.getSourceId();
-        if (sourceId != null) {
-            deployedFiles.put(sourceId, ri.getName());
         }
         components.put(name, ri);
         for (ComponentName n : al) {

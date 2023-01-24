@@ -215,17 +215,6 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
     }
 
     /**
-     * Only for compatibility.
-     *
-     * @deprecated since 9.3
-     */
-    @Deprecated
-    @Override
-    public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context) {
-        return getCurrentUserPersonalWorkspace(userCoreSession);
-    }
-
-    /**
      * This method handles the UserWorkspace creation with a Principal or a username. At least one should be passed. If
      * a principal is passed, the username is not taken into account.
      *

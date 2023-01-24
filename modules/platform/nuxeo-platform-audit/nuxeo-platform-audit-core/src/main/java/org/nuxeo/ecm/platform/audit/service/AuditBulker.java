@@ -32,22 +32,12 @@ public interface AuditBulker {
     void onApplicationStarted();
 
     /**
-     * @since 9.2 with default backward compatibility by delegating to deprecated API {@link #onShutdown()}
+     * @since 9.2
      */
-    default void onApplicationStopped() {
-        onShutdown();
-    }
+    void onApplicationStopped();
 
     void offer(LogEntry entry);
 
     boolean await(long delay, TimeUnit unit) throws InterruptedException;
-
-    /**
-     * @deprecated since 9.2, replaced with {@link #onApplicationStopped()}
-     */
-    @Deprecated
-    default void onShutdown() {
-        throw new UnsupportedOperationException("deprecated API, should not be invoked");
-    }
 
 }

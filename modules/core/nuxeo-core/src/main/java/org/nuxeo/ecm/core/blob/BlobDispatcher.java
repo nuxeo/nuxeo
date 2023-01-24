@@ -72,20 +72,6 @@ public interface BlobDispatcher {
      *
      * @param doc the document containing the blob
      * @param blob the blob
-     * @return the blob provider id and whether it should be added as prefix
-     * @deprecated since 9.1, use {@link #getBlobProvider(Document, Blob, String)} instead
-     */
-    @Deprecated
-    default BlobDispatch getBlobProvider(Document doc, Blob blob) {
-        return getBlobProvider(doc, blob, null);
-    }
-
-    /**
-     * Decides which {@link BlobProvider} to use to write the given blob, and whether the provider id should be added as
-     * prefix to the managed blob key.
-     *
-     * @param doc the document containing the blob
-     * @param blob the blob
      * @param xpath the xpath of the blob in the document
      * @return the blob provider id and whether it should be added as prefix
      * @since 9.1

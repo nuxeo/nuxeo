@@ -63,14 +63,9 @@ public class UserWorkspaceCreateFromBlob {
     @Context
     protected AutomationService as;
 
-    protected DocumentModel getCurrentDocument() throws OperationException {
-        String cdRef = (String) context.get("currentDocument");
-        return as.getAdaptedValue(context, cdRef, DocumentModel.class);
-    }
-
     @OperationMethod
     public DocumentModel run(Blob blob) throws OperationException, IOException {
-        DocumentModel userws = userWorkspace.getCurrentUserPersonalWorkspace(session, getCurrentDocument());
+        DocumentModel userws = userWorkspace.getCurrentUserPersonalWorkspace(session);
         FileImporterContext fileImporterContext = FileImporterContext.builder(session, blob, userws.getPathAsString())
                                                                      .build();
         return fileManager.createOrUpdateDocument(fileImporterContext);

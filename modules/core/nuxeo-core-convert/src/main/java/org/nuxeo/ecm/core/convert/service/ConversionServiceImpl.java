@@ -42,7 +42,6 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -194,12 +193,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     @Override
     public List<String> getRegistredConverters() {
         return new ArrayList<>(converterDescriptors.keySet());
-    }
-
-    @Override
-    @Deprecated
-    public Blob convertBlobToPDF(Blob blob) {
-        return convertThroughHTML(new SimpleBlobHolder(blob), MimetypeRegistry.PDF_MIMETYPE).getBlob();
     }
 
     protected BlobHolder convertThroughHTML(BlobHolder blobHolder, String destMimeType) {

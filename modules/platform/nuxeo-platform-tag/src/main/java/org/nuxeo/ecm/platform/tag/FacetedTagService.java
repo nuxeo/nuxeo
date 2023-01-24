@@ -65,16 +65,6 @@ public class FacetedTagService extends AbstractTagService {
     public static final String DISABLE_VERSIONING = "tag.facet.disable.versioning";
 
     @Override
-    public boolean hasFeature(Feature feature) {
-        switch (feature) {
-        case TAGS_BELONG_TO_DOCUMENT:
-            return true;
-        default:
-            throw new UnsupportedOperationException(feature.name());
-        }
-    }
-
-    @Override
     public boolean supportsTag(CoreSession session, String docId) {
         return session.getDocument(new IdRef(docId)).hasFacet(TAG_FACET);
     }
@@ -207,11 +197,6 @@ public class FacetedTagService extends AbstractTagService {
             return Collections.emptySet();
         }
         return res.stream().map(m -> (String) m.get(TagConstants.TAG_LIST + "/*1/label")).collect(Collectors.toSet());
-    }
-
-    @Override
-    public List<Tag> getTagCloud(CoreSession session, String docId, String username, Boolean normalize) {
-        return Collections.emptyList();
     }
 
     @SuppressWarnings("unchecked")

@@ -577,12 +577,6 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
-    @Override
-    public void deleteEntry(String id, Map<String, String> map) {
-        log.warn("Calling deleteEntry extended on multi directory");
-        deleteEntry(id);
-    }
-
     private static void updateSubDirectoryEntry(SubDirectoryInfo dirInfo, Map<String, Object> fieldMap, String id,
             boolean canCreateIfOptional) {
         DocumentModel dirEntry = dirInfo.getSession().getEntry(id);

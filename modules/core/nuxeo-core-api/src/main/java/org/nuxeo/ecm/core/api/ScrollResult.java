@@ -34,16 +34,6 @@ public interface ScrollResult<T> {
     String getScrollId();
 
     /**
-     * Returns the list of document ids
-     *
-     * @deprecated since 9.10 use {@link #getResults()} instead.
-     */
-    @Deprecated
-    default List<String> getResultIds() {
-        throw new UnsupportedOperationException("Use getResults instead.");
-    }
-
-    /**
      * Returns {@code true} when this {@code ScrollResult} contains results.
      */
     boolean hasResults();

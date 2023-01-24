@@ -20,14 +20,11 @@
 
 package org.nuxeo.ecm.platform.tag;
 
-import static org.nuxeo.ecm.platform.tag.TagService.Feature.TAGS_BELONG_TO_DOCUMENT;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -109,11 +106,6 @@ public abstract class AbstractTagService implements TagService {
     }
 
     @Override
-    public void tag(CoreSession session, String docId, String label, String username) {
-        tag(session, docId, label);
-    }
-
-    @Override
     public void untag(CoreSession session, String docId, String label) {
         // There's two allowed cases here:
         // - document doesn't exist, we're here after documentRemoved event
@@ -135,11 +127,6 @@ public abstract class AbstractTagService implements TagService {
     }
 
     @Override
-    public void untag(CoreSession session, String docId, String label, String username) {
-        untag(session, docId, label);
-    }
-
-    @Override
     public boolean canUntag(CoreSession session, String docId, String label) {
         return session.hasPermission(new IdRef(docId), SecurityConstants.WRITE);
     }
@@ -147,16 +134,6 @@ public abstract class AbstractTagService implements TagService {
     @Override
     public Set<String> getTags(CoreSession session, String docId) {
         return CoreInstance.doPrivileged(session, (CoreSession s) -> doGetTags(s, docId));
-    }
-
-    @Override
-    public List<Tag> getDocumentTags(CoreSession session, String docId, String username) {
-        return getTags(session, docId).stream().map(t -> new Tag(t, 0)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Tag> getDocumentTags(CoreSession session, String docId, String username, boolean useCore) {
-        return getTags(session, docId).stream().map(t -> new Tag(t, 0)).collect(Collectors.toList());
     }
 
     @Override
@@ -185,11 +162,6 @@ public abstract class AbstractTagService implements TagService {
     }
 
     @Override
-    public List<String> getTagDocumentIds(CoreSession session, String label, String username) {
-        return getTagDocumentIds(session, label);
-    }
-
-    @Override
     public Set<String> getSuggestions(CoreSession session, String label) {
         label = cleanLabel(label, true, true);
         if (!isTagSanitizationEnabled()) {
@@ -204,14 +176,8 @@ public abstract class AbstractTagService implements TagService {
         return CoreInstance.doPrivileged(session, (CoreSession s) -> doGetTagSuggestions(s, l));
     }
 
-    @Override
-    public List<Tag> getSuggestions(CoreSession session, String label, String username) {
-        return getSuggestions(session, label).stream().map(t -> new Tag(t, 0)).collect(Collectors.toList());
-    }
-
     protected boolean isTagSanitizationEnabled() {
-        return !hasFeature(TAGS_BELONG_TO_DOCUMENT)
-                || Framework.getService(ConfigurationService.class).isBooleanTrue(TAG_SANITIZATION_PROP);
+        return Framework.getService(ConfigurationService.class).isBooleanTrue(TAG_SANITIZATION_PROP);
     }
 
     public abstract void doTag(CoreSession session, String docId, String label, String username);

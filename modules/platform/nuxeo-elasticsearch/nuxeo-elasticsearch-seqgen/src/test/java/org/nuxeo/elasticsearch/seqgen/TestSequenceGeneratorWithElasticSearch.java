@@ -57,21 +57,21 @@ public class TestSequenceGeneratorWithElasticSearch {
         assertNotNull(seq);
         assertTrue(seq.getClass().isAssignableFrom(ESUIDSequencer.class));
 
-        assertEquals(1, seq.getNext("myseq"));
-        assertEquals(2, seq.getNext("myseq"));
+        assertEquals(1, seq.getNextLong("myseq"));
+        assertEquals(2, seq.getNextLong("myseq"));
         assertEquals(3L, seq.getNextLong("myseq"));
-        assertEquals(1, seq.getNext("myseq2"));
-        assertEquals(4, seq.getNext("myseq"));
-        assertEquals(2, seq.getNext("myseq2"));
+        assertEquals(1, seq.getNextLong("myseq2"));
+        assertEquals(4, seq.getNextLong("myseq"));
+        assertEquals(2, seq.getNextLong("myseq2"));
     }
 
     @Test
     public void testInitSequence() {
         UIDSequencer seq = uidGeneratorService.getSequencer();
-        seq.getNext("mySequence");
-        seq.getNext("mySequence");
+        seq.getNextLong("mySequence");
+        seq.getNextLong("mySequence");
 
-        assertTrue(seq.getNext("mySequence") > 1);
+        assertTrue(seq.getNextLong("mySequence") > 1);
         // initSequence will work only for greater value
         seq.initSequence("mySequence", 1_000_000L);
         assertEquals(1_000_001L, seq.getNextLong("mySequence"));
@@ -95,7 +95,7 @@ public class TestSequenceGeneratorWithElasticSearch {
             tpe.submit(new Runnable() {
                 @Override
                 public void run() {
-                    seq.getNext(seqName);
+                    seq.getNextLong(seqName);
                 }
             });
         }
@@ -104,7 +104,7 @@ public class TestSequenceGeneratorWithElasticSearch {
         boolean finish = tpe.awaitTermination(20, TimeUnit.SECONDS);
         assertTrue("timeout", finish);
 
-        assertEquals(nbCalls + 1, seq.getNext(seqName));
+        assertEquals(nbCalls + 1, seq.getNextLong(seqName));
     }
 
     @Test

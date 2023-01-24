@@ -3,7 +3,7 @@
 
   <require>org.nuxeo.ecm.platform.el.service</require>
 
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="policies">
     <policy id="versioning-delay-minor" increment="MINOR" beforeUpdate="false" order="1">
       <filter-id>minor-version</filter-id>
     </policy>
@@ -12,7 +12,7 @@
     </policy>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="filters">
     <filter id="minor-version">
       <condition>#{currentDocument.contextData.VersioningOption == "MINOR"}</condition>
     </filter>

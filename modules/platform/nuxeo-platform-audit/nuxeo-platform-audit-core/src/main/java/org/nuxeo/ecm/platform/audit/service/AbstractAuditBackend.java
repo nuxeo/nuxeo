@@ -415,40 +415,6 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     }
 
     @Override
-    @Deprecated
-    public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        // create builder
-        QueryBuilder builder = new AuditQueryBuilder();
-        // create predicates
-        builder.predicate(Predicates.eq(LOG_DOC_UUID, uuid));
-        filterMap.values().stream().map(this::convert).forEach(builder::and);
-        if (doDefaultSort) {
-            builder.defaultOrder();
-        }
-        return queryLogs(builder);
-    }
-
-    protected Predicate convert(FilterMapEntry entry) {
-        String name = entry.getColumnName();
-        String operator = entry.getOperator();
-        Object value = entry.getObject();
-        if (Operator.EQ.toString().equals(operator)) {
-            return Predicates.eq(name, value);
-        } else if (Operator.LT.toString().equals(operator)) {
-            return Predicates.lt(name, value);
-        } else if (Operator.LTEQ.toString().equals(operator)) {
-            return Predicates.lte(name, value);
-        } else if (Operator.GTEQ.toString().equals(operator)) {
-            return Predicates.gte(name, value);
-        } else if (Operator.GT.toString().equals(operator)) {
-            return Predicates.gt(name, value);
-        } else if (Operator.IN.toString().equals(operator)) {
-            return Predicates.in(name, (List<?>) value);
-        }
-        throw new NuxeoException(String.format("Audit backend search doesn't handle '%s' operator", operator));
-    }
-
-    @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
             int pageSize) {
         QueryBuilder builder = new AuditQueryBuilder();

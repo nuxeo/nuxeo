@@ -21,7 +21,6 @@ package org.nuxeo.connect.update.live;
 import java.io.IOException;
 
 import org.nuxeo.common.Environment;
-import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.connect.update.task.live.LiveInstallTask;
@@ -37,7 +36,6 @@ import org.nuxeo.connect.update.task.live.commands.UndeployConfig;
 import org.nuxeo.connect.update.task.live.commands.UpdateAndDeploy;
 import org.nuxeo.connect.update.task.update.Rollback;
 import org.nuxeo.connect.update.task.update.Update;
-import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -65,19 +63,6 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements Packag
         // override the update command to add hot reload support
         addCommand(Update.ID, UpdateAndDeploy.class);
         addCommand(Rollback.ID, RollbackAndUndeploy.class);
-    }
-
-    /**
-     * @deprecated since 9.10 - use {@code org.nuxeo.ecm.admin.NuxeoCtlManager#restart()} instead.
-     */
-    @Override
-    @Deprecated
-    public void restart() throws PackageException {
-        try {
-            NuxeoRestart.restart();
-        } catch (IOException e) {
-            throw new PackageException("Failed to restart Nuxeo", e);
-        }
     }
 
     @Override

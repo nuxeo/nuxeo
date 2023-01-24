@@ -66,9 +66,6 @@ public class AudioImporter extends AbstractFileImporter {
             // update known attributes, format is: schema, attribute, value
             docModel.setPropertyValue("file:content", (Serializable) blob);
             docModel.setPropertyValue("dc:title", title);
-
-            // now save the uploaded file as another new version
-            checkIn(docModel);
             docModel = session.saveDocument(docModel);
 
         } else {

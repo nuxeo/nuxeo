@@ -22,12 +22,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -54,13 +51,10 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporterDescript
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporter;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescriptor;
 import org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension;
-import org.nuxeo.ecm.platform.filemanager.service.extension.VersioningDescriptor;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -92,9 +86,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     /** @since 11.1 */
     public static final String UNICITY_EP = "unicity";
 
-    /** @since 11.1 */
-    public static final String VERSIONING_EP = "versioning";
-
     private static final Logger log = LogManager.getLogger(FileManagerService.class);
 
     private Map<String, FileImporter> fileImporters;
@@ -110,26 +101,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private String digestAlgorithm = "sha-256";
 
     private boolean computeDigest = false;
-
-    public static final VersioningOption DEF_VERSIONING_OPTION = VersioningOption.MINOR;
-
-    public static final boolean DEF_VERSIONING_AFTER_ADD = false;
-
-    /**
-     * @since 5.7
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Deprecated(since = "9.1")
-    private VersioningOption defaultVersioningOption = DEF_VERSIONING_OPTION;
-
-    /**
-     * @since 5.7
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Deprecated(since = "9.1")
-    private boolean versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
 
     @Override
     public void registerContribution(Object contribution, String xp, ComponentInstance component) {
@@ -155,7 +126,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         registerFolderImporters();
         registerCreationContainerListProviders();
         registerUnicity();
-        registerVersioning();
     }
 
     protected void registerFileImporters() {
@@ -201,32 +171,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         });
     }
 
-    /**
-     * @deprecated since 9.1
-     */
-    @Deprecated(since = "9.1")
-    protected void registerVersioning() {
-        getDescriptors(VERSIONING_EP).stream().map(VersioningDescriptor.class::cast).forEach(versioningDescriptor -> {
-            String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
-                    + "Nuxeo Platform. Please use versioning policy instead.";
-            DeprecationLogger.log(message, "9.1");
-            addRuntimeMessage(Level.WARNING, message);
-
-            String defver = versioningDescriptor.defaultVersioningOption;
-            if (!StringUtils.isBlank(defver)) {
-                try {
-                    defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
-                } catch (IllegalArgumentException e) {
-                    log.warn("Illegal versioning option: {}, using {} instead", defver, DEF_VERSIONING_OPTION);
-                    defaultVersioningOption = DEF_VERSIONING_OPTION;
-                }
-            }
-            if (versioningDescriptor.versionAfterAdd != null) {
-                versioningAfterAdd = versioningDescriptor.versionAfterAdd;
-            }
-        });
-    }
-
     protected String computePluginsExtensionPoint(Class<?> klass) {
         return String.format("%s-%s", PLUGINS_EP, klass.getSimpleName());
     }
@@ -252,29 +196,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     /**
-     * @deprecated since 9.1, use {@link #defaultCreateFolder(CoreSession, String, String, boolean)} instead
-     */
-    @Deprecated(since = "9.1")
-    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path) {
-        return defaultCreateFolder(documentManager, fullname, path, true);
-    }
-
-    /**
      * @since 9.1
      */
     public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
             boolean overwrite) {
         return defaultCreateFolder(documentManager, fullname, path, DEFAULT_FOLDER_TYPE_NAME, true, overwrite);
-    }
-
-    /**
-     * @deprecated since 9.1, use {@link #defaultCreateFolder(CoreSession, String, String, String, boolean, boolean)}
-     *             instead
-     */
-    @Deprecated(since = "9.1")
-    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
-            String containerTypeName, boolean checkAllowedSubTypes) {
-        return defaultCreateFolder(documentManager, fullname, path, containerTypeName, checkAllowedSubTypes, true);
     }
 
     /**
@@ -447,25 +373,4 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     public String getDigestAlgorithm() {
         return digestAlgorithm;
     }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Override
-    @Deprecated(since = "9.1")
-    public VersioningOption getVersioningOption() {
-        return defaultVersioningOption;
-    }
-
-    /**
-     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
-     *             behaviors from importers
-     */
-    @Override
-    @Deprecated(since = "9.1")
-    public boolean doVersioningAfterAdd() {
-        return versioningAfterAdd;
-    }
-
 }

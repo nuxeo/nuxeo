@@ -54,19 +54,6 @@ public class LoginPage extends AbstractPage {
     }
 
     /**
-     * Fills in the login form with the username, password and language.
-     *
-     * @param username the username
-     * @param password the password
-     * @param language value of one of the options in the language select box. For example, English (United States)
-     * @deprecated since 9.1 not used anymore, use {@link #login(String, String)} insted.
-     */
-    @Deprecated
-    public void login(String username, String password, String language) {
-        login(username, password);
-    }
-
-    /**
      * Fills in the login form with the username and password. Uses the default language.
      *
      * @param username the username

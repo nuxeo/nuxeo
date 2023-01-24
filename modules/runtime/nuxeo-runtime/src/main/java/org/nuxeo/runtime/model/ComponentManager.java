@@ -82,29 +82,6 @@ public interface ComponentManager {
     void unregister(ComponentName name);
 
     /**
-     * This method was added only to support unregistering by location which is used by some tests. Removing by location
-     * should be managed at a higher level (it is useful only for tests) and this method should be removed
-     *
-     * @param sourceId the location from where the component was deployed
-     * @return false if no component was registered from that location, true otherwise
-     * @see DefaultRuntimeContext for more on this
-     * @since 9.2
-     * @deprecated since 9.2
-     */
-    @Deprecated
-    boolean unregisterByLocation(String sourceId);
-
-    /**
-     * Given a source location tests if a component was deployed from that location <br>
-     * This method was added to support undeploying by location needed by tests. Should be removed and a test specific
-     * helper implemented to support locations
-     *
-     * @deprecated since 9.2
-     */
-    @Deprecated
-    boolean hasComponentFromLocation(String sourceId);
-
-    /**
      * Gets the component if there is one having the given name.
      *
      * @param name the component name

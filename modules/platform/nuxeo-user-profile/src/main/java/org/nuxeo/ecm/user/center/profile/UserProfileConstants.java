@@ -47,13 +47,6 @@ public class UserProfileConstants {
 
     /**
      * @since 5.6
-     * @deprecated since 9.3. No 'timezone' field on userprofile.xsd
-     */
-    @Deprecated
-    public static final String USER_PROFILE_TIMEZONE = USER_PROFILE_SCHEMA + ":timezone";
-
-    /**
-     * @since 5.6
      */
     public static final String USER_PROFILE_LOCALE = USER_PROFILE_SCHEMA + ":locale";
 }

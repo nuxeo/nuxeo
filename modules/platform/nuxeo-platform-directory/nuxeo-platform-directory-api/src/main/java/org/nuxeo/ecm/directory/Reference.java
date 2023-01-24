@@ -43,10 +43,6 @@ public interface Reference {
 
     Directory getTargetDirectory();
 
-    /**
-     * @deprecated since 9.2 (unused)
-     */
-    @Deprecated
     void setTargetDirectoryName(String targetDirectoryName);
 
     void addLinks(String sourceId, List<String> targetIds);

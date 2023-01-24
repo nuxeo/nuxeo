@@ -124,7 +124,6 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
         log.debug("getLogEntriesFor() UUID: {} and repositoryId: {}", uuid, repositoryId);
         Query query = em.createNamedQuery("LogEntry.findByDocumentAndRepository");

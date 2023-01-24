@@ -26,11 +26,6 @@ public abstract class AbstractUIDSequencer implements UIDSequencer {
     protected String name;
 
     @Override
-    public int getNext(String key) {
-        return (int) getNextLong(key);
-    }
-
-    @Override
     public String getName() {
         return name;
     }
@@ -46,10 +41,4 @@ public abstract class AbstractUIDSequencer implements UIDSequencer {
             // loop
         }
     }
-
-    @Override
-    public void initSequence(String key, int id) {
-        initSequence(key, (long) id);
-    }
-
 }

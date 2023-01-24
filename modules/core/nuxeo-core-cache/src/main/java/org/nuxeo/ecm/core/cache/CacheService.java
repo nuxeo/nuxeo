@@ -36,17 +36,6 @@ public interface CacheService {
     Cache getCache(String name);
 
     /**
-     * Programmatically registers a cache with the given characteristics.
-     *
-     * @param name the cache name
-     * @param size the maximum number of elements
-     * @param timeout the entry timeout (in minutes)
-     * @since 8.2
-     * @deprecated since 9.3, seems unused, use {@link #registerCache(String)} instead.
-     */
-    @Deprecated void registerCache(String name, int size, int timeout);
-
-    /**
      * Programmatically registers a cache with the given name, with the the size and the timeout given by the default
      * cache.
      *

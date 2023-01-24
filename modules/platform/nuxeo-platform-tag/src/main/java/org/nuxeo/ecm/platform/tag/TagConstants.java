@@ -47,24 +47,4 @@ public class TagConstants {
      */
     public static final String TAG_FACET = "NXTag";
 
-    /**
-     * @since 9.3
-     */
-    public static final String MIGRATION_ID = "tag-storage"; // also in XML
-
-    /**
-     * @since 9.3
-     */
-    public static final String MIGRATION_STATE_RELATIONS = "relations"; // also in XML
-
-    /**
-     * @since 9.3
-     */
-    public static final String MIGRATION_STATE_FACETS = "facets"; // also in XML
-
-    /**
-     * @since 9.3
-     */
-    public static final String MIGRATION_STEP_RELATIONS_TO_FACETS = "relations-to-facets"; // also in XML
-
 }

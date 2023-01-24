@@ -266,7 +266,7 @@ public class PackageListingProvider extends DefaultObject {
      */
     public boolean canDownload(DownloadablePackage pkg) {
         return pkg.getPackageState() == PackageState.REMOTE && (!pkg.hasSubscriptionRequired() //
-                || (ConnectStatusHolder.instance().isRegistred() //
+                || (ConnectStatusHolder.instance().isRegistered() //
                         && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
     }
 
@@ -289,7 +289,7 @@ public class PackageListingProvider extends DefaultObject {
      */
     public boolean registrationRequired(DownloadablePackage pkg) {
         return pkg.getPackageState() == PackageState.REMOTE && pkg.hasSubscriptionRequired()
-                && (!ConnectStatusHolder.instance().isRegistred() //
+                && (!ConnectStatusHolder.instance().isRegistered() //
                         || ConnectStatusHolder.instance().getStatus().status() != SubscriptionStatusType.OK);
     }
 

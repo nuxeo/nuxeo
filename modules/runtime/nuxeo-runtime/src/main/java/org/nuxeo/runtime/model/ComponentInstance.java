@@ -79,15 +79,6 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
     void destroy();
 
     /**
-     * Reload the component. All the extensions and registries are reloaded.
-     *
-     * @deprecated since 9.3, but in fact since 5.6, only usage in
-     *             {@link org.nuxeo.runtime.model.impl.RegistrationInfoImpl}
-     */
-    @Deprecated
-    void reload();
-
-    /**
      * Gets the list of provided services, or null if no service is provided.
      *
      * @return an array containing the service class names or null if no service is provided

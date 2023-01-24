@@ -24,7 +24,6 @@ import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -80,66 +79,6 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     public DocumentBackedFileItem(FileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
-            boolean relaxSyncRootConstraint, boolean getLockInfo) {
-        super(factory.getName(), parentItem, doc, relaxSyncRootConstraint, getLockInfo);
-        initialize(factory, doc);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) {
-        this(factory, doc, false);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
-            boolean relaxSyncRootConstraint) {
-        this(factory, doc, relaxSyncRootConstraint, true);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
-            boolean relaxSyncRootConstraint, boolean getLockInfo) {
-        super(factory.getName(), doc, relaxSyncRootConstraint, getLockInfo);
-        initialize(factory, doc);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc) {
-        this(factory, parentItem, doc, false);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
-            boolean relaxSyncRootConstraint) {
-        this(factory, parentItem, doc, relaxSyncRootConstraint, true);
-    }
-
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint, boolean getLockInfo) {
         super(factory.getName(), parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         initialize(factory, doc);
@@ -247,14 +186,6 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     /*--------------------- Protected -----------------*/
-    /**
-     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
-     */
-    @Deprecated
-    protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) {
-        initialize((FileSystemItemFactory) factory, doc);
-    }
 
     protected final void initialize(FileSystemItemFactory factory, DocumentModel doc) {
         this.factory = factory;
