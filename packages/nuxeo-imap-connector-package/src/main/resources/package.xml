@@ -5,9 +5,10 @@
     The Nuxeo IMAP Connector addon allows users to import emails from an IMAP mailbox into the Nuxeo repository.
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

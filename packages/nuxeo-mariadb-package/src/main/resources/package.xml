@@ -5,9 +5,10 @@
     <p>The Nuxeo Package to configure your server to use MariaDB.</p>
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <conflicts>
     <package>nuxeo-mssql-connector</package>
     <package>nuxeo-mysql-connector</package>

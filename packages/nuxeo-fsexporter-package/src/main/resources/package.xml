@@ -4,9 +4,10 @@
   <description>The Nuxeo File System Exporter addon enables a Nuxeo server administrator to export a chosen root structure of documents in the Nuxeo repository to a specified File System path. The export format is pluggable and two formats are currently provided: XML export and simple file export.
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

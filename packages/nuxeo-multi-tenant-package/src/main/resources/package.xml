@@ -4,9 +4,10 @@
   <description>The Nuxeo Multi-Tenant addon supports multiple domains, or tenants, that are independent of each other, with their own users and vocabulary values, as well as low-level filters on content based on tenant ID.
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

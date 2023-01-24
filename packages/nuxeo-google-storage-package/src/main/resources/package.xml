@@ -4,9 +4,10 @@
   <description>The Google Storage addon is a Nuxeo Binary Manager for Google object store. It stores files (the attached documents) in an Google bucket, with server side and client side encryption support.
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

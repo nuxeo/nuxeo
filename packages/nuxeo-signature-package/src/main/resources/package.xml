@@ -5,9 +5,10 @@
     <p>The Digital Signature addon introduces PDF signing capabilities to the Nuxeo Platform following asymmetric cryptography, PKI and the X.509 standards. This addon also provides generation of user certificates stored server-side, which are required for document signing.</p>
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

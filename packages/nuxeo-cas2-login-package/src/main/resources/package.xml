@@ -3,9 +3,10 @@
   <title>CAS2 Authentication</title>
   <description>The CAS2 Authentication enables the Central Authentication Service on your instance, allowing Single Sign On (SSO) to your users. Once they are authenticated with one of the applications linked to your CAS server, they don't need to re-authenticate on any of the other applications, including your Nuxeo instance.</description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

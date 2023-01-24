@@ -4,9 +4,10 @@
   <description>The Amazon S3 Online Storage addon is a Nuxeo Binary Manager for S3 object store. It stores files (binaries) in an Amazon S3 bucket, with server and client-side encryption support. This functionality requires a separately licensed account and subscription with AWS.
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

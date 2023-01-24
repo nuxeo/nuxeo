@@ -3,9 +3,10 @@
   <title>Template Rendering</title>
   <description>The Template Rendering addon associates a Nuxeo document with a template (Word document, Excel spreadsheet, or an HTML page) and merges document properties with the template to render the document.</description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 </package>

@@ -5,9 +5,10 @@
     <p>The Nuxeo Package to configure your server to use MySQL.</p>
   </description>
   <vendor>Nuxeo</vendor>
-  <platforms>
-    <platform>@DISTRIBUTION_NAME@-@VERSION@</platform>
-  </platforms>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
   <conflicts>
     <package>nuxeo-mariadb-connector</package>
     <package>nuxeo-mssql-connector</package>
