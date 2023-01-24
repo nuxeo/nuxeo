@@ -3917,7 +3917,7 @@
       <dependency>
         <groupId>org.opensaml</groupId>
         <artifactId>openws</artifactId>
-        <version>1.5.4</version>
+        <version>1.5.6</version>
       </dependency>
       <dependency>
         <groupId>org.owasp.esapi</groupId>
