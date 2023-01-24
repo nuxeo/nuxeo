@@ -221,5 +221,8 @@ public class TestPageProviderCurrentPage {
         var res = (List<T>) pp.getCurrentPage();
         assertEquals(sortedDocTitles.length, res.size());
         assertEquals(List.of(sortedDocTitles), res.stream().map(mapper).collect(Collectors.toList()));
+
+        // NXP-31627
+        pp.addSortInfo("dc:created", true);
     }
 }
