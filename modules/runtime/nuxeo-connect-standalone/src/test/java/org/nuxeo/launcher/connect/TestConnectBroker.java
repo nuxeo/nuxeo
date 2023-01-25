@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 package org.nuxeo.launcher.connect;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -33,12 +32,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
@@ -50,8 +46,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,7 +85,7 @@ public class TestConnectBroker {
     private Environment environment;
 
     @Inject
-    LogCaptureFeature.Result logCaptureResult;
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Inject
     protected ServletContainerFeature servletContainerFeature;
@@ -220,38 +214,40 @@ public class TestConnectBroker {
         connectBroker.pkgListAll();
 
         // THEN it shows all expected packages with "[REGISTRATION REQUIRED]" on relevant packages
-        String expectedLogs = "All packages:\n" + //
-                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
-                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
-                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
-                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
-                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
-                " addon     started\tA (id: A-1.0.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2) \n" + //
-                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
-                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tB (id: B-1.0.1) \n" + //
-                " addon  downloaded\tB (id: B-1.0.2) \n" + //
-                " addon     started\tC (id: C-1.0.0) \n" + //
-                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
-                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
-                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tJ (id: J-1.0.1) \n" + //
-                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
-                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n" + //
-                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
-                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
-                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n";
+        String expectedLogs = """
+                All packages:
+                studio     started\tstudioA (id: studioA-1.0.0)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.1)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT)\s
+                hotfix     started\thfA (id: hfA-1.0.0)\s
+                hotfix  downloaded\thfA (id: hfA-1.0.8)\s
+                hotfix  downloaded\thfB (id: hfB-1.0.0)\s
+                hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT)\s
+                 addon     started\tA (id: A-1.0.0)\s
+                 addon  downloaded\tA (id: A-1.2.0)\s
+                 addon  downloaded\tA (id: A-1.2.1-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2)\s
+                 addon  downloaded\tA (id: A-1.2.3-SNAPSHOT)\s
+                 addon     started\tB (id: B-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tB (id: B-1.0.1)\s
+                 addon  downloaded\tB (id: B-1.0.2)\s
+                 addon     started\tC (id: C-1.0.0)\s
+                 addon  downloaded\tC (id: C-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tC (id: C-1.0.2-SNAPSHOT)\s
+                 addon     started\tD (id: D-1.0.2-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.3-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.4-SNAPSHOT)\s
+                 addon     started\tG (id: G-1.0.1-SNAPSHOT)\s
+                 addon     started\tH (id: H-1.0.1-SNAPSHOT)\s
+                 addon     started\tJ (id: J-1.0.1)\s
+                 addon     started\tK (id: K-1.0.0-SNAPSHOT)\s
+                 addon  downloaded\tM (id: M-1.0.0-SNAPSHOT)\s
+                 addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]
+                 addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT)\s
+                 addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0)\s
+                 addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0)\s
+                """;
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -264,40 +260,42 @@ public class TestConnectBroker {
         connectBroker.pkgListAll();
 
         // THEN it shows all expected packages without the "[REGISTRATION REQUIRED]"
-        expectedLogs = "All packages:\n" + //
-                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
-                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
-                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
-                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
-                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
-                " addon     started\tA (id: A-1.0.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2) \n" + //
-                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
-                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tB (id: B-1.0.1) \n" + //
-                " addon  downloaded\tB (id: B-1.0.2) \n" + //
-                " addon     started\tC (id: C-1.0.0) \n" + //
-                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
-                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
-                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tJ (id: J-1.0.1) \n" + //
-                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
-                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tM (id: M-1.0.1) \n" + //
-                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
-                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
-                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
-                " addon      remote\tprivA (id: privA-1.0.1) [PRIVATE (Owner: customer1)]\n" + //
-                " addon      remote\tprivB (id: privB-1.0.0-SNAPSHOT) [PRIVATE (Owner: customer1)]\n";
+        expectedLogs = """
+                All packages:
+                studio     started\tstudioA (id: studioA-1.0.0)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.1)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT)\s
+                hotfix     started\thfA (id: hfA-1.0.0)\s
+                hotfix  downloaded\thfA (id: hfA-1.0.8)\s
+                hotfix  downloaded\thfB (id: hfB-1.0.0)\s
+                hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT)\s
+                 addon     started\tA (id: A-1.0.0)\s
+                 addon  downloaded\tA (id: A-1.2.0)\s
+                 addon  downloaded\tA (id: A-1.2.1-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2)\s
+                 addon  downloaded\tA (id: A-1.2.3-SNAPSHOT)\s
+                 addon     started\tB (id: B-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tB (id: B-1.0.1)\s
+                 addon  downloaded\tB (id: B-1.0.2)\s
+                 addon     started\tC (id: C-1.0.0)\s
+                 addon  downloaded\tC (id: C-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tC (id: C-1.0.2-SNAPSHOT)\s
+                 addon     started\tD (id: D-1.0.2-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.3-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.4-SNAPSHOT)\s
+                 addon     started\tG (id: G-1.0.1-SNAPSHOT)\s
+                 addon     started\tH (id: H-1.0.1-SNAPSHOT)\s
+                 addon     started\tJ (id: J-1.0.1)\s
+                 addon     started\tK (id: K-1.0.0-SNAPSHOT)\s
+                 addon  downloaded\tM (id: M-1.0.0-SNAPSHOT)\s
+                 addon      remote\tM (id: M-1.0.1)\s
+                 addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT)\s
+                 addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0)\s
+                 addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0)\s
+                 addon      remote\tprivA (id: privA-1.0.1) [PRIVATE (Owner: customer1)]
+                 addon      remote\tprivB (id: privB-1.0.0-SNAPSHOT) [PRIVATE (Owner: customer1)]
+                """;
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -315,39 +313,41 @@ public class TestConnectBroker {
         connectBroker.pkgListAll();
 
         // THEN it shows all expected packages with "[REGISTRATION REQUIRED]" on relevant packages
-        String expectedLogs = "All packages:\n" + //
-                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
-                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
-                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
-                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
-                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
-                " addon     started\tA (id: A-1.0.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2) \n" + //
-                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
-                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tB (id: B-1.0.1) \n" + //
-                " addon  downloaded\tB (id: B-1.0.2) \n" + //
-                " addon     started\tC (id: C-1.0.0) \n" + //
-                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
-                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
-                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tJ (id: J-1.0.1) \n" + //
-                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
-                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
-                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
-                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
-                " addon      remote\tP (id: P-1.0.1) [REGISTRATION REQUIRED]\n" + //
-                " addon      remote\tT (id: T-1.0.1) [REGISTRATION REQUIRED]\n";
+        String expectedLogs = """
+                All packages:
+                studio     started\tstudioA (id: studioA-1.0.0)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.1)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT)\s
+                hotfix     started\thfA (id: hfA-1.0.0)\s
+                hotfix  downloaded\thfA (id: hfA-1.0.8)\s
+                hotfix  downloaded\thfB (id: hfB-1.0.0)\s
+                hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT)\s
+                 addon     started\tA (id: A-1.0.0)\s
+                 addon  downloaded\tA (id: A-1.2.0)\s
+                 addon  downloaded\tA (id: A-1.2.1-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2)\s
+                 addon  downloaded\tA (id: A-1.2.3-SNAPSHOT)\s
+                 addon     started\tB (id: B-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tB (id: B-1.0.1)\s
+                 addon  downloaded\tB (id: B-1.0.2)\s
+                 addon     started\tC (id: C-1.0.0)\s
+                 addon  downloaded\tC (id: C-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tC (id: C-1.0.2-SNAPSHOT)\s
+                 addon     started\tD (id: D-1.0.2-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.3-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.4-SNAPSHOT)\s
+                 addon     started\tG (id: G-1.0.1-SNAPSHOT)\s
+                 addon     started\tH (id: H-1.0.1-SNAPSHOT)\s
+                 addon     started\tJ (id: J-1.0.1)\s
+                 addon     started\tK (id: K-1.0.0-SNAPSHOT)\s
+                 addon  downloaded\tM (id: M-1.0.0-SNAPSHOT)\s
+                 addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT)\s
+                 addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0)\s
+                 addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0)\s
+                 addon      remote\tP (id: P-1.0.1) [REGISTRATION REQUIRED]
+                 addon      remote\tT (id: T-1.0.1) [REGISTRATION REQUIRED]
+                """;
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -360,40 +360,42 @@ public class TestConnectBroker {
         connectBroker.pkgListAll();
 
         // THEN it shows all expected packages without the "[REGISTRATION REQUIRED]"
-        expectedLogs = "All packages:\n" + //
-                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
-                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
-                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
-                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
-                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
-                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
-                " addon     started\tA (id: A-1.0.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.0) \n" + //
-                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tA (id: A-1.2.2) \n" + //
-                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
-                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tB (id: B-1.0.1) \n" + //
-                " addon  downloaded\tB (id: B-1.0.2) \n" + //
-                " addon     started\tC (id: C-1.0.0) \n" + //
-                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
-                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
-                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
-                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
-                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
-                " addon     started\tJ (id: J-1.0.1) \n" + //
-                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
-                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
-                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
-                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
-                " addon      remote\tP (id: P-1.0.1) \n" + //
-                " addon      remote\tprivD (id: privD-1.0.1) [PRIVATE (Owner: customer1)]\n" + //
-                " addon      remote\tT (id: T-1.0.1) \n";
+        expectedLogs = """
+                All packages:
+                studio     started\tstudioA (id: studioA-1.0.0)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.1)\s
+                studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT)\s
+                hotfix     started\thfA (id: hfA-1.0.0)\s
+                hotfix  downloaded\thfA (id: hfA-1.0.8)\s
+                hotfix  downloaded\thfB (id: hfB-1.0.0)\s
+                hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT)\s
+                 addon     started\tA (id: A-1.0.0)\s
+                 addon  downloaded\tA (id: A-1.2.0)\s
+                 addon  downloaded\tA (id: A-1.2.1-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2-SNAPSHOT)\s
+                 addon  downloaded\tA (id: A-1.2.2)\s
+                 addon  downloaded\tA (id: A-1.2.3-SNAPSHOT)\s
+                 addon     started\tB (id: B-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tB (id: B-1.0.1)\s
+                 addon  downloaded\tB (id: B-1.0.2)\s
+                 addon     started\tC (id: C-1.0.0)\s
+                 addon  downloaded\tC (id: C-1.0.1-SNAPSHOT)\s
+                 addon  downloaded\tC (id: C-1.0.2-SNAPSHOT)\s
+                 addon     started\tD (id: D-1.0.2-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.3-SNAPSHOT)\s
+                 addon  downloaded\tD (id: D-1.0.4-SNAPSHOT)\s
+                 addon     started\tG (id: G-1.0.1-SNAPSHOT)\s
+                 addon     started\tH (id: H-1.0.1-SNAPSHOT)\s
+                 addon     started\tJ (id: J-1.0.1)\s
+                 addon     started\tK (id: K-1.0.0-SNAPSHOT)\s
+                 addon  downloaded\tM (id: M-1.0.0-SNAPSHOT)\s
+                 addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT)\s
+                 addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0)\s
+                 addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0)\s
+                 addon      remote\tP (id: P-1.0.1)\s
+                 addon      remote\tprivD (id: privD-1.0.1) [PRIVATE (Owner: customer1)]
+                 addon      remote\tT (id: T-1.0.1)\s
+                """;
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -403,58 +405,59 @@ public class TestConnectBroker {
         // GIVEN we are unregistered
 
         // WHEN trying to show packages properties
-        connectBroker.pkgShow(Arrays.asList("A-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "M-1.0.1", "unknown-package"));
+        connectBroker.pkgShow(List.of("A-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "M-1.0.1", "unknown-package"));
         connectBroker.getCommandSet().log();
 
         // THEN it shows all expected properties
-        String expectedLogs = "****************************************\n" + //
-                "Package: A-1.0.0\n" + //
-                "State: started\n" + //
-                "Version: 1.0.0\n" + //
-                "Name: A\n" + //
-                "Type: addon\n" + //
-                "Target platforms: {server-8.3,server-8.4}\n" + //
-                "Supports hot-reload: false\n" + //
-                "Title: Package A\n" + //
-                "Description: Description of A\n" + //
-                "License: LGPL\n" + //
-                "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
-                "****************************************\n" + //
-                "Package: studioA-1.0.1\n" + //
-                "State: downloaded\n" + //
-                "Version: 1.0.1\n" + //
-                "Name: studioA\n" + //
-                "Type: studio\n" + //
-                "Target platforms: {server-8.3,server-8.4}\n" + //
-                "Supports hot-reload: false\n" + //
-                "Title: Studio A\n" + //
-                "Description: Description of studioA\n" + //
-                "License: LGPL\n" + //
-                "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
-                "****************************************\n" + //
-                "Package: hfA-1.0.0\n" + //
-                "State: started\n" + //
-                "Version: 1.0.0\n" + //
-                "Name: hfA\n" + //
-                "Type: hotfix\n" + //
-                "Target platforms: {server-8.3}\n" + //
-                "Supports hot-reload: false\n" + //
-                "Title: Hot fix NXP\n" + //
-                "Description: Hot Fix for NXP\n" + //
-                "License: LGPL\n" + //
-                "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
-                "****************************************\n" + //
-                "Package: M-1.0.1\n" + //
-                "State: remote [REGISTRATION REQUIRED]\n" + //
-                "Version: 1.0.1\n" + //
-                "Name: M\n" + //
-                "Type: addon\n" + //
-                "Target platforms: {server-8.3,server-8.4}\n" + //
-                "Supports hot-reload: false\n" + //
-                "Title: Package M\n" + //
-                "Description: description of M\n" + //
-                "****************************************\n" + //
-                "\tCould not find a remote or local (relative to current directory or to NUXEO_HOME) package with name or ID unknown-package"; //
+        String expectedLogs = """
+                ****************************************
+                Package: A-1.0.0
+                State: started
+                Version: 1.0.0
+                Name: A
+                Type: addon
+                Target platforms: {server-8.3,server-8.4}
+                Supports hot-reload: false
+                Title: Package A
+                Description: Description of A
+                License: LGPL
+                License URL: http://www.gnu.org/licenses/lgpl.html
+                ****************************************
+                Package: studioA-1.0.1
+                State: downloaded
+                Version: 1.0.1
+                Name: studioA
+                Type: studio
+                Target platforms: {server-8.3,server-8.4}
+                Supports hot-reload: false
+                Title: Studio A
+                Description: Description of studioA
+                License: LGPL
+                License URL: http://www.gnu.org/licenses/lgpl.html
+                ****************************************
+                Package: hfA-1.0.0
+                State: started
+                Version: 1.0.0
+                Name: hfA
+                Type: hotfix
+                Target platforms: {server-8.3}
+                Supports hot-reload: false
+                Title: Hot fix NXP
+                Description: Hot Fix for NXP
+                License: LGPL
+                License URL: http://www.gnu.org/licenses/lgpl.html
+                ****************************************
+                Package: M-1.0.1
+                State: remote [REGISTRATION REQUIRED]
+                Version: 1.0.1
+                Name: M
+                Type: addon
+                Target platforms: {server-8.3,server-8.4}
+                Supports hot-reload: false
+                Title: Package M
+                Description: description of M
+                ****************************************
+                \tCould not find a remote or local (relative to current directory or to NUXEO_HOME) package with name or ID unknown-package""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -464,54 +467,56 @@ public class TestConnectBroker {
 
         // WHEN trying to show packages properties
         connectBroker.refreshCache();
-        connectBroker.pkgShow(Arrays.asList("privA-1.0.1", "M-1.0.1"));
+        connectBroker.pkgShow(List.of("privA-1.0.1", "M-1.0.1"));
 
         // THEN it shows all expected properties
-        expectedLogs = "****************************************\n" + //
-                "Package: privA-1.0.1\n" + //
-                "State: remote [PRIVATE (Owner: customer1)]\n" + //
-                "Version: 1.0.1\n" + //
-                "Name: privA\n" + //
-                "Type: addon\n" + //
-                "Target platforms: {server-8.3,server-8.4}\n" + //
-                "Supports hot-reload: false\n" + //
-                "Title: Package privA\n" + //
-                "Description: description of privA\n" + //
-                "****************************************\n" + //
-                "Package: M-1.0.1\n" + //
-                "State: remote \n" + //
-                "Version: 1.0.1\n" + //
-                "Name: M\n" + //
-                "Type: addon\n" + //
-                "Target platforms: {server-8.3,server-8.4}\n" + //
-                "Supports hot-reload: false\n" + //
-                "Title: Package M\n" + //
-                "Description: description of M\n" + //
-                "****************************************"; //
+        expectedLogs = """
+                ****************************************
+                Package: privA-1.0.1
+                State: remote [PRIVATE (Owner: customer1)]
+                Version: 1.0.1
+                Name: privA
+                Type: addon
+                Target platforms: {server-8.3,server-8.4}
+                Supports hot-reload: false
+                Title: Package privA
+                Description: description of privA
+                ****************************************
+                Package: M-1.0.1
+                State: remote\s
+                Version: 1.0.1
+                Name: M
+                Type: addon
+                Target platforms: {server-8.3,server-8.4}
+                Supports hot-reload: false
+                Title: Package M
+                Description: description of M
+                ****************************************""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testDownloadUnknownPackage() throws Exception {
+    public void testDownloadUnknownPackage() {
         // GIVEN a non existing package
         checkPackagesState(null, "unknown-package");
 
         // WHEN trying to download it
-        boolean isSuccessful = connectBroker.downloadPackages(Arrays.asList("unknown-package"));
+        boolean isSuccessful = connectBroker.downloadPackages(new ArrayList<>(List.of("unknown-package")));
         assertThat(isSuccessful).isFalse();
 
         // THEN it fails and the package is still unknown
         checkPackagesState(null, "unknown-package");
         connectBroker.getCommandSet().log();
-        String expectedLogs = "Downloading [unknown-package]...\n" //
-                + "\tDownload failed (not found)."; //
+        String expectedLogs = """
+                Downloading [unknown-package]...
+                \tDownload failed (not found).""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testDownloadSubscriptionRequiredPackage() throws Exception {
+    public void testDownloadSubscriptionRequiredPackage() {
         // GIVEN a remote package with subscription required
         checkPackagesState(PackageState.REMOTE, "M-1.0.1");
 
@@ -522,8 +527,9 @@ public class TestConnectBroker {
         // THEN it fails and the package is still remote
         checkPackagesState(PackageState.REMOTE, "M-1.0.1");
         connectBroker.getCommandSet().log();
-        String expectedLogs = "Downloading [M-1.0.1]...\n" //
-                + "\tRegistration required."; //
+        String expectedLogs = """
+                Downloading [M-1.0.1]...
+                \tRegistration required.""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -570,7 +576,7 @@ public class TestConnectBroker {
 
         // When handling the install request
         try {
-            connectBroker.pkgRequest(null, asList(pkgA, pkgB), null, null, true, false);
+            connectBroker.pkgRequest(null, List.of(pkgA, pkgB), null, null, true, false);
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -615,7 +621,7 @@ public class TestConnectBroker {
 
         // When handling the install request
         try {
-            connectBroker.pkgInstall(asList("NXP-24507-A-1.0.0", "B", "C"), false);
+            connectBroker.pkgInstall(List.of("NXP-24507-A-1.0.0", "B", "C"), false);
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -625,7 +631,7 @@ public class TestConnectBroker {
         checkPackagesState(PackageState.STARTED, "NXP-24507-A-1.0.0");
         // And a file is created for pending changes
         Path pending = connectBroker.getPendingFile();
-        assertThat(pending).hasContent("install B\n" + "install C\n");
+        assertThat(pending).hasContent("install B\ninstall C\n");
     }
 
     @Test
@@ -658,7 +664,7 @@ public class TestConnectBroker {
 
         // When handling the uninstall request
         try {
-            connectBroker.pkgUninstall(asList(pkgA, pkgB));
+            connectBroker.pkgUninstall(List.of(pkgA, pkgB));
             fail();
         } catch (LauncherRestartException e) {
             // Then restarting launcher is required
@@ -676,7 +682,7 @@ public class TestConnectBroker {
         assertThat(path).doesNotExist();
 
         // When persist new pending commands
-        asList("L1", "L2").forEach(connectBroker::persistCommand);
+        List.of("L1", "L2").forEach(connectBroker::persistCommand);
 
         // Then the file is created: new commands are present
         assertThat(Files.readAllLines(path)).containsExactly("L1", "L2");
@@ -686,10 +692,10 @@ public class TestConnectBroker {
     public void testPersistPendingCommand_appendExistingFile() throws Exception {
         // Given an existing path for pending commands
         Path path = connectBroker.getPendingFile();
-        Files.write(path, asList("L1", "L2"));
+        Files.write(path, List.of("L1", "L2"));
 
         // When persist new pending commands
-        asList("L3", "L4").forEach(connectBroker::persistCommand);
+        List.of("L3", "L4").forEach(connectBroker::persistCommand);
 
         // Then the file is created: both old and new commands are present
         assertThat(Files.readAllLines(path)).containsExactly("L1", "L2", "L3", "L4");
@@ -699,7 +705,7 @@ public class TestConnectBroker {
     public void testExecutePending_resumeCommands() throws Exception {
         // Given an exiting path for pending commands
         Path path = connectBroker.getPendingFile();
-        Files.write(path, asList("install A-1.2.0", "install B-1.0.1"));
+        Files.write(path, List.of("install A-1.2.0", "install B-1.0.1"));
 
         // When executing the pending changes
         connectBroker.executePending(path.toFile(), true, true, false);
@@ -715,7 +721,7 @@ public class TestConnectBroker {
         String pkgA = "NXP-24507-A-1.0.0";
         String pkgB = "NXP-24507-B-1.0.0";
         Path path = connectBroker.getPendingFile();
-        Files.write(path, asList("install " + pkgA, "install " + pkgB));
+        Files.write(path, List.of("install " + pkgA, "install " + pkgB));
 
         // When executing the pending changes
         try {
@@ -740,7 +746,7 @@ public class TestConnectBroker {
     }
 
     @Test
-    public void testIsRemotePackageId() throws Exception {
+    public void testIsRemotePackageId() {
         assertThat(connectBroker.isRemotePackageId("A-1.0.0")).isTrue();
         assertThat(connectBroker.isRemotePackageId("B-1.0.1-SNAPSHOT")).isTrue();
         assertThat(connectBroker.isRemotePackageId("studioA-1.0.0")).isTrue();
@@ -762,23 +768,23 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // B-1.0.2 is not available on platform version server-8.3
-        assertThat(connectBroker.pkgRequest(null, asList("A-1.2.0", "B-1.0.2"), null, null, true, false)).isFalse();
+        assertThat(connectBroker.pkgRequest(null, List.of("A-1.2.0", "B-1.0.2"), null, null, true, false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -791,89 +797,92 @@ public class TestConnectBroker {
         connectBroker.setRelax("true");
         // restriction on target platform must be ignored and B-1.0.2 must be installed before A-1.2.0 because of
         // optional dependencies
-        assertThat(connectBroker.pkgRequest(null, asList("A-1.2.0", "B-1.0.2"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, List.of("A-1.2.0", "B-1.0.2"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.2.0", "B-1.0.2", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.2.0", "B-1.0.2", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT",
                         "B-1.0.1", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "Relax restriction to target platform server-8.3 because of package(s) B-1.0.2\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (2):        B-1.0.2/A-1.2.0\n" //
-                + "  Unchanged packages (8):        hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to upgrade (2):       A:1.0.0, B:1.0.1-SNAPSHOT\n" //
-                + "  Local packages to install (2): A:1.2.0, B:1.0.2\n" //
-                + "\n" //
-                + "Uninstalling B-1.0.1-SNAPSHOT\n" //
-                + "Uninstalling A-1.0.0\n" //
-                + "Installing B-1.0.2\n" //
-                + "Installing A-1.2.0";
+        expectedLogs = """
+                Relax restriction to target platform server-8.3 because of package(s) B-1.0.2
+
+                Dependency resolution:
+                  Installation order (2):        B-1.0.2/A-1.2.0
+                  Unchanged packages (8):        hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to upgrade (2):       A:1.0.0, B:1.0.1-SNAPSHOT
+                  Local packages to install (2): A:1.2.0, B:1.0.2
+
+                Uninstalling B-1.0.1-SNAPSHOT
+                Uninstalling A-1.0.0
+                Installing B-1.0.2
+                Installing A-1.2.0""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
         // SNAPSHOTS must be replaced in local cache before installation and D-1.0.4-SNAPSHOT must be installed after
         // C-1.0.2-SNAPSHOT because of optional dependencies
-        assertThat(connectBroker.pkgRequest(null, asList("A-1.2.2-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+        assertThat(connectBroker.pkgRequest(null, List.of("A-1.2.2-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.2-SNAPSHOT, B-1.0.2, C-1.0.2-SNAPSHOT, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.2.2-SNAPSHOT", "B-1.0.2",
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.2.2-SNAPSHOT", "B-1.0.2",
                 "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.0", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT", "B-1.0.1",
                         "C-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [A-1.2.2-SNAPSHOT, C-1.0.2-SNAPSHOT, D-1.0.4-SNAPSHOT]\n" //
-                + "Download of 'A-1.2.2-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [A-1.2.2-SNAPSHOT]...\n" //
-                + "Replacement of A-1.2.2-SNAPSHOT in local cache...\n" //
-                + "Added A-1.2.2-SNAPSHOT\n" //
-                + "Download of 'C-1.0.2-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [C-1.0.2-SNAPSHOT]...\n" //
-                + "Replacement of C-1.0.2-SNAPSHOT in local cache...\n" //
-                + "Added C-1.0.2-SNAPSHOT\n" //
-                + "Download of 'D-1.0.4-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [D-1.0.4-SNAPSHOT]...\n" //
-                + "Replacement of D-1.0.4-SNAPSHOT in local cache...\n" //
-                + "Added D-1.0.4-SNAPSHOT\n" //
-                + "Relax restriction to target platform server-8.3 because of package(s) A-1.2.2-SNAPSHOT, C-1.0.2-SNAPSHOT, D-1.0.4-SNAPSHOT\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (3):        A-1.2.2-SNAPSHOT/D-1.0.4-SNAPSHOT/C-1.0.2-SNAPSHOT\n" //
-                + "  Unchanged packages (7):        B:1.0.2, hfA:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to upgrade (3):       A:1.2.0, C:1.0.0, D:1.0.2-SNAPSHOT\n" //
-                + "  Local packages to install (3): A:1.2.2-SNAPSHOT, C:1.0.2-SNAPSHOT, D:1.0.4-SNAPSHOT\n" //
-                + "\n" //
-                + "Uninstalling C-1.0.0\n" //
-                + "Uninstalling D-1.0.2-SNAPSHOT\n" //
-                + "Uninstalling A-1.2.0\n" //
-                + "Installing A-1.2.2-SNAPSHOT\n" //
-                + "Installing D-1.0.4-SNAPSHOT\n" //
-                + "Installing C-1.0.2-SNAPSHOT";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [A-1.2.2-SNAPSHOT, C-1.0.2-SNAPSHOT, D-1.0.4-SNAPSHOT]
+                Download of 'A-1.2.2-SNAPSHOT' will replace the one already in local cache.
+                Downloading [A-1.2.2-SNAPSHOT]...
+                Replacement of A-1.2.2-SNAPSHOT in local cache...
+                Added A-1.2.2-SNAPSHOT
+                Download of 'C-1.0.2-SNAPSHOT' will replace the one already in local cache.
+                Downloading [C-1.0.2-SNAPSHOT]...
+                Replacement of C-1.0.2-SNAPSHOT in local cache...
+                Added C-1.0.2-SNAPSHOT
+                Download of 'D-1.0.4-SNAPSHOT' will replace the one already in local cache.
+                Downloading [D-1.0.4-SNAPSHOT]...
+                Replacement of D-1.0.4-SNAPSHOT in local cache...
+                Added D-1.0.4-SNAPSHOT
+                Relax restriction to target platform server-8.3 because of package(s) A-1.2.2-SNAPSHOT, C-1.0.2-SNAPSHOT, D-1.0.4-SNAPSHOT
+
+                Dependency resolution:
+                  Installation order (3):        A-1.2.2-SNAPSHOT/D-1.0.4-SNAPSHOT/C-1.0.2-SNAPSHOT
+                  Unchanged packages (7):        B:1.0.2, hfA:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to upgrade (3):       A:1.2.0, C:1.0.0, D:1.0.2-SNAPSHOT
+                  Local packages to install (3): A:1.2.2-SNAPSHOT, C:1.0.2-SNAPSHOT, D:1.0.4-SNAPSHOT
+
+                Uninstalling C-1.0.0
+                Uninstalling D-1.0.2-SNAPSHOT
+                Uninstalling A-1.2.0
+                Installing A-1.2.2-SNAPSHOT
+                Installing D-1.0.4-SNAPSHOT
+                Installing C-1.0.2-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
     private String getExpectedLogsForOnePkgAndItsDep(String pkg, String pkgVersion, String dep, String depVersion) {
-        return String.format("\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (2):        %s-%s/%s-%s\n" //
-                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to download (2):      %s:%s, %s:%s\n" //
-                + "\n" //
-                + "Downloading [%s-%s, %s-%s]...\n" //
-                + "Aborting packages change request", dep, depVersion, pkg, pkgVersion, pkg, pkgVersion, dep,
-                depVersion, pkg, pkgVersion, dep, depVersion);
+        return """
+
+                Dependency resolution:
+                  Installation order (2):        %s-%s/%s-%s
+                  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to download (2):      %s:%s, %s:%s
+
+                Downloading [%s-%s, %s-%s]...
+                Aborting packages change request""".formatted(
+                dep, depVersion, pkg, pkgVersion, pkg, pkgVersion, dep, depVersion, pkg, pkgVersion, dep, depVersion);
     }
 
     @Test
@@ -1002,10 +1011,10 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1015,10 +1024,10 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1033,10 +1042,10 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1053,25 +1062,25 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // F-1.0.0-SNAPSHOT is not available on platform version server-8.3
         assertThat(connectBroker.pkgRequest(null,
-                asList(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null, null,
+                List.of(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null, null,
                 true, false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT", "E-1.0.1",
                         "F-1.0.0-SNAPSHOT"),
@@ -1082,40 +1091,43 @@ public class TestConnectBroker {
         assertThat(new File(TEST_LOCAL_ONLY_PATH + "/E-1.0.1").exists()).isTrue();
 
         // check logs
-        String expectedLogs = "Added " + TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip\n" //
-                + "Added " + TEST_LOCAL_ONLY_PATH + "/E-1.0.1\n" //
-                + "org.nuxeo.connect.update.PackageException: Package(s) F-1.0.0-SNAPSHOT not available on platform version server-8.3 (relax is not allowed)";
+        String expectedLogs = """
+                Added %s/F-1.0.0-SNAPSHOT.zip
+                Added %s/E-1.0.1
+                org.nuxeo.connect.update.PackageException: Package(s) F-1.0.0-SNAPSHOT not available on platform version server-8.3 (relax is not allowed)""".formatted(
+                TEST_LOCAL_ONLY_PATH, TEST_LOCAL_ONLY_PATH);
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
         connectBroker.setRelax("true");
         assertThat(connectBroker.pkgRequest(null,
-                asList(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null, null,
+                List.of(TEST_LOCAL_ONLY_PATH + "/F-1.0.0-SNAPSHOT.zip", TEST_LOCAL_ONLY_PATH + "/E-1.0.1"), null, null,
                 true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT, E-1.0.1,
         // F-1.0.0-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "E-1.0.1", "F-1.0.0-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "E-1.0.1", "F-1.0.0-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/F-1.0.0-SNAPSHOT.zip]\n" //
-                + "Replacement of F-1.0.0-SNAPSHOT in local cache...\n" //
-                + "Added src/test/resources/packages/store/local-only/F-1.0.0-SNAPSHOT.zip\n" //
-                + "Relax restriction to target platform server-8.3 because of package(s) F-1.0.0-SNAPSHOT\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (2):        E-1.0.1/F-1.0.0-SNAPSHOT\n" //
-                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (2): E:1.0.1, F:1.0.0-SNAPSHOT\n" //
-                + "\n" //
-                + "Installing E-1.0.1\n" //
-                + "Installing F-1.0.0-SNAPSHOT";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/F-1.0.0-SNAPSHOT.zip]
+                Replacement of F-1.0.0-SNAPSHOT in local cache...
+                Added src/test/resources/packages/store/local-only/F-1.0.0-SNAPSHOT.zip
+                Relax restriction to target platform server-8.3 because of package(s) F-1.0.0-SNAPSHOT
+
+                Dependency resolution:
+                  Installation order (2):        E-1.0.1/F-1.0.0-SNAPSHOT
+                  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Local packages to install (2): E:1.0.1, F:1.0.0-SNAPSHOT
+
+                Installing E-1.0.1
+                Installing F-1.0.0-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1132,25 +1144,25 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // Q-1.0.0 is not available on platform version server-11.2.3
-        assertThat(connectBroker.pkgRequest(null, asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip",
+        assertThat(connectBroker.pkgRequest(null, List.of(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip",
                 TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT", TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip"), null, null, true,
                 false)).isFalse();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT", "Q-1.0.0",
                         "R-1.0.2-SNAPSHOT"),
@@ -1162,42 +1174,45 @@ public class TestConnectBroker {
         assertThat(new File(TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip").exists()).isTrue();
 
         // check logs
-        String expectedLogs = "Added " + TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip\n" //
-                + "Added " + TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT\n" //
-                + "Added " + TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip\n" //
-                + "org.nuxeo.connect.update.PackageException: Package(s) Q-1.0.0, R-1.0.2-SNAPSHOT not available on platform version server-11.2.3 (relax is not allowed)";
+        String expectedLogs = """
+                Added %s/Q-1.0.0.zip
+                Added %s/R-1.0.2-SNAPSHOT
+                Added %s/S-1.0.0.zip
+                org.nuxeo.connect.update.PackageException: Package(s) Q-1.0.0, R-1.0.2-SNAPSHOT not available on platform version server-11.2.3 (relax is not allowed)""".formatted(
+                TEST_LOCAL_ONLY_PATH, TEST_LOCAL_ONLY_PATH, TEST_LOCAL_ONLY_PATH);
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
         connectBroker.setRelax("true");
-        assertThat(connectBroker.pkgRequest(null, asList(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip",
+        assertThat(connectBroker.pkgRequest(null, List.of(TEST_LOCAL_ONLY_PATH + "/Q-1.0.0.zip",
                 TEST_LOCAL_ONLY_PATH + "/R-1.0.2-SNAPSHOT", TEST_LOCAL_ONLY_PATH + "/S-1.0.0.zip"), null, null, true,
                 false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.0, B-1.0.2, C-1.0.0, D-1.0.2-SNAPSHOT, E-1.0.1,
         // F-1.0.0-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "Q-1.0.0", "R-1.0.2-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "Q-1.0.0", "R-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT]\n" //
-                + "Replacement of R-1.0.2-SNAPSHOT in local cache...\n" //
-                + "Added src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT\n" //
-                + "Relax restriction to target platform server-11.2.3 because of package(s) Q-1.0.0, R-1.0.2-SNAPSHOT\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (3):        Q-1.0.0/R-1.0.2-SNAPSHOT/S-1.0.0\n" //
-                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (3): Q:1.0.0, R:1.0.2-SNAPSHOT, S:1.0.0\n" //
-                + "\n" //
-                + "Installing Q-1.0.0\n" //
-                + "Installing R-1.0.2-SNAPSHOT\n" //
-                + "Installing S-1.0.0";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT]
+                Replacement of R-1.0.2-SNAPSHOT in local cache...
+                Added src/test/resources/packages/store/local-only/R-1.0.2-SNAPSHOT
+                Relax restriction to target platform server-11.2.3 because of package(s) Q-1.0.0, R-1.0.2-SNAPSHOT
+
+                Dependency resolution:
+                  Installation order (3):        Q-1.0.0/R-1.0.2-SNAPSHOT/S-1.0.0
+                  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Local packages to install (3): Q:1.0.0, R:1.0.2-SNAPSHOT, S:1.0.0
+
+                Installing Q-1.0.0
+                Installing R-1.0.2-SNAPSHOT
+                Installing S-1.0.0""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1208,73 +1223,76 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // A-1.0.0 and C-1.0.0 are releases and are already installed
-        assertThat(connectBroker.pkgRequest(null, asList("A-1.0.0", "C"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, List.of("A-1.0.0", "C"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\n" //
-                + "Dependency resolution:\n" //
-                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n";
+        String expectedLogs = """
+
+                Dependency resolution:
+                  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                """;
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
         // B-1.0.1-SNAPSHOT and D-1.0.2-SNAPSHOT must be uninstalled then reinstalled as they are SNAPSHOTS
         // C-1.0.0 must be reinstalled as it has an optional dependency on D
-        assertThat(connectBroker.pkgRequest(null, asList("B-1.0.1-SNAPSHOT", "D"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, List.of("B-1.0.1-SNAPSHOT", "D"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [D-1.0.2-SNAPSHOT, B-1.0.1-SNAPSHOT]\n" //
-                + "Uninstalling D-1.0.2-SNAPSHOT\n" //
-                + "Uninstalling B-1.0.1-SNAPSHOT\n" //
-                + "Download of 'D-1.0.2-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [D-1.0.2-SNAPSHOT]...\n" //
-                + "Replacement of D-1.0.2-SNAPSHOT in local cache...\n" //
-                + "Added D-1.0.2-SNAPSHOT\n" //
-                + "Download of 'B-1.0.1-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [B-1.0.1-SNAPSHOT]...\n" //
-                + "Replacement of B-1.0.1-SNAPSHOT in local cache...\n" //
-                + "Added B-1.0.1-SNAPSHOT\n" //
-                + "\n"
-                + "As package 'C-1.0.0' has an optional dependency on package(s) [D-1.0.2-SNAPSHOT] currently being installed, it will be reinstalled.\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (3):        B-1.0.1-SNAPSHOT/D-1.0.2-SNAPSHOT/C-1.0.0\n" //
-                + "  Uninstallation order (1):      C-1.0.0\n" //
-                + "  Unchanged packages (7):        A:1.0.0, hfA:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (3): B:1.0.1-SNAPSHOT, C:1.0.0, D:1.0.2-SNAPSHOT\n" //
-                + "  Local packages to remove (1):  C:1.0.0\n" //
-                + "\n" //
-                + "Uninstalling C-1.0.0\n" //
-                + "Installing B-1.0.1-SNAPSHOT\n" //
-                + "Installing D-1.0.2-SNAPSHOT\n" //
-                + "Installing C-1.0.0";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [D-1.0.2-SNAPSHOT, B-1.0.1-SNAPSHOT]
+                Uninstalling D-1.0.2-SNAPSHOT
+                Uninstalling B-1.0.1-SNAPSHOT
+                Download of 'D-1.0.2-SNAPSHOT' will replace the one already in local cache.
+                Downloading [D-1.0.2-SNAPSHOT]...
+                Replacement of D-1.0.2-SNAPSHOT in local cache...
+                Added D-1.0.2-SNAPSHOT
+                Download of 'B-1.0.1-SNAPSHOT' will replace the one already in local cache.
+                Downloading [B-1.0.1-SNAPSHOT]...
+                Replacement of B-1.0.1-SNAPSHOT in local cache...
+                Added B-1.0.1-SNAPSHOT
+
+                As package 'C-1.0.0' has an optional dependency on package(s) [D-1.0.2-SNAPSHOT] currently being installed, it will be reinstalled.
+                Dependency resolution:
+                  Installation order (3):        B-1.0.1-SNAPSHOT/D-1.0.2-SNAPSHOT/C-1.0.0
+                  Uninstallation order (1):      C-1.0.0
+                  Unchanged packages (7):        A:1.0.0, hfA:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Local packages to install (3): B:1.0.1-SNAPSHOT, C:1.0.0, D:1.0.2-SNAPSHOT
+                  Local packages to remove (1):  C:1.0.0
+
+                Uninstalling C-1.0.0
+                Installing B-1.0.1-SNAPSHOT
+                Installing D-1.0.2-SNAPSHOT
+                Installing C-1.0.0""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1285,10 +1303,10 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1299,18 +1317,20 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\n" //
-                + "Dependency resolution:\n" //
-                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n";
+        String expectedLogs = """
+
+                Dependency resolution:
+                  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                """;
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -1321,26 +1341,27 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/B-1.0.1-SNAPSHOT.zip]\n" //
-                + "Uninstalling B-1.0.1-SNAPSHOT\n" //
-                + "Replacement of B-1.0.1-SNAPSHOT in local cache...\n" //
-                + "Added src/test/resources/packages/store/B-1.0.1-SNAPSHOT.zip\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (1):        B-1.0.1-SNAPSHOT\n" //
-                + "  Unchanged packages (9):        A:1.0.0, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (1): B:1.0.1-SNAPSHOT\n" //
-                + "\n" //
-                + "Installing B-1.0.1-SNAPSHOT";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/B-1.0.1-SNAPSHOT.zip]
+                Uninstalling B-1.0.1-SNAPSHOT
+                Replacement of B-1.0.1-SNAPSHOT in local cache...
+                Added src/test/resources/packages/store/B-1.0.1-SNAPSHOT.zip
+
+                Dependency resolution:
+                  Installation order (1):        B-1.0.1-SNAPSHOT
+                  Unchanged packages (9):        A:1.0.0, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Local packages to install (1): B:1.0.1-SNAPSHOT
+
+                Installing B-1.0.1-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -1350,26 +1371,27 @@ public class TestConnectBroker {
                 null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, K-1.0.0-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/K-1.0.0-SNAPSHOT.zip]\n" //
-                + "Uninstalling K-1.0.0-SNAPSHOT\n" //
-                + "Replacement of K-1.0.0-SNAPSHOT in local cache...\n" //
-                + "Added src/test/resources/packages/store/local-only/K-1.0.0-SNAPSHOT.zip\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (1):        K-1.0.0-SNAPSHOT\n" //
-                + "  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n" //
-                + "  Local packages to install (1): K:1.0.0-SNAPSHOT\n" //
-                + "\n" //
-                + "Installing K-1.0.0-SNAPSHOT";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [src/test/resources/packages/store/local-only/K-1.0.0-SNAPSHOT.zip]
+                Uninstalling K-1.0.0-SNAPSHOT
+                Replacement of K-1.0.0-SNAPSHOT in local cache...
+                Added src/test/resources/packages/store/local-only/K-1.0.0-SNAPSHOT.zip
+
+                Dependency resolution:
+                  Installation order (1):        K-1.0.0-SNAPSHOT
+                  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1
+                  Local packages to install (1): K:1.0.0-SNAPSHOT
+
+                Installing K-1.0.0-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -1378,25 +1400,26 @@ public class TestConnectBroker {
         assertThat(connectBroker.pkgRequest(null, singletonList("K"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, K-1.0.0-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "K-1.0.0-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [K-1.0.0-SNAPSHOT]\n" //
-                + "Uninstalling K-1.0.0-SNAPSHOT\n" //
-                + "The SNAPSHOT package K-1.0.0-SNAPSHOT is not available remotely, local cache will be used.\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (1):        K-1.0.0-SNAPSHOT\n" //
-                + "  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n" //
-                + "  Local packages to install (1): K:1.0.0-SNAPSHOT\n" //
-                + "\n" //
-                + "Installing K-1.0.0-SNAPSHOT";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [K-1.0.0-SNAPSHOT]
+                Uninstalling K-1.0.0-SNAPSHOT
+                The SNAPSHOT package K-1.0.0-SNAPSHOT is not available remotely, local cache will be used.
+
+                Dependency resolution:
+                  Installation order (1):        K-1.0.0-SNAPSHOT
+                  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1
+                  Local packages to install (1): K:1.0.0-SNAPSHOT
+
+                Installing K-1.0.0-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1412,10 +1435,11 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1426,45 +1450,47 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.2, B-1.0.2, C-1.0.0, D-1.0.4-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.2", "B-1.0.2", "C-1.0.0",
-                "D-1.0.4-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.2", "B-1.0.2",
+                "C-1.0.0", "D-1.0.4-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                List.of("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.0", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT",
                         "B-1.0.1", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "Relax restriction to target platform nomatching-1.0 because of package(s) studioA, hfA, A, B, C, D, G, H, J, K\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (7):        A-1.2.2/B-1.0.2/D-1.0.4-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT\n" //
-                + "  Unchanged packages (5):        C:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to upgrade (5):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0\n" //
-                + "  Local packages to install (5): A:1.2.2, B:1.0.2, hfA:1.0.8, D:1.0.4-SNAPSHOT, studioA:1.0.2-SNAPSHOT\n" //
-                + "\n" //
-                + "Uninstalling studioA-1.0.0\n" //
-                + "Uninstalling hfA-1.0.0\n" //
-                + "Uninstalling D-1.0.2-SNAPSHOT\n" //
-                + "Uninstalling B-1.0.1-SNAPSHOT\n" //
-                + "Uninstalling A-1.0.0\n" //
-                + "Installing A-1.2.2\n" //
-                + "Installing B-1.0.2\n" //
-                + "Installing D-1.0.4-SNAPSHOT\n" //
-                + "Updating package G-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling G-1.0.1-SNAPSHOT\n" //
-                + "Removed G-1.0.1-SNAPSHOT\n" //
-                + "Downloading [G-1.0.1-SNAPSHOT]...\n" //
-                + "Added G-1.0.1-SNAPSHOT\n" //
-                + "Installing G-1.0.1-SNAPSHOT\n" //
-                + "Updating package H-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling H-1.0.1-SNAPSHOT\n" //
-                + "Removed H-1.0.1-SNAPSHOT\n" //
-                + "Downloading [H-1.0.1-SNAPSHOT]...\n" //
-                + "Added H-1.0.1-SNAPSHOT\n" //
-                + "Installing H-1.0.1-SNAPSHOT\n" //
-                + "Installing hfA-1.0.8\n" //
-                + "Installing studioA-1.0.2-SNAPSHOT";
+        String expectedLogs = """
+                Relax restriction to target platform nomatching-1.0 because of package(s) studioA, hfA, A, B, C, D, G, H, J, K
+
+                Dependency resolution:
+                  Installation order (7):        A-1.2.2/B-1.0.2/D-1.0.4-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT
+                  Unchanged packages (5):        C:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to upgrade (5):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0
+                  Local packages to install (5): A:1.2.2, B:1.0.2, hfA:1.0.8, D:1.0.4-SNAPSHOT, studioA:1.0.2-SNAPSHOT
+
+                Uninstalling studioA-1.0.0
+                Uninstalling hfA-1.0.0
+                Uninstalling D-1.0.2-SNAPSHOT
+                Uninstalling B-1.0.1-SNAPSHOT
+                Uninstalling A-1.0.0
+                Installing A-1.2.2
+                Installing B-1.0.2
+                Installing D-1.0.4-SNAPSHOT
+                Updating package G-1.0.1-SNAPSHOT...
+                Uninstalling G-1.0.1-SNAPSHOT
+                Removed G-1.0.1-SNAPSHOT
+                Downloading [G-1.0.1-SNAPSHOT]...
+                Added G-1.0.1-SNAPSHOT
+                Installing G-1.0.1-SNAPSHOT
+                Updating package H-1.0.1-SNAPSHOT...
+                Uninstalling H-1.0.1-SNAPSHOT
+                Removed H-1.0.1-SNAPSHOT
+                Downloading [H-1.0.1-SNAPSHOT]...
+                Added H-1.0.1-SNAPSHOT
+                Installing H-1.0.1-SNAPSHOT
+                Installing hfA-1.0.8
+                Installing studioA-1.0.2-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1479,10 +1505,11 @@ public class TestConnectBroker {
         connectBroker.setRelax("true");
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1493,47 +1520,49 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.3-SNAPSHOT, B-1.0.2, C-1.0.2-SNAPSHOT, D-1.0.4-SNAPSHOT]
         checkPackagesState(
-                connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.3-SNAPSHOT", "B-1.0.2",
+                connectBroker, List.of("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.3-SNAPSHOT", "B-1.0.2",
                         "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                List.of("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.0", "B-1.0.1-SNAPSHOT", "B-1.0.1",
                         "C-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "Relax restriction to target platform nomatching-1.0 because of package(s) studioA, hfA, A, B, C, D, G, H, J, K\n" //
-                + "\nDependency resolution:\n" //
-                + "  Installation order (8):        A-1.2.3-SNAPSHOT/B-1.0.2/D-1.0.4-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT/C-1.0.2-SNAPSHOT\n" //
-                + "  Unchanged packages (4):        G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to upgrade (6):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0\n" //
-                + "  Local packages to install (6): A:1.2.3-SNAPSHOT, B:1.0.2, hfA:1.0.8, C:1.0.2-SNAPSHOT, D:1.0.4-SNAPSHOT, studioA:1.0.2-SNAPSHOT\n" //
-                + "\n" //
-                + "Uninstalling C-1.0.0\n" //
-                + "Uninstalling studioA-1.0.0\n" //
-                + "Uninstalling hfA-1.0.0\n" //
-                + "Uninstalling D-1.0.2-SNAPSHOT\n" //
-                + "Uninstalling B-1.0.1-SNAPSHOT\n" //
-                + "Uninstalling A-1.0.0\n" //
-                + "Installing A-1.2.3-SNAPSHOT\n" //
-                + "Installing B-1.0.2\n" //
-                + "Installing D-1.0.4-SNAPSHOT\n" //
-                + "Updating package G-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling G-1.0.1-SNAPSHOT\n" //
-                + "Removed G-1.0.1-SNAPSHOT\n" //
-                + "Downloading [G-1.0.1-SNAPSHOT]...\n" //
-                + "Added G-1.0.1-SNAPSHOT\n" //
-                + "Installing G-1.0.1-SNAPSHOT\n" //
-                + "Updating package H-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling H-1.0.1-SNAPSHOT\n" //
-                + "Removed H-1.0.1-SNAPSHOT\n" //
-                + "Downloading [H-1.0.1-SNAPSHOT]...\n" //
-                + "Added H-1.0.1-SNAPSHOT\n" //
-                + "Installing H-1.0.1-SNAPSHOT\n" //
-                + "Installing hfA-1.0.8\n" //
-                + "Installing studioA-1.0.2-SNAPSHOT\n" //
-                + "Installing C-1.0.2-SNAPSHOT";
+        String expectedLogs = """
+                Relax restriction to target platform nomatching-1.0 because of package(s) studioA, hfA, A, B, C, D, G, H, J, K
+
+                Dependency resolution:
+                  Installation order (8):        A-1.2.3-SNAPSHOT/B-1.0.2/D-1.0.4-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT/C-1.0.2-SNAPSHOT
+                  Unchanged packages (4):        G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to upgrade (6):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0
+                  Local packages to install (6): A:1.2.3-SNAPSHOT, B:1.0.2, hfA:1.0.8, C:1.0.2-SNAPSHOT, D:1.0.4-SNAPSHOT, studioA:1.0.2-SNAPSHOT
+
+                Uninstalling C-1.0.0
+                Uninstalling studioA-1.0.0
+                Uninstalling hfA-1.0.0
+                Uninstalling D-1.0.2-SNAPSHOT
+                Uninstalling B-1.0.1-SNAPSHOT
+                Uninstalling A-1.0.0
+                Installing A-1.2.3-SNAPSHOT
+                Installing B-1.0.2
+                Installing D-1.0.4-SNAPSHOT
+                Updating package G-1.0.1-SNAPSHOT...
+                Uninstalling G-1.0.1-SNAPSHOT
+                Removed G-1.0.1-SNAPSHOT
+                Downloading [G-1.0.1-SNAPSHOT]...
+                Added G-1.0.1-SNAPSHOT
+                Installing G-1.0.1-SNAPSHOT
+                Updating package H-1.0.1-SNAPSHOT...
+                Uninstalling H-1.0.1-SNAPSHOT
+                Removed H-1.0.1-SNAPSHOT
+                Downloading [H-1.0.1-SNAPSHOT]...
+                Added H-1.0.1-SNAPSHOT
+                Installing H-1.0.1-SNAPSHOT
+                Installing hfA-1.0.8
+                Installing studioA-1.0.2-SNAPSHOT
+                Installing C-1.0.2-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1543,10 +1572,11 @@ public class TestConnectBroker {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1556,45 +1586,47 @@ public class TestConnectBroker {
         assertThat(connectBroker.pkgUpgrade()).isTrue();
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.0, B-1.0.1, C-1.0.0, D-1.0.3-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.0", "B-1.0.1", "C-1.0.0",
-                "D-1.0.3-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.0", "B-1.0.1",
+                "C-1.0.0", "D-1.0.3-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                List.of("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "Optional dependencies [B:1.0.2] will be ignored for 'A-1.2.0'.\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (7):        A-1.2.0/B-1.0.1/D-1.0.3-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT\n" //
-                + "  Unchanged packages (5):        C:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to upgrade (5):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0\n" //
-                + "  Local packages to install (5): A:1.2.0, B:1.0.1, hfA:1.0.8, D:1.0.3-SNAPSHOT, studioA:1.0.2-SNAPSHOT\n" //
-                + "\n" //
-                + "Uninstalling studioA-1.0.0\n" //
-                + "Uninstalling hfA-1.0.0\n" //
-                + "Uninstalling D-1.0.2-SNAPSHOT\n" //
-                + "Uninstalling B-1.0.1-SNAPSHOT\n" //
-                + "Uninstalling A-1.0.0\n" //
-                + "Installing A-1.2.0\n" //
-                + "Installing B-1.0.1\n" //
-                + "Installing D-1.0.3-SNAPSHOT\n" //
-                + "Updating package G-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling G-1.0.1-SNAPSHOT\n" //
-                + "Removed G-1.0.1-SNAPSHOT\n" //
-                + "Downloading [G-1.0.1-SNAPSHOT]...\n" //
-                + "Added G-1.0.1-SNAPSHOT\n" //
-                + "Installing G-1.0.1-SNAPSHOT\n" //
-                + "Updating package H-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling H-1.0.1-SNAPSHOT\n" //
-                + "Removed H-1.0.1-SNAPSHOT\n" //
-                + "Downloading [H-1.0.1-SNAPSHOT]...\n" //
-                + "Added H-1.0.1-SNAPSHOT\n" //
-                + "Installing H-1.0.1-SNAPSHOT\n" //
-                + "Installing hfA-1.0.8\n" //
-                + "Installing studioA-1.0.2-SNAPSHOT";
+        String expectedLogs = """
+                Optional dependencies [B:1.0.2] will be ignored for 'A-1.2.0'.
+
+                Dependency resolution:
+                  Installation order (7):        A-1.2.0/B-1.0.1/D-1.0.3-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT
+                  Unchanged packages (5):        C:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to upgrade (5):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0
+                  Local packages to install (5): A:1.2.0, B:1.0.1, hfA:1.0.8, D:1.0.3-SNAPSHOT, studioA:1.0.2-SNAPSHOT
+
+                Uninstalling studioA-1.0.0
+                Uninstalling hfA-1.0.0
+                Uninstalling D-1.0.2-SNAPSHOT
+                Uninstalling B-1.0.1-SNAPSHOT
+                Uninstalling A-1.0.0
+                Installing A-1.2.0
+                Installing B-1.0.1
+                Installing D-1.0.3-SNAPSHOT
+                Updating package G-1.0.1-SNAPSHOT...
+                Uninstalling G-1.0.1-SNAPSHOT
+                Removed G-1.0.1-SNAPSHOT
+                Downloading [G-1.0.1-SNAPSHOT]...
+                Added G-1.0.1-SNAPSHOT
+                Installing G-1.0.1-SNAPSHOT
+                Updating package H-1.0.1-SNAPSHOT...
+                Uninstalling H-1.0.1-SNAPSHOT
+                Removed H-1.0.1-SNAPSHOT
+                Downloading [H-1.0.1-SNAPSHOT]...
+                Added H-1.0.1-SNAPSHOT
+                Installing H-1.0.1-SNAPSHOT
+                Installing hfA-1.0.8
+                Installing studioA-1.0.2-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1604,10 +1636,11 @@ public class TestConnectBroker {
         connectBroker.setAllowSNAPSHOT(true);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1618,47 +1651,48 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.2-SNAPSHOT, hfA-1.0.8, A-1.2.1-SNAPSHOT, B-1.0.1, C-1.0.1-SNAPSHOT, D-1.0.3-SNAPSHOT]
         checkPackagesState(
-                connectBroker, asList("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.1-SNAPSHOT", "B-1.0.1",
+                connectBroker, List.of("studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.1-SNAPSHOT", "B-1.0.1",
                         "C-1.0.1-SNAPSHOT", "D-1.0.3-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                List.of("studioA-1.0.0", "studioA-1.0.1", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
                         "A-1.2.0", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1-SNAPSHOT", "B-1.0.2",
                         "C-1.0.0", "C-1.0.2-SNAPSHOT", "D-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (8):        A-1.2.1-SNAPSHOT/B-1.0.1/D-1.0.3-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT/C-1.0.1-SNAPSHOT\n" //
-                + "  Unchanged packages (4):        G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to upgrade (6):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0\n" //
-                + "  Local packages to install (6): A:1.2.1-SNAPSHOT, B:1.0.1, hfA:1.0.8, C:1.0.1-SNAPSHOT, D:1.0.3-SNAPSHOT, studioA:1.0.2-SNAPSHOT\n" //
-                + "\n" //
-                + "Uninstalling C-1.0.0\n" //
-                + "Uninstalling studioA-1.0.0\n" //
-                + "Uninstalling hfA-1.0.0\n" //
-                + "Uninstalling D-1.0.2-SNAPSHOT\n" //
-                + "Uninstalling B-1.0.1-SNAPSHOT\n" //
-                + "Uninstalling A-1.0.0\n" //
-                + "Installing A-1.2.1-SNAPSHOT\n" //
-                + "Installing B-1.0.1\n" //
-                + "Installing D-1.0.3-SNAPSHOT\n" //
-                + "Updating package G-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling G-1.0.1-SNAPSHOT\n" //
-                + "Removed G-1.0.1-SNAPSHOT\n" //
-                + "Downloading [G-1.0.1-SNAPSHOT]...\n" //
-                + "Added G-1.0.1-SNAPSHOT\n" //
-                + "Installing G-1.0.1-SNAPSHOT\n" //
-                + "Updating package H-1.0.1-SNAPSHOT...\n" //
-                + "Uninstalling H-1.0.1-SNAPSHOT\n" //
-                + "Removed H-1.0.1-SNAPSHOT\n" //
-                + "Downloading [H-1.0.1-SNAPSHOT]...\n" //
-                + "Added H-1.0.1-SNAPSHOT\n" //
-                + "Installing H-1.0.1-SNAPSHOT\n" //
-                + "Installing hfA-1.0.8\n" //
-                + "Installing studioA-1.0.2-SNAPSHOT\n" //
-                + "Installing C-1.0.1-SNAPSHOT";
+        String expectedLogs = """
+
+                Dependency resolution:
+                  Installation order (8):        A-1.2.1-SNAPSHOT/B-1.0.1/D-1.0.3-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT/C-1.0.1-SNAPSHOT
+                  Unchanged packages (4):        G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to upgrade (6):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0
+                  Local packages to install (6): A:1.2.1-SNAPSHOT, B:1.0.1, hfA:1.0.8, C:1.0.1-SNAPSHOT, D:1.0.3-SNAPSHOT, studioA:1.0.2-SNAPSHOT
+
+                Uninstalling C-1.0.0
+                Uninstalling studioA-1.0.0
+                Uninstalling hfA-1.0.0
+                Uninstalling D-1.0.2-SNAPSHOT
+                Uninstalling B-1.0.1-SNAPSHOT
+                Uninstalling A-1.0.0
+                Installing A-1.2.1-SNAPSHOT
+                Installing B-1.0.1
+                Installing D-1.0.3-SNAPSHOT
+                Updating package G-1.0.1-SNAPSHOT...
+                Uninstalling G-1.0.1-SNAPSHOT
+                Removed G-1.0.1-SNAPSHOT
+                Downloading [G-1.0.1-SNAPSHOT]...
+                Added G-1.0.1-SNAPSHOT
+                Installing G-1.0.1-SNAPSHOT
+                Updating package H-1.0.1-SNAPSHOT...
+                Uninstalling H-1.0.1-SNAPSHOT
+                Removed H-1.0.1-SNAPSHOT
+                Downloading [H-1.0.1-SNAPSHOT]...
+                Added H-1.0.1-SNAPSHOT
+                Installing H-1.0.1-SNAPSHOT
+                Installing hfA-1.0.8
+                Installing studioA-1.0.2-SNAPSHOT
+                Installing C-1.0.1-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1672,10 +1706,10 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                         "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1",
                         "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1683,25 +1717,26 @@ public class TestConnectBroker {
         assertThat(connectBroker.pkgHotfix()).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.8, hfB-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "A-1.0.0",
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "A-1.0.0",
                 "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (2):        hfA-1.0.8/hfB-1.0.0\n" //
-                + "  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Packages to upgrade (1):       hfA:1.0.0\n" //
-                + "  Local packages to install (2): hfA:1.0.8, hfB:1.0.0\n" //
-                + "\n" //
-                + "Uninstalling hfA-1.0.0\n" //
-                + "Installing hfA-1.0.8\n" //
-                + "Installing hfB-1.0.0";
+        String expectedLogs = """
+
+                Dependency resolution:
+                  Installation order (2):        hfA-1.0.8/hfB-1.0.0
+                  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to upgrade (1):       hfA:1.0.0
+                  Local packages to install (2): hfA:1.0.8, hfB:1.0.0
+
+                Uninstalling hfA-1.0.0
+                Installing hfA-1.0.8
+                Installing hfB-1.0.0""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -1710,27 +1745,28 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.8, hfB-1.0.0, hfC-1.0.0-SNAPSHOT, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0,
         // D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                 "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "A-1.2.0", "A-1.2.1-SNAPSHOT",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "A-1.2.0", "A-1.2.1-SNAPSHOT",
                         "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2", "C-1.0.1-SNAPSHOT",
                         "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [hfC-1.0.0-SNAPSHOT]\n" //
-                + "Download of 'hfC-1.0.0-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [hfC-1.0.0-SNAPSHOT]...\n" //
-                + "Replacement of hfC-1.0.0-SNAPSHOT in local cache...\n" //
-                + "Added hfC-1.0.0-SNAPSHOT\n" //
-                + "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (1):        hfC-1.0.0-SNAPSHOT\n" //
-                + "  Unchanged packages (11):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.8, C:1.0.0, D:1.0.2-SNAPSHOT, hfB:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (1): hfC:1.0.0-SNAPSHOT\n" //
-                + "\n" //
-                + "Installing hfC-1.0.0-SNAPSHOT";
+        expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [hfC-1.0.0-SNAPSHOT]
+                Download of 'hfC-1.0.0-SNAPSHOT' will replace the one already in local cache.
+                Downloading [hfC-1.0.0-SNAPSHOT]...
+                Replacement of hfC-1.0.0-SNAPSHOT in local cache...
+                Added hfC-1.0.0-SNAPSHOT
+
+                Dependency resolution:
+                  Installation order (1):        hfC-1.0.0-SNAPSHOT
+                  Unchanged packages (11):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.8, C:1.0.0, D:1.0.2-SNAPSHOT, hfB:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Local packages to install (1): hfC:1.0.0-SNAPSHOT
+
+                Installing hfC-1.0.0-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1741,53 +1777,56 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // G-1.0.1-SNAPSHOT and H-1.0.1-SNAPSHOT are snapshots and must be replaced
         // J-1.0.1 has optional dependencies on G and H and must be reinstalled in last position
-        assertThat(connectBroker.pkgRequest(null, asList("H", "G"), null, null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, List.of("H", "G"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT]\n" //
-                + "Uninstalling G-1.0.1-SNAPSHOT\n" //
-                + "Uninstalling H-1.0.1-SNAPSHOT\n" //
-                + "Download of 'G-1.0.1-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [G-1.0.1-SNAPSHOT]...\n" //
-                + "Replacement of G-1.0.1-SNAPSHOT in local cache...\n" //
-                + "Added G-1.0.1-SNAPSHOT\n" //
-                + "Download of 'H-1.0.1-SNAPSHOT' will replace the one already in local cache.\n" //
-                + "Downloading [H-1.0.1-SNAPSHOT]...\n" //
-                + "Replacement of H-1.0.1-SNAPSHOT in local cache...\n" //
-                + "Added H-1.0.1-SNAPSHOT\n" //
-                + "\n" //
-                + "As package 'J-1.0.1' has an optional dependency on package(s) [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT] currently being installed, it will be reinstalled.\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (3):        G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/J-1.0.1\n" //
-                + "  Uninstallation order (1):      J-1.0.1\n" //
-                + "  Unchanged packages (7):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (3): G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n" //
-                + "  Local packages to remove (1):  J:1.0.1\n" //
-                + "\n" //
-                + "Uninstalling J-1.0.1\n" //
-                + "Installing G-1.0.1-SNAPSHOT\n" //
-                + "Installing H-1.0.1-SNAPSHOT\n" //
-                + "Installing J-1.0.1";
+        String expectedLogs = """
+                The following SNAPSHOT package(s) will be replaced in local cache (if available): [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT]
+                Uninstalling G-1.0.1-SNAPSHOT
+                Uninstalling H-1.0.1-SNAPSHOT
+                Download of 'G-1.0.1-SNAPSHOT' will replace the one already in local cache.
+                Downloading [G-1.0.1-SNAPSHOT]...
+                Replacement of G-1.0.1-SNAPSHOT in local cache...
+                Added G-1.0.1-SNAPSHOT
+                Download of 'H-1.0.1-SNAPSHOT' will replace the one already in local cache.
+                Downloading [H-1.0.1-SNAPSHOT]...
+                Replacement of H-1.0.1-SNAPSHOT in local cache...
+                Added H-1.0.1-SNAPSHOT
+
+                As package 'J-1.0.1' has an optional dependency on package(s) [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT] currently being installed, it will be reinstalled.
+                Dependency resolution:
+                  Installation order (3):        G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/J-1.0.1
+                  Uninstallation order (1):      J-1.0.1
+                  Unchanged packages (7):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, K:1.0.0-SNAPSHOT
+                  Local packages to install (3): G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1
+                  Local packages to remove (1):  J:1.0.1
+
+                Uninstalling J-1.0.1
+                Installing G-1.0.1-SNAPSHOT
+                Installing H-1.0.1-SNAPSHOT
+                Installing J-1.0.1""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1799,11 +1838,11 @@ public class TestConnectBroker {
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
         checkPackagesState(
-                connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
+                connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
                         "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1", "K-1.0.0-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1812,23 +1851,25 @@ public class TestConnectBroker {
         assertThat(connectBroker.pkgRequest(null, null, singletonList("K"), null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT",
                         "K-1.0.0-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\n" //
-                + "Dependency resolution:\n" //
-                + "  Uninstallation order (1):      K-1.0.0-SNAPSHOT\n" //
-                + "  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n" //
-                + "  Local packages to remove (1):  K:1.0.0-SNAPSHOT\n" //
-                + "\n" //
-                + "Uninstalling K-1.0.0-SNAPSHOT";
+        String expectedLogs = """
+
+                Dependency resolution:
+                  Uninstallation order (1):      K-1.0.0-SNAPSHOT
+                  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1
+                  Local packages to remove (1):  K:1.0.0-SNAPSHOT
+
+                Uninstalling K-1.0.0-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1839,41 +1880,43 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
         // H-1.0.1-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // J-1.0.1 has optional dependencies on G and H and must be reinstalled after uninstalling G and H
-        assertThat(connectBroker.pkgRequest(null, null, asList("H", "G"), null, true, false)).isTrue();
+        assertThat(connectBroker.pkgRequest(null, null, List.of("H", "G"), null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, J-1.0.1]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT",
                         "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\n" //
-                + "As package 'J-1.0.1' has an optional dependency on package(s) [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT] currently being uninstalled, it will be reinstalled.\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (1):        J-1.0.1\n" //
-                + "  Uninstallation order (3):      J-1.0.1/H-1.0.1-SNAPSHOT/G-1.0.1-SNAPSHOT\n" //
-                + "  Unchanged packages (7):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (1): J:1.0.1\n" //
-                + "  Local packages to remove (3):  G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n" //
-                + "\n" //
-                + "Uninstalling J-1.0.1\n" //
-                + "Uninstalling H-1.0.1-SNAPSHOT\n" //
-                + "Uninstalling G-1.0.1-SNAPSHOT\n" //
-                + "Installing J-1.0.1";
+        String expectedLogs = """
+
+                As package 'J-1.0.1' has an optional dependency on package(s) [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT] currently being uninstalled, it will be reinstalled.
+                Dependency resolution:
+                  Installation order (1):        J-1.0.1
+                  Uninstallation order (3):      J-1.0.1/H-1.0.1-SNAPSHOT/G-1.0.1-SNAPSHOT
+                  Unchanged packages (7):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, K:1.0.0-SNAPSHOT
+                  Local packages to install (1): J:1.0.1
+                  Local packages to remove (3):  G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1
+
+                Uninstalling J-1.0.1
+                Uninstalling H-1.0.1-SNAPSHOT
+                Uninstalling G-1.0.1-SNAPSHOT
+                Installing J-1.0.1""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -1889,10 +1932,10 @@ public class TestConnectBroker {
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
                 PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -1902,21 +1945,24 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT,
         // M-1.0.0-I20181011_1121]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        String expectedLogs = "\n" //
-                + "Dependency resolution:\n" + "  Installation order (1):        M-1.0.0-I20181011_1121\n"
-                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n"
-                + "  Packages to download (1):      M:1.0.0-I20181011_1121\n" //
-                + "\n" + "Package 'M-1.0.0-I20181011_1121' is already in local cache.\n" //
-                + "Installing M-1.0.0-I20181011_1121";
+        String expectedLogs = """
+
+                Dependency resolution:
+                  Installation order (1):        M-1.0.0-I20181011_1121
+                  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Packages to download (1):      M:1.0.0-I20181011_1121
+
+                Package 'M-1.0.0-I20181011_1121' is already in local cache.
+                Installing M-1.0.0-I20181011_1121""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -1931,30 +1977,33 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT,
         // M-1.0.0-I20181011_1121, N-1.0.1-HF08-SNAPSHOT]
-        checkPackagesState(connectBroker, asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121", "N-1.0.1-HF08-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121", "N-1.0.1-HF08-SNAPSHOT"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
-                asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (1):        N-1.0.1-HF08-SNAPSHOT\n"
-                + "  Unchanged packages (11):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT, M:1.0.0-I20181011_1121\n"
-                + "  Local packages to install (1): N:1.0.1-HF08-SNAPSHOT\n" + "\n"
-                + "Download of 'N-1.0.1-HF08-SNAPSHOT' will replace the one already in local cache.\n"
-                + "Downloading [N-1.0.1-HF08-SNAPSHOT]...\n"
-                + "Replacement of N-1.0.1-HF08-SNAPSHOT in local cache...\n" //
-                + "Added N-1.0.1-HF08-SNAPSHOT\n" //
-                + "Installing N-1.0.1-HF08-SNAPSHOT";
+        expectedLogs = """
+
+                Dependency resolution:
+                  Installation order (1):        N-1.0.1-HF08-SNAPSHOT
+                  Unchanged packages (11):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT, M:1.0.0-I20181011_1121
+                  Local packages to install (1): N:1.0.1-HF08-SNAPSHOT
+
+                Download of 'N-1.0.1-HF08-SNAPSHOT' will replace the one already in local cache.
+                Downloading [N-1.0.1-HF08-SNAPSHOT]...
+                Replacement of N-1.0.1-HF08-SNAPSHOT in local cache...
+                Added N-1.0.1-HF08-SNAPSHOT
+                Installing N-1.0.1-HF08-SNAPSHOT""";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
     protected void checkPackagesState(PackageState expectedState, String... packageIds) {
-        checkPackagesState(connectBroker, asList(packageIds), expectedState);
+        checkPackagesState(connectBroker, List.of(packageIds), expectedState);
     }
 
     private void checkPackagesState(ConnectBroker connectBrocker, List<String> packageIdList,
@@ -1963,24 +2012,6 @@ public class TestConnectBroker {
         for (String pkgId : packageIdList) {
             assertThat(states.get(pkgId)).as("Checking state of %s", pkgId).isEqualTo(expectedState);
         }
-    }
-
-    protected Set<String> collectIdsFrom(String... jsonFileNames) throws JSONException, IOException {
-        Set<String> result = new HashSet<>();
-
-        for (String jsonFileName : jsonFileNames) {
-            File jsonFile = new File(testStore, jsonFileName);
-            JSONArray array = new JSONArray(FileUtils.readFileToString(jsonFile, UTF_8));
-            Set<String> ids = new HashSet<>();
-
-            for (int i = 0; i < array.length(); i++) {
-                String id = (String) array.getJSONObject(i).get("id");
-                ids.add(id);
-            }
-            assertThat(ids).hasSize(array.length());
-            result.addAll(ids);
-        }
-        return result;
     }
 
     protected static String logOf(LogCaptureFeature.Result logCaptureResult) {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1485,7 +1485,7 @@ public class ConnectBroker {
                 sb.append("\nPackage: ").append(packageInfo.id);
                 sb.append("\nState: ").append(packageInfo.state);
                 if (pkg instanceof DownloadablePackage) {
-                    sb.append(" " + getPrivateOrSubscriptionTag((DownloadablePackage) pkg));
+                    sb.append(" ").append(getPrivateOrSubscriptionTag((DownloadablePackage) pkg));
                 }
                 sb.append("\nVersion: ").append(packageInfo.version);
                 sb.append("\nName: ").append(packageInfo.name);
