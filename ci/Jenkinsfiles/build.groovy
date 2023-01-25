@@ -477,6 +477,11 @@ pipeline {
           }
         }
       }
+      post {
+        always {
+          junit testResults: 'server/**/target/surefire-reports/*.xml'
+        }
+      }
     }
 
     stage('Build Nuxeo Packages') {
