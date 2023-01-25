@@ -19,13 +19,8 @@
  */
 package org.nuxeo.ecm.admin.runtime;
 
-import java.util.Arrays;
-
 import org.nuxeo.common.Environment;
-import org.nuxeo.connect.connector.fake.FakeDownloadablePackage;
-import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.platform.PlatformId;
-import org.nuxeo.connect.update.Package;
 import org.nuxeo.runtime.api.Framework;
 
 public class PlatformVersionHelper {
@@ -62,28 +57,4 @@ public class PlatformVersionHelper {
     public static String getDistributionHost() {
         return Framework.getProperty(Environment.DISTRIBUTION_SERVER, UNKNOWN);
     }
-
-    /**
-     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(Package, PlatformId)}
-     * @see TargetPlatformFilterHelper
-     */
-    @Deprecated
-    public static boolean isCompatible(final String[] targetPlatforms, String currentPlatform) {
-        // we use a fake package here because the method of TargetPlatformFilterHelper without a package has become
-        // private
-        FakeDownloadablePackage fakePkg = new FakeDownloadablePackage(null, null);
-        fakePkg.targetPlatforms = Arrays.asList(targetPlatforms);
-        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(fakePkg, PlatformId.parse(currentPlatform));
-    }
-
-    /**
-     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(Package, PlatformId)}
-     * @see #getPlatformId()
-     * @see TargetPlatformFilterHelper
-     */
-    @Deprecated
-    public static boolean isCompatible(String[] targetPlatforms) {
-        return isCompatible(targetPlatforms, getPlatformId().asString());
-    }
-
 }

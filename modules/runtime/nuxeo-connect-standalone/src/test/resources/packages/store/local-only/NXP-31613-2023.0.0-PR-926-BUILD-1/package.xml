@@ -1,0 +1,18 @@
+<package type="addon" name="NXP-31613" version="2023.0.0-PR-926-BUILD-1">
+  <title>Package NXP-31613</title>
+  <description>Package NXP-31613</description>
+  <home-page>http://doc.nuxeo.com/x/7YGo</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <target-platform>
+    <name>lts</name>
+    <version>2023.0.0-PR-926-BUILD-1</version>
+  </target-platform>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
+  <visibility>PUBLIC</visibility>
+</package>

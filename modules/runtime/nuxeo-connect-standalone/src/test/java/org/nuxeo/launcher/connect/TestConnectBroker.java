@@ -1133,6 +1133,53 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testInstallLocalPackageRequestWithTargetPlatformBuildVersion() throws Exception {
+        // GIVEN current target platform is lts-2023.0.0-PR-926-BUILD-1
+        Environment environment = Environment.getDefault();
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "lts");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "2023.0.0-PR-926-BUILD-1");
+        connectBroker = new ConnectBroker(environment);
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        connectBroker.setAllowSNAPSHOT(false);
+
+        // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker,
+                List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        assertThat(connectBroker.pkgRequest(null, List.of(TEST_LOCAL_ONLY_PATH + "/NXP-31613-2023.0.0-PR-926-BUILD-1"),
+                null, null, true, false)).isTrue();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker, List.of("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "NXP-31613-2023.0.0-PR-926-BUILD-1"), PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                List.of("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check logs
+        String expectedLogs = """
+                Added %s/NXP-31613-2023.0.0-PR-926-BUILD-1
+                
+                Dependency resolution:
+                  Installation order (1):        NXP-31613-2023.0.0-PR-926-BUILD-1
+                  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT
+                  Local packages to install (1): NXP-31613:2023.0.0-PR-926-BUILD-1
+                
+                Installing NXP-31613-2023.0.0-PR-926-BUILD-1""".formatted(
+                TEST_LOCAL_ONLY_PATH);
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testInstallLocalPackageRequestWithRange() throws Exception {
         // GIVEN current target platform is server-11.2
         Environment environment = Environment.getDefault();

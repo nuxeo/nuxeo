@@ -117,8 +117,8 @@ public class ConnectBroker {
         service.initialize();
         cbHolder = new StandaloneCallbackHolder(env, service);
         NuxeoConnectClient.setCallBackHolder(cbHolder);
-        targetPlatform = PlatformId.parse(env.getProperty(Environment.DISTRIBUTION_NAME) + "-"
-                + env.getProperty(Environment.DISTRIBUTION_VERSION));
+        targetPlatform = PlatformId.parse(env.getProperty(Environment.DISTRIBUTION_NAME),
+                env.getProperty(Environment.DISTRIBUTION_VERSION));
     }
 
     /**
