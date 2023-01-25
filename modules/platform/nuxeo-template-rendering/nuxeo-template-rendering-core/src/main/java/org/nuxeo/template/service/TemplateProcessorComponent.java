@@ -92,7 +92,16 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         processorRegistry = new TemplateProcessorRegistry();
         contextExtensionRegistry = new ContextFactoryRegistry();
         outputFormatRegistry = new OutputFormatRegistry();
+    }
+
+    @Override
+    public void start(ComponentContext context) {
         registerInvalidator();
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        unregisterInvalidator();
     }
 
     @Override
@@ -100,7 +109,6 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         processorRegistry = null;
         contextExtensionRegistry = null;
         outputFormatRegistry = null;
-        unregisterInvalidator();
     }
 
     protected void registerInvalidator() {
