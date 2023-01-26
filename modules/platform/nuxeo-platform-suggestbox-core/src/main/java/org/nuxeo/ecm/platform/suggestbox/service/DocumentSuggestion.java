@@ -58,7 +58,7 @@ public class DocumentSuggestion extends Suggestion {
         if (StringUtils.isEmpty(icon)) {
             icon = typeInfo.getIcon();
         }
-        String thumbnailURL = String.format("api/v1/id/%s/@rendition/thumbnail", doc.getId());
+        String thumbnailURL = String.format("api/v1/repo/%s/id/%s/@rendition/thumbnail", doc.getRepositoryName(), doc.getId());
         @SuppressWarnings("unchecked")
         Map<String, List<String>> highlights = (Map<String, List<String>>) doc.getContextData(
                 PageProvider.HIGHLIGHT_CTX_DATA);

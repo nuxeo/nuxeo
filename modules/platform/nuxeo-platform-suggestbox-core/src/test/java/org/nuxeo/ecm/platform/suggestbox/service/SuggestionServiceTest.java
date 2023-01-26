@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.suggestbox.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.util.Arrays;
@@ -173,6 +174,7 @@ public class SuggestionServiceTest {
         assertEquals("document", sugg0.getType());
         assertEquals("First document with a superuniqueword in the title", sugg0.getLabel());
         assertEquals("/icons/file.gif", sugg0.getIconURL());
+        assertTrue(sugg0.getThumbnailURL().contains(String.format("/repo/%s/id", session.getRepositoryName())));
     }
 
     @Test
