@@ -1,0 +1,71 @@
+name: "Docker image scan"
+
+on:
+  # Run manually or with the GitHub CLI
+  workflow_dispatch:
+    inputs:
+      imageName:
+        description: 'Docker image name'
+        required: true
+        default: '${{ vars.DOCKER_REGISTRY }}/nuxeo/nuxeo:2023.x'
+        type: string
+      notifyFailure:
+        description: 'Notify Slack in case of scan failure'
+        type: boolean
+
+jobs:
+  scan:
+    name: Scan Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ vars.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Pull Docker image
+        run: docker pull ${{ inputs.imageName }}
+
+      - name: Scan Docker image with Prisma Cloud
+        id: scan
+        uses: PaloAltoNetworks/prisma-cloud-scan@v1.4.0
+        with:
+          pcc_console_url: ${{ secrets.PRISMA_BASE_URL }}
+          pcc_user: ${{ secrets.PRISMA_ACCESS_KEY_ID }}
+          pcc_pass: ${{ secrets.PRISMA_SECRET_KEY }}
+          image_name: ${{ inputs.imageName }}
+
+      - name: Upload SARIF file
+        if: ${{ always() }} # necessary as using failure thresholds in the image scan
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif_file }}
+
+      - name: Notify Slack
+        if: inputs.notifyFailure && failure()
+        uses: slackapi/slack-github-action@v1.23.0
+        env:
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          channel-id: 'platform-notifs'
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "#A30200",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "<${{ env.REPO_URL }}/actions/runs/${{ github.run_id }}|Docker image scan> failed in nuxeo/nuxeo-lts <${{ env.REPO_URL }}/commit/${{ github.sha }}|${{ github.ref_name }}>"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
