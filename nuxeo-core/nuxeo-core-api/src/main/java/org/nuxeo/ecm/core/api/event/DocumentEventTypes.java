@@ -61,6 +61,9 @@ public final class DocumentEventTypes {
 
     public static final String VERSION_REMOVED = "versionRemoved";
 
+    /** @since 2023.0 */
+    public static final String PROXY_REMOVED = "proxyRemoved";
+
     public static final String BEFORE_DOC_UPDATE = "beforeDocumentModification";
 
     public static final String BEFORE_DOC_SECU_UPDATE = "beforeDocumentSecurityModification";

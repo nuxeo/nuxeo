@@ -33,6 +33,7 @@ id,label,obsolete,ordering
 "Cancelation event","Cancelation event","0","340"
 "documentMoved","documentMoved","0","350"
 "afterRelationRemoval","afterRelationRemoval","0","360"
+"proxyRemoved","versionRemoved","0","365"
 "versionRemoved","versionRemoved","0","370"
 "annotationDeleted","annotationDeleted","0","380"
 "lifecycle_transition_event","lifecycle_transition_event","0","390"
