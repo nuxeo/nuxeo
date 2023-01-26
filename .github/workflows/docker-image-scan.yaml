@@ -7,7 +7,7 @@ on:
       imageName:
         description: 'Docker image name'
         required: true
-        default: '${{ vars.DOCKER_REGISTRY }}/nuxeo/nuxeo:2023.x'
+        default: 'docker-private.packages.nuxeo.com/nuxeo/nuxeo:2023.x'
         type: string
       notifyFailure:
         description: 'Notify Slack in case of scan failure'
