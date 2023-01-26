@@ -133,6 +133,7 @@
     <event name="loginFailed" />
     <event name="logout" />
     <event name="documentCheckedIn" />
+    <event name="proxyRemoved" />
     <event name="versionRemoved" />
     <event name="documentProxyPublished" />
     <event name="sectionContentPublished" />
