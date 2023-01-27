@@ -410,15 +410,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    @Deprecated
-    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
-        if (resetLifeCycle) {
-            return copy(src, dst, name, CopyOption.RESET_LIFE_CYCLE);
-        }
-        return copy(src, dst, name);
-    }
-
-    @Override
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions) {
         Document dstDoc = resolveReference(dst);
         checkPermission(dstDoc, ADD_CHILDREN);
@@ -471,26 +462,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    @Deprecated
-    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
-        if (resetLifeCycle) {
-            return copy(src, dst, CopyOption.RESET_LIFE_CYCLE);
-        }
-        return copy(src, dst);
-    }
-
-    @Override
     public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, CopyOption... opts) {
         return src.stream().map(ref -> copy(ref, dst, null, opts)).collect(Collectors.toList());
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
-        if (resetLifeCycle) {
-            return copyProxyAsDocument(src, dst, name, CopyOption.RESET_LIFE_CYCLE);
-        }
-        return copyProxyAsDocument(src, dst, name);
     }
 
     @Override
@@ -523,15 +496,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel, options, null, comment, true, false);
 
         return docModel;
-    }
-
-    @Override
-    @Deprecated
-    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
-        if (resetLifeCycle) {
-            return copyProxyAsDocument(src, dst, CopyOption.RESET_LIFE_CYCLE);
-        }
-        return copyProxyAsDocument(src, dst);
     }
 
     @Override

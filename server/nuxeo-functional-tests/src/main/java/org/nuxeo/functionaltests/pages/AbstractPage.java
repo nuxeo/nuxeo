@@ -292,22 +292,6 @@ public abstract class AbstractPage {
     }
 
     /**
-     * Finds the first {@link WebElement} using the given method, with a {@code findElementTimeout}. Then waits until
-     * the element is enabled, with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
-     *
-     * @param by the locating mechanism
-     * @param findElementTimeout the find element timeout in milliseconds
-     * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
-     * @throws NotFoundException if the element is not found or not enabled
-     * @deprecated since 8.3, use {@link Locator#findElementWaitUntilEnabledAndClick(WebElement, By, int, int)}
-     */
-    @Deprecated
-    public static void findElementWaitUntilEnabledAndClick(By by, int findElementTimeout, int waitUntilEnabledTimeout)
-            throws NotFoundException {
-        Locator.findElementWaitUntilEnabledAndClick(by, findElementTimeout, waitUntilEnabledTimeout);
-    }
-
-    /**
      * Finds the first {@link WebElement} using the given method, with the default timeout. Then waits until the element
      * is enabled, with the default timeout. Then clicks on the element.
      *

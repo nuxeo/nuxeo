@@ -106,11 +106,6 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
     }
 
     @Override
-    public boolean isLife() {
-        return rs != null;
-    }
-
-    @Override
     public boolean mustBeClosed() {
         return rs != null;
     }

@@ -79,11 +79,4 @@ public class LocalSession extends AbstractSession implements CloseableCoreSessio
     public NuxeoPrincipal getPrincipal() {
         return principal;
     }
-
-    @Override
-    public boolean isStateSharedByAllThreadSessions() {
-        // by design we always share state when in the same thread
-        return true;
-    }
-
 }

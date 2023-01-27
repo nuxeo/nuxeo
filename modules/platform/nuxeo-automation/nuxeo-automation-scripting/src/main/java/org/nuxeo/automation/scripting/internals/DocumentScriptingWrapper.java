@@ -341,7 +341,9 @@ public class DocumentScriptingWrapper extends HashMap<String, Object> {
 
     @Override
     public int size() {
-        return Stream.of(doc.getParts()).collect(Collectors.summingInt(part -> part.size()));
+        return Stream.of(getSchemas())
+                     .map(doc::getPropertyObjects)
+                     .collect(Collectors.summingInt(Collection::size));
     }
 
     @Override

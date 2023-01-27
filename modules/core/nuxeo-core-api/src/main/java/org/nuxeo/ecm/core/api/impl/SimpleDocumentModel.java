@@ -203,6 +203,14 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public void setPropertyObject(Property property) {
+        DocumentPart part = getPart(property.getSchema().getName());
+        if (part != null) {
+            part.set(property.getName(), property);
+        }
+    }
+
+    @Override
     public void setProperty(String schemaName, String name, Object value) {
         if (name.contains(":")) {
             name = name.substring(name.indexOf(':'));
@@ -617,20 +625,12 @@ public class SimpleDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    @Deprecated
     public DocumentPart getPart(String schema) {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
             return ((DataModelImpl) dm).getDocumentPart();
         }
         return null;
-    }
-
-    @Override
-    @Deprecated
-    public DocumentPart[] getParts() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

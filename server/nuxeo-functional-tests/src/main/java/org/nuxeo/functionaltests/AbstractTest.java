@@ -57,10 +57,7 @@ import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
-import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
-import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
 import org.openqa.selenium.By;
@@ -130,61 +127,6 @@ public abstract class AbstractTest {
     public static final int AJAX_TIMEOUT_SECONDS = 10;
 
     public static final int AJAX_SHORT_TIMEOUT_SECONDS = 2;
-
-    /**
-     * @since 5.7
-     * @deprecated since 8.3
-     * @see ChromeDriverProvider
-     */
-    @Deprecated
-    public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_LINUX;
-
-    /**
-     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" doesn't work
-     * @deprecated since 8.3
-     * @see ChromeDriverProvider
-     */
-    @Deprecated
-    public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_MAC;
-
-    /**
-     * @since 5.7
-     * @deprecated since 8.3
-     * @see ChromeDriverProvider
-     */
-    @Deprecated
-    public static final String CHROME_DRIVER_DEFAULT_PATH_WINVISTA = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_WINVISTA;
-
-    /**
-     * @since 5.7
-     * @deprecated since 8.3
-     * @see ChromeDriverProvider
-     */
-    @Deprecated
-    public static final String CHROME_DRIVER_DEFAULT_PATH_WINXP = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_WINXP;
-
-    /**
-     * @since 5.7
-     * @deprecated since 8.3
-     * @see ChromeDriverProvider
-     */
-    @Deprecated
-    public static final String CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME;
-
-    /**
-     * @since 5.7
-     * @deprecated since 8.3
-     * @see ChromeDriverProvider
-     */
-    @Deprecated
-    public static final String CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME = ChromeDriverProvider.CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
-
-    /**
-     * @deprecated since 8.3
-     * @see ChromeDriverProvider
-     */
-    @Deprecated
-    public static final String SYSPROP_CHROME_DRIVER_PATH = ChromeDriverProvider.SYSPROP_CHROME_DRIVER_PATH;
 
     public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
                                                  .replaceAll("/$", "");
@@ -538,109 +480,6 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Init the repository with a test Workspace form the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @return the created Workspace page
-     * @throws Exception if initializing repository fails
-     * @deprecated since 8.3
-     */
-    @Deprecated
-    protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
-        return createWorkspace(currentPage, "Test Workspace", "Test Workspace for my dear WebDriver.");
-    }
-
-    /**
-     * Cleans the repository (delete the test Workspace) from the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @throws Exception if cleaning repository fails
-     * @deprecated since 8.3
-     */
-    @Deprecated
-    protected void cleanRepository(DocumentBasePage currentPage) throws Exception {
-        deleteWorkspace(currentPage, "Test Workspace");
-    }
-
-    /**
-     * Creates a Workspace from the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @param workspaceTitle the workspace title
-     * @param workspaceDescription the workspace description
-     * @return the created Workspace page
-     * @deprecated since 8.3: use {@link DocumentBasePage#createWorkspace(String, String)} instead.
-     */
-    @Deprecated
-    protected DocumentBasePage createWorkspace(DocumentBasePage currentPage, String workspaceTitle,
-            String workspaceDescription) {
-        return currentPage.createWorkspace(workspaceTitle, workspaceDescription);
-    }
-
-    /**
-     * Deletes the Workspace with title {@code workspaceTitle} from the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @param workspaceTitle the workspace title
-     * @deprecated since 8.3: use {@link DocumentBasePage#deleteWorkspace(String)} instead.
-     */
-    @Deprecated
-    protected void deleteWorkspace(DocumentBasePage currentPage, String workspaceTitle) {
-        currentPage.deleteWorkspace(workspaceTitle);
-    }
-
-    /**
-     * Creates a File form the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @param fileTitle the file title
-     * @param fileDescription the file description
-     * @param uploadBlob true if a blob needs to be uploaded (temporary file created for this purpose)
-     * @param filePrefix the file prefix
-     * @param fileSuffix the file suffix
-     * @param fileContent the file content
-     * @return the created File page
-     * @throws IOException if temporary file creation fails
-     * @deprecated since 8.3: use {@link DocumentBasePage#createFile(String, String, boolean, String, String, String)}
-     *             instead.
-     */
-    @Deprecated
-    protected FileDocumentBasePage createFile(DocumentBasePage currentPage, String fileTitle, String fileDescription,
-            boolean uploadBlob, String filePrefix, String fileSuffix, String fileContent) throws IOException {
-        return currentPage.createFile(fileTitle, fileDescription, uploadBlob, filePrefix, fileSuffix, fileContent);
-    }
-
-    /**
-     * Creates a Collections container form the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @param collectionsTitle the Collections container title
-     * @param fileDescription the collections description
-     * @return the created Collections page
-     * @deprecated since 8.3: use {@link DocumentBasePage#createCollections(String, String)} instead.
-     */
-    @Deprecated
-    protected DocumentBasePage createCollections(DocumentBasePage currentPage, String collectionsTitle,
-            String fileDescription) {
-        return currentPage.createCollections(collectionsTitle, fileDescription);
-    }
-
-    /**
-     * Creates a Collection form the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @param collectionsTitle the Collections container title
-     * @param fileDescription the collection description
-     * @return the created Collections page
-     * @deprecated since 8.3: use {@link DocumentBasePage#createCollection(String, String)} instead.
-     */
-    @Deprecated
-    protected CollectionContentTabSubPage createCollection(DocumentBasePage currentPage, String collectionsTitle,
-            String fileDescription) {
-        return currentPage.createCollection(collectionsTitle, fileDescription);
-    }
-
-    /**
      * Creates a temporary file and returns its absolute path.
      *
      * @param filePrefix the file prefix
@@ -674,23 +513,4 @@ public abstract class AbstractTest {
     protected String getCurrentDocumentId() {
         return (String) driver.executeScript("return ctx.currentDocument;");
     }
-
-    /**
-     * Creates a Note form the {@code currentPage}.
-     *
-     * @param currentPage the current page
-     * @param noteTitle the note title
-     * @param noteDescription the note description
-     * @param defineNote true if the content of the note needs to be defined
-     * @param noteContent the content of the note
-     * @return the created note page.
-     * @since 5.9.4
-     * @deprecated since 8.3: use {@link DocumentBasePage#createNote(String, String, boolean, String)} instead.
-     */
-    @Deprecated
-    protected NoteDocumentBasePage createNote(DocumentBasePage currentPage, String noteTitle, String noteDescription,
-            boolean defineNote, String noteContent) throws IOException {
-        return currentPage.createNote(noteTitle, noteDescription, defineNote, noteContent);
-    }
-
 }

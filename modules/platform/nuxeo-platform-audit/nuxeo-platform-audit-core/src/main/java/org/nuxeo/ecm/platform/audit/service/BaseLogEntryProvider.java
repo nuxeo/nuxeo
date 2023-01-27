@@ -18,10 +18,6 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
 /**
@@ -32,34 +28,6 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 public interface BaseLogEntryProvider {
 
     void addLogEntry(LogEntry entry);
-
-    /**
-     * Returns the logs given a doc uuid.
-     *
-     * @param uuid the document uuid
-     * @return a list of log entries
-     * @since 8.4
-     * @deprecated since 8.4
-     */
-    @Deprecated
-    default List<LogEntry> getLogEntriesFor(String uuid) {
-        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
-    }
-
-    /**
-     * Returns the logs given a doc uuid, a map of filters and a default sort.
-     *
-     * @param uuid the document uuid
-     * @param filterMap the map of filters to apply
-     * @param doDefaultSort the default sort to set
-     * @return a list of log entries
-     * @since 8.4
-     * @deprecated since 8.4
-     */
-    @Deprecated
-    default List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
-    }
 
     int removeEntries(String eventId, String pathPattern);
 

@@ -547,6 +547,14 @@ public interface DocumentModel extends Serializable {
     Property getPropertyObject(String schema, String name);
 
     /**
+     * Sets a property object.
+     *
+     * @param property the property object
+     * @since 2023.0
+     */
+    void setPropertyObject(Property property);
+
+    /**
      * Sets the property value from the given schema.
      * <p>
      * This operation will not fetch the data model if not already fetched
@@ -809,29 +817,6 @@ public interface DocumentModel extends Serializable {
      * to the server. This is needed as some critical system properties might be changed directly in the core.
      */
     <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type);
-
-    /**
-     * Get a document part given its schema name
-     *
-     * @param schema the schema
-     * @return the document aprt or null if none exists for that schema
-     * @deprecated since 8.4, use direct {@link Property} getters instead
-     * @see #getPropertyObject
-     * @see #getPropertyObjects
-     */
-    @Deprecated
-    DocumentPart getPart(String schema);
-
-    /**
-     * Gets this document's parts.
-     *
-     * @deprecated since 8.4, use direct {@link Property} getters instead
-     * @see #getSchemas
-     * @see #getPropertyObject
-     * @see #getPropertyObjects
-     */
-    @Deprecated
-    DocumentPart[] getParts();
 
     /**
      * Gets the {@link Property} objects for the given schema.

@@ -100,7 +100,6 @@ import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -3275,27 +3274,24 @@ public class TestSQLRepositoryAPI {
 
         doc = session.createDocument(doc);
 
-        DocumentPart dp = doc.getPart("myschema");
-        Property p = dp.get("long");
+        Property p = doc.getPropertyObject("myschema", "long");
 
         assertTrue(p.isPhantom());
         assertNull(p.getValue());
         p.setValue(12);
         assertEquals(Long.valueOf(12), p.getValue());
-        session.saveDocument(doc);
+        doc = session.saveDocument(doc);
 
-        dp = doc.getPart("myschema");
-        p = dp.get("long");
+        p = doc.getPropertyObject("myschema", "long");
         assertFalse(p.isPhantom());
         assertEquals(Long.valueOf(12), p.getValue());
         p.setValue(null);
         assertFalse(p.isPhantom());
         assertNull(p.getValue());
 
-        session.saveDocument(doc);
+        doc = session.saveDocument(doc);
 
-        dp = doc.getPart("myschema");
-        p = dp.get("long");
+        p = doc.getPropertyObject("myschema", "long");
         // assertTrue(p.isPhantom());
         assertNull(p.getValue());
         p.setValue(Long.valueOf(13));
@@ -3303,10 +3299,9 @@ public class TestSQLRepositoryAPI {
         assertTrue(p.isRemoved());
         assertNull(p.getValue());
 
-        session.saveDocument(doc);
+        doc = session.saveDocument(doc);
 
-        dp = doc.getPart("myschema");
-        p = dp.get("long");
+        p = doc.getPropertyObject("myschema", "long");
         // assertTrue(p.isPhantom()); not applicable to SQL
         assertNull(p.getValue());
     }
@@ -3511,16 +3506,16 @@ public class TestSQLRepositoryAPI {
         byte[] bytes = createBytes(1024 * 1024, (byte) 24);
 
         Blob blob = Blobs.createBlob(bytes);
-        doc.getPart("file").get("content").setValue(blob);
+        doc.getPropertyObject("file", "content").setValue(blob);
         doc = session.saveDocument(doc);
 
-        blob = (Blob) doc.getPart("file").get("content").getValue();
+        blob = (Blob) doc.getPropertyObject("file", "content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
 
         // reset not implemented (not needed) for StorageBlob's Binary
         // XXX blob.getStream().reset();
 
-        blob = (Blob) doc.getPart("file").get("content").getValue();
+        blob = (Blob) doc.getPropertyObject("file", "content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
     }
 

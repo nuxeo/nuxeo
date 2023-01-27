@@ -620,6 +620,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
+    public void setPropertyObject(Property property) {
+        var part = getPart(property.getSchema().getName());
+        if (part != null) {
+            part.set(property.getName(), property);
+        }
+    }
+
+    @Override
     public void setPathInfo(String parentPath, String name) {
         path = new Path(parentPath == null ? name : parentPath + '/' + name);
         ref = new PathRef(parentPath, name);
@@ -1242,8 +1250,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return currentLifeCycleState != null;
     }
 
-    @Override
-    @Deprecated
     public DocumentPart getPart(String schema) {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
@@ -1252,8 +1258,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null; // TODO thrown an exception?
     }
 
-    @Override
-    @Deprecated
     public DocumentPart[] getParts() {
         // DocumentType type = getDocumentType();
         // type = Framework.getService(SchemaManager.class).getDocumentType(

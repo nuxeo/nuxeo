@@ -186,14 +186,6 @@ public interface CoreSession {
     String getSessionId();
 
     /**
-     * Returns {@code true} if all sessions in the current thread share the same state.
-     *
-     * @deprecated since 8.4 as it always returns true by design
-     */
-    @Deprecated
-    boolean isStateSharedByAllThreadSessions();
-
-    /**
      * Gets the principal that created the client session.
      *
      * @return the principal
@@ -613,24 +605,6 @@ public interface CoreSession {
     DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions);
 
     /**
-     * Copies the source document to the destination folder under the given name. If the name is null the original name
-     * is preserved.
-     * <p>
-     * If the destination document is not a folder or it doesn't exists then throws an exception.
-     * <p>
-     * If the source is a proxy the destination will be a copy of the proxy.
-     *
-     * @param src the source document reference
-     * @param dst the destination folder reference
-     * @param name the new name of the file or null if the original name must be preserved
-     * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @since 5.7
-     * @deprecated Since 8.2. Use {@link #copy(DocumentRef, DocumentRef, String, CopyOption...)} instead
-     */
-    @Deprecated
-    DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
-
-    /**
      * Bulk copy. Destination must be a folder document.
      *
      * @param src the documents to copy
@@ -639,18 +613,6 @@ public interface CoreSession {
      * @since 8.2
      */
     List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, CopyOption... copyOptions);
-
-    /**
-     * Bulk copy. Destination must be a folder document.
-     *
-     * @param src the documents to copy
-     * @param dst the destination folder
-     * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @since 5.7
-     * @deprecated Since 8.2. Use {@link #copy(List, DocumentRef, CopyOption...)} instead
-     */
-    @Deprecated
-    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
 
     /**
      * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
@@ -665,19 +627,6 @@ public interface CoreSession {
     DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions);
 
     /**
-     * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
-     *
-     * @param src the source document reference
-     * @param dst the destination folder reference
-     * @param name the new name of the file or null if the original name must be preserved
-     * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @since 5.7
-     * @deprecated Since 8.2. Use {@link #copyProxyAsDocument(DocumentRef, DocumentRef, String, CopyOption...)} instead
-     */
-    @Deprecated
-    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
-
-    /**
      * Bulk copyProxyAsDocument. Destination must be a folder document.
      *
      * @param src the documents to copy
@@ -686,18 +635,6 @@ public interface CoreSession {
      * @since 8.2
      */
     List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, CopyOption... copyOptions);
-
-    /**
-     * Bulk copyProxyAsDocument. Destination must be a folder document.
-     *
-     * @param src the documents to copy
-     * @param dst the destination folder
-     * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @since 5.7
-     * @deprecated Since 8.2. Use {@link #copyProxyAsDocument(List, DocumentRef, CopyOption...)} instead
-     */
-    @Deprecated
-    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
 
     /**
      * Moves the source document to the destination folder under the given name. If the name is {@code null} or if there

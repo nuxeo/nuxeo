@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
 import static org.nuxeo.ecm.permissions.Constants.ACL_NAME_KEY;
-import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
 import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
 import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 import static org.nuxeo.ecm.permissions.PermissionHelper.computeDirectoryId;
@@ -109,39 +108,6 @@ public class PermissionListener implements EventListener {
                             firePermissionNotificationEvent(docCtx, diff.aclName, ace);
                         }
                     }
-                }
-            }
-        });
-    }
-
-    /**
-     * @deprecated since 8.1. Not used anymore.
-     */
-    @Deprecated
-    protected void handleReplaceACE(DocumentEventContext docCtx, String changedACLName, ACE oldACE, ACE newACE) {
-        Framework.doPrivileged(() -> {
-            DocumentModel doc = docCtx.getSourceDocument();
-
-            DirectoryService directoryService = Framework.getService(DirectoryService.class);
-            try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
-                Boolean notify = (Boolean) newACE.getContextData(NOTIFY_KEY);
-                String comment = (String) newACE.getContextData(COMMENT_KEY);
-
-                String oldId = computeDirectoryId(doc, changedACLName, oldACE.getId());
-                DocumentModel oldEntry = session.getEntry(oldId);
-                if (oldEntry != null) {
-                    // remove the old entry
-                    session.deleteEntry(oldId);
-                }
-
-                // add the new entry
-                notify = notify != null ? notify : false;
-                Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, changedACLName, newACE, notify,
-                        comment);
-                session.createEntry(m);
-
-                if (notify && newACE.isGranted() && newACE.isEffective()) {
-                    firePermissionNotificationEvent(docCtx, changedACLName, newACE);
                 }
             }
         });

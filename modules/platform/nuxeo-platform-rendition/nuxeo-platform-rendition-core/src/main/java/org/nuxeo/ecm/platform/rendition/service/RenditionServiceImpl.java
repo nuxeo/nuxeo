@@ -165,15 +165,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     }
 
     /**
-     * @deprecated since 8.1
-     */
-    @Deprecated(since = "8.1")
-    protected DocumentModel storeRendition(DocumentModel sourceDocument, Rendition rendition, String name) {
-        StoredRendition storedRendition = storeRendition(sourceDocument, rendition);
-        return storedRendition == null ? null : storedRendition.getHostDocument();
-    }
-
-    /**
      * @since 8.1
      * @deprecated since 10.10, use {@link #storeRendition(DocumentModel, Rendition, RenditionDefinition)} instead
      */

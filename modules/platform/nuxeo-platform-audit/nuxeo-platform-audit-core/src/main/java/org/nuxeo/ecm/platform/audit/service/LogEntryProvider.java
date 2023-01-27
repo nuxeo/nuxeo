@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 
 import javax.persistence.EntityManager;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
@@ -129,74 +127,6 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         Query query = em.createNamedQuery("LogEntry.findByDocumentAndRepository");
         query.setParameter("docUUID", uuid);
         query.setParameter("repositoryId", repositoryId);
-        return doPublish(query.getResultList());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<LogEntry> getLogEntriesFor(String uuid) {
-        log.debug("getLogEntriesFor() UUID: {}", uuid);
-        Query query = em.createNamedQuery("LogEntry.findByDocument");
-        query.setParameter("docUUID", uuid);
-        return doPublish(query.getResultList());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        log.debug("getLogEntriesFor() UUID: {}", uuid);
-
-        if (filterMap == null) {
-            filterMap = new HashMap<>();
-        }
-
-        StringBuilder queryStr = new StringBuilder();
-        queryStr.append(" FROM LogEntry log WHERE log.docUUID=:uuid ");
-
-        Set<String> filterMapKeySet = filterMap.keySet();
-        for (String currentKey : filterMapKeySet) {
-            FilterMapEntry currentFilterMapEntry = filterMap.get(currentKey);
-            String currentOperator = currentFilterMapEntry.getOperator();
-            String currentQueryParameterName = currentFilterMapEntry.getQueryParameterName();
-            String currentColumnName = currentFilterMapEntry.getColumnName();
-
-            if (LIKE.equals(currentOperator)) {
-                queryStr.append(" AND log.")
-                        .append(currentColumnName)
-                        .append(" LIKE :")
-                        .append(currentQueryParameterName)
-                        .append(" ");
-            } else {
-                queryStr.append(" AND log.")
-                        .append(currentColumnName)
-                        .append(currentOperator)
-                        .append(":")
-                        .append(currentQueryParameterName)
-                        .append(" ");
-            }
-        }
-
-        if (doDefaultSort) {
-            queryStr.append(" ORDER BY log.eventDate DESC");
-        }
-
-        Query query = em.createQuery(queryStr.toString());
-
-        query.setParameter("uuid", uuid);
-
-        for (String currentKey : filterMapKeySet) {
-            FilterMapEntry currentFilterMapEntry = filterMap.get(currentKey);
-            String currentOperator = currentFilterMapEntry.getOperator();
-            String currentQueryParameterName = currentFilterMapEntry.getQueryParameterName();
-            Object currentObject = currentFilterMapEntry.getObject();
-
-            if (LIKE.equals(currentOperator)) {
-                query.setParameter(currentQueryParameterName, "%" + currentObject + "%");
-            } else {
-                query.setParameter(currentQueryParameterName, currentObject);
-            }
-        }
-
         return doPublish(query.getResultList());
     }
 

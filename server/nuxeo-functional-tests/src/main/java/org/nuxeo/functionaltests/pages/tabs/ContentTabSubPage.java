@@ -148,17 +148,6 @@ public class ContentTabSubPage extends AbstractContentTabSubPage {
     }
 
     /**
-     * Selects documents by their title in the content view.
-     *
-     * @since 5.7.8
-     * @deprecated since 8.1 use {@link #selectByTitle(String...)}
-     */
-    @Deprecated
-    public ContentTabSubPage selectDocumentByTitles(String... titles) {
-        return selectByTitle(titles);
-    }
-
-    /**
      * Selects documents by title in the content view.
      *
      * @since 8.1

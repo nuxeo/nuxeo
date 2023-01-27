@@ -295,18 +295,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    @Deprecated
-    public DocumentPart getPart(String schema) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    @Deprecated
-    public DocumentPart[] getParts() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Collection<Property> getPropertyObjects(String schema) {
         throw new UnsupportedOperationException();
     }
@@ -498,6 +486,11 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public void setProperty(String schemaName, String name, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setPropertyObject(Property property) {
         throw new UnsupportedOperationException();
     }
 

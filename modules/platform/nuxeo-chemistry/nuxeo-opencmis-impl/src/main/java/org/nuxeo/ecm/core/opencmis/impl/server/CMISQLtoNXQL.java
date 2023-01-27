@@ -896,12 +896,6 @@ public class CMISQLtoNXQL {
             it.close();
         }
 
-        @SuppressWarnings("deprecation")
-        @Override
-        public boolean isLife() {
-            return it.isLife();
-        }
-
         @Override
         public boolean mustBeClosed() {
             return it.mustBeClosed();

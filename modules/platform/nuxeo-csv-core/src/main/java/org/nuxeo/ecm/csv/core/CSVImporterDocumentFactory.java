@@ -43,12 +43,6 @@ public interface CSVImporterDocumentFactory extends Serializable {
     boolean exists(CoreSession session, String parentPath, String name, Map<String, Serializable> values);
 
     /**
-     * @deprecated since 8.2
-     */
-    @Deprecated boolean exists(CoreSession session, String parentPath, String name, String type,
-            Map<String, Serializable> values);
-
-    /**
      * @since 8.4
      */
     void setImporterOptions(CSVImporterOptions importerOptions);

@@ -1858,11 +1858,6 @@ public class DBSSession extends BaseSession {
         }
 
         @Override
-        public boolean isLife() {
-            return !closed;
-        }
-
-        @Override
         public boolean mustBeClosed() {
             return false; // holds no resources
         }

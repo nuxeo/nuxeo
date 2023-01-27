@@ -283,17 +283,6 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
-     * May be called by implementing classes to open a session on the repository.
-     *
-     * @return the session (also available in {@code session} field)
-     * @deprecated since 8.1. Use {@link #openSystemSession()}.
-     */
-    @Deprecated
-    public CoreSession initSession() {
-        return initSession(repositoryName);
-    }
-
-    /**
      * May be called by implementing classes to open a System session on the repository.
      *
      * @since 8.1
@@ -322,20 +311,6 @@ public abstract class AbstractWork implements Work {
         }
 
         session = CoreInstance.getCoreSession(repositoryName);
-    }
-
-    /**
-     * May be called by implementing classes to open a session on the given repository.
-     *
-     * @param repositoryName the repository name
-     * @return the session (also available in {@code session} field)
-     * @deprecated since 8.1. Use {@link #openSystemSession()} to open a session on the configured repository name,
-     *             otherwise use {@link CoreInstance#getCoreSessionSystem(String)}.
-     */
-    @Deprecated
-    public CoreSession initSession(String repositoryName) {
-        session = CoreInstance.getCoreSessionSystem(repositoryName, originatingUsername);
-        return session;
     }
 
     /**

@@ -88,7 +88,7 @@ public class TestEsIterableQueryResultImpl {
         EsIterableQueryResultImpl iterable = new EsIterableQueryResultImpl(spiedEss, res);
         assertEquals(100, iterable.size());
         assertEquals(0, iterable.pos());
-        assertTrue(iterable.isLife());
+        assertTrue(iterable.mustBeClosed());
         assertTrue(iterable.hasNext());
 
         List<Map<String, Serializable>> rows = new ArrayList<>(100);

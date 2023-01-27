@@ -42,17 +42,6 @@ public class DeltaLong extends Delta {
     }
 
     /**
-     * A {@link DeltaLong} with the given base and delta.
-     *
-     * @deprecated since 8.3, use {@link #DeltaLong(Long, long)} instead.
-     */
-    @Deprecated
-    public DeltaLong(long base, long delta) {
-        this.base = Long.valueOf(base);
-        this.delta = delta;
-    }
-
-    /**
      * Returns a {@link DeltaLong} from the given base number and delta.
      * <p>
      * The base number may be a {@link Long} (which may be null), or a {@link DeltaLong}. If it is a {@link DeltaLong}
@@ -75,22 +64,6 @@ public class DeltaLong extends Delta {
         } else {
             throw new IllegalArgumentException(base.getClass().getName());
         }
-    }
-
-    /**
-     * Returns a {@link DeltaLong} from the given base number and delta.
-     * <p>
-     * The base number may be a {@link Long} (which may be null), or a {@link DeltaLong}. If it is a {@link DeltaLong}
-     * then the returned value will keep its base and just add deltas.
-     *
-     * @param base the base number
-     * @param delta the delta
-     * @return a {@link DeltaLong}
-     * @deprecated since 8.3, use {@link #valueOf(Number, long)} instead.
-     */
-    @Deprecated
-    public static DeltaLong deltaOrLong(Number base, long delta) {
-        return valueOf(base, delta);
     }
 
     @Override

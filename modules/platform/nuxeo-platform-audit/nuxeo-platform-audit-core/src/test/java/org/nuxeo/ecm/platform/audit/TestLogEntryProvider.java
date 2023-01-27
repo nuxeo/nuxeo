@@ -36,7 +36,6 @@ import javax.persistence.EntityManager;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
@@ -119,29 +118,12 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     }
 
     @Test
-    public void testByUUID() {
-        LogEntry entry = doCreateEntryAndPersist("id");
-        providerUnderTest.addLogEntry(entry);
-        List<LogEntry> fetchedEntries = providerUnderTest.getLogEntriesFor("id");
-        assertNotNull(fetchedEntries);
-        int entriesCount = fetchedEntries.size();
-        assertEquals(1, entriesCount);
-        LogEntry fetchedEntry = fetchedEntries.get(0);
-        assertNotNull(fetchedEntry);
-        assertEquals("id", fetchedEntry.getDocUUID());
-    }
-
-    @Test
     public void testByUuidAndRepository() {
         LogEntry entry1 = doCreateEntryAndPersist("id", "repository1");
         providerUnderTest.addLogEntry(entry1);
         LogEntry entry2 = doCreateEntryAndPersist("id", "repository2");
         providerUnderTest.addLogEntry(entry2);
 
-        List<LogEntry> fetchedEntries = providerUnderTest.getLogEntriesFor("id");
-        assertNotNull(fetchedEntries);
-        int entriesCount = fetchedEntries.size();
-        assertEquals(2, entriesCount);
         List<LogEntry> fetchedEntries1 = providerUnderTest.getLogEntriesFor("id", "repository1");
         assertNotNull(fetchedEntries1);
         int entriesCount1 = fetchedEntries1.size();
@@ -159,25 +141,6 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertNotNull(fetchedEntry2);
         assertEquals("id", fetchedEntry2.getDocUUID());
         assertEquals("repository2", fetchedEntry2.getRepositoryId());
-    }
-
-    @Test
-    public void testByFilter() throws Exception {
-        LogEntry one = doCreateEntryAndPersist("id");
-        Thread.sleep(1000);
-        doCreateEntryAndPersist("id");
-
-        Map<String, FilterMapEntry> filters = new HashMap<>();
-        FilterMapEntry filterOne = new FilterMapEntry();
-        filterOne.setQueryParameterName("yop");
-        filterOne.setColumnName("eventDate");
-        filterOne.setOperator("=");
-        filterOne.setObject(one.getEventDate());
-        filters.put("oups", filterOne);
-        List<LogEntry> entries = providerUnderTest.getLogEntriesFor("id", filters, true);
-        assertNotNull(entries);
-        assertEquals(1, entries.size());
-        assertEquals(one.getId(), entries.get(0).getId());
     }
 
     @Test

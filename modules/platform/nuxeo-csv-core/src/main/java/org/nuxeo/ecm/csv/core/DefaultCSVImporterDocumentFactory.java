@@ -134,13 +134,6 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
     }
 
     @Override
-    @Deprecated
-    public boolean exists(CoreSession session, String parentPath, String name, String type,
-            Map<String, Serializable> values) {
-        return exists(session, parentPath, name, null);
-    }
-
-    @Override
     public void setImporterOptions(CSVImporterOptions importerOptions) {
         this.importerOptions = importerOptions;
     }

@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
@@ -96,7 +95,6 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     protected DocumentModel readEntity(JsonNode jn) throws IOException {
         DocumentModel doc = getDocument(jn);
 
@@ -106,12 +104,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             List<Property> properties = readEntity(List.class, genericType, propsNode);
             for (Property property : properties) {
                 // security has been applied in previous step while reading properties
-                Framework.doPrivileged(() -> {
-                    DocumentPart part = doc.getPart(property.getSchema().getName());
-                    if (part != null) {
-                        part.set(property.getName(), property);
-                    }
-                });
+                Framework.doPrivileged(() -> doc.setPropertyObject(property));
             }
         }
 

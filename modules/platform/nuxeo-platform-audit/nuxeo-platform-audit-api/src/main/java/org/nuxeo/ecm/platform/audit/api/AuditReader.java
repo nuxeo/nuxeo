@@ -54,20 +54,6 @@ public interface AuditReader {
     }
 
     /**
-     * Returns the logs given a doc uuid.
-     *
-     * @param uuid the document uuid
-     * @return a list of log entries
-     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String)} instead.
-     */
-    @Deprecated
-    default List<LogEntry> getLogEntriesFor(String uuid) {
-        return queryLogs(
-                new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, uuid))
-                                       .defaultOrder());
-    }
-
-    /**
      * Returns a given log entry given its id.
      *
      * @param id the log entry identifier

@@ -44,10 +44,6 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
     public static final String PROPERTY_FILE_SUFFIX = ".properties";
 
-    /** @deprecated since 8.3 misspelled */
-    @Deprecated
-    public static final String PROPERTY_FILE_SUFIX = PROPERTY_FILE_SUFFIX;
-
     protected static IndividualMetadataCollector collector = new IndividualMetadataCollector();
 
     public FileWithIndividualMetadasSourceNode(File file) {
@@ -106,12 +102,6 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
             }
         }
         return children;
-    }
-
-    /** @deprecated since 8.3 unused. */
-    @Deprecated
-    protected boolean isPropertyFile(File file) {
-        return file.getName().endsWith(PROPERTY_FILE_SUFFIX);
     }
 
     public static String getFileNameNoExt(File file) {

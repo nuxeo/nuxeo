@@ -156,7 +156,6 @@ public class RenderingContextImpl implements RenderingContext {
         return result;
     }
 
-    @SuppressWarnings("deprecation")
     private Set<String> getSplittedParameterValues(char separator, String category, String... subCategories) {
         if (category == null) {
             return Collections.emptySet();

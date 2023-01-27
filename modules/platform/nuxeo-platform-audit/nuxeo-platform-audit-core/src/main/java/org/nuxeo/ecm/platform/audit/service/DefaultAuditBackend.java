@@ -154,11 +154,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
-    public List<LogEntry> getLogEntriesFor(final String uuid) {
-        return apply(false, provider -> provider.getLogEntriesFor(uuid));
-    }
-
-    @Override
     public LogEntry getLogEntryByID(final long id) {
         return apply(false, provider -> provider.getLogEntryByID(id));
     }

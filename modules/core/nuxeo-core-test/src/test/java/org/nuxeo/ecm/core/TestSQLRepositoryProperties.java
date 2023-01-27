@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,6 +72,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -1272,14 +1274,14 @@ public class TestSQLRepositoryProperties {
     public void testPropertyIsSameAsBlob() {
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
-        DocumentPart part = doc.getPart("file");
+        DocumentPart part = ((DocumentModelImpl) doc).getPart("file");
         assertTrue(part.isSameAs(part));
 
         DocumentModel doc2 = session.createDocumentModel("/", "file2", "File");
         Blob blob2 = Blobs.createBlob("hello world!");
         doc2.setPropertyValue("file:content", (Serializable) blob2);
         doc2 = session.createDocument(doc2);
-        DocumentPart part2 = doc2.getPart("file");
+        DocumentPart part2 = ((DocumentModelImpl) doc2).getPart("file");
         assertTrue(part2.isSameAs(part2));
 
         assertFalse(part2.isSameAs(part));
@@ -1291,7 +1293,7 @@ public class TestSQLRepositoryProperties {
         Blob blob3 = Blobs.createBlob("hello world!");
         doc3.setPropertyValue("file:content", (Serializable) blob3);
         doc3 = session.createDocument(doc3);
-        DocumentPart part3 = doc3.getPart("file");
+        DocumentPart part3 = ((DocumentModelImpl) doc3).getPart("file");
         assertTrue(part2.isSameAs(part3));
 
         // different blob content
@@ -1300,7 +1302,7 @@ public class TestSQLRepositoryProperties {
         Blob blob4 = Blobs.createBlob("this is goodbye");
         doc4.setPropertyValue("file:content", (Serializable) blob4);
         doc4 = session.createDocument(doc4);
-        DocumentPart part4 = doc4.getPart("file");
+        DocumentPart part4 = ((DocumentModelImpl) doc4).getPart("file");
         assertFalse(part2.isSameAs(part4));
 
         // compare directly two StorageBlobs
