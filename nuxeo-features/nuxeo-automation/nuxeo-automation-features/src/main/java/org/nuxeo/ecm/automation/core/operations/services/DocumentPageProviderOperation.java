@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -131,6 +133,18 @@ public class DocumentPageProviderOperation {
         Long currentOffset = offset != null ? offset.longValue() : null;
 
         Object[] parameters = strParameters != null ? strParameters.toArray(new String[0]) : null;
+
+        String ppMethod = Framework.getProperty("org.nuxeo.web.ui.pageprovider.method");
+        if (strParameters != null && ppMethod != null && "post".equals(ppMethod.toLowerCase())) {
+            // Dirty hack to make NXP-29126 work with nxql search
+            int count = StringUtils.countMatches(def.getPattern(), '?');
+            if (count == 1 && strParameters.size() > 1) {
+                // pattern has a single '?' but there are many parameters
+                // let's join them to form the original NXQL query that contained commas
+                parameters = new Object[] { String.join(",", strParameters.toArray(new String[0])) };
+            }
+        }
+
         ActionContext actionContext = (ActionContext) context.get(GetActions.SEAM_ACTION_CONTEXT);
         if (actionContext != null) {
             parameters = PageProviderHelper.resolveELParameters(def, parameters);

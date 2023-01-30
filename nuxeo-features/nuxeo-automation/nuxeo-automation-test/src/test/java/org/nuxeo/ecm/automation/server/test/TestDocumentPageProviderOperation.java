@@ -22,6 +22,7 @@ package org.nuxeo.ecm.automation.server.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @since 10.10
@@ -85,5 +87,29 @@ public class TestDocumentPageProviderOperation {
                                                            .execute();
         assertNotNull(documentsWithOffset);
         assertEquals(documents.get(offset + 1).getId(), documentsWithOffset.get(1).getId());
+    }
+
+    // NXP-31595
+    @Test
+    @WithFrameworkProperty(name = "org.nuxeo.web.ui.pageprovider.method", value = "POST")
+    public void testNXQLWithDocumentPageProviderOperation() throws IOException {
+        Documents documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
+                                                 .set("providerName", "NXQLPageProvider")
+                                                 .set("queryParams", "Select * FROM Domain, SectionRoot")
+                                                 .execute();
+        assertNotNull(documents);
+        assertEquals(2, documents.size());
+        assertTrue(documents.list().stream().anyMatch(doc -> "Domain".equals(doc.getType())));
+        assertTrue(documents.list().stream().anyMatch(doc -> "SectionRoot".equals(doc.getType())));
+
+        // Check we do not break other page provider with org.nuxeo.web.ui.pageprovider.method=POST
+        documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
+                                       .set("providerName", "PageProvider")
+                                       .execute();
+        assertNotNull(documents);
+        documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
+                                       .set("providerName", "QuickFilterPageProvider")
+                                       .execute();
+        assertNotNull(documents);
     }
 }
