@@ -4,6 +4,10 @@
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
 
+    <coreQueryPageProvider name="NXQLPageProvider">
+      <pattern quoteParameters="false" escapeParameters="false">?</pattern>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="PageProvider">
       <pattern>
         SELECT * FROM Document
