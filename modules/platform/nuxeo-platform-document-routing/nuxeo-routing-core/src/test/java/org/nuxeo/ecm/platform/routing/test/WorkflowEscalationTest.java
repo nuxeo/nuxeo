@@ -140,7 +140,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         TransactionHelper.commitOrRollbackTransaction();
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
-        assertEquals(0, workManager.getQueueSize("escalation", null));
+        assertEquals(0, getScheduledAndRunningWork());
         TransactionHelper.startTransaction();
 
     }
@@ -181,7 +181,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         TransactionHelper.commitOrRollbackTransaction();
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
-        assertEquals(0, workManager.getQueueSize("escalation", null));
+        assertEquals(0, getScheduledAndRunningWork());
         TransactionHelper.startTransaction();
 
         // fetch node doc to check that the rule is marked as executed
@@ -251,7 +251,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         // check that the rule was executed
         TransactionHelper.commitOrRollbackTransaction();
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
-        assertEquals(0, workManager.getQueueSize("escalation", null));
+        assertEquals(0, getScheduledAndRunningWork());
         TransactionHelper.startTransaction();
         doc = session.getDocument(doc.getRef());
         assertEquals("title 1", doc.getTitle());
@@ -268,7 +268,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         // check that the rule was executed
         TransactionHelper.commitOrRollbackTransaction();
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
-        assertEquals(0, workManager.getQueueSize("escalation", null));
+        assertEquals(0, getScheduledAndRunningWork());
         TransactionHelper.startTransaction();
         doc = session.getDocument(doc.getRef());
         assertEquals("title 2", doc.getTitle());
@@ -284,7 +284,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         escalationService.scheduleExecution(rules.get(2), session);
         TransactionHelper.commitOrRollbackTransaction();
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
-        assertEquals(0, workManager.getQueueSize("escalation", null));
+        assertEquals(0, getScheduledAndRunningWork());
         TransactionHelper.startTransaction();
 
         // check that the rules were executed
@@ -378,4 +378,8 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         return m;
     }
 
+    protected int getScheduledAndRunningWork() {
+        var metrics = workManager.getMetrics("escalation");
+        return metrics.getScheduled().intValue() + metrics.getRunning().intValue();
+    }
 }

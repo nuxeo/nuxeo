@@ -246,7 +246,6 @@ public class LayoutFunctions {
         builder.append(";");
 
         builder.append(widgetDef.isTranslated()).append(";");
-        builder.append(widgetDef.isHandlingLabels()).append(";");
 
         Map<String, String> modes = widgetDef.getModes();
         if (modes != null) {

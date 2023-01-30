@@ -75,7 +75,7 @@ public class ACLUtils {
         for (int i = s0, k = s1; i < len; i++, k++) {
             ACE ace = aces[i];
             UserEntry entry = new UserEntryImpl(ace.getUsername());
-            entry.addPrivilege(ace.getPermission(), ace.isGranted(), false);
+            entry.addPrivilege(ace.getPermission(), ace.isGranted());
             entries[k] = entry;
         }
     }

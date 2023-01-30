@@ -80,24 +80,6 @@ public interface DocumentRoutingService {
             boolean startInstance);
 
     /**
-     * @deprecated since 5.6, use other APIs
-     */
-    @Deprecated
-    DocumentRoute createNewInstance(DocumentRoute model, String documentId, CoreSession session, boolean startInstance);
-
-    /**
-     * @deprecated since 5.6, use other APIs
-     */
-    @Deprecated
-    DocumentRoute createNewInstance(DocumentRoute model, List<String> documentIds, CoreSession session);
-
-    /**
-     * @deprecated since 5.6, use other APIs
-     */
-    @Deprecated
-    DocumentRoute createNewInstance(DocumentRoute model, String documentId, CoreSession session);
-
-    /**
      * Starts an instance that was created with {@link #createNewInstance} but with {@code startInstance = false}.
      *
      * @param routeInstanceId the route instance id
@@ -232,14 +214,6 @@ public interface DocumentRoutingService {
      * @see #getDocumentRoutesForAttachedDocument(CoreSession, String, List) for route running or ready.
      */
     List<DocumentRoute> getDocumentRoutesForAttachedDocument(CoreSession session, String attachedDocId);
-
-    /**
-     * if the user can validate a route.
-     *
-     * @deprecated use {@link #canValidateRoute(DocumentModel, CoreSession)} instead.
-     */
-    @Deprecated
-    boolean canUserValidateRoute(NuxeoPrincipal currentUser);
 
     /**
      * Checks if the principal that created the client session can validate the route

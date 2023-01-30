@@ -68,7 +68,6 @@ public class WidgetDefinitionJsonWriter extends AbstractLayoutJsonWriter<WidgetD
         }
 
         jg.writeBooleanField("translated", entity.isTranslated());
-        jg.writeBooleanField("handlingLabels", entity.isHandlingLabels());
 
         Map<String, String> widgetModes = entity.getModes();
         if (MapUtils.isNotEmpty(widgetModes)) {

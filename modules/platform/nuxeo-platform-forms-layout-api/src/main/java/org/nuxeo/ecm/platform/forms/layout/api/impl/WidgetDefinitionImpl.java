@@ -55,12 +55,6 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     protected boolean translated = false;
 
-    /**
-     * @deprecated since 5.7: use {@link #controls} instead
-     */
-    @Deprecated
-    protected boolean handlingLabels = false;
-
     protected Map<String, String> modes;
 
     protected FieldDefinition[] fieldDefinitions;
@@ -368,24 +362,6 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         this.translated = translated;
     }
 
-    @Override
-    public boolean isHandlingLabels() {
-        // migration code
-        Map<String, Serializable> controls = getControls(BuiltinModes.ANY, BuiltinModes.ANY);
-        if (controls != null && controls.containsKey("handleLabels")) {
-            Serializable handling = controls.get("handleLabels");
-            if (handling != null) {
-                return Boolean.parseBoolean(handling.toString());
-            }
-        }
-        return handlingLabels;
-    }
-
-    @Override
-    public void setHandlingLabels(boolean handlingLabels) {
-        this.handlingLabels = handlingLabels;
-    }
-
     public static Map<String, Serializable> getProperties(Map<String, Map<String, Serializable>> properties, String mode) {
         Map<String, Serializable> res = new HashMap<>();
         if (properties != null) {
@@ -573,7 +549,6 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         clone.setTypeCategory(typeCategory);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubWidgetRefs);
-        clone.setHandlingLabels(handlingLabels);
         clone.setControls(ccontrols);
         if (aliases != null) {
             clone.setAliases(new ArrayList<>(aliases));
@@ -595,13 +570,25 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
             return true;
         }
         WidgetDefinitionImpl w = (WidgetDefinitionImpl) obj;
-        return new EqualsBuilder().append(name, w.name).append(type, w.type).append(typeCategory, w.typeCategory).append(
-                labels, w.labels).append(helpLabels, w.helpLabels).append(translated, w.translated).append(
-                handlingLabels, w.handlingLabels).append(modes, w.modes).append(fieldDefinitions, w.fieldDefinitions).append(
-                properties, w.properties).append(widgetModeProperties, w.widgetModeProperties).append(controls,
-                w.controls).append(subWidgets, w.subWidgets).append(subWidgetReferences, w.subWidgetReferences).append(
-                selectOptions, w.selectOptions).append(renderingInfos, w.renderingInfos).append(aliases, w.aliases).append(
-                dynamic, w.dynamic).append(global, w.global).isEquals();
+        return new EqualsBuilder().append(name, w.name)
+                                  .append(type, w.type)
+                                  .append(typeCategory, w.typeCategory)
+                                  .append(labels, w.labels)
+                                  .append(helpLabels, w.helpLabels)
+                                  .append(translated, w.translated)
+                                  .append(modes, w.modes)
+                                  .append(fieldDefinitions, w.fieldDefinitions)
+                                  .append(properties, w.properties)
+                                  .append(widgetModeProperties, w.widgetModeProperties)
+                                  .append(controls, w.controls)
+                                  .append(subWidgets, w.subWidgets)
+                                  .append(subWidgetReferences, w.subWidgetReferences)
+                                  .append(selectOptions, w.selectOptions)
+                                  .append(renderingInfos, w.renderingInfos)
+                                  .append(aliases, w.aliases)
+                                  .append(dynamic, w.dynamic)
+                                  .append(global, w.global)
+                                  .isEquals();
     }
 
     /**

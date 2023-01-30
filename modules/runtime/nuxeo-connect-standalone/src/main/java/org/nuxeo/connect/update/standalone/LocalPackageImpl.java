@@ -61,24 +61,6 @@ public class LocalPackageImpl implements LocalPackage {
     private PackageUpdateService service;
 
     /**
-     * @deprecated Since 5.8. Use {@link #LocalPackageImpl(File, PackageState, PackageUpdateService)} instead.
-     */
-    @Deprecated
-    public LocalPackageImpl(File file, int state, PackageUpdateService pus) throws PackageException {
-        this(null, file, state, pus);
-    }
-
-    /**
-     * @deprecated Since 5.8. Use {@link #LocalPackageImpl(ClassLoader, File, PackageState, PackageUpdateService)}
-     *             instead.
-     */
-    @Deprecated
-    public LocalPackageImpl(ClassLoader parent, File file, int state, PackageUpdateService pus)
-            throws PackageException {
-        this(parent, file, PackageState.getByValue(state), pus);
-    }
-
-    /**
      * @since 5.7
      */
     public LocalPackageImpl(File file, PackageState state, PackageUpdateService pus) throws PackageException {

@@ -202,21 +202,6 @@ public interface WorkManager {
     boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
-     * Gets the number of work instances in a given queue in a defined state.
-     * <p>
-     *
-     * @param queueId the queue id
-     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, or {@code null} for non-completed ( {@link State#SCHEDULED SCHEDULED} or
-     *            {@link State#RUNNING RUNNING})
-     * @return the number of work instances in the given state
-     * @since 5.8
-     * @deprecated since 5.8,
-     */
-    @Deprecated
-    int getQueueSize(String queueId, State state);
-
-    /**
      * Gets the metrics for the {@code queueId}
      *
      * @since 8.3

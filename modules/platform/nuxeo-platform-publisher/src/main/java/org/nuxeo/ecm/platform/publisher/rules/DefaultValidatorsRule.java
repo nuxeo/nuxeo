@@ -20,14 +20,15 @@
 
 package org.nuxeo.ecm.platform.publisher.rules;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default NXP validator.
@@ -44,8 +45,12 @@ public class DefaultValidatorsRule implements ValidatorsRule {
         UnrestrictedACPGetter acpg = new UnrestrictedACPGetter(doc);
         acpg.runUnrestricted();
         String[] writePermissions = doc.getCoreSession().getPermissionsToCheck(SecurityConstants.WRITE);
-        String[] reviewers = acpg.acp.listUsernamesForAnyPermission(new HashSet<>(Arrays.asList(writePermissions)));
-        return reviewers;
+        var userManager = Framework.getService(UserManager.class);
+        return Stream.of(writePermissions).distinct().<String> mapMulti((perm, buffer) -> {
+            for (var user : userManager.getUsersForPermission(perm, acpg.acp)) {
+                buffer.accept(user);
+            }
+        }).distinct().toArray(String[]::new);
     }
 
     protected static class UnrestrictedACPGetter extends UnrestrictedSessionRunner {

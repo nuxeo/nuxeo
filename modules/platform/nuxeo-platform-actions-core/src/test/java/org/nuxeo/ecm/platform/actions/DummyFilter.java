@@ -21,14 +21,33 @@
 
 package org.nuxeo.ecm.platform.actions;
 
-import org.nuxeo.ecm.platform.actions.AbstractActionFilter;
-import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.actions.ActionContext;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class DummyFilter extends AbstractActionFilter {
+public class DummyFilter implements ActionFilter {
+
+    protected String id;
+
+    protected String[] actions;
+
+    protected DummyFilter() {
+        // for instantiation by reflection
+    }
+
+    protected DummyFilter(String id, String[] actions) {
+        this.id = id;
+        this.actions = actions;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @Override
     public boolean accept(Action action, ActionContext context) {
@@ -36,4 +55,13 @@ public class DummyFilter extends AbstractActionFilter {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return id;
+    }
+
+    @Override
+    public DummyFilter clone() {
+        throw new UnsupportedOperationException();
+    }
 }

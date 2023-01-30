@@ -69,12 +69,6 @@ public class WidgetImpl implements Widget {
 
     protected boolean translated = false;
 
-    /**
-     * @deprecated since 5.7: use {@link #controls} instead
-     */
-    @Deprecated
-    protected boolean handlingLabels = false;
-
     protected int level = 0;
 
     protected WidgetSelectOption[] selectOptions;
@@ -111,17 +105,6 @@ public class WidgetImpl implements Widget {
             FieldDefinition[] fields, String label, String helpLabel, boolean translated,
             Map<String, Serializable> properties, boolean required, Widget[] subWidgets, int level,
             WidgetSelectOption[] selectOptions, String definitionId, List<RenderingInfo> renderingInfos) {
-        this(layoutName, name, mode, type, valueName, fields, label, helpLabel, translated, false, properties,
-                required, subWidgets, level, selectOptions, definitionId, renderingInfos);
-    }
-
-    /**
-     * @since 5.6
-     */
-    public WidgetImpl(String layoutName, String name, String mode, String type, String valueName,
-            FieldDefinition[] fields, String label, String helpLabel, boolean translated, boolean handlingLabels,
-            Map<String, Serializable> properties, boolean required, Widget[] subWidgets, int level,
-            WidgetSelectOption[] selectOptions, String definitionId, List<RenderingInfo> renderingInfos) {
         this.layoutName = layoutName;
         this.name = name;
         this.mode = mode;
@@ -131,7 +114,6 @@ public class WidgetImpl implements Widget {
         this.label = label;
         this.helpLabel = helpLabel;
         this.translated = translated;
-        this.handlingLabels = handlingLabels;
         this.properties = properties;
         this.required = required;
         this.subWidgets = subWidgets;
@@ -220,8 +202,7 @@ public class WidgetImpl implements Widget {
                 return Boolean.parseBoolean(handling.toString());
             }
         }
-        // BBB
-        return handlingLabels;
+        return false;
     }
 
     @Override
@@ -368,8 +349,6 @@ public class WidgetImpl implements Widget {
         sb.append(helpLabel);
         sb.append(", translated=");
         sb.append(translated);
-        sb.append(", handlingLabels=");
-        sb.append(handlingLabels);
         sb.append(", required=");
         sb.append(required);
         sb.append(", properties=");

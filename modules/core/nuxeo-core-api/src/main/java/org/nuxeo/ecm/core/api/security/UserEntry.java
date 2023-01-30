@@ -50,12 +50,4 @@ public interface UserEntry extends Serializable {
      */
     void addPrivilege(String permission, boolean granted);
 
-    /**
-     * Adds a permission for this username.
-     *
-     * @deprecated since 5.9.4 readonly is not used
-     */
-    @Deprecated
-    void addPrivilege(String permission, boolean granted, boolean readOnly);
-
 }

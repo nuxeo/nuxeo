@@ -190,7 +190,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             return null;
         } else if (state == State.SCHEDULED) {
             String queueId = workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION);
-            long queueSize = workManager.getQueueSize(queueId, State.SCHEDULED);
+            long queueSize = workManager.getMetrics(queueId).getScheduled().longValue();
             return new VideoConversionStatus(VideoConversionStatus.STATUS_CONVERSION_QUEUED, 0L, queueSize);
         } else { // RUNNING
             return new VideoConversionStatus(VideoConversionStatus.STATUS_CONVERSION_PENDING, 0L, 0L);

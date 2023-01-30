@@ -29,17 +29,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.api.security.Access.GRANT;
 import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.RESTRICTED_READ;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -141,29 +137,6 @@ public class TestACP {
         assertSame(UNKNOWN, acp.getAccess("joe", READ));
         assertSame(UNKNOWN, acp.getAccess("joe", RESTRICTED_READ));
         assertSame(UNKNOWN, acp.getAccess("jack", READ));
-    }
-
-    @Test
-    public void testPermissionsAPI() {
-        ACL acl = new ACLImpl("acl1");
-
-        ACE bart = new ACE("bart", EVERYTHING, true);
-        ACE notbart = new ACE("notbart", EVERYTHING, false);
-        ACE homer = new ACE("homer", BROWSE, true);
-        ACE lisa = new ACE("lisa", BROWSE, true);
-
-        acl.add(bart);
-        acl.add(notbart);
-        acl.add(homer);
-        acl.add(lisa);
-        acp.addACL(acl);
-
-        Set<String> perms = new HashSet<>(3);
-        perms.add(BROWSE);
-        perms.add(READ);
-        perms.add(WRITE);
-        String[] usernames = acp.listUsernamesForAnyPermission(perms);
-        assertEquals(2, usernames.length);
     }
 
     @Test

@@ -112,60 +112,6 @@ public interface AutomationService {
     Object run(OperationContext ctx, String id, Map<String, ?> params) throws OperationException;
 
     /**
-     * Registers a parametrized operation chain. This chain can be executed later by calling <code>run</code> and
-     * passing the chain ID. If a chain having the same ID exists an exception is thrown
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #putOperation(OperationType, boolean)} method instead.
-     * @since 5.7.2
-     */
-    @Deprecated
-    void putOperationChain(OperationChain chain) throws OperationException;
-
-    /**
-     * Registers a parametrized operation chain. This chain can be executed later by calling <code>run</code> and
-     * passing the chain ID. If the replace attribute is true then any chain already registered under the same id will
-     * be replaced otherwise an exception is thrown.
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #putOperation(OperationType, boolean)} method instead.
-     * @since 5.7.2
-     */
-    @Deprecated
-    void putOperationChain(OperationChain chain, boolean replace) throws OperationException;
-
-    /**
-     * Removes a registered operation chain given its ID. Do nothing if the chain was not registered.
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #removeOperation(OperationType)} method instead.
-     * @since 5.7.2
-     */
-    @Deprecated
-    void removeOperationChain(String id);
-
-    /**
-     * Gets a registered operation chain.
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use
-     *             {@link #getOperation(String)} method instead.
-     * @since 5.7.2
-     */
-    @Deprecated
-    OperationChain getOperationChain(String id) throws OperationNotFoundException;
-
-    /**
-     * Gets a list of all registered chains
-     *
-     * @deprecated since 5.9.2 no specific chain registry anymore: chains are now operations, use {@link #getOperations()} method
-     *             instead.
-     * @since 5.7.2
-     * @return the list or an empty list if no registered chains exists
-     */
-    @Deprecated
-    List<OperationChain> getOperationChains();
-
-    /**
      * Registers a new type adapter that can adapt an instance of the accepted type into one of the produced type.
      */
     void putTypeAdapter(Class<?> accept, Class<?> produce, TypeAdapter adapter);

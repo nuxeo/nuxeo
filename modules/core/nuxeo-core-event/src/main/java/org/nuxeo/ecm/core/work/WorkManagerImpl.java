@@ -671,11 +671,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
 
         public int getScheduledOrRunningSize() {
-            int ret = 0;
-            for (String queueId : getWorkQueueIds()) {
-                ret += getQueueSize(queueId, null);
-            }
-            return ret;
+            return getWorkQueueIds().stream()
+                                    .map(WorkManagerImpl.this::getMetrics)
+                                    .mapToInt(m -> m.getScheduled().intValue() + m.getRunning().intValue())
+                                    .sum();
         }
 
         @Override
@@ -910,21 +909,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public int getQueueSize(String queueId, State state) {
-        WorkQueueMetrics metrics = getMetrics(queueId);
-        if (state == null) {
-            return metrics.scheduled.intValue() + metrics.running.intValue();
-        }
-        if (state == State.SCHEDULED) {
-            return metrics.scheduled.intValue();
-        } else if (state == State.RUNNING) {
-            return metrics.running.intValue();
-        } else {
-            throw new IllegalArgumentException(String.valueOf(state));
-        }
-    }
-
-    @Override
     public boolean awaitCompletion(long duration, TimeUnit unit) throws InterruptedException {
         return awaitCompletion(null, duration, unit);
     }
@@ -974,9 +958,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         if (!isProcessingEnabled(queueId)) {
             return getExecutor(queueId).runningCount.getCount() == 0L;
         }
-        if (getQueueSize(queueId, null) > 0) {
-            log.trace("{} not empty, sched: {}, running: {}", () -> queueId,
-                    () -> getQueueSize(queueId, State.SCHEDULED), () -> getQueueSize(queueId, State.RUNNING));
+        var metrics = getMetrics(queueId);
+        if (metrics.getScheduled().intValue() + metrics.getRunning().intValue() > 0) {
+            log.trace("{} not empty, sched: {}, running: {}", () -> queueId, metrics::getScheduled,
+                    metrics::getRunning);
             return false;
         }
         log.trace("{} is completed", queueId);

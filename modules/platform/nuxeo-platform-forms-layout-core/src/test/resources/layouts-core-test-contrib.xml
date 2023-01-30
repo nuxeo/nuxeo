@@ -263,7 +263,6 @@
           <label mode="edit">help text</label>
         </helpLabels>
         <translated>true</translated>
-        <handlingLabels>true</handlingLabels>
         <fields>
           <field>dc:title</field>
         </fields>
@@ -277,6 +276,9 @@
         <properties mode="create">
           <property name="rendered">false</property>
         </properties>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
       </widget>
       <widget name="subjects" type="list">
         <widgetModes>

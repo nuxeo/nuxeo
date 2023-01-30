@@ -36,6 +36,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -414,7 +415,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         }
         UserEntry userEntry = new UserEntryImpl(username);
         for (String perm : perms) {
-            userEntry.addPrivilege(perm, true, false);
+            userEntry.addPrivilege(perm, true);
         }
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);

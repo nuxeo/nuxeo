@@ -117,20 +117,20 @@ public class AsyncEventExecutor {
 
     public int getUnfinishedCount() {
         WorkManager workManager = getWorkManager();
-        int n = 0;
-        for (String queueId : workManager.getWorkQueueIds()) {
-            n += workManager.getQueueSize(queueId, State.SCHEDULED) + workManager.getQueueSize(queueId, State.RUNNING);
-        }
-        return n;
+        return workManager.getWorkQueueIds()
+                          .stream()
+                          .map(workManager::getMetrics)
+                          .mapToInt(m -> m.getScheduled().intValue() + m.getRunning().intValue())
+                          .sum();
     }
 
     public int getActiveCount() {
         WorkManager workManager = getWorkManager();
-        int n = 0;
-        for (String queueId : workManager.getWorkQueueIds()) {
-            n += workManager.getQueueSize(queueId, State.RUNNING);
-        }
-        return n;
+        return workManager.getWorkQueueIds()
+                .stream()
+                .map(workManager::getMetrics)
+                .mapToInt(m -> m.getRunning().intValue())
+                .sum();
     }
 
     protected static class ListenerWork extends AbstractWork {

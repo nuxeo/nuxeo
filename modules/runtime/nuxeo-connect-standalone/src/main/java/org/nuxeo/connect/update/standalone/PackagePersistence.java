@@ -258,19 +258,6 @@ public class PackagePersistence {
     }
 
     /**
-     * @deprecated Since 5.7. Use {@link #updateState(String, PackageState)} instead.
-     */
-    @Deprecated
-    public synchronized void updateState(String id, int state) throws PackageException {
-        states.put(id, PackageState.getByValue(state));
-        try {
-            writeStates();
-        } catch (IOException e) {
-            throw new PackageException("Failed to write package states", e);
-        }
-    }
-
-    /**
      * @since 5.7
      */
     public synchronized void updateState(String id, PackageState state) throws PackageException {
@@ -283,7 +270,7 @@ public class PackagePersistence {
     }
 
     public synchronized void reset() throws PackageException {
-        String[] keys = states.keySet().toArray(new String[states.size()]);
+        String[] keys = states.keySet().toArray(String[]::new);
         for (String key : keys) {
             states.put(key, PackageState.DOWNLOADED);
         }

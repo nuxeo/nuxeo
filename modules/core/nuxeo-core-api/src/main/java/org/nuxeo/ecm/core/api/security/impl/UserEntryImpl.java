@@ -57,12 +57,6 @@ public class UserEntryImpl implements UserEntry {
     }
 
     @Override
-    @Deprecated
-    public void addPrivilege(String permission, boolean granted, boolean readOnly) {
-        addPrivilege(permission, granted);
-    }
-
-    @Override
     public String getUserName() {
         return username;
     }

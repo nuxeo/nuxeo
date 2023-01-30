@@ -58,12 +58,6 @@ public class FrameworkLoader {
 
     public static final String HOST_VERSION = "org.nuxeo.app.host.version";
 
-    /**
-     * @deprecated since 5.4.2 prefer use of {@link Environment#NUXEO_TMP_DIR}
-     */
-    @Deprecated
-    public static final String TMP_DIR = "org.nuxeo.app.tmp";
-
     public static final String LIBS = "org.nuxeo.app.libs"; // class path
 
     public static final String BUNDLES = "org.nuxeo.app.bundles"; // class path

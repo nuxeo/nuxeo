@@ -487,18 +487,6 @@ public class StreamWorkManager extends WorkManagerImpl {
         }
     }
 
-    @Override
-    public int getQueueSize(String queueId, Work.State state) {
-        switch (state) {
-        case SCHEDULED:
-            return getMetrics(queueId).getScheduled().intValue();
-        case RUNNING:
-            return getMetrics(queueId).getRunning().intValue();
-        default:
-            return 0;
-        }
-    }
-
     protected WorkQueueMetrics getMetricsWithNuxeoClassLoader(String queueId) {
         long now = System.currentTimeMillis();
         if (lastMetrics != null && lastMetrics.queueId == queueId

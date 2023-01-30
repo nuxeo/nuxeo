@@ -200,7 +200,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
     @Deprecated
     @Override
     public void setPackageState(LocalPackage pkg, int state) throws PackageException {
-        persistence.updateState(pkg.getId(), state);
+        persistence.updateState(pkg.getId(), PackageState.getByValue(state));
         pkg.setState(state);
     }
 

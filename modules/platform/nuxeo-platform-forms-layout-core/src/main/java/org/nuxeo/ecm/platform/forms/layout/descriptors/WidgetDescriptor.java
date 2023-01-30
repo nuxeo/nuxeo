@@ -89,14 +89,6 @@ public class WidgetDescriptor {
     @XNode("translated")
     boolean translated = true;
 
-    /**
-     * @since 5.6
-     * @deprecated since 5.7: use {@link #controls} instead, with name "handleLabels".
-     */
-    @Deprecated
-    @XNode("handlingLabels")
-    boolean handlingLabels = false;
-
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<>();
 
@@ -389,7 +381,6 @@ public class WidgetDescriptor {
                 cfieldDefinitions, getProperties(), getWidgetModeProperties(), csubWidgets, cselectOptions);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubwidgetRefs);
-        clone.setHandlingLabels(handlingLabels);
         clone.setControls(getControls());
         clone.setTypeCategory(typeCategory);
         if (aliases != null) {

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -230,31 +229,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         return operationParameters;
     }
 
-    @Override
-    public void putOperationChain(OperationChain chain) throws OperationException {
-        putOperationChain(chain, false);
-    }
-
-    final Map<String, OperationType> typeofChains = new HashMap<>();
-
-    @Override
-    public void putOperationChain(OperationChain chain, boolean replace) throws OperationException {
-        final OperationType typeof = OperationType.typeof(chain, replace);
-        this.putOperation(typeof, replace);
-        typeofChains.put(chain.getId(), typeof);
-    }
-
-    @Override
-    public void removeOperationChain(String id) {
-        OperationType typeof = operations.lookup().get(id);
-        if (typeof == null) {
-            throw new IllegalArgumentException("no such chain " + id);
-        }
-        this.removeOperation(typeof);
-    }
-
-    @Override
-    public OperationChain getOperationChain(String id) throws OperationNotFoundException {
+    protected OperationChain getOperationChain(String id) throws OperationNotFoundException {
         OperationType type = getOperation(id);
         if (type instanceof ChainTypeImpl) {
             return ((ChainTypeImpl) type).chain;
@@ -262,21 +237,6 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         OperationChain chain = new OperationChain(id);
         chain.add(id);
         return chain;
-    }
-
-    @Override
-    public List<OperationChain> getOperationChains() {
-        List<ChainTypeImpl> chainsType = new ArrayList<>();
-        List<OperationChain> chains = new ArrayList<>();
-        for (OperationType operationType : operations.lookup().values()) {
-            if (operationType instanceof ChainTypeImpl) {
-                chainsType.add((ChainTypeImpl) operationType);
-            }
-        }
-        for (ChainTypeImpl chainType : chainsType) {
-            chains.add(chainType.getChain());
-        }
-        return chains;
     }
 
     @Override

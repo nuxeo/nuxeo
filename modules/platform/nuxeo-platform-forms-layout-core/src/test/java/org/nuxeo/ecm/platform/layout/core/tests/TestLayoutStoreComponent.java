@@ -94,7 +94,6 @@ public class TestLayoutStoreComponent {
         assertEquals("", title.getLabel(BuiltinModes.EDIT));
         assertEquals("help text", title.getHelpLabel(BuiltinModes.EDIT));
         assertTrue(title.isTranslated());
-        assertTrue(title.isHandlingLabels());
         FieldDefinition[] fieldDefs = title.getFieldDefinitions();
         assertEquals(1, fieldDefs.length);
         assertNull(fieldDefs[0].getSchemaName());
@@ -109,6 +108,10 @@ public class TestLayoutStoreComponent {
         assertEquals("styleClass", editProps.get("styleClass"));
         assertEquals("#{!currentUser.administrator}", editProps.get("required"));
         assertEquals("false", editProps.get("rendered"));
+        // controls
+        Map<String, Serializable> anyControls = title.getControls(BuiltinModes.ANY, BuiltinModes.ANY);
+        assertEquals(1, anyControls.size());
+        assertEquals("true", anyControls.get("handleLabels"));
 
         WidgetDefinition subjects = dublincore.getWidgetDefinition("subjects");
         assertNotNull(subjects);

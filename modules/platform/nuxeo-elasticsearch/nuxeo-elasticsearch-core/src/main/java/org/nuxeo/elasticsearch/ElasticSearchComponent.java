@@ -316,16 +316,14 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public long getPendingWorkerCount() {
         WorkManager wm = Framework.getService(WorkManager.class);
-        // api is deprecated for completed work
-        return wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
+        return wm.getMetrics(INDEXING_QUEUE_ID).scheduled.longValue();
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public long getRunningWorkerCount() {
         WorkManager wm = Framework.getService(WorkManager.class);
-        // api is deprecated for completed work
-        return runIndexingWorkerCount.get() + wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.RUNNING);
+        return runIndexingWorkerCount.get() + wm.getMetrics(INDEXING_QUEUE_ID).getRunning().longValue();
     }
 
     @Override

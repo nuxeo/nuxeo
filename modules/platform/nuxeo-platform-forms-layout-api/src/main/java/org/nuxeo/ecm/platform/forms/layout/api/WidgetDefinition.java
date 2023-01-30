@@ -149,28 +149,6 @@ public interface WidgetDefinition extends Serializable {
     void setTranslated(boolean translated);
 
     /**
-     * Returns true if the widget is handling his own labels display (usual label and help label). This can be checked
-     * by the layout template to render the widget using both label and widget usual places.
-     * <p>
-     * Defaults to false.
-     *
-     * @since 5.6
-     * @deprecated since 5.7: this was added prematurely, see {@link #getControls()} for a more generic management of
-     *             rendering controls
-     */
-    @Deprecated
-    boolean isHandlingLabels();
-
-    /**
-     * @since 5.6
-     * @see #isHandlingLabels()
-     * @deprecated since 5.7: this was added prematurely, see {@link #setControls(Map)} for a more generic management of
-     *             rendering controls
-     */
-    @Deprecated
-    void setHandlingLabels(boolean handlingLabels);
-
-    /**
      * Returns a map of properties to use in a given mode.
      * <p>
      * A property value can be a string or an EL ValueExpression.

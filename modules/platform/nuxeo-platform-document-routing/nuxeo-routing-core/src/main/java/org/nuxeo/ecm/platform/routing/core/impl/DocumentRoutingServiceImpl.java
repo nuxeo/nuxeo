@@ -243,25 +243,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    @Deprecated
-    public DocumentRoute createNewInstance(DocumentRoute model, String documentId, CoreSession session,
-            boolean startInstance) {
-        return createNewInstance(model, Collections.singletonList(documentId), session, startInstance);
-    }
-
-    @Override
-    @Deprecated
-    public DocumentRoute createNewInstance(DocumentRoute model, List<String> documentIds, CoreSession session) {
-        return createNewInstance(model, documentIds, session, true);
-    }
-
-    @Override
-    @Deprecated
-    public DocumentRoute createNewInstance(DocumentRoute model, String documentId, CoreSession session) {
-        return createNewInstance(model, Collections.singletonList(documentId), session, true);
-    }
-
-    @Override
     public void startInstance(final String routeInstanceId, final List<String> docIds,
             final Map<String, Serializable> map, CoreSession s) {
         CoreInstance.doPrivileged(s, session -> {
@@ -512,11 +493,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             routes.add(model.getAdapter(DocumentRoute.class));
         }
         return routes;
-    }
-
-    @Override
-    public boolean canUserValidateRoute(NuxeoPrincipal currentUser) {
-        return currentUser.getGroups().contains(DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
     }
 
     @Override

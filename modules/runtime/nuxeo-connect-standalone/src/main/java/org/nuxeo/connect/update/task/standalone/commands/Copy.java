@@ -270,11 +270,6 @@ public class Copy extends AbstractCommand {
      *         replacing or appending to destination file.
      */
     protected String getContentToCopy(File fileToCopy, Map<String, String> prefs) throws PackageException {
-        // For compliance
-        String deprecatedContent = getContentToCopy(prefs);
-        if (deprecatedContent != null) {
-            return deprecatedContent;
-        }
         if (append) {
             try {
                 return FileUtils.readFileToString(fileToCopy, UTF_8);
@@ -284,15 +279,6 @@ public class Copy extends AbstractCommand {
         } else {
             return null;
         }
-    }
-
-    /**
-     * @deprecated Since 5.5, use {@link #getContentToCopy(File, Map)}. This method is missing the fileToCopy reference.
-     *             Using {@link #file} is leading to errors.
-     */
-    @Deprecated
-    protected String getContentToCopy(Map<String, String> prefs) throws PackageException {
-        return null;
     }
 
     @Override

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.context.ContextHelperDescriptor;
@@ -194,8 +196,12 @@ public class AutomationComponent extends DefaultComponent {
                 // ignore
             }
         } else if (XP_CHAINS.equals(extensionPoint)) {
-            OperationChainContribution occ = (OperationChainContribution) contribution;
-            service.removeOperationChain(occ.getId());
+            try {
+                OperationChainContribution occ = (OperationChainContribution) contribution;
+                service.removeOperation(service.getOperation(occ.getId()));
+            } catch (OperationNotFoundException e) {
+                log.debug("The operation chain with id: {} was not found", ((OperationChainContribution) contribution).getId(), e);
+            }
         } else if (XP_CHAIN_EXCEPTION.equals(extensionPoint)) {
             ChainExceptionDescriptor chainExceptionDescriptor = (ChainExceptionDescriptor) contribution;
             ChainException chainException = new ChainExceptionImpl(chainExceptionDescriptor);
@@ -255,15 +261,17 @@ public class AutomationComponent extends DefaultComponent {
      * @since 11.3
      */
     protected void checkOperationChains() {
-        List<OperationChain> chains = service.getOperationChains();
-        for (OperationChain chain : chains) {
-            List<OperationParameters> opps = chain.getOperations();
-            for (OperationParameters opp : opps) {
-                if (!service.hasOperation(opp.id())) {
-                    String msg = String.format("Operation chain with id '%s' references unknown operation with id '%s'",
-                            chain.getId(), opp.id());
-                    log.error(msg);
-                    addRuntimeMessage(Level.ERROR, msg);
+        for (var operationType : service.getOperations()) {
+            if (operationType instanceof ChainTypeImpl chainType) {
+                var chain = chainType.getChain();
+                for (OperationParameters opp : chain.getOperations()) {
+                    if (!service.hasOperation(opp.id())) {
+                        String msg = String.format(
+                                "Operation chain with id '%s' references unknown operation with id '%s'", chain.getId(),
+                                opp.id());
+                        log.error(msg);
+                        addRuntimeMessage(Level.ERROR, msg);
+                    }
                 }
             }
         }

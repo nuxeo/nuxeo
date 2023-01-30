@@ -53,174 +53,172 @@ public class TestAutomationJson {
         OperationType op = service.getOperation(chainId);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonWriter.writeOperation(out, op.getDocumentation(), true);
-        return new String(out.toByteArray());
+        return out.toString();
     }
 
-    protected void checkEquals(String expected, String actual) throws Exception {
+    protected void checkEquals(String expected, String actual) {
         JSONAssert.assertEquals(expected, actual, true);
     }
 
     @Test
     public void testEmptyChain() throws Exception {
         String chain = getJsonChain("empty_chain");
-        StringBuilder res = new StringBuilder();
-        res.append("{\n");
-        res.append("  \"id\" : \"empty_chain\",\n");
-        res.append("  \"label\" : \"empty_chain\",\n");
-        res.append("  \"category\" : \"Chain\",\n");
-        res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : null,\n");
-        res.append("  \"url\" : \"empty_chain\",\n");
-        res.append("  \"signature\" : [ \"void\", \"void\" ],\n");
-        res.append("  \"params\" : [ ],\n");
-        res.append("}");
-        checkEquals(res.toString(), chain);
+        String res = """
+                {
+                  "id" : "empty_chain",
+                  "label" : "empty_chain",
+                  "category" : "Chain",
+                  "requires" : null,
+                  "description" : null,
+                  "url" : "empty_chain",
+                  "signature" : [ "void", "void" ],
+                  "params" : [ ],
+                }""";
+        checkEquals(res, chain);
     }
 
     @Test
     public void testChain() throws Exception {
         String chain = getJsonChain("chain");
-        StringBuilder res = new StringBuilder();
-        res.append("{\n");
-        res.append("  \"id\" : \"chain\",\n");
-        res.append("  \"label\" : \"chain\",\n");
-        res.append("  \"category\" : \"Chain\",\n");
-        res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : \"My desc\",\n");
-        res.append("  \"url\" : \"chain\",\n");
-        res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ ],\n");
-        res.append("}");
-        checkEquals(res.toString(), chain);
+        String res = """
+                {
+                  "id" : "chain",
+                  "label" : "chain",
+                  "category" : "Chain",
+                  "requires" : null,
+                  "description" : "My desc",
+                  "url" : "chain",
+                  "signature" : [ "document", "document", "documents", "documents" ],
+                  "params" : [ ],
+                }""";
+        checkEquals(res, chain);
     }
 
     @Test
     public void testChainAlt() throws Exception {
         String chain = getJsonChain("chain_props");
-        StringBuilder res = new StringBuilder();
-        res.append("{\n");
-        res.append("  \"id\" : \"chain_props\",\n");
-        res.append("  \"label\" : \"chain_props\",\n");
-        res.append("  \"category\" : \"Chain\",\n");
-        res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : null,\n");
-        res.append("  \"url\" : \"chain_props\",\n");
-        res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ ],\n");
-        res.append("}");
-        checkEquals(res.toString(), chain);
+        String res = """
+                {
+                  "id" : "chain_props",
+                  "label" : "chain_props",
+                  "category" : "Chain",
+                  "requires" : null,
+                  "description" : null,
+                  "url" : "chain_props",
+                  "signature" : [ "document", "document", "documents", "documents" ],
+                  "params" : [ ],
+                }""";
+        checkEquals(res, chain);
     }
 
     @Test
     public void testChainWithParams() throws Exception {
         String chain = getJsonChain("chain_with_params");
-        StringBuilder res = new StringBuilder();
-        res.append("{\n");
-        res.append("  \"id\" : \"chain_with_params\",\n");
-        res.append("  \"label\" : \"chain_with_params\",\n");
-        res.append("  \"category\" : \"Chain\",\n");
-        res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : \"This is an awesome chain!\",\n");
-        res.append("  \"url\" : \"chain_with_params\",\n");
-        res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ {\n");
-        res.append("    \"name\" : \"foo\",\n");
-        res.append("    \"description\" : null,\n");
-        res.append("    \"type\" : \"string\",\n");
-        res.append("    \"required\" : false,\n");
-        res.append("    \"widget\" : null,\n");
-        res.append("    \"order\" : 0,\n");
-        res.append("    \"values\" : [ \"bar\" ]\n");
-        res.append("  }, {\n");
-        res.append("    \"name\" : \"foo2\",\n");
-        res.append("    \"description\" : \"yop\",\n");
-        res.append("    \"type\" : \"boolean\",\n");
-        res.append("    \"required\" : false,\n");
-        res.append("    \"widget\" : null,\n");
-        res.append("    \"order\" : 0,\n");
-        res.append("    \"values\" : [ ]\n");
-        res.append("  } ],\n");
-        res.append("}");
-        checkEquals(res.toString(), chain);
+        String res = """
+                {
+                  "id" : "chain_with_params",
+                  "label" : "chain_with_params",
+                  "category" : "Chain",
+                  "requires" : null,
+                  "description" : "This is an awesome chain!",
+                  "url" : "chain_with_params",
+                  "signature" : [ "document", "document", "documents", "documents" ],
+                  "params" : [ {
+                    "name" : "foo",
+                    "description" : null,
+                    "type" : "string",
+                    "required" : false,
+                    "widget" : null,
+                    "order" : 0,
+                    "values" : [ "bar" ]
+                  }, {
+                    "name" : "foo2",
+                    "description" : "yop",
+                    "type" : "boolean",
+                    "required" : false,
+                    "widget" : null,
+                    "order" : 0,
+                    "values" : [ ]
+                  } ],
+                }""";
+        checkEquals(res, chain);
     }
 
     @Test
     public void testChainSample() throws Exception {
         String chain = getJsonChain("chain_complex");
-        StringBuilder res = new StringBuilder();
-        res.append("{\n");
-        res.append("  \"id\" : \"chain_complex\",\n");
-        res.append("  \"label\" : \"chain_complex\",\n");
-        res.append("  \"category\" : \"Chain\",\n");
-        res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : null,\n");
-        res.append("  \"url\" : \"chain_complex\",\n");
-        res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ ],\n");
-        res.append("}");
-        checkEquals(res.toString(), chain);
+        String res = """
+                {
+                  "id" : "chain_complex",
+                  "label" : "chain_complex",
+                  "category" : "Chain",
+                  "requires" : null,
+                  "description" : null,
+                  "url" : "chain_complex",
+                  "signature" : [ "document", "document", "documents", "documents" ],
+                  "params" : [ ],
+                }""";
+        checkEquals(res, chain);
     }
 
     @Test
     public void testOperationTypeSetProperty() throws Exception {
         String chain = getJsonChain("Document.SetProperty");
-        StringBuilder res = new StringBuilder();
-        res.append("{\n");
-        res.append("  \"id\" : \"Document.SetProperty\",\n");
-        res.append("  \"label\" : \"Update Property\",\n");
-        res.append("  \"category\" : \"Document\",\n");
-        res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : \"Set a single property value on the input document. The property is specified using its xpath. Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events. Returns the modified document.\",\n");
-        res.append("  \"url\" : \"Document.SetProperty\",\n");
-        res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ {\n");
-        res.append("    \"name\" : \"xpath\",\n");
-        res.append("    \"description\" : \"\",\n");
-        res.append("    \"type\" : \"string\",\n");
-        res.append("    \"required\" : true,\n");
-        res.append("    \"widget\" : null,\n");
-        res.append("    \"order\" : 0,\n");
-        res.append("    \"values\" : [ ]\n");
-        res.append("  }, {\n");
-        res.append("    \"name\" : \"save\",\n");
-        res.append("    \"description\" : \"\",\n");
-        res.append("    \"type\" : \"boolean\",\n");
-        res.append("    \"required\" : false,\n");
-        res.append("    \"widget\" : null,\n");
-        res.append("    \"order\" : 0,\n");
-        res.append("    \"values\" : [ \"true\" ]\n");
-        res.append("  }, {\n");
-        res.append("    \"name\" : \"value\",\n");
-        res.append("    \"description\" : \"\",\n");
-        res.append("    \"type\" : \"serializable\",\n");
-        res.append("    \"required\" : false,\n");
-        res.append("    \"widget\" : null,\n");
-        res.append("    \"order\" : 0,\n");
-        res.append("    \"values\" : [ ]\n");
-        res.append("  } ],\n");
-        res.append("  \"widgets\" : [ {\n");
-        res.append("    \"name\" : \"xpath\",\n");
-        res.append("    \"type\" : \"codearea\",\n");
-        res.append("    \"labels\" : {\n");
-        res.append("      \"any\" : \"XPath\"\n");
-        res.append("    },\n");
-        res.append("    \"translated\" : true,\n");
-        res.append("    \"handlingLabels\" : false,\n");
-        res.append("    \"fields\" : [ {\n");
-        res.append("      \"fieldName\" : \"xpath\",\n");
-        res.append("      \"propertyName\" : \"xpath\"\n");
-        res.append("    } ],\n");
-        res.append("    \"properties\" : {\n");
-        res.append("      \"any\" : {\n");
-        res.append("        \"height\" : \"100%\",\n");
-        res.append("        \"language\" : \"xpath\",\n");
-        res.append("        \"width\" : \"100%\"\n");
-        res.append("      }\n");
-        res.append("    }\n");
-        res.append("  } ]\n");
-        res.append("}");
-        res.append("}");
-        checkEquals(res.toString(), chain);
+        String res = """
+                {
+                  "id" : "Document.SetProperty",
+                  "label" : "Update Property",
+                  "category" : "Document",
+                  "requires" : null,
+                  "description" : "Set a single property value on the input document. The property is specified using its xpath. Save parameter automatically saves the document in the database. It has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events. Returns the modified document.",
+                  "url" : "Document.SetProperty",
+                  "signature" : [ "document", "document", "documents", "documents" ],
+                  "params" : [ {
+                    "name" : "xpath",
+                    "description" : "",
+                    "type" : "string",
+                    "required" : true,
+                    "widget" : null,
+                    "order" : 0,
+                    "values" : [ ]
+                  }, {
+                    "name" : "save",
+                    "description" : "",
+                    "type" : "boolean",
+                    "required" : false,
+                    "widget" : null,
+                    "order" : 0,
+                    "values" : [ "true" ]
+                  }, {
+                    "name" : "value",
+                    "description" : "",
+                    "type" : "serializable",
+                    "required" : false,
+                    "widget" : null,
+                    "order" : 0,
+                    "values" : [ ]
+                  } ],
+                  "widgets" : [ {
+                    "name" : "xpath",
+                    "type" : "codearea",
+                    "labels" : {
+                      "any" : "XPath"
+                    },
+                    "translated" : true,
+                    "fields" : [ {
+                      "fieldName" : "xpath",
+                      "propertyName" : "xpath"
+                    } ],
+                    "properties" : {
+                      "any" : {
+                        "height" : "100%",
+                        "language" : "xpath",
+                        "width" : "100%"
+                      }
+                    }
+                  } ]
+                }""";
+        checkEquals(res, chain);
     }
 
     /**
@@ -229,54 +227,55 @@ public class TestAutomationJson {
     @Test
     public void testOperationWithWidgetDescriptor() throws Exception {
         final String chain = getJsonChain("Document.Query");
-        StringBuilder res = new StringBuilder();
-        res.append("{\n");
-        res.append("  \"id\" : \"Document.Query\",\n");
-        res.append("  \"label\" : \"Query\",\n");
-        res.append("  \"category\" : \"Fetch\",\n");
-        res.append("  \"requires\" : null,\n");
-        res.append("  \"description\" : \"Perform a query on the repository. The query result will become the input for the next operation.\",\n");
-        res.append("  \"url\" : \"Document.Query\",\n");
-        res.append("  \"signature\" : [ \"void\",\n \"documents\" ],\n");
-        res.append("  \"params\" : [ {\n");
-        res.append("    \"name\" : \"query\",\n");
-        res.append("    \"description\" : \"\",\n");
-        res.append("    \"type\" : \"string\",\n");
-        res.append("    \"required\" : true,\n");
-        res.append("    \"widget\" : null,\n");
-        res.append("    \"order\" : 0,\n");
-        res.append("    \"values\" : [ ]\n");
-        res.append("  }, {\n");
-        res.append("    \"name\" : \"language\",\n");
-        res.append("    \"description\" : \"\",\n");
-        res.append("    \"type\" : \"string\",\n");
-        res.append("    \"required\" : false,\n");
-        res.append("    \"widget\" : \"Option\",\n");
-        res.append("    \"order\" : 0,\n");
-        res.append("    \"values\" : [ \"NXQL\",\n \"CMISQL\" ]\n");
-        res.append("  } ],\n");
-        res.append("  \"widgets\" : [ {\n");
-        res.append("    \"name\" : \"query\",\n");
-        res.append("    \"type\" : \"codearea\",\n");
-        res.append("    \"labels\" : {\n");
-        res.append("      \"any\" : \"Query\"\n");
-        res.append("    },\n");
-        res.append("    \"translated\" : true,\n");
-        res.append("    \"handlingLabels\" : false,\n");
-        res.append("    \"fields\" : [ {\n");
-        res.append("      \"fieldName\" : \"query\",\n");
-        res.append("      \"propertyName\" : \"query\"\n");
-        res.append("    } ],\n");
-        res.append("    \"properties\" : {\n");
-        res.append("      \"any\" : {\n");
-        res.append("        \"height\" : \"100%\",\n");
-        res.append("        \"language\" : \"nxql\",\n");
-        res.append("        \"width\" : \"100%\"\n");
-        res.append("      }\n");
-        res.append("    }\n");
-        res.append("  } ]\n");
-        res.append("}");
-        checkEquals(res.toString(), chain);
+        String res = """
+                {
+                  "id" : "Document.Query",
+                  "label" : "Query",
+                  "category" : "Fetch",
+                  "requires" : null,
+                  "description" : "Perform a query on the repository. The query result will become the input for the next operation.",
+                  "url" : "Document.Query",
+                  "signature" : [ "void",
+                 "documents" ],
+                  "params" : [ {
+                    "name" : "query",
+                    "description" : "",
+                    "type" : "string",
+                    "required" : true,
+                    "widget" : null,
+                    "order" : 0,
+                    "values" : [ ]
+                  }, {
+                    "name" : "language",
+                    "description" : "",
+                    "type" : "string",
+                    "required" : false,
+                    "widget" : "Option",
+                    "order" : 0,
+                    "values" : [ "NXQL",
+                 "CMISQL" ]
+                  } ],
+                  "widgets" : [ {
+                    "name" : "query",
+                    "type" : "codearea",
+                    "labels" : {
+                      "any" : "Query"
+                    },
+                    "translated" : true,
+                    "fields" : [ {
+                      "fieldName" : "query",
+                      "propertyName" : "query"
+                    } ],
+                    "properties" : {
+                      "any" : {
+                        "height" : "100%",
+                        "language" : "nxql",
+                        "width" : "100%"
+                      }
+                    }
+                  } ]
+                }""";
+        checkEquals(res, chain);
     }
 
 }

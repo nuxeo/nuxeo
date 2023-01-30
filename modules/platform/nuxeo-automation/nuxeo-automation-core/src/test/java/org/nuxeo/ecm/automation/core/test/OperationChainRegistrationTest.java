@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
@@ -28,9 +29,9 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -40,7 +41,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 /**
  * Test registration of operation chains on service.
  *
- * @sincze 5.7.3
+ * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -59,7 +60,9 @@ public class OperationChainRegistrationTest {
      */
     @Test
     public void testChainWithEscapedParams() throws Exception {
-        OperationChain chain = service.getOperationChain("chainWithEscapedParams");
+        var type = service.getOperation("chainWithEscapedParams");
+        assertTrue(type instanceof ChainTypeImpl);
+        var chain = ((ChainTypeImpl) type).getChain();
         assertEquals(2, chain.getOperations().size());
         OperationParameters params = chain.getOperations().get(1);
         assertEquals(3, params.map().size());
