@@ -32,6 +32,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -144,6 +145,15 @@ public class FulltextExtractorWork extends AbstractWork {
         session.save();
         setProgress(Progress.PROGRESS_100_PC);
         setStatus("Done");
+    }
+
+    // @since 2021.32
+    public void extractBinaryFulltext(CoreSession session, DocumentModel doc) {
+        this.session = session;
+        docsToUpdate = Collections.singletonList(doc.getRef());
+        document = doc;
+        initFulltextConfiguration();
+        extractAndUpdateBinaryText();
     }
 
     protected void initFulltextConfiguration() {
