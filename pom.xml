@@ -2327,7 +2327,7 @@
         <!-- not used by Nuxeo anymore, but needed by some dependencies -->
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
-        <version>3.1-jenkins-2</version>
+        <version>3.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
