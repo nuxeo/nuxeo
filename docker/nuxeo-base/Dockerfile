@@ -25,11 +25,11 @@ ARG BUILD_TAG
 ARG SCM_REF
 ARG VERSION
 
+ARG ROCKY_LINUX_VERSION=9.1
 ARG LIBREOFFICE_VERSION=7.4.2
 ARG GHOSTSCRIPT_MAJOR_VERSION=9
 ARG GHOSTSCRIPT_MINOR_VERSION=25
 ARG GHOSTSCRIPT_VERSION=$GHOSTSCRIPT_MAJOR_VERSION.$GHOSTSCRIPT_MINOR_VERSION
-ARG IMAGEMAGICK_VERSION=7.1.0.57-1.el9
 
 LABEL org.nuxeo.base.build-tag=$BUILD_TAG
 LABEL org.nuxeo.base.scm-ref=$SCM_REF
@@ -72,11 +72,11 @@ RUN dnf -y update \
   && curl -f -L https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION/ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64.tgz | tar -xzv \
   && mv ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64/gs-$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION-linux-x86_64 /usr/bin/gs \
   && rm -rf ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64 \
+  # ImageMagick 7 for Rocky Linux 9 is only provided by a third party repo
+  && dnf -y install https://rpms.remirepo.net/enterprise/remi-release-$ROCKY_LINUX_VERSION.rpm \
+  && dnf -y --enablerepo=remi install ImageMagick7 \
   # devel repository required for some packages such as libwpd-tools
   && dnf -y --setopt=skip_missing_names_on_install=False --enablerepo=devel install \
-    # ImageMagick 7 for Rocky Linux 9 is only provided by a third party repo
-    https://rpms.remirepo.net/enterprise/9/remi/x86_64/ImageMagick7-libs-${IMAGEMAGICK_VERSION}.remi.x86_64.rpm \
-    https://rpms.remirepo.net/enterprise/9/remi/x86_64/ImageMagick7-${IMAGEMAGICK_VERSION}.remi.x86_64.rpm \
     libwpd-tools \
     # required by exiftool to extract binary metadata from open office document
     perl-Archive-Zip \
