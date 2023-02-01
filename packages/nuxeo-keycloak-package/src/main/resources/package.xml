@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package type="addon" name="nuxeo-keycloak" version="@VERSION@">
-  <title>Nuxeo Keycloack</title>
+  <title>Nuxeo Keycloak</title>
   <description>
     <p>Nuxeo Login Module for JBoss Keycloak</p>
   </description>
