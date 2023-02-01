@@ -37,13 +37,6 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 @XObject(value = "whereClause")
 public class WhereClauseDescriptor implements WhereClauseDefinition {
 
-    /**
-     * @deprecated since 6.0: doc type moved up to the page provider descriptor.
-     */
-    @Deprecated
-    @XNode("@docType")
-    protected String docType;
-
     @XNode("@escaper")
     protected Class<? extends Escaper> escaperClass;
 
@@ -66,15 +59,6 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
 
     @XNode("fixedPart@escape")
     protected boolean escapeFixedPartParameters = true;
-
-    /**
-     * @deprecated since 6.0: use {@link BasePageProviderDescriptor#getSearchDocumentType()}
-     */
-    @Override
-    @Deprecated
-    public String getDocType() {
-        return docType;
-    }
 
     @Override
     @XNode("fixedPart")
@@ -129,7 +113,6 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     @Override
     public WhereClauseDescriptor clone() {
         WhereClauseDescriptor clone = new WhereClauseDescriptor();
-        clone.docType = getDocType();
         clone.escaperClass = getEscaperClass();
         if (predicates != null) {
             clone.predicates = new PredicateDefinition[predicates.length];

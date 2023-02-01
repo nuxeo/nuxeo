@@ -40,11 +40,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ESClient;
@@ -74,7 +72,6 @@ import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.opensearch.common.bytes.BytesReference;
-import org.opensearch.index.query.QueryBuilder;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -544,24 +541,6 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public void clearScroll(EsScrollResult scrollResult) {
         ess.clearScroll(scrollResult);
-    }
-
-    @Deprecated
-    @Override
-    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
-        return query(query);
-    }
-
-    @Deprecated
-    @Override
-    public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
-                                                          .limit(limit)
-                                                          .offset(offset)
-                                                          .addSort(sortInfos);
-        return query(query);
     }
 
     // misc ====================================================================

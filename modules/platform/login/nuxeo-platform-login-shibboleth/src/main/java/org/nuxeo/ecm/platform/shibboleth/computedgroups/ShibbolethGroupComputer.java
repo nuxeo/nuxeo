@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
@@ -89,7 +90,7 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
      */
     private DocumentModelList getAllGroups() {
         try (Session shibGroupDirectory = getDS().open(getDirectoryName())) {
-            return shibGroupDirectory.getEntries();
+            return shibGroupDirectory.query(new QueryBuilder(), false);
         }
     }
 }

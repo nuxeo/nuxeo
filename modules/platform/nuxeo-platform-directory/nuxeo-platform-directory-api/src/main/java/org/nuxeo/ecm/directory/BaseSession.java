@@ -384,14 +384,6 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public DocumentModelList getEntries() {
-        if (!hasPermission(SecurityConstants.READ)) {
-            return new DocumentModelListImpl();
-        }
-        return query(Collections.emptyMap());
-    }
-
-    @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
         String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
         DocumentModelList result = query(Collections.singletonMap(idFieldName, id), Collections.emptySet(),

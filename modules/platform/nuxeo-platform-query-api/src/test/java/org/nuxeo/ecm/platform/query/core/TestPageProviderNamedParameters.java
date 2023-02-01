@@ -225,30 +225,6 @@ public class TestPageProviderNamedParameters {
      * @since 7.3
      */
     @Test
-    public void testPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
-        DocumentModel searchDoc = getSearchDocWithNamedParam("np:title", "Document number2");
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        PageProvider<?> pp = pps.getPageProvider("namedParamProviderWithWhereClauseWithDoc", searchDoc, null, null,
-                null, getPageProviderProps());
-        assertNotNull(pp);
-        List<?> p = pp.getCurrentPage();
-        assertNotNull(p);
-        assertEquals(1, p.size());
-
-        // retry without params
-        searchDoc = getSearchDocWithNamedParam(null, null);
-        pp = pps.getPageProvider("namedParamProviderWithWhereClauseWithDoc", searchDoc, null, null, null,
-                getPageProviderProps());
-        assertNotNull(pp);
-        p = pp.getCurrentPage();
-        assertNotNull(p);
-        assertEquals(2, p.size());
-    }
-
-    /**
-     * @since 7.3
-     */
-    @Test
     public void testPageProviderWithNamedParametersComplex() throws Exception {
         DocumentModel searchDoc = DocumentModelFactory.createDocumentModel("NamedParamDoc");
         HashMap<String, Object> params = new HashMap<>();

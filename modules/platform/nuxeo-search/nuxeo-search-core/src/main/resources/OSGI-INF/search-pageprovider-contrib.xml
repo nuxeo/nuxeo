@@ -5,7 +5,8 @@
 
     <coreQueryPageProvider name="default_search">
       <trackUsage>true</trackUsage>
-      <whereClause docType="DefaultSearch">
+      <searchDocumentType>DefaultSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           ecm:primaryType NOT IN ('Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Favorites')
           AND ecm:mixinType != 'HiddenInNavigation'
@@ -115,7 +116,8 @@
 
     <coreQueryPageProvider name="default_trash_search">
       <trackUsage>true</trackUsage>
-      <whereClause docType="DefaultSearch">
+      <searchDocumentType>DefaultSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           ecm:primaryType NOT IN ('Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Favorites')
           AND ecm:mixinType != 'HiddenInNavigation'
@@ -155,7 +157,8 @@
 
     <coreQueryPageProvider name="simple_search">
       <trackUsage>true</trackUsage>
-      <whereClause docType="DefaultSearch">
+      <searchDocumentType>DefaultSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           ecm:mixinType != 'HiddenInNavigation' AND
           ecm:isVersion = 0
@@ -182,7 +185,8 @@
     <coreQueryPageProvider name="expired_search" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <trackUsage>true</trackUsage>
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-      <whereClause docType="ExpiredSearch">
+      <searchDocumentType>ExpiredSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           ecm:isVersion = 0 AND
           ecm:mixinType !=

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -72,40 +73,40 @@ public class TestLocalConfigurationForSQLDirectory {
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenNoContextIsGiven() throws Exception {
+    public void testShouldReturnUserDirectoryWhenNoContextIsGiven() {
 
         Directory dir = dirService.getDirectory("userDirectory");
         assertEquals("userDirectory", dir.getName());
 
         try (Session dirSession = dirService.open("userDirectory")) {
-            assertEquals(3, dirSession.getEntries().size());
+            assertEquals(3, dirSession.queryIds(new QueryBuilder()).size());
         }
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenContextIsNull() throws Exception {
+    public void testShouldReturnUserDirectoryWhenContextIsNull() {
 
         Directory dir = dirService.getDirectory("userDirectory", null);
         assertEquals("userDirectory", dir.getName());
 
         try (Session dirSession = dirService.open("userDirectory", null)) {
-            assertEquals(3, dirSession.getEntries().size());
+            assertEquals(3, dirSession.queryIds(new QueryBuilder()).size());
         }
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenNoLocalConfigurationSet() throws Exception {
+    public void testShouldReturnUserDirectoryWhenNoLocalConfigurationSet() {
 
         Directory dir = dirService.getDirectory("userDirectory", workspace);
         assertEquals("userDirectory", dir.getName());
 
         try (Session dirSession = dirService.open("userDirectory", workspace)) {
-            assertEquals(3, dirSession.getEntries().size());
+            assertEquals(3, dirSession.queryIds(new QueryBuilder()).size());
         }
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWhenLocalConfigurationSetIsAnEmptyString() throws Exception {
+    public void testShouldReturnUserDirectoryWhenLocalConfigurationSetIsAnEmptyString() {
 
         setDirectorySuffix(workspace, "          ");
 
@@ -115,12 +116,12 @@ public class TestLocalConfigurationForSQLDirectory {
         // directory
 
         try (Session dirSession = dirService.open("userDirectory", workspace)) {
-            assertEquals(3, dirSession.getEntries().size());
+            assertEquals(3, dirSession.queryIds(new QueryBuilder()).size());
         }
     }
 
     @Test
-    public void testShouldReturnUserDirectoryWithSuffixWhenDirectoryContextIsGiven() throws Exception {
+    public void testShouldReturnUserDirectoryWithSuffixWhenDirectoryContextIsGiven() {
 
         setDirectorySuffix(workspace, "domain_a");
 
@@ -128,7 +129,7 @@ public class TestLocalConfigurationForSQLDirectory {
         assertEquals("userDirectory_domain_a", dir.getName());
 
         try (Session dirSession = dirService.open("userDirectory", workspace)) {
-            assertEquals(1, dirSession.getEntries().size());
+            assertEquals(1, dirSession.queryIds(new QueryBuilder()).size());
         }
     }
 

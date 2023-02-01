@@ -27,5 +27,5 @@ import org.nuxeo.ecm.directory.ldap.LDAPDirectoryFeature.UseExternalServer;
 // Ignore external tests
 @Ignore
 @UseExternalServer("TestDirectoriesWithExternalOpenLDAP-SSL.xml")
-public class TestExternalLDAPSessionUsingSSL extends TestLDAPSessionUsingSSL {
+public class TestExternalLDAPSessionUsingSSL extends LDAPDirectoryTestCase {
 }

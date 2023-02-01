@@ -25,10 +25,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
@@ -46,7 +44,6 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.action.search.SearchScrollRequest;
 import org.opensearch.action.search.SearchType;
 import org.opensearch.common.unit.TimeValue;
-import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.bucket.filter.Filter;
 import org.opensearch.search.builder.SearchSourceBuilder;
@@ -85,24 +82,6 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         searchTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "search"));
         scrollTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "scroll"));
         fetchTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "fetch"));
-    }
-
-    @Deprecated
-    @Override
-    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
-        return query(query);
-    }
-
-    @Deprecated
-    @Override
-    public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
-                                                          .limit(limit)
-                                                          .offset(offset)
-                                                          .addSort(sortInfos);
-        return query(query);
     }
 
     @Override

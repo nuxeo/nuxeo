@@ -6,7 +6,8 @@
 
     <genericPageProvider name="permissions_purge"
                          class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
-      <whereClause docType="PermissionsSearch">
+      <searchDocumentType>PermissionsSearch</searchDocumentType>
+      <whereClause>
         <fixedPart
             statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">
           ecm:mixinType != 'HiddenInNavigation'
@@ -34,7 +35,8 @@
     </coreQueryPageProvider>
 
     <genericPageProvider class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider" name="EVENTS_VIEW">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="log.eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate"/>
           <field schema="basicauditsearch" name="endDate"/>
@@ -56,7 +58,8 @@
 
     <genericPageProvider class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider"
                          name="PERMISSIONS_SEARCH">
-      <whereClause docType="PermissionsSearch">
+      <searchDocumentType>PermissionsSearch</searchDocumentType>
+      <whereClause>
         <fixedPart quoteParameters="false" escapeParameters="false"
                    statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission,
               ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">

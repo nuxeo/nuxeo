@@ -8,7 +8,8 @@
 
     <genericPageProvider name="AUDIT_BROWSER"
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="log.id" operator="&gt;">
           <field schema="basicauditsearch" name="logId" />
         </predicate>

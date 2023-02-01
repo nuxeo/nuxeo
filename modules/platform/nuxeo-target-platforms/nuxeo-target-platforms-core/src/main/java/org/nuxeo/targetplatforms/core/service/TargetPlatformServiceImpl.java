@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -481,8 +482,8 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         new DirectoryUpdater(getOverrideDirectory()) {
             @Override
             public void run(DirectoryService service, Session session) {
-                for (DocumentModel entry : session.getEntries()) {
-                    session.deleteEntry(entry.getId());
+                for (var id : session.queryIds(new QueryBuilder())) {
+                    session.deleteEntry(id);
                 }
             }
         }.run();

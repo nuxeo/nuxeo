@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -71,11 +72,10 @@ public class TestTokenAuthenticationService {
     protected CoreFeature coreFeature;
 
     @After
-    public void cleanDirectories() throws Exception {
+    public void cleanDirectories() {
         try (Session tokenDirSession = directoryService.open("authTokens")) {
-            DocumentModelList entries = tokenDirSession.getEntries();
-            for (DocumentModel entry : entries) {
-                tokenDirSession.deleteEntry(entry);
+            for (var id : tokenDirSession.queryIds(new QueryBuilder())) {
+                tokenDirSession.deleteEntry(id);
             }
         }
     }

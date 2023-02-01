@@ -301,29 +301,6 @@ public class DocumentListTest extends BaseTest {
     }
 
     /**
-     * @since 7.1
-     */
-    @Test
-    public void iCanPerformPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("np:title", "Folder 0");
-        try (CloseableClientResponse response = getResponse(RequestType.GET,
-                QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc", queryParams)) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(1, getLogEntries(node).size());
-        }
-
-        // retry without params
-        try (CloseableClientResponse response = getResponse(RequestType.GET,
-                QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc")) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(2, getLogEntries(node).size());
-        }
-    }
-
-    /**
      * @since 8.4
      */
     @Test

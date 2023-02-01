@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -63,7 +62,6 @@ import org.nuxeo.ecm.automation.core.operations.document.TrashDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UntrashDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
-import org.nuxeo.ecm.automation.core.operations.execution.RunInNewTransaction;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.operations.stack.PopDocument;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
@@ -83,7 +81,6 @@ import org.nuxeo.ecm.core.trash.AbstractTrashService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -698,40 +695,6 @@ public class CoreOperationsTest {
             service.run(ctx, chain);
             String result = (String) ctx.get("result");
             assertEquals("tic, tac", result);
-        }
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testRunInNewTxOperation() throws Exception {
-        try (OperationContext ctx = new OperationContext(session)) {
-
-            // test that the global transaction is not marked for rollback
-            try {
-                OperationChain chain = new OperationChain("testChain");
-                chain.add(RunInNewTransaction.ID)
-                     .set("id", "testExitChain")
-                     .set("isolate", "false")
-                     .set("rollbackGlobalOnError", "false");
-                service.run(ctx, chain);
-            } finally {
-                assertFalse(TransactionHelper.isTransactionMarkedRollback());
-            }
-
-            // test that the global transaction is marked for rollback
-            try {
-                OperationChain chain = new OperationChain("testChain");
-                chain.add(RunInNewTransaction.ID)
-                     .set("id", "testExitChain")
-                     .set("isolate", "false")
-                     .set("rollbackGlobalOnError", "true");
-                service.run(ctx, chain);
-            } catch (Exception e) {
-                assertTrue(TransactionHelper.isTransactionMarkedRollback());
-            }
-            // needed for session cleanup
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
         }
     }
 

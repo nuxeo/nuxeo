@@ -156,32 +156,6 @@ public class DocumentTaskProvider implements TaskProvider {
         return tasks;
     }
 
-    /**
-     * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
-     */
-    @Deprecated
-    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) {
-        return wrapDocModelInTask(taskDocuments, false);
-    }
-
-    /**
-     * Converts a {@link DocumentModelList} to a list of {@link Task}s.
-     *
-     * @param detach if {@code true}, detach each document before converting it to a {@code Task}.
-     * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
-     */
-    @Deprecated
-    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments, boolean detach) {
-        List<Task> tasks = new ArrayList<>();
-        for (DocumentModel doc : taskDocuments) {
-            if (detach) {
-                doc.detach(true);
-            }
-            tasks.add(doc.getAdapter(Task.class));
-        }
-        return tasks;
-    }
-
     @Override
     public String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment,
             String eventName, boolean isValidated) {

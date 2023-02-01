@@ -24,7 +24,8 @@
     <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_SEARCH_DOCUMENT_TRACK"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <trackUsage>true</trackUsage>
-      <whereClause docType="Document">
+      <searchDocumentType>Document</searchDocumentType>
+      <whereClause>
         <predicate parameter="ecm:parentId" operator="=">
           <field schema="ecm" name="uuid" />
         </predicate>

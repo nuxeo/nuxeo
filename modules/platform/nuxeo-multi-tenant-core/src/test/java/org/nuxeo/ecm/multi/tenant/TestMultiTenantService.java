@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -115,9 +116,8 @@ public class TestMultiTenantService {
             userManager.deleteUser("leela");
         }
         try (Session dir = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = dir.getEntries();
-            for (DocumentModel doc : docs) {
-                dir.deleteEntry(doc.getId());
+            for (var docId : dir.queryIds(new QueryBuilder())) {
+                dir.deleteEntry(docId);
             }
         }
         multiTenantService.disableTenantIsolation(session);
@@ -155,8 +155,8 @@ public class TestMultiTenantService {
         assertFalse(domain.hasFacet(TENANT_CONFIG_FACET));
 
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = session.getEntries();
-            assertEquals(0, docs.size());
+            var docIds = session.queryIds(new QueryBuilder());
+            assertEquals(0, docIds.size());
         }
     }
 
@@ -171,7 +171,7 @@ public class TestMultiTenantService {
         assertEquals(newDomain.getName(), newDomain.getPropertyValue(TENANT_ID_PROPERTY));
 
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = session.getEntries();
+            DocumentModelList docs = session.query(new QueryBuilder(), false);
             assertEquals(2, docs.size());
             // order from directory is not fixed
             if (docs.get(0).getPropertyValue("tenant:id").equals("newDomain")) {
@@ -199,7 +199,7 @@ public class TestMultiTenantService {
         assertNotNull(acl);
 
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = session.getEntries();
+            DocumentModelList docs = session.query(new QueryBuilder(), false);
             assertEquals(1, docs.size());
             DocumentModel doc = docs.get(0);
             assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));
@@ -225,8 +225,8 @@ public class TestMultiTenantService {
         assertFalse(newDomain.hasFacet(TENANT_CONFIG_FACET));
 
         try (Session dirSession = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = dirSession.getEntries();
-            assertEquals(1, docs.size());
+            var docIds = dirSession.queryIds(new QueryBuilder());
+            assertEquals(1, docIds.size());
         }
     }
 
@@ -241,8 +241,8 @@ public class TestMultiTenantService {
         assertEquals(newDomain.getName(), newDomain.getPropertyValue(TENANT_ID_PROPERTY));
 
         try (Session dirSession = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = dirSession.getEntries();
-            assertEquals(2, docs.size());
+            var docIds = dirSession.queryIds(new QueryBuilder());
+            assertEquals(2, docIds.size());
         }
 
         // trash the domain, which incidentally changes its name
@@ -253,8 +253,8 @@ public class TestMultiTenantService {
         assertFalse(newDomain.hasFacet(TENANT_CONFIG_FACET));
 
         try (Session dirSession = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = dirSession.getEntries();
-            assertEquals(1, docs.size());
+            var docIds = dirSession.queryIds(new QueryBuilder());
+            assertEquals(1, docIds.size());
         }
     }
 

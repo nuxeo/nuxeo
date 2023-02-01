@@ -96,7 +96,8 @@
 
     <genericPageProvider name="CUSTOM_HISTORY_VIEW"
                          class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           {
             "bool": {
@@ -130,7 +131,8 @@
 
     <genericPageProvider name="FIXED_PART_DOCUMENT_HISTORY_PROVIDER"
                          class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           {
             "bool": {

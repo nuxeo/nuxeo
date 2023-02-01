@@ -65,15 +65,6 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
     }
 
     /**
-     * @deprecated since 6.0
-     */
-    @Deprecated
-    protected void loadDic(String dicName) throws IOException {
-        this.dicName = dicName;
-        loadDic();
-    }
-
-    /**
      * @since 6.0
      */
     protected void loadDic() throws IOException {

@@ -7,7 +7,8 @@
 
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER_OLD"
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           log.docUUID = ?
         </fixedPart>
@@ -28,7 +29,8 @@
 
     <genericPageProvider name="LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER"
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           log.eventId = 'user_created' OR log.eventId = 'group_created'
         </fixedPart>
@@ -43,7 +45,8 @@
 
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
       class="org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="log.eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />

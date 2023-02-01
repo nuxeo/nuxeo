@@ -202,22 +202,6 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testGetEntries() throws Exception {
-        DocumentModelList l;
-        l = dir.getEntries();
-        assertEquals(4, l.size());
-        DocumentModel entry = null;
-        for (DocumentModel e : l) {
-            if (e.getId().equals("1")) {
-                entry = e;
-                break;
-            }
-        }
-        assertNotNull(entry);
-        assertEquals("foo1", entry.getProperty("schema3", "thefoo"));
-    }
-
-    @Test
     public void testCreate() throws Exception {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
@@ -407,22 +391,22 @@ public class TestMultiDirectory {
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
             dir.deleteEntry("no-such-entry");
-            assertEquals(4, dir.getEntries().size());
-            assertEquals(2, dir1.getEntries().size());
-            assertEquals(2, dir2.getEntries().size());
-            assertEquals(2, dir3.getEntries().size());
+            assertEquals(4, dir.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir1.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir2.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir3.queryIds(new QueryBuilder()).size());
             dir.deleteEntry("1");
             assertNull(dir.getEntry("1"));
-            assertEquals(3, dir.getEntries().size());
-            assertEquals(1, dir1.getEntries().size());
-            assertEquals(1, dir2.getEntries().size());
-            assertEquals(2, dir3.getEntries().size());
+            assertEquals(3, dir.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir1.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir2.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir3.queryIds(new QueryBuilder()).size());
             dir.deleteEntry("3");
             assertNull(dir.getEntry("3"));
-            assertEquals(2, dir.getEntries().size());
-            assertEquals(1, dir1.getEntries().size());
-            assertEquals(1, dir2.getEntries().size());
-            assertEquals(1, dir3.getEntries().size());
+            assertEquals(2, dir.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir1.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir2.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir3.queryIds(new QueryBuilder()).size());
         }
     }
 
@@ -821,7 +805,7 @@ public class TestMultiDirectory {
 
         Map<String, Serializable> filter = new HashMap<>();
         DocumentModelList results = dir.query(filter);
-        Collections.sort(results, comp);
+        results.sort(comp);
 
         // by default no backing dir is readonly
         assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
@@ -833,7 +817,7 @@ public class TestMultiDirectory {
         memdir2.setReadOnly(false);
         memdir3.setReadOnly(false);
         results = dir.query(filter);
-        Collections.sort(results, comp);
+        results.sort(comp);
         assertTrue(BaseSession.isReadOnlyEntry(results.get(0)));
         assertTrue(BaseSession.isReadOnlyEntry(results.get(1)));
         assertFalse(BaseSession.isReadOnlyEntry(results.get(2)));
@@ -843,43 +827,7 @@ public class TestMultiDirectory {
         memdir2.setReadOnly(false);
         memdir3.setReadOnly(true);
         results = dir.query(filter);
-        Collections.sort(results, comp);
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(1)));
-        assertTrue(BaseSession.isReadOnlyEntry(results.get(2)));
-        assertTrue(BaseSession.isReadOnlyEntry(results.get(3)));
-    }
-
-    @Test
-    public void testReadOnlyEntryInGetEntriesResults() throws Exception {
-        Map<String, String> orderBy = new HashMap<>();
-        orderBy.put("schema3:uid", "asc");
-        DocumentModelComparator comp = new DocumentModelComparator(orderBy);
-
-        DocumentModelList results = dir.getEntries();
-        Collections.sort(results, comp);
-
-        // by default no backing dir is readonly
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(1)));
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(2)));
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(3)));
-
-        memdir1.setReadOnly(true);
-        memdir2.setReadOnly(false);
-        memdir3.setReadOnly(false);
-        results = dir.getEntries();
-        Collections.sort(results, comp);
-        assertTrue(BaseSession.isReadOnlyEntry(results.get(0)));
-        assertTrue(BaseSession.isReadOnlyEntry(results.get(1)));
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(2)));
-        assertFalse(BaseSession.isReadOnlyEntry(results.get(3)));
-
-        memdir1.setReadOnly(false);
-        memdir2.setReadOnly(false);
-        memdir3.setReadOnly(true);
-        results = dir.getEntries();
-        Collections.sort(results, comp);
+        results.sort(comp);
         assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
         assertFalse(BaseSession.isReadOnlyEntry(results.get(1)));
         assertTrue(BaseSession.isReadOnlyEntry(results.get(2)));

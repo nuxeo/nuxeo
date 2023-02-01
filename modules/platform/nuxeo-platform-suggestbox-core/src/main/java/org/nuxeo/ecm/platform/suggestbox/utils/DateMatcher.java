@@ -26,10 +26,8 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentSearchByDateSuggester;
-
 /**
- * @deprecated since 11.1 only used from deprecated {@link DocumentSearchByDateSuggester}
+ * @deprecated since 11.1 not used
  */
 @Deprecated
 public class DateMatcher {

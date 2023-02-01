@@ -42,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -207,22 +208,6 @@ public class TestMultiDirectoryOptional {
     }
 
     @Test
-    public void testGetEntries() throws Exception {
-        DocumentModelList l;
-        l = dir.getEntries();
-        assertEquals(4, l.size());
-        DocumentModel entry = null;
-        for (DocumentModel e : l) {
-            if (e.getId().equals("1")) {
-                entry = e;
-                break;
-            }
-        }
-        assertNotNull(entry);
-        assertEquals("defaultFooValue", entry.getProperty("schema3", "thefoo"));
-    }
-
-    @Test
     public void testCreate() throws Exception {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
@@ -320,8 +305,6 @@ public class TestMultiDirectoryOptional {
             assertNotNull(dir3.getEntry("3"));
             assertEquals("fffooo3", dir3.getEntry("3").getProperty("schema3", "thefoo"));
             assertEquals("babar3", dir3.getEntry("3").getProperty("schema3", "thebar"));
-
-            dir.getEntries();
         }
     }
 
@@ -331,22 +314,22 @@ public class TestMultiDirectoryOptional {
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
             dir.deleteEntry("no-such-entry");
-            assertEquals(4, dir.getEntries().size());
-            assertEquals(2, dir1.getEntries().size());
-            assertEquals(2, dir2.getEntries().size());
-            assertEquals(2, dir3.getEntries().size());
+            assertEquals(4, dir.query(new QueryBuilder(), false).size());
+            assertEquals(2, dir1.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir2.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir3.queryIds(new QueryBuilder()).size());
             dir.deleteEntry("1");
             assertNull(dir.getEntry("1"));
-            assertEquals(3, dir.getEntries().size());
-            assertEquals(2, dir1.getEntries().size());
-            assertEquals(1, dir2.getEntries().size());
-            assertEquals(2, dir3.getEntries().size());
+            assertEquals(3, dir.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir1.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir2.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir3.queryIds(new QueryBuilder()).size());
             dir.deleteEntry("3");
             assertNull(dir.getEntry("3"));
-            assertEquals(2, dir.getEntries().size());
-            assertEquals(2, dir1.getEntries().size());
-            assertEquals(1, dir2.getEntries().size());
-            assertEquals(1, dir3.getEntries().size());
+            assertEquals(2, dir.queryIds(new QueryBuilder()).size());
+            assertEquals(2, dir1.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir2.queryIds(new QueryBuilder()).size());
+            assertEquals(1, dir3.queryIds(new QueryBuilder()).size());
         }
     }
 

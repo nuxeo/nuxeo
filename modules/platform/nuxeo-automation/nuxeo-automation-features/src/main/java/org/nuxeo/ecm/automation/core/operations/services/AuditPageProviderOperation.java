@@ -91,36 +91,17 @@ public class AuditPageProviderOperation {
     @Param(name = "language", required = false, widget = Constants.W_OPTION, values = { NXQL.NXQL })
     protected String lang = NXQL.NXQL;
 
-    /** @deprecated since 6.0 use currentPageIndex instead. */
-    @Param(name = "page", required = false)
-    @Deprecated
-    protected Integer page;
-
     @Param(name = "currentPageIndex", required = false)
     protected Integer currentPageIndex;
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
 
-    /**
-     * @deprecated since 6.0 use instead {@link #sortBy and @link #sortOrder}.
-     */
-    @Deprecated
-    @Param(name = "sortInfo", required = false)
-    protected StringList sortInfoAsStringList;
-
     @Param(name = "queryParams", required = false)
     protected StringList strParameters;
 
     @Param(name = "namedQueryParams", required = false)
     protected Properties namedQueryParams;
-
-    /**
-     * @deprecated since 6.0, not used in operation.
-     */
-    @Deprecated
-    @Param(name = "maxResults", required = false)
-    protected Integer maxResults = 100;
 
     /**
      * @since 6.0
@@ -140,33 +121,19 @@ public class AuditPageProviderOperation {
     public Paginable<LogEntry> run() throws IOException {
 
         List<SortInfo> sortInfos = null;
-        if (sortInfoAsStringList != null) {
+        // Sort Info Management
+        if (!StringUtils.isBlank(sortBy)) {
             sortInfos = new ArrayList<>();
-            for (String sortInfoDesc : sortInfoAsStringList) {
-                SortInfo sortInfo;
-                if (sortInfoDesc.contains(SORT_PARAMETER_SEPARATOR)) {
-                    String[] parts = sortInfoDesc.split(SORT_PARAMETER_SEPARATOR);
-                    sortInfo = new SortInfo(parts[0], Boolean.parseBoolean(parts[1]));
-                } else {
-                    sortInfo = new SortInfo(sortInfoDesc, true);
-                }
-                sortInfos.add(sortInfo);
+            String[] sorts = sortBy.split(",");
+            String[] orders = null;
+            if (!StringUtils.isBlank(sortOrder)) {
+                orders = sortOrder.split(",");
             }
-        } else {
-            // Sort Info Management
-            if (!StringUtils.isBlank(sortBy)) {
-                sortInfos = new ArrayList<>();
-                String[] sorts = sortBy.split(",");
-                String[] orders = null;
-                if (!StringUtils.isBlank(sortOrder)) {
-                    orders = sortOrder.split(",");
-                }
-                for (int i = 0; i < sorts.length; i++) {
-                    String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length > i
-                            && "asc".equals(orders[i].toLowerCase()));
-                    sortInfos.add(new SortInfo(sort, sortAscending));
-                }
+            for (int i = 0; i < sorts.length; i++) {
+                String sort = sorts[i];
+                boolean sortAscending = (orders != null && orders.length > i
+                        && "asc".equals(orders[i].toLowerCase()));
+                sortInfos.add(new SortInfo(sort, sortAscending));
             }
         }
 
@@ -197,9 +164,6 @@ public class AuditPageProviderOperation {
         }
 
         Long targetPage = null;
-        if (page != null) {
-            targetPage = page.longValue();
-        }
         if (currentPageIndex != null) {
             targetPage = currentPageIndex.longValue();
         }
@@ -224,7 +188,7 @@ public class AuditPageProviderOperation {
 
             DocumentModel searchDoc = null;
             if (namedQueryParams != null && namedQueryParams.size() > 0) {
-                String docType = ppService.getPageProviderDefinition(providerName).getWhereClause().getDocType();
+                String docType = ppService.getPageProviderDefinition(providerName).getSearchDocumentType();
                 searchDoc = session.createDocumentModel(docType);
                 DocumentHelper.setProperties(session, searchDoc, namedQueryParams);
             }

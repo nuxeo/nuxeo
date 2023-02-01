@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
@@ -48,13 +49,13 @@ public class TestFilterDirectories {
     protected DirectoryService directoryService;
 
     @Test
-    public void testFilterDirectory() throws Exception {
+    public void testFilterDirectory() {
         Map<String, Serializable> queryFilter = new HashMap<>();
         queryFilter.put("lang", "en");
 
         try (Session unfiltredSession = directoryService.open("unfiltredTestDirectory")) {
             assertNotNull(unfiltredSession);
-            assertEquals(5, unfiltredSession.getEntries().size());
+            assertEquals(5, unfiltredSession.queryIds(new QueryBuilder()).size());
             assertNotNull(unfiltredSession.getEntry("1"));
             assertNotNull(unfiltredSession.getEntry("2"));
             assertNotNull(unfiltredSession.getEntry("5"));
@@ -63,7 +64,7 @@ public class TestFilterDirectories {
 
         try (Session filtredSession = directoryService.open("filtredTestDirectory")) {
             assertNotNull(filtredSession);
-            assertEquals(2, filtredSession.getEntries().size());
+            assertEquals(2, filtredSession.queryIds(new QueryBuilder()).size());
             assertNotNull(filtredSession.getEntry("1"));
             assertNull(filtredSession.getEntry("2"));
             assertNull(filtredSession.getEntry("5"));

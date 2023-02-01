@@ -10,7 +10,8 @@
     <genericPageProvider name="EVENTS_VIEW" class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <property name="generateUIComments">false</property>
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />
@@ -32,7 +33,8 @@
 
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER_OLD"
       class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
             {
 		        "bool" : {
@@ -67,7 +69,8 @@
 
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
       class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />
@@ -90,7 +93,8 @@
       <genericPageProvider name="ADMIN_HISTORY" class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
         <property name="coreSession"></property>
         <property name="generateUIComments">false</property>
-        <whereClause docType="BasicAuditSearch">
+        <searchDocumentType>BasicAuditSearch</searchDocumentType>
+        <whereClause>
           <predicate parameter="eventDate" operator="BETWEEN">
             <field schema="basicauditsearch" name="startDate" />
             <field schema="basicauditsearch" name="endDate" />

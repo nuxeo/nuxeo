@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,8 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.Reference;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.shibboleth.computedgroups.ELGroupComputerHelper;
@@ -111,7 +109,7 @@ public class ShibbolethGroupHelper {
 
     public static DocumentModelList getGroups() {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
-            return session.getEntries();
+            return session.query(new QueryBuilder(), false);
         }
     }
 

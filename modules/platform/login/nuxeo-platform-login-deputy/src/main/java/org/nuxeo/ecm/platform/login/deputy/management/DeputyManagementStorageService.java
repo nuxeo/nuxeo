@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -98,12 +99,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         initPersistentService();
 
         try {
-            DocumentModelList allEntries = dirSession.getEntries();
-            List<String> ids = new ArrayList<>();
-            for (DocumentModel entry : allEntries) {
-                ids.add(entry.getId());
-            }
-            for (String id : ids) {
+            for (String id : dirSession.queryIds(new QueryBuilder())) {
                 dirSession.deleteEntry(id);
             }
 

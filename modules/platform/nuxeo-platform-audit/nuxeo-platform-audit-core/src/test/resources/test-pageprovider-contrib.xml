@@ -19,7 +19,8 @@
 
     <coreQueryPageProvider
       name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
-      <whereClause docType="File">
+      <searchDocumentType>File</searchDocumentType>
+      <whereClause>
         <fixedPart>
           ecm:parentId = ? AND ecm:isVersion = 0 AND ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isTrashed = 0
@@ -53,7 +54,8 @@
 
     <genericPageProvider name="GetAllEntriesForDocumentInCategory"
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-      <whereClause docType="File">
+      <searchDocumentType>File</searchDocumentType>
+      <whereClause>
         <fixedPart>
           log.docUUID = ?
         </fixedPart>
@@ -67,7 +69,8 @@
 
     <genericPageProvider name="GetAllEntriesForDocumentInCategories"
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-      <whereClause docType="File">
+      <searchDocumentType>File</searchDocumentType>
+      <whereClause>
         <fixedPart>
           log.docUUID = ?
         </fixedPart>
@@ -81,7 +84,8 @@
 
     <genericPageProvider name="GetAllEntriesBetween2Dates"
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
-      <whereClause docType="File">
+      <searchDocumentType>File</searchDocumentType>
+      <whereClause>
         <fixedPart>
           log.docUUID = ?
         </fixedPart>

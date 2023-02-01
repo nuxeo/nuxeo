@@ -174,7 +174,7 @@ public class TestMemoryDirectory {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         entry = dir.createEntry(e2);
-        DocumentModelList l = dir.getEntries();
+        DocumentModelList l = dir.query(new QueryBuilder(), false);
         assertEquals(2, l.size());
         assertEquals("1", l.get(0).getId());
         assertEquals("2", l.get(1).getId());
@@ -202,10 +202,10 @@ public class TestMemoryDirectory {
 
     @Test
     public void testDeleteEntry() {
-        DocumentModelList l = dir.getEntries();
+        var l = dir.queryIds(new QueryBuilder());
         assertEquals(1, l.size());
         dir.deleteEntry("1");
-        l = dir.getEntries();
+        l = dir.queryIds(new QueryBuilder());
         assertEquals(0, l.size());
     }
 

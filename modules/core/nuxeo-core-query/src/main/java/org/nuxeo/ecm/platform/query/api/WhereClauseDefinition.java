@@ -23,8 +23,6 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 
 public interface WhereClauseDefinition {
 
-    String getDocType();
-
     void setFixedPath(String fixedPart);
 
     boolean getQuoteFixedPartParameters();

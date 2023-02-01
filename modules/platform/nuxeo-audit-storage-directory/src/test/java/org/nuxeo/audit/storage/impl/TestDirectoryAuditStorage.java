@@ -138,7 +138,7 @@ public class TestDirectoryAuditStorage {
         Directory directory = storage.getAuditDirectory();
         String schemaName = directory.getSchema();
         try (Session session = directory.getSession()) {
-            DocumentModelList auditEntries = session.getEntries();
+            DocumentModelList auditEntries = session.query(new QueryBuilder(), false);
             assertEquals(2, auditEntries.size());
 
             String jsonEntry1 = jsonEntries.get(0);

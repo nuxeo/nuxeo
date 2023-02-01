@@ -214,16 +214,6 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList getEntries() {
-        checkClose();
-        DocumentModelList list = new DocumentModelListImpl();
-        for (String id : data.keySet()) {
-            list.add(getEntry(id));
-        }
-        return list;
-    }
-
-    @Override
     public void deleteEntry(DocumentModel docModel) {
         checkClose();
         deleteEntry(docModel.getId());

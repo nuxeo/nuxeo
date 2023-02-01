@@ -6,7 +6,8 @@
 
     <coreQueryPageProvider name="document_picker">
       <trackUsage>true</trackUsage>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="ecm:fulltext" operator="FULLTEXT">
           <field schema="advanced_search" name="fulltext_all" />
         </predicate>

@@ -120,11 +120,6 @@ public class CoreDirectorySession extends BaseSession {
         return null;
     }
 
-    @Override
-    public DocumentModelList getEntries() {
-        throw new UnsupportedOperationException();
-    }
-
     private String getPrefixedFieldName(String fieldName) {
         if (UUID_FIELD.equals(fieldName)) {
             return fieldName;

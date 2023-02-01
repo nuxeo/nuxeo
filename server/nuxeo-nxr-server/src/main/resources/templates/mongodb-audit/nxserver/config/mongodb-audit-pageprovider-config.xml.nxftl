@@ -13,7 +13,8 @@
     <genericPageProvider name="EVENTS_VIEW" class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
       <property name="coreSession">${r"#{documentManager}"}</property>
       <property name="generateUIComments">false</property>
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />
@@ -35,7 +36,8 @@
 
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER_OLD"
                          class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <fixedPart>
           { "docUUID": "?" }
         </fixedPart>
@@ -60,7 +62,8 @@
 
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
                          class="org.nuxeo.mongodb.audit.pageprovider.MongoDBDocumentHistoryPageProvider">
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />
@@ -83,7 +86,8 @@
     <genericPageProvider name="ADMIN_HISTORY" class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
       <property name="coreSession"></property>
       <property name="generateUIComments">false</property>
-      <whereClause docType="BasicAuditSearch">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />

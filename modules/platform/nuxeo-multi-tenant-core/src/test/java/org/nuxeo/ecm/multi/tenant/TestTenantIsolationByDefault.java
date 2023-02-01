@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -84,7 +85,7 @@ public class TestTenantIsolationByDefault {
         assertNotNull(acl);
 
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = session.getEntries();
+            DocumentModelList docs = session.query(new QueryBuilder(), false);
             assertEquals(1, docs.size());
             DocumentModel doc = docs.get(0);
             assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));

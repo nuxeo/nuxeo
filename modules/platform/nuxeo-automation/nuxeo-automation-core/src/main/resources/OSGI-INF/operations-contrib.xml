@@ -31,8 +31,6 @@
     <operation
         class="org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList"/>
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.execution.RunInNewTransaction"/>
-    <operation
         class="org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain"/>
     <operation class="org.nuxeo.ecm.automation.core.operations.execution.RunFileChain"/>
     <operation class="org.nuxeo.ecm.automation.core.operations.document.CopyDocument"/>
@@ -397,9 +395,6 @@
         class="org.nuxeo.ecm.automation.core.operations.business.BusinessUpdateOperation"/>
     <operation
         class="org.nuxeo.ecm.automation.core.operations.business.BusinessFetchOperation"/>
-
-    <operation
-        class="org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnListInNewTransaction"/>
 
     <!-- Trace related operations -->
     <operation

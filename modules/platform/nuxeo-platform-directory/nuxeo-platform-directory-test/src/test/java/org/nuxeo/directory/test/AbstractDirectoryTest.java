@@ -283,54 +283,6 @@ public abstract class AbstractDirectoryTest {
         }
     }
 
-    @Test
-    public void testGetEntries() throws Exception {
-        try (Session session = getSession()) {
-            DocumentModelList entries = session.getEntries();
-
-            assertEquals(3, entries.size());
-
-            Map<String, DocumentModel> entryMap = new HashMap<>();
-            for (DocumentModel entry : entries) {
-                entryMap.put(entry.getId(), entry);
-            }
-
-            DocumentModel dm = entryMap.get("user_1");
-            assertNotNull(dm);
-            assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
-            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
-                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
-            assertEquals(3L, dm.getProperty(SCHEMA, "intField"));
-            assertTrue((Boolean) dm.getProperty(SCHEMA, "booleanField"));
-            // XXX: getEntries does not fetch references anymore => groups is
-            // null
-
-            dm = entryMap.get("Administrator");
-            assertNotNull(dm);
-            assertEquals("Administrator", dm.getProperty(SCHEMA, "username"));
-            assertEquals(10L, dm.getProperty(SCHEMA, "intField"));
-            assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
-                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
-
-            dm = entryMap.get("user_3");
-            assertFalse((Boolean) dm.getProperty(SCHEMA, "booleanField"));
-        }
-
-        try (Session session = directoryService.open(GROUP_DIR)) {
-            DocumentModel doc = session.getEntry("administrators");
-            assertEquals("administrators", doc.getPropertyValue("group:groupname"));
-            assertEquals("Administrators group", doc.getPropertyValue("group:grouplabel"));
-
-            doc = session.getEntry("group_1");
-            assertEquals("group_1", doc.getPropertyValue("group:groupname"));
-            Serializable label = doc.getPropertyValue("group:grouplabel");
-            if (label != null) {
-                // NULL for Oracle
-                assertEquals("", label);
-            }
-        }
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void testUpdateEntry() throws Exception {
@@ -441,7 +393,7 @@ public abstract class AbstractDirectoryTest {
             entryMap.put("email", "second@email");
             DocumentModel dm = session.createEntry(entryMap);
             assertNotNull(dm);
-            assertEquals(3, session.getEntries().size());
+            assertEquals(3, session.queryIds(new QueryBuilder()).size());
         }
     }
 

@@ -41,7 +41,6 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
-import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnListInNewTransaction;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -95,31 +94,16 @@ public class OperationsAndTxTests {
         groups[2] = "toc";
         ctx.put("groups", groups);
 
-        // Test with deprecated RunOperationOnListInNewTransaction.ID
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(RunOperationOnListInNewTransaction.ID)
-             .set("list", "groups")
-             .set("id", RunOnListItemWithTx.ID)
-             .set("isolate", "false");
-        service.run(ctx, chain);
-        List<String> result = (List<String>) ctx.remove("result");
-        List<String> txids = (List<String>) ctx.remove("txids");
-
-        assertTrue(result.contains("tic"));
-        assertTrue(result.contains("tac"));
-        assertTrue(result.contains("toc"));
-        assertNotEquals(txids.get(0), txids.get(1));
-
         // Same test with RunOperationOnList.ID
-        chain = new OperationChain("testChain");
+        var chain = new OperationChain("testChain");
         chain.add(RunOperationOnList.ID)
              .set("list", "groups")
              .set("id", RunOnListItemWithTx.ID)
              .set("isolate", "false")
              .set("newTx", "true");
         service.run(ctx, chain);
-        result = (List<String>) ctx.remove("result");
-        txids = (List<String>) ctx.remove("txids");
+        var result = (List<String>) ctx.remove("result");
+        var txids = (List<String>) ctx.remove("txids");
 
         assertTrue(result.contains("tic"));
         assertTrue(result.contains("tac"));

@@ -47,7 +47,8 @@
       <property name="coreSession">#{documentManager}</property>
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <property name="searchAllRepositories">true</property>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate operator="FULLTEXT" parameter="ecm:fulltext">
           <field name="fulltext_all" schema="advanced_search" />
         </predicate>
@@ -71,7 +72,8 @@
     <genericPageProvider name="ADVANCED_SEARCH"
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <property name="coreSession">#{documentManager}</property>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate operator="FULLTEXT" parameter="ecm:fulltext">
           <field name="fulltext_all" schema="advanced_search" />
         </predicate>
@@ -96,7 +98,8 @@
     <genericPageProvider name="ADVANCED_SEARCH_NXQL"
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate operator="FULLTEXT" parameter="ecm:fulltext">
           <field name="fulltext_all" schema="advanced_search" />
         </predicate>
@@ -119,7 +122,8 @@
     </genericPageProvider>
 
     <genericPageProvider name="TEST_IN" class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate operator="IN" parameter="dc:title">
           <field name="subjects" schema="dublincore" />
         </predicate>
@@ -128,7 +132,8 @@
 
     <genericPageProvider name="TEST_IN_INTEGERS"
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate operator="IN" parameter="size">
           <field name="integerlist" schema="advanced_search" />
         </predicate>
@@ -212,7 +217,8 @@
 
     <genericPageProvider name="NXQL_WITH_HINT" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate hint="ES: INDEX(dc:title.fulltext)" operator="=" parameter="dc:title">
           <field name="fulltext_all" schema="advanced_search" />
         </predicate>
@@ -229,7 +235,8 @@
     <genericPageProvider name="NXQL_WITH_HINT_IN_PARAMETER"
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate operator="=" parameter="/*+ES: INDEX(dc:title.fulltext) */ dc:title">
           <field name="fulltext_all" schema="advanced_search" />
         </predicate>

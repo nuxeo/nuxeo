@@ -407,33 +407,6 @@ public class CoreProviderTest {
      * @since 7.1
      */
     @Test
-    public void testPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
-        try (OperationContext ctx = new OperationContext(session)) {
-            Map<String, Object> params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", "np:title",
-                    "WS1");
-            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
-                    DocumentPageProviderOperation.ID, params);
-
-            // test page size
-            assertEquals(2, result.getPageSize());
-            assertEquals(1, result.getNumberOfPages());
-            assertEquals(1, result.size());
-
-            // retry without params
-            params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", null, null);
-            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
-
-            // test page size
-            assertEquals(2, result.getPageSize());
-            assertEquals(2, result.getNumberOfPages());
-            assertEquals(2, result.size());
-        }
-    }
-
-    /**
-     * @since 7.1
-     */
-    @Test
     public void testPageProviderWithNamedParametersComplex() throws Exception {
         try (OperationContext ctx = new OperationContext(session)) {
             Map<String, Object> params = new HashMap<>();

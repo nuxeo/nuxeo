@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -77,7 +78,7 @@ public class GetDirectoryEntries {
     public Blob run(DocumentModel doc) throws IOException {
         Directory directory = directoryService.getDirectory(directoryName, doc);
         try (Session session = directory.getSession()) {
-            DocumentModelList entries = session.getEntries();
+            DocumentModelList entries = session.query(new QueryBuilder(), false);
             String schemaName = directory.getSchema();
             Schema schema = schemaManager.getSchema(schemaName);
             List<Map<String, Object>> rows = new ArrayList<>();

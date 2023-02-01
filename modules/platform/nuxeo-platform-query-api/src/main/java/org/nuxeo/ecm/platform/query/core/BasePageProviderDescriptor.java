@@ -248,13 +248,6 @@ public abstract class BasePageProviderDescriptor {
      * @since 6.0
      */
     public String getSearchDocumentType() {
-        if (searchDocumentType == null) {
-            // BBB
-            WhereClauseDefinition wc = getWhereClause();
-            if (wc != null) {
-                return wc.getDocType();
-            }
-        }
         return searchDocumentType;
     }
 

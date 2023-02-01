@@ -375,24 +375,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testGetEntries() {
-        try (Session session = userDir.getSession()) {
-            DocumentModelList entries = session.getEntries();
-            assertNotNull(entries);
-            assertEquals(4, entries.size());
-            List<String> entryIds = new ArrayList<>();
-            for (DocumentModel entry : entries) {
-                entryIds.add(entry.getId());
-            }
-            Collections.sort(entryIds);
-            assertEquals("Administrator", entryIds.get(0));
-            assertEquals("user1", entryIds.get(1));
-            assertEquals("user2", entryIds.get(2));
-            assertEquals("user3", entryIds.get(3));
-        }
-    }
-
-    @Test
     public void testCreateEntry() throws Exception {
         assumeTrue(isExternalServer());
         try (Session session = userDir.getSession()) {
@@ -743,29 +725,29 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             DocumentModel entry = session.getEntry("user1");
             assertNull(entry);
 
-            DocumentModelList entries = session.getEntries();
-            assertEquals(3, entries.size());
+            var ids = session.queryIds(new QueryBuilder());
+            assertEquals(3, ids.size());
 
             session.deleteEntry("user2");
             entry = session.getEntry("user2");
             assertNull(entry);
 
-            entries = session.getEntries();
-            assertEquals(2, entries.size());
+            ids = session.queryIds(new QueryBuilder());
+            assertEquals(2, ids.size());
 
             session.deleteEntry("Administrator");
             entry = session.getEntry("Administrator");
             assertNull(entry);
 
-            entries = session.getEntries();
-            assertEquals(1, entries.size());
+            ids = session.queryIds(new QueryBuilder());
+            assertEquals(1, ids.size());
 
             session.deleteEntry("user3");
             entry = session.getEntry("user3");
             assertNull(entry);
 
-            entries = session.getEntries();
-            assertEquals(0, entries.size());
+            ids = session.queryIds(new QueryBuilder());
+            assertEquals(0, ids.size());
         }
     }
 
@@ -778,12 +760,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             DocumentModel entry = session.getEntry("submembers");
             assertNull(entry);
 
-            DocumentModelList entries = session.getEntries();
+            var ids = session.queryIds(new QueryBuilder());
             if (hasDynGroupSchema()) {
                 // 3 dynamic groups
-                assertEquals(10, entries.size());
+                assertEquals(10, ids.size());
             } else {
-                assertEquals(7, entries.size());
+                assertEquals(7, ids.size());
             }
         }
     }
@@ -793,7 +775,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         // As a LDAP is not transactional, rollbacking is useless
         // this is just a smoke test
         try (Session session = userDir.getSession()) {
-            session.getEntries();
+            session.queryIds(new QueryBuilder());
         }
     }
 

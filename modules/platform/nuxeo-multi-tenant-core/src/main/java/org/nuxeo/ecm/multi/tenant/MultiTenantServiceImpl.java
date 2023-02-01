@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -227,7 +228,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     public List<DocumentModel> getTenants() {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            return session.getEntries();
+            return session.query(new QueryBuilder(), false);
         }
     }
 

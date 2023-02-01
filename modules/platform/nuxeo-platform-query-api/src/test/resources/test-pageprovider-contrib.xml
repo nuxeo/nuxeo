@@ -23,7 +23,8 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
-      <whereClause docType="File">
+      <searchDocumentType>File</searchDocumentType>
+      <whereClause>
         <fixedPart statement="SELECT * FROM Note">
           ecm:parentId = ? AND ecm:isVersion = 0 AND
           ecm:mixinType !=
@@ -72,7 +73,8 @@
 
     <coreQueryPageProvider name="CUSTOM_SELECT_STATEMENT">
       <property name="coreSession">#{documentManager}</property>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="ecm:fulltext" operator="FULLTEXT">
           <field schema="advanced_search" name="fulltext_all" />
         </predicate>
@@ -92,7 +94,8 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="TEST_IN">
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="dc:title" operator="IN">
           <field schema="dublincore" name="subjects" />
         </predicate>
@@ -100,7 +103,8 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="TEST_IN_INTEGERS">
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="size" operator="IN">
           <field schema="advanced_search" name="integerlist" />
         </predicate>
@@ -108,7 +112,8 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="TEST_NOT_IN_INTEGERS">
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="size" operator="NOT IN">
           <field schema="advanced_search" name="integerlist" />
         </predicate>
@@ -160,7 +165,8 @@
 
     <coreQueryPageProvider name="PREDICATE_WITH_HINT">
       <property name="coreSession">#{documentManager}</property>
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="dc:title" operator="LIKE" hint="ES: INDEX(dc:title.custom)">
           <field schema="advanced_search" name="title" />
         </predicate>
@@ -188,7 +194,8 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="DUMMY_NOT_LIKE_PP">
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="size" operator="NOT LIKE">
           <field schema="advanced_search" name="title" />
         </predicate>
@@ -196,7 +203,8 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="DUMMY_NOT_ILIKE_PP">
-      <whereClause docType="AdvancedSearch">
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
         <predicate parameter="size" operator="NOT ILIKE">
           <field schema="advanced_search" name="title" />
         </predicate>

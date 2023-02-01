@@ -20,10 +20,7 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import org.opensearch.index.query.QueryBuilder;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 
 /**
@@ -72,24 +69,5 @@ public interface ElasticSearchService {
      * @since 8.4
      */
     void clearScroll(EsScrollResult scrollResult);
-
-    /**
-     * Returns a document list using an NXQL query. Fetch documents from the VCS repository.
-     *
-     * @since 5.9.3
-     * @deprecated since 6.0, use query with NxQueryBuilder
-     */
-    @Deprecated
-    DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos);
-
-    /**
-     * Returns a document list using an ElasticSearch {@link QueryBuilder}. Fetch documents from the VCS repository.
-     *
-     * @since 5.9.3
-     * @deprecated since 6.0, use query with NxQueryBuilder
-     */
-    @Deprecated
-    DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos);
 
 }

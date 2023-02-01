@@ -74,16 +74,6 @@
       <pageSize>2</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="namedParamProviderWithWhereClauseWithDoc">
-      <whereClause docType="NamedParamDoc">
-        <predicate parameter="dc:title" operator="=">
-          <field xpath="np:title" />
-        </predicate>
-      </whereClause>
-      <sort column="dc:title" ascending="true" />
-      <pageSize>2</pageSize>
-    </coreQueryPageProvider>
-
     <coreQueryPageProvider name="namedParamProviderWithQuickFilter">
       <pattern>
         SELECT * FROM Document where dc:title='Note 1' and ecm:isVersion = 0
