@@ -8,7 +8,6 @@
     <lifecycle-policy>documentRouteElement</lifecycle-policy>
     <facet>DocumentRoute</facet>
     <facet>Orderable</facet>
-    <facet>StepFolder</facet>
     <facet>FacetRoute1</facet>
     <access-control/>
   </system>
@@ -31,9 +30,6 @@
     <dc:expired/>
     <dc:lastContributor/>
     <dc:title><![CDATA[myRouteBis]]></dc:title>
-  </schema>
-  <schema xmlns:stepf="http://www.nuxeo.org/ecm/schemas/step_folder" name="step_folder">
-    <stepf:execution><![CDATA[graph]]></stepf:execution>
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon/>

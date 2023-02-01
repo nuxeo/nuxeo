@@ -18,20 +18,14 @@
  */
 package org.nuxeo.ecm.platform.routing.core.adapter;
 
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ROUTE_NODE_DOCUMENT_TYPE;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
-import org.nuxeo.ecm.platform.routing.core.impl.ConditionalRunner;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteElementImpl;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteImpl;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteStepsContainerImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNodeImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRouteImpl;
-import org.nuxeo.ecm.platform.routing.core.impl.ParallelRunner;
-import org.nuxeo.ecm.platform.routing.core.impl.SerialRunner;
-import org.nuxeo.ecm.platform.routing.core.impl.StepElementRunner;
 
 /**
  * Provides {@link DocumentRoute} for a {@link DocumentModel}.
@@ -44,39 +38,10 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
         String type = doc.getType();
         if (doc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
-            ExecutionTypeValues executionType = getExecutionType(doc, type);
-            switch (executionType) {
-            case serial:
-                return new DocumentRouteImpl(doc, new SerialRunner());
-            case parallel:
-                return new DocumentRouteImpl(doc, new ParallelRunner());
-            case graph:
-                return new GraphRouteImpl(doc);
-            }
-        } else if (type.equals("RouteNode")) {
+            return new GraphRouteImpl(doc);
+        } else if (ROUTE_NODE_DOCUMENT_TYPE.equals(type)) {
             return new GraphNodeImpl(doc);
-        } else if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
-            return new DocumentRouteElementImpl(doc, new StepElementRunner());
-        } else if (doc.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
-            return new DocumentRouteStepsContainerImpl(doc, new ConditionalRunner());
-        } else if (doc.hasFacet(DocumentRoutingConstants.STEP_FOLDER_FACET)) {
-            ExecutionTypeValues executionType = getExecutionType(doc, type);
-            switch (executionType) {
-            case serial:
-                return new DocumentRouteStepsContainerImpl(doc, new SerialRunner());
-            case parallel:
-                return new DocumentRouteStepsContainerImpl(doc, new ParallelRunner());
-            case graph:
-                throw new UnsupportedOperationException();
-            }
         }
         return null;
     }
-
-    protected ExecutionTypeValues getExecutionType(DocumentModel doc, String type) {
-        ExecutionTypeValues executionType = ExecutionTypeValues.valueOf(
-                (String) doc.getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
-        return executionType;
-    }
-
 }

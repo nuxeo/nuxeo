@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/conditional_step_folder/" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.nuxeo.org/ecm/schemas/conditional_step_folder">
-
-  <xs:include schemaLocation="base.xsd"/>
-
-  <xs:element name="posOfChildStepToRunNext" type="xs:string"/>
-</xs:schema>

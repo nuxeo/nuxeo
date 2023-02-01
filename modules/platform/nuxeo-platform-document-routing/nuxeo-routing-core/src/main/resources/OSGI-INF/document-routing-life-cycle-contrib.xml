@@ -106,15 +106,6 @@
         noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
         documentRouteElement
       </type>
-      <type name="StepFolder"
-        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
-        documentRouteElement
-      </type>
-      <type name="ConditionalStepFolder"
-        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
-        documentRouteElement
-      </type>
-      <type name="DocumentRouteStep">documentRouteElement</type>
       <type name="RouteNode">documentRouteElement</type>
       <type name="RoutingTask">task</type>
     </types>

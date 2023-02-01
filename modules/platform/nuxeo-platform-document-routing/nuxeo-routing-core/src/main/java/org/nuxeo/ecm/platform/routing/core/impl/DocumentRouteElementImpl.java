@@ -293,13 +293,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     }
 
     @Override
-    public DocumentRouteStep undo(CoreSession session) {
-        runner.undo(session, this);
-        document = session.getDocument(document.getRef());
-        return this;
-    }
-
-    @Override
     public boolean canUndoStep(CoreSession session) {
         GetIsParentRunningUnrestricted runner = new GetIsParentRunningUnrestricted(session);
         runner.runUnrestricted();

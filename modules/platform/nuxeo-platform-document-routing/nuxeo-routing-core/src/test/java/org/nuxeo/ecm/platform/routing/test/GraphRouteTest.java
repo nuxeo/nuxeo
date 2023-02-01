@@ -68,9 +68,9 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.TaskInfo;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -1840,7 +1840,6 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-reassign-delegate-listener.xml")
     @Test
     public void testTasksReassignment() {
 
@@ -1906,11 +1905,18 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // user1 has Write on the document following the workflow
         assertTrue(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
         // reassign task to user2
+        try (var listener = new CapturingEventListener(TaskEventNames.WORKFLOW_TASK_REASSIGNED)) {
+            routing.reassignTask(sessionUser1, task1.getId(), List.of("myuser2"), "Reassigned");
+            sessionUser1.save();
 
-        List<String> newActors = new ArrayList<>();
-        newActors.add("myuser2");
-        routing.reassignTask(sessionUser1, task1.getId(), newActors, "Reassigned");
-        sessionUser1.save();
+            var eventCtx = listener.findFirstCapturedEventContextOrElseThrow();
+            var eventWfVar = (Map<String, Serializable>) eventCtx.getProperty(Constants.VAR_WORKFLOW);
+            assertNotNull(eventWfVar);
+            assertEquals(DUMMY_WF_VAR, eventWfVar.get("stringfield"));
+            var eventNodeVar = (Map<String, Serializable>) eventCtx.getProperty(Constants.VAR_WORKFLOW_NODE);
+            assertNotNull(eventNodeVar);
+            assertEquals(DUMMY_NODE_VAR, eventNodeVar.get("stringfield2"));
+        }
 
         // check that user1 doesn't have Write permission any more on
         // documents following the workflow
@@ -1943,7 +1949,6 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Deploy("org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-reassign-delegate-listener.xml")
     @Test
     public void testTasksDelegation() {
 
@@ -2008,11 +2013,18 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // user1 has Write on the document following the workflow
         assertTrue(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
         // delegate task to user2
+        try (var listener = new CapturingEventListener(TaskEventNames.WORKFLOW_TASK_DELEGATED)) {
+            routing.delegateTask(sessionUser1, task1.getId(), List.of("myuser2"), "Delegated");
+            sessionUser1.save();
 
-        List<String> newActors = new ArrayList<>();
-        newActors.add("myuser2");
-        routing.delegateTask(sessionUser1, task1.getId(), newActors, "Delegated");
-        sessionUser1.save();
+            var eventCtx = listener.findFirstCapturedEventContextOrElseThrow();
+            var eventWfVar = (Map<String, Serializable>) eventCtx.getProperty(Constants.VAR_WORKFLOW);
+            assertNotNull(eventWfVar);
+            assertEquals(DUMMY_WF_VAR, eventWfVar.get("stringfield"));
+            var eventNodeVar = (Map<String, Serializable>) eventCtx.getProperty(Constants.VAR_WORKFLOW_NODE);
+            assertNotNull(eventNodeVar);
+            assertEquals(DUMMY_NODE_VAR, eventNodeVar.get("stringfield2"));
+        }
 
         // check that user1 still have Write permission on documents
         // following the workflow
@@ -2186,7 +2198,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         List<LogEvent> events = logResult.getCaughtEvents();
         assertTrue(events.isEmpty());
-        // Setting  global not allowed variable goes through
+        // Setting global not allowed variable goes through
         node.setAllVariables(vars, false);
         routeDoc = session.getDocument(routeDoc.getRef());
         GraphRoute route = routeDoc.getAdapter(GraphRoute.class);

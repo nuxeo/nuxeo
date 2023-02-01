@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/step_folder"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/step_folder/">
-
-  <xs:include schemaLocation="base.xsd" />
-  <!-- the execution plan for the steps inside this folder, it can be either
-    serial or paralel -->
-  <xs:element name="execution" type="xs:string" default="serial" />
-</xs:schema>

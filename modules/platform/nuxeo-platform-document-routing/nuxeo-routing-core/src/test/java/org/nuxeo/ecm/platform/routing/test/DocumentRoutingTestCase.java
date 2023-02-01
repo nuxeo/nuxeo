@@ -19,6 +19,12 @@
 package org.nuxeo.ecm.platform.routing.test;
 
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ROUTE_NODE_DOCUMENT_TYPE;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -29,6 +35,7 @@ import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -41,7 +48,7 @@ import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -81,9 +88,6 @@ public class DocumentRoutingTestCase {
     protected CoreSession session;
 
     @Inject
-    protected DocumentRoutingEngineService engineService;
-
-    @Inject
     protected DocumentRoutingService service;
 
     @Inject
@@ -112,57 +116,72 @@ public class DocumentRoutingTestCase {
         session.save();
     }
 
-    public DocumentModel createDocumentRouteModel(CoreSession session, String name, String path) {
-        DocumentModel route = createDocumentModel(session, name, DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE,
-                path);
-        createDocumentModel(session, "step1", DocumentRoutingConstants.STEP_DOCUMENT_TYPE, route.getPathAsString());
-        createDocumentModel(session, "step2", DocumentRoutingConstants.STEP_DOCUMENT_TYPE, route.getPathAsString());
-        DocumentModel parallelFolder1 = createDocumentModel(session, "parallel1",
-                DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE, route.getPathAsString());
-        parallelFolder1.setPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME,
-                DocumentRoutingConstants.ExecutionTypeValues.parallel.name());
-        session.saveDocument(parallelFolder1);
-        createDocumentModel(session, "step31", DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
-                parallelFolder1.getPathAsString());
-        createDocumentModel(session, "step32", DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
-                parallelFolder1.getPathAsString());
-        session.save();
-        return route;
-    }
-
-    public DocumentModel createDocumentRouteModelWithConditionalFolder(CoreSession session, String name, String path)
-            {
-        DocumentModel route = createDocumentModel(session, name, DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE,
-                path);
-        createDocumentModel(session, "step1", DocumentRoutingConstants.STEP_DOCUMENT_TYPE, route.getPathAsString());
-        DocumentModel condFolder = createDocumentModel(session, "conditionalStep2",
-                DocumentRoutingConstants.CONDITIONAL_STEP_DOCUMENT_TYPE, route.getPathAsString());
-        // create a step into each one of the 2 branches
-        createDocumentModel(session, "executeIfOption1", DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
-                condFolder.getPathAsString() + "/option1");
-        createDocumentModel(session, "executeIfOption2", DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
-                condFolder.getPathAsString() + "/option2");
-        createDocumentModel(session, "step3", DocumentRoutingConstants.STEP_DOCUMENT_TYPE, route.getPathAsString());
-        session.save();
-        return route;
-    }
-
-    public DocumentModel createDocumentModel(CoreSession session, String name, String type, String path)
-            {
-        DocumentModel route1 = session.createDocumentModel(path, name, type);
-        route1.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME, name);
-        return session.createDocument(route1);
-    }
-
     public DocumentRoute createDocumentRoute(CoreSession session, String name) {
         DocumentModel model = createDocumentRouteModel(session, name, WORKSPACES_PATH);
         return model.getAdapter(DocumentRoute.class);
     }
 
-    public DocumentRoute createDocumentRouteWithConditionalFolder(CoreSession session, String name)
-            {
-        DocumentModel model = createDocumentRouteModelWithConditionalFolder(session, name, WORKSPACES_PATH);
-        return model.getAdapter(DocumentRoute.class);
+    public DocumentModel createDocumentRouteModel(CoreSession session, String name, String path) {
+        DocumentModel route = createDocumentModel(session, name, DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE,
+                path);
+        var step1Node = createNode(route, "step1", session);
+        step1Node.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(step1Node, transition("transToStep2", "step2"));
+        session.saveDocument(step1Node);
+
+        var step2Node = createNode(route, "step2", session);
+        setTransitions(step2Node, transition("transToParallel1", "parallel1"));
+        session.saveDocument(step2Node);
+
+        DocumentModel parallel1Node = createNode(route, "parallel1", session);
+        setTransitions(parallel1Node, transition("transToParallel1", "step31"),
+                transition("transToParallel2", "step32"));
+        session.saveDocument(parallel1Node);
+
+        var step31 = createNode(route, "step31", session);
+        setTransitions(step31, transition("transToMergeNode", "mergeNode"));
+        session.saveDocument(step31);
+
+        var step32 = createNode(route, "step32", session);
+        setTransitions(step32, transition("transToMergeNode", "mergeNode"));
+        session.saveDocument(step32);
+
+        var mergeNode = createNode(route, "mergeNode", session);
+        mergeNode.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        mergeNode.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        session.saveDocument(mergeNode);
+
+        session.save();
+        return route;
+    }
+
+    protected DocumentModel createNode(DocumentModel route, String name, CoreSession session) throws PropertyException {
+        DocumentModel node = session.createDocumentModel(route.getPathAsString(), name, ROUTE_NODE_DOCUMENT_TYPE);
+        node.setPropertyValue(GraphNode.PROP_NODE_ID, name);
+        return session.createDocument(node);
+    }
+
+    @SafeVarargs
+    protected final void setTransitions(DocumentModel node, Map<String, Serializable>... transitions) {
+        node.setPropertyValue(GraphNode.PROP_TRANSITIONS, (Serializable) List.of(transitions));
+    }
+
+    protected Map<String, Serializable> transition(String name, String target) {
+        return transition(name, target, "true");
+    }
+
+    protected Map<String, Serializable> transition(String name, String target, String condition) {
+        Map<String, Serializable> m = new HashMap<>();
+        m.put(GraphNode.PROP_TRANS_NAME, name);
+        m.put(GraphNode.PROP_TRANS_TARGET, target);
+        m.put(GraphNode.PROP_TRANS_CONDITION, condition);
+        return m;
+    }
+
+    public DocumentModel createDocumentModel(CoreSession session, String name, String type, String path) {
+        DocumentModel route1 = session.createDocumentModel(path, name, type);
+        route1.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME, name);
+        return session.createDocument(route1);
     }
 
     protected DocumentModel createTestDocument(String name, CoreSession session) {

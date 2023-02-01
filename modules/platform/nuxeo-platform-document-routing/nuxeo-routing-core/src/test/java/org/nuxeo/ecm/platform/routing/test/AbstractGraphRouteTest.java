@@ -20,8 +20,7 @@ package org.nuxeo.ecm.platform.routing.test;
 
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
-import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME;
-import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues.graph;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ROUTE_NODE_DOCUMENT_TYPE;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -54,18 +53,15 @@ public abstract class AbstractGraphRouteTest {
     // the route model we'll use
     protected DocumentModel routeDoc;
 
-    protected static final String TYPE_ROUTE_NODE = "RouteNode";
-
     protected DocumentModel createRoute(String name, CoreSession session) throws PropertyException {
         DocumentModel route = session.createDocumentModel("/", name, DOCUMENT_ROUTE_DOCUMENT_TYPE);
-        route.setPropertyValue(EXECUTION_TYPE_PROPERTY_NAME, graph.name());
         route.setPropertyValue("dc:title", name);
         route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME, (Serializable) List.of(doc.getId()));
         return session.createDocument(route);
     }
 
     protected DocumentModel createNode(DocumentModel route, String name, CoreSession session) throws PropertyException {
-        DocumentModel node = session.createDocumentModel(route.getPathAsString(), name, TYPE_ROUTE_NODE);
+        DocumentModel node = session.createDocumentModel(route.getPathAsString(), name, ROUTE_NODE_DOCUMENT_TYPE);
         node.setPropertyValue(GraphNode.PROP_NODE_ID, name);
         return session.createDocument(node);
     }

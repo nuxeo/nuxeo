@@ -4,15 +4,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
     <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.ResumeStepOperation" />
-    <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.StepDoneOperation" />
-    <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.StepBackToReadyOperation" />
-    <operation
       class="org.nuxeo.ecm.platform.routing.api.operation.UpdateCommentsInfoOnDocumentOperation" />
-    <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.SetNextStepOnConditionalFolderOperation" />
     <operation
       class="org.nuxeo.ecm.platform.routing.core.impl.GetGraphOperation" />
     <operation

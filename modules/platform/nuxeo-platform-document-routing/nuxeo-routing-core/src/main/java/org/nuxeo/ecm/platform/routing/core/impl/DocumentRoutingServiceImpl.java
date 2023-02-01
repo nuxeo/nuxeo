@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.LockHelper;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -58,7 +57,6 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
-import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -79,14 +77,11 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
-import org.nuxeo.ecm.platform.routing.api.RouteFolderElement;
 import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
-import org.nuxeo.ecm.platform.routing.api.RouteTable;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
@@ -130,11 +125,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             + " ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isVersion = 0  AND ecm:isProxy = 0 ",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
-    private static final String ORDERED_CHILDREN_QUERY = "SELECT * FROM Document WHERE"
-            + " ecm:parentId = '%s' AND ecm:isVersion = 0 AND ecm:isTrashed = 0 ORDER BY ecm:pos";
-
-    public static final String CHAINS_TO_TYPE_XP = "chainsToType";
-
     public static final String PERSISTER_XP = "persister";
 
     /**
@@ -150,12 +140,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     /** @since 11.5 */
     protected static final String WORKFLOW_MODELS_CACHE = "workflowModels";
 
-    protected Map<String, String> typeToChain = new HashMap<>();
-
-    protected Map<String, String> undoChainIdFromRunning = new HashMap<>();
-
-    protected Map<String, String> undoChainIdFromDone = new HashMap<>();
-
     protected DocumentRoutingPersister persister;
 
     protected RouteTemplateResourceRegistry routeResourcesRegistry = new RouteTemplateResourceRegistry();
@@ -166,12 +150,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CHAINS_TO_TYPE_XP.equals(extensionPoint)) {
-            ChainToTypeMappingDescriptor desc = (ChainToTypeMappingDescriptor) contribution;
-            typeToChain.put(desc.getDocumentType(), desc.getChainId());
-            undoChainIdFromRunning.put(desc.getDocumentType(), desc.getUndoChainIdFromRunning());
-            undoChainIdFromDone.put(desc.getDocumentType(), desc.getUndoChainIdFromDone());
-        } else if (PERSISTER_XP.equals(extensionPoint)) {
+        if (PERSISTER_XP.equals(extensionPoint)) {
             PersisterDescriptor des = (PersisterDescriptor) contribution;
             try {
                 persister = des.getKlass().getDeclaredConstructor().newInstance();
@@ -366,21 +345,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public String getOperationChainId(String documentType) {
-        return typeToChain.get(documentType);
-    }
-
-    @Override
-    public String getUndoFromRunningOperationChainId(String documentType) {
-        return undoChainIdFromRunning.get(documentType);
-    }
-
-    @Override
-    public String getUndoFromDoneOperationChainId(String documentType) {
-        return undoChainIdFromDone.get(documentType);
-    }
-
-    @Override
     public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel,
             CoreSession userSession) {
         CoreInstance.doPrivileged(userSession, session -> {
@@ -404,59 +368,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             route.validate(session);
         });
         return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(DocumentRoute.class);
-    }
-
-    /**
-     * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     */
-    @Deprecated
-    @Override
-    public List<DocumentRouteTableElement> getRouteElements(DocumentRoute route, CoreSession session) {
-        RouteTable table = new RouteTable(route);
-        List<DocumentRouteTableElement> elements = new ArrayList<>();
-        processElementsInFolder(route.getDocument(), elements, table, session, 0, null);
-        int maxDepth = 0;
-        for (DocumentRouteTableElement element : elements) {
-            int d = element.getDepth();
-            maxDepth = Math.max(d, maxDepth);
-        }
-        table.setMaxDepth(maxDepth);
-        for (DocumentRouteTableElement element : elements) {
-            element.computeFirstChildList();
-        }
-        return elements;
-    }
-
-    /**
-     * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     */
-    @Deprecated
-    protected void processElementsInFolder(DocumentModel doc, List<DocumentRouteTableElement> elements,
-            RouteTable table, CoreSession session, int depth, RouteFolderElement folder) {
-        DocumentModelList children = session.getChildren(doc.getRef());
-        boolean first = true;
-        for (DocumentModel child : children) {
-            if (child.isFolder() && !session.getChildren(child.getRef()).isEmpty()) {
-                RouteFolderElement thisFolder = new RouteFolderElement(child.getAdapter(DocumentRouteElement.class),
-                        table, first, folder, depth);
-                processElementsInFolder(child, elements, table, session, depth + 1, thisFolder);
-            } else {
-                if (folder != null) {
-                    folder.increaseTotalChildCount();
-                } else {
-                    table.increaseTotalChildCount();
-                }
-                elements.add(new DocumentRouteTableElement(child.getAdapter(DocumentRouteElement.class), table, depth,
-                        folder, first));
-            }
-            first = false;
-        }
-    }
-
-    @Deprecated
-    protected List<DocumentRouteTableElement> getRouteElements(DocumentRouteElement routeElementDocument,
-            CoreSession session, List<DocumentRouteTableElement> routeElements, int depth) {
-        return null;
     }
 
     @Override
@@ -504,66 +415,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         return coreSession.hasPermission(documentRoute.getRef(), SecurityConstants.EVERYTHING);
     }
 
-    // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    @Override
-    @Deprecated
-    public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx, DocumentRouteElement routeElement,
-            CoreSession session) throws DocumentRouteNotLockedException {
-        DocumentRoute route = getParentRouteModel(parentDocumentRef, session);
-        if (!isLockedByCurrentUser(route, session)) {
-            throw new DocumentRouteNotLockedException();
-        }
-        DocumentModelList children = session.query(
-                String.format(ORDERED_CHILDREN_QUERY, session.getDocument(parentDocumentRef).getId()));
-        DocumentModel sourceDoc;
-        try {
-            sourceDoc = children.get(idx);
-            addRouteElementToRoute(parentDocumentRef, sourceDoc.getName(), routeElement, session);
-        } catch (IndexOutOfBoundsException e) {
-            addRouteElementToRoute(parentDocumentRef, null, routeElement, session);
-        }
-    }
-
-    // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    @Override
-    @Deprecated
-    public void addRouteElementToRoute(DocumentRef parentDocumentRef, String sourceName,
-            DocumentRouteElement routeElement, CoreSession session) throws DocumentRouteNotLockedException {
-        DocumentRoute parentRoute = getParentRouteModel(parentDocumentRef, session);
-        if (!isLockedByCurrentUser(parentRoute, session)) {
-            throw new DocumentRouteNotLockedException();
-        }
-        PathSegmentService pss = Framework.getService(PathSegmentService.class);
-        DocumentModel docRouteElement = routeElement.getDocument();
-        DocumentModel parentDocument = session.getDocument(parentDocumentRef);
-        docRouteElement.setPathInfo(parentDocument.getPathAsString(), pss.generatePathSegment(docRouteElement));
-        String lifecycleState = parentDocument.getCurrentLifeCycleState()
-                                              .equals(DocumentRouteElement.ElementLifeCycleState.draft.name())
-                                                      ? DocumentRouteElement.ElementLifeCycleState.draft.name()
-                                                      : DocumentRouteElement.ElementLifeCycleState.ready.name();
-        docRouteElement.putContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME, lifecycleState);
-        docRouteElement = session.createDocument(docRouteElement);
-        session.orderBefore(parentDocumentRef, docRouteElement.getName(), sourceName);
-        session.save();// the new document will be queried later on
-    }
-
-    @Override
-    public void removeRouteElement(DocumentRouteElement routeElement, CoreSession session)
-            throws DocumentRouteNotLockedException {
-        DocumentRoute parentRoute = routeElement.getDocumentRoute(session);
-        if (!isLockedByCurrentUser(parentRoute, session)) {
-            throw new DocumentRouteNotLockedException();
-        }
-        session.removeDocument(routeElement.getDocument().getRef());
-        session.save();// the document will be queried later on
-    }
-
-    @Override
-    public DocumentModelList getOrderedRouteElement(String routeElementId, CoreSession session) {
-        String query = String.format(ORDERED_CHILDREN_QUERY, routeElementId);
-        return session.query(query);
-    }
-
     @Override
     public void lockDocumentRoute(DocumentRoute routeModel, CoreSession session)
             throws DocumentRouteAlredayLockedException {
@@ -600,16 +451,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             throw new DocumentRouteNotLockedException();
         }
         routeElement.save(session);
-    }
-
-    private DocumentRoute getParentRouteModel(DocumentRef documentRef, CoreSession session) {
-        DocumentModel parentDoc = session.getDocument(documentRef);
-        if (parentDoc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
-            return parentDoc.getAdapter(DocumentRoute.class);
-        }
-        DocumentRouteElement rElement = parentDoc.getAdapter(DocumentRouteElement.class);
-        return rElement.getDocumentRoute(session);
-
     }
 
     @Override
@@ -768,7 +609,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public String getRouteModelDocIdWithId(CoreSession session, String id) {
-        return modelsCache.computeIfAbsent(session.getRepositoryName() + ":" + id, () ->  {
+        return modelsCache.computeIfAbsent(session.getRepositoryName() + ":" + id, () -> {
             String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
             List<String> routeIds = new ArrayList<>();
             try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {
@@ -1003,21 +844,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
             routingEngine.cancel(routeInstance, session);
             isWorkflowCanceled = true;
-        }
-    }
-
-    @Override
-    public void finishTask(CoreSession session, DocumentRoute route, Task task, boolean delete)
-            throws DocumentRouteException {
-        DocumentModelList docs = route.getAttachedDocuments(session);
-        try {
-            removePermissionsForTaskActors(session, docs, task);
-            // delete task
-            if (delete) {
-                session.removeDocument(new IdRef(task.getId()));
-            }
-        } catch (DocumentNotFoundException e) {
-            throw new DocumentRouteException("Cannot finish task", e);
         }
     }
 

@@ -8,7 +8,6 @@
     <lifecycle-policy>documentRouteElement</lifecycle-policy>
     <facet>DocumentRoute</facet>
     <facet>Orderable</facet>
-    <facet>StepFolder</facet>
     <facet>facet-var_SerialDocumentReview</facet>
     <access-control/>
   </system>
@@ -17,9 +16,6 @@
   <schema xmlns:var_SerialDocumentReview="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_SerialDocumentReview" name="var_SerialDocumentReview">
     <var_SerialDocumentReview:validationOrReview><![CDATA[validation]]></var_SerialDocumentReview:validationOrReview>
     <var_SerialDocumentReview:index><![CDATA[0]]></var_SerialDocumentReview:index>
-  </schema>
-  <schema xmlns:stepf="http://www.nuxeo.org/ecm/schemas/step_folder" name="step_folder">
-    <stepf:execution><![CDATA[graph]]></stepf:execution>
   </schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
     <dc:title><![CDATA[wf.serialDocumentReview.SerialDocumentReview]]></dc:title>

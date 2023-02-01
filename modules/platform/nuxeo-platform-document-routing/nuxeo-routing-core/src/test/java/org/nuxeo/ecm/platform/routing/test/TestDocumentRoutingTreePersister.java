@@ -43,12 +43,12 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
     protected DocumentRoutingPersister persister;
 
     @Before
-    public void createPersister() throws Exception {
+    public void createPersister() {
         persister = new DocumentRoutingTreePersister();
     }
 
     @Test
-    public void testGetOrCreateRootOfDocumentRouteInstanceStructure() throws Exception {
+    public void testGetOrCreateRootOfDocumentRouteInstanceStructure() {
         DocumentModel doc = persister.getOrCreateRootOfDocumentRouteInstanceStructure(session);
         assertNotNull(doc);
         assertEquals(doc.getPathAsString(), TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
@@ -62,7 +62,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
      * Test creation when there's a non-folderish doc at the root.
      */
     @Test
-    public void testDocumentRouteInstancesRootCreation() throws Exception {
+    public void testDocumentRouteInstancesRootCreation() {
         // create a document coming before '/default-domain' in name order
         DocumentModel firstDoc = session.createDocumentModel("/", "aaa", "File");
         firstDoc = session.createDocument(firstDoc);
@@ -98,7 +98,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
 
         CoreSession managersSession = CoreInstance.getCoreSession(session.getRepositoryName(),
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
-        assertEquals(3, managersSession.getChildren(instance.getRef()).size());
+        assertEquals(6, managersSession.getChildren(instance.getRef()).size());
     }
 
     @Test

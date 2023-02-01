@@ -45,6 +45,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ROUTE_NODE_DOCUMENT_TYPE;
+
 /**
  * @since 5.6
  */
@@ -89,7 +91,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         String startNodeId = null;
         for (DocumentModel doc : children) {
             // TODO use adapters
-            if (doc.getType().equals("RouteNode")) {
+            if (ROUTE_NODE_DOCUMENT_TYPE.equals(doc.getType())) {
                 GraphNode node = new GraphNodeImpl(doc, this);
                 String id = node.getId();
                 if (nodesById.put(id, node) != null) {

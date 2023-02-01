@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ROUTE_NODE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.routing.core.persistence.RouteModelsZipImporter.WORKFLOW_KEY_VALUE_STORE;
 
 import java.io.File;
@@ -159,10 +161,10 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
         public void populate(CoreSession session) {
             // create an initial route to test that is override at import
             DocumentModel root = createDocumentModel(session, "document-route-models-root", "DocumentRouteModelsRoot",
-                                                     "/");
+                    "/");
             assertNotNull(root);
             DocumentModel route = createDocumentModel(session, "myRoute", "DocumentRoute",
-                                                      "/document-route-models-root/");
+                    "/document-route-models-root/");
             route.setPropertyValue("dc:coverage", "test");
             route = session.saveDocument(route);
             // set ACL to test that the ACLs are kept
@@ -176,8 +178,8 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
             assertNotNull(route);
             assertEquals("test", route.getPropertyValue("dc:coverage"));
 
-            DocumentModel node = createDocumentModel(session, "myNode", "RouteNode",
-                                                     "/document-route-models-root/myRoute");
+            DocumentModel node = createDocumentModel(session, "myNode", ROUTE_NODE_DOCUMENT_TYPE,
+                    "/document-route-models-root/myRoute");
             assertNotNull(node);
         }
 
@@ -219,13 +221,13 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
             node = null;
         }
         assertNull(node);
-        assertEquals("DocumentRoute", route.getType());
+        assertEquals(DOCUMENT_ROUTE_DOCUMENT_TYPE, route.getType());
         DocumentModel step1 = session.getDocument(new PathRef("/document-route-models-root/myRoute/Step1"));
         assertNotNull(step1);
-        assertEquals("RouteNode", step1.getType());
+        assertEquals(ROUTE_NODE_DOCUMENT_TYPE, step1.getType());
         DocumentModel step2 = session.getDocument(new PathRef("/document-route-models-root/myRoute/Step2"));
         assertNotNull(step2);
-        assertEquals("RouteNode", step2.getType());
+        assertEquals(ROUTE_NODE_DOCUMENT_TYPE, step2.getType());
     }
 
     // NXP-30170

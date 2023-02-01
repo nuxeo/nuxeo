@@ -27,8 +27,4 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface DocumentRouteStep extends DocumentRouteElement {
 
-    /**
-     * Undo this step. This operation run the undo operation on this element.
-     */
-    DocumentRouteStep undo(CoreSession session);
 }

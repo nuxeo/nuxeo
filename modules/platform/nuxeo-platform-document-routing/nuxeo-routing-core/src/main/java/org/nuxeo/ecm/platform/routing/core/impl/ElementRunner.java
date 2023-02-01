@@ -50,14 +50,6 @@ public interface ElementRunner {
             Map<String, Object> data, String status);
 
     /**
-     * Run the undo chain on this element. If this element is not a step, then throw an exception.
-     *
-     * @deprecated since 5.9.2 - Use only routes of type 'graph'
-     */
-    @Deprecated
-    void undo(CoreSession session, DocumentRouteElement element);
-
-    /**
      * Cancel this element.
      *
      * @see DocumentRoute#cancel(CoreSession)
