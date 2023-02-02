@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -152,6 +153,15 @@ public class FulltextExtractorWork extends AbstractWork {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         Repository repository = repositoryService.getRepository(repositoryName);
         fulltextConfiguration = repository.getFulltextConfiguration();
+    }
+
+    // @since 2021.32
+    public void extractBinaryFulltext(CoreSession session, DocumentModel doc) {
+        this.session = session;
+        docsToUpdate = Collections.singletonList(doc.getRef());
+        document = doc;
+        initFulltextConfiguration();
+        extractAndUpdateBinaryText();
     }
 
     protected void findDocsToUpdate() {

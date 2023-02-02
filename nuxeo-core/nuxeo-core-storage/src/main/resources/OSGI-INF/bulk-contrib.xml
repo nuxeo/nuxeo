@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.bulk" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.bulk.config</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="extractBinaryFulltext" bucketSize="50" batchSize="10" httpEnabled="false" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="extractBinaryFulltext" logConfig="bulk"
+      class="org.nuxeo.ecm.core.storage.action.ExtractBinaryFulltextAction"
+      defaultConcurrency="${nuxeo.bulk.action.extractBinaryFulltext.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.extractBinaryFulltext.defaultPartitions:=2}">
+      <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
+    </streamProcessor>
+  </extension>
+
+</component>
