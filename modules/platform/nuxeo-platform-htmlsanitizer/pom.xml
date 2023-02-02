@@ -27,10 +27,6 @@
       <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
       <artifactId>owasp-java-html-sanitizer</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.w3c.css</groupId>
-      <artifactId>sac</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -42,7 +38,6 @@
       <artifactId>nuxeo-core-test</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
 </project>

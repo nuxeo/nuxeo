@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.nuxeo.elasticsearch</groupId>
     <artifactId>nuxeo-elasticsearch-parent</artifactId>
@@ -7,6 +8,7 @@
   </parent>
   <artifactId>nuxeo-elasticsearch-seqgen</artifactId>
   <name>Elasticsearch based Sequence generator</name>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -25,7 +27,6 @@
       <artifactId>nuxeo-elasticsearch-core</artifactId>
     </dependency>
 
-    <!-- Test -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -35,16 +36,6 @@
       <groupId>org.nuxeo.elasticsearch</groupId>
       <artifactId>nuxeo-elasticsearch-core</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-server</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-io</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -86,5 +77,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

@@ -8,6 +8,7 @@
   <artifactId>nuxeo-admin-center-core</artifactId>
   <name>Nuxeo Administration Center Core</name>
   <description>Nuxeo Administration Center</description>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -50,10 +51,6 @@
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-jaxrs</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-connect-standalone</artifactId>
     </dependency>
@@ -71,15 +68,9 @@
       <artifactId>nuxeo-connect-client-wrapper</artifactId>
     </dependency>
 
-    <!-- scope test -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audit-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -91,12 +82,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.connect</groupId>
-      <artifactId>nuxeo-connect-client</artifactId>
-      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -8,6 +8,7 @@
   <artifactId>nuxeo-scim-server</artifactId>
   <name>Nuxeo SCIM server</name>
   <description>Server to expose SCIM API</description>
+
   <build>
     <plugins>
       <plugin>
@@ -45,13 +46,13 @@
         </executions>
       </plugin>
       <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                    <downloadJavadocs>false</downloadJavadocs>
-                </configuration>
-            </plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>false</downloadJavadocs>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <repositories>
@@ -130,11 +131,6 @@
       <groupId>info.simplecloud.scimproxy</groupId>
       <artifactId>compliance</artifactId>
       <classifier>classes</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>not-yet-commons-ssl</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -24,13 +24,5 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-el</artifactId>
     </dependency>
-
-    <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-
 </project>

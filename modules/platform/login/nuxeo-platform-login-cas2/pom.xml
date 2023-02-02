@@ -26,18 +26,8 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-url</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-login</artifactId>
-    </dependency>
-
-    <!-- libs -->
 
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -47,8 +37,6 @@
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
     </dependency>
-
-    <!-- tests -->
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -60,5 +48,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>
