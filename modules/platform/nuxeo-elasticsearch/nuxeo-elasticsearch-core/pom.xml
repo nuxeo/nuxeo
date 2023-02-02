@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.nuxeo.elasticsearch</groupId>
     <artifactId>nuxeo-elasticsearch-parent</artifactId>
@@ -7,6 +8,7 @@
   </parent>
   <artifactId>nuxeo-elasticsearch-core</artifactId>
   <name>Elasticsearch Connector implementation</name>
+  
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -45,14 +47,6 @@
       <artifactId>nuxeo-core-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-cache</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-management</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.lib.stream</groupId>
       <artifactId>nuxeo-stream</artifactId>
     </dependency>
@@ -78,10 +72,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-migration</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-jtajca</artifactId>
     </dependency>
     <dependency>
@@ -92,6 +82,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-tag</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.opensearch.client</groupId>
       <artifactId>opensearch-rest-high-level-client</artifactId>
@@ -103,10 +94,6 @@
     <dependency>
       <groupId>org.opensearch.plugin</groupId>
       <artifactId>transport-netty4-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore-nio</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -124,11 +111,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-server</artifactId>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
@@ -170,35 +153,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-forms-layout-export</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>io.dropwizard.metrics5</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
-    <dependency>
-      <!-- note that this contains all of javax.ws.rs:jsr311-api -->
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
@@ -219,6 +179,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -250,6 +211,7 @@
       </plugin>
     </plugins>
   </build>
+
   <profiles>
     <profile>
       <id>RestClient</id>

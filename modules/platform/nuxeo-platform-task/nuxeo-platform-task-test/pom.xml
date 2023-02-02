@@ -10,16 +10,4 @@
   <artifactId>nuxeo-platform-task-test</artifactId>
   <name>Nuxeo task Service test</name>
   <description>The task service test.</description>
-
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-  </dependencies>
-
 </project>

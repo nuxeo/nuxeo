@@ -9,12 +9,4 @@
 
   <artifactId>nuxeo-target-platforms-api</artifactId>
   <name>Nuxeo Target Platforms - API module</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-  </dependencies>
-
 </project>

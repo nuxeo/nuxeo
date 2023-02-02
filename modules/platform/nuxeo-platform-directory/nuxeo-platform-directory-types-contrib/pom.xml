@@ -10,11 +10,4 @@
   <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
   <name>Nuxeo Directory Management Service - Types contribution</name>
   <description>Nuxeo Enterprise Platform: Directory Management Service Types contributions.</description>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-  </dependencies>
 </project>

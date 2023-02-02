@@ -12,11 +12,6 @@
     providing tagging feature for Nuxeo.</description>
 
   <dependencies>
-    <!-- Nuxeo dependencies -->
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-migration</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
@@ -42,15 +37,9 @@
       <artifactId>nuxeo-platform-dublincore</artifactId>
     </dependency>
 
-    <!-- Testing -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-datasource</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -62,11 +51,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-core</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-collections-core</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -97,5 +81,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

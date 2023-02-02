@@ -12,8 +12,6 @@
   <description>Nuxeo Live Connect</description>
 
   <dependencies>
-    <!-- Nuxeo -->
-
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
@@ -21,10 +19,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -50,8 +44,6 @@
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-core</artifactId>
     </dependency>
-
-    <!-- other libraries -->
 
     <dependency>
       <groupId>commons-io</groupId>
@@ -90,8 +82,6 @@
       <artifactId>google-oauth-client</artifactId>
     </dependency>
 
-    <!-- test -->
-
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -106,11 +96,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-directory-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -147,5 +132,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
