@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.13"
+library identifier: "platform-ci-shared-library@v0.0.16"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -223,6 +223,7 @@ pipeline {
     AWS_REGION = 'eu-west-3'
     AWS_ROLE_ARN= 'arn:aws:iam::783725821734:role/nuxeo-s3directupload-role'
     AWS_CREDENTIALS_SECRET = 'aws-credentials'
+    GITHUB_WORKFLOW_DOCKER_SCAN = 'docker-image-scan.yaml'
   }
 
   stages {
@@ -381,6 +382,45 @@ pipeline {
               dockerRun(image, 'nuxeoctl start')
               echo 'Run image as an arbitrary user (800)'
               dockerRun(image, 'nuxeoctl start', '800')
+            }
+          }
+        }
+      }
+    }
+
+    stage('Scan Docker image') {
+      when {
+        anyOf {
+          expression {
+            !nxUtils.isPullRequest()
+          }
+          expression {
+            pullRequest.labels.contains('docker-scan')
+          }
+          changeset "docker/**"
+        }
+      }
+      steps {
+        container('maven') {
+          nxWithGitHubStatus(context: 'docker/scan', message: 'Scan Docker image') {
+            script {
+              def imageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
+              echo """
+              ----------------------------------------
+              Scan Docker image
+              ----------------------------------------
+              Image full name: ${DOCKER_REGISTRY}/${imageName}
+              """
+              nxGitHub.runAndWatchWorkflow(
+                workflowId: "${GITHUB_WORKFLOW_DOCKER_SCAN}",
+                branch: "${CHANGE_BRANCH}",
+                rawFields: [
+                  internalRegistry: true,
+                  imageName: "${imageName}",
+                ],
+                sha: "${GIT_COMMIT}",
+                exitStatus: false
+              )
             }
           }
         }
