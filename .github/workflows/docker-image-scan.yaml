@@ -4,14 +4,19 @@ on:
   # Run manually or with the GitHub CLI
   workflow_dispatch:
     inputs:
+      internalRegistry:
+        description: 'Use internal Docker registry'
+        type: boolean
       imageName:
         description: 'Docker image name'
         required: true
-        default: 'docker-private.packages.nuxeo.com/nuxeo/nuxeo:2023.x'
+        default: 'nuxeo/nuxeo:2023.x'
         type: string
-      notifyFailure:
-        description: 'Notify Slack in case of scan failure'
-        type: boolean
+
+env:
+  DOCKER_REGISTRY: ${{ inputs.internalRegistry && vars.DOCKER_REGISTRY_INTERNAL || vars.DOCKER_REGISTRY_PRIVATE }}
+  DOCKER_REGISTRY_USERNAME: ${{ inputs.internalRegistry && secrets.DOCKER_REGISTRY_INTERNAL_USERNAME || secrets.DOCKER_REGISTRY_PRIVATE_USERNAME }}
+  DOCKER_REGISTRY_PASSWORD: ${{ inputs.internalRegistry && secrets.DOCKER_REGISTRY_INTERNAL_PASSWORD || secrets.DOCKER_REGISTRY_PRIVATE_PASSWORD }}
 
 jobs:
   scan:
@@ -19,15 +24,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Print workflow inputs
+        run: |
+          echo internalRegistry = ${{ inputs.internalRegistry }}
+          echo imageName = ${{ inputs.imageName }}
+
       - name: Log in to Docker registry
         uses: docker/login-action@v2.1.0
         with:
-          registry: ${{ vars.DOCKER_REGISTRY }}
-          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
-          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ env.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ env.DOCKER_REGISTRY_PASSWORD }}
 
       - name: Pull Docker image
-        run: docker pull ${{ inputs.imageName }}
+        run: docker pull ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
 
       - name: Scan Docker image with Prisma Cloud
         id: scan
@@ -36,36 +46,10 @@ jobs:
           pcc_console_url: ${{ secrets.PRISMA_BASE_URL }}
           pcc_user: ${{ secrets.PRISMA_ACCESS_KEY_ID }}
           pcc_pass: ${{ secrets.PRISMA_SECRET_KEY }}
-          image_name: ${{ inputs.imageName }}
+          image_name: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
 
       - name: Upload SARIF file
-        if: ${{ always() }} # necessary as using failure thresholds in the image scan
+        if: always() # necessary as using failure thresholds in the image scan
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ steps.scan.outputs.sarif_file }}
-
-      - name: Notify Slack
-        if: inputs.notifyFailure && failure()
-        uses: slackapi/slack-github-action@v1.23.0
-        env:
-          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        with:
-          channel-id: 'platform-notifs'
-          payload: |
-            {
-              "attachments": [
-                {
-                  "color": "#A30200",
-                  "blocks": [
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "<${{ env.REPO_URL }}/actions/runs/${{ github.run_id }}|Docker image scan> failed in nuxeo/nuxeo-lts <${{ env.REPO_URL }}/commit/${{ github.sha }}|${{ github.ref_name }}>"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
