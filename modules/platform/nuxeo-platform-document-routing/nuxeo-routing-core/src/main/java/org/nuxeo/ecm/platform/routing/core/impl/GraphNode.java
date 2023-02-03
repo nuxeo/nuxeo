@@ -483,6 +483,11 @@ public interface GraphNode {
             return node;
         }
 
+        /** @since 2023.0 */
+        public String getCondition() {
+            return condition;
+        }
+
         public void setExecuted(boolean executed) {
             this.executed = executed;
             prop.get(PROP_ESCALATION_RULE_EXECUTED).setValue(Boolean.valueOf(executed));
@@ -618,6 +623,9 @@ public interface GraphNode {
      * @return the node id
      */
     String getId();
+
+    /** @since 2023.0 */
+    GraphRoute getGraph();
 
     /**
      * Get the node state.
@@ -783,17 +791,32 @@ public interface GraphNode {
      *
      * @param map the map of variables
      */
-    void setAllVariables(Map<String, Object> map);
+    default void setAllVariables(Map<String, Object> map) {
+        setAllVariables(map, true);
+    }
 
     /**
      * Sets the graph and node variables.
      *
      * @param map the map of variables
-     * @param allowGlobalVariablesAssignement if set to false, throw a DocumentRouteException when trying to set global
+     * @param allowGlobalVariablesAssignment if set to false, throw a DocumentRouteException when trying to set global
      *            variables when not supposed to
      * @since 7.2
      */
-    void setAllVariables(Map<String, Object> map, final boolean allowGlobalVariablesAssignement);
+    default void setAllVariables(Map<String, Object> map, boolean allowGlobalVariablesAssignment) {
+        setAllVariables(map, allowGlobalVariablesAssignment, true);
+    }
+
+    /**
+     * Sets the graph and node variables.
+     *
+     * @param map the map of variables
+     * @param allowGlobalVariablesAssignment if set to false, throw a DocumentRouteException when trying to set global
+     *            variables when not supposed to
+     * @param save whether to save the document after setting the variables
+     * @since 2023.0
+     */
+    void setAllVariables(Map<String, Object> map, boolean allowGlobalVariablesAssignment, boolean save);
 
     /**
      * Gets the task buttons
@@ -900,7 +923,11 @@ public interface GraphNode {
      * not having the property multipleExecution = true are also ignored
      *
      * @since 5.7.2
+     * @deprecated since 2023.0, use
+     *             {@link org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEscalationService#computeEscalationRulesToExecute(GraphNode)}
+     *             instead
      */
+    @Deprecated
     List<EscalationRule> evaluateEscalationRules();
 
     /**

@@ -62,6 +62,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEscalationService;
 import org.nuxeo.ecm.platform.routing.core.api.TasksInfoWrapper;
 import org.nuxeo.ecm.platform.routing.core.api.scripting.RoutingScriptingExpression;
 import org.nuxeo.ecm.platform.routing.core.api.scripting.RoutingScriptingFunctions;
@@ -114,6 +115,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         super(doc, new GraphRunner());
         graph = (GraphRouteImpl) getDocumentRoute(doc.getCoreSession());
         inputTransitions = new ArrayList<>(2);
+    }
+
+    /** @since 2023.0 */
+    @Override
+    public GraphRoute getGraph() {
+        return graph;
     }
 
     @Override
@@ -308,13 +315,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setAllVariables(Map<String, Object> map) {
-        setAllVariables(map, true);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setAllVariables(Map<String, Object> map, final boolean allowGlobalVariablesAssignement) {
+    public void setAllVariables(Map<String, Object> map, boolean allowGlobalVariablesAssignment, boolean save) {
         if (map == null) {
             return;
         }
@@ -355,7 +356,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 if (graphVariables.containsKey(key)) {
                     Serializable oldValue = graphVariables.get(key);
                     if (!equality(value, oldValue)) {
-                        if (!allowGlobalVariablesAssignement
+                        if (!allowGlobalVariablesAssignment
                                 && (transientSchema == null || !transientSchema.hasField(key))) {
                             log.warn("The workflow variable {} cannot be set within graph node {} completion",
                                     () -> key, this::getId);
@@ -367,7 +368,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             }
         }
 
-        if (!allowGlobalVariablesAssignement) {
+        if (!allowGlobalVariablesAssignment) {
             // Validation
             final DocumentModel transientDocumentModel = new DocumentModelImpl(getDocument().getType());
             transientDocumentModel.copyContent(document);
@@ -390,11 +391,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
         if (!changedNodeVariables.isEmpty()) {
             changedNodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
-            setVariables(changedNodeVariables);
+            GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, changedNodeVariables, save);
         }
         if (!changedGraphVariables.isEmpty()) {
             changedGraphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
-            graph.setVariables(changedGraphVariables);
+            GraphVariablesUtil.setVariables(graph.getDocument(), GraphRoute.PROP_VARIABLES_FACET, changedGraphVariables,
+                    save);
         }
     }
 
@@ -868,30 +870,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     @Override
+    @Deprecated
     public List<EscalationRule> evaluateEscalationRules() {
-        List<EscalationRule> rulesToExecute = new ArrayList<>();
-        // add specific helpers for escalation
-        for (EscalationRule rule : getEscalationRules()) {
-            try (OperationContext context = getExecutionContext(getSession())) {
-                Expression expr = new RoutingScriptingExpression(rule.condition,
-                        new RoutingScriptingFunctions(context, rule));
-                Object res = expr.eval(context);
-                if (!(res instanceof Boolean)) {
-                    throw new DocumentRouteException("Condition for rule " + rule + " of node '" + getId()
-                            + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + rule.condition);
-                }
-                boolean bool = Boolean.TRUE.equals(res);
-                if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
-                    rulesToExecute.add(rule);
-                }
-            } catch (DocumentRouteException e) {
-                throw e;
-            } catch (RuntimeException e) {
-                throw new DocumentRouteException("Error evaluating condition: " + rule.condition, e);
-            }
-        }
-        saveDocument();
-        return rulesToExecute;
+        return Framework.getService(DocumentRoutingEscalationService.class).computeEscalationRulesToExecute(this);
     }
 
     @Override
