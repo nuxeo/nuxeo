@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -49,6 +50,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
+import org.apache.kafka.common.errors.UnsupportedVersionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.StreamRuntimeException;
@@ -166,14 +168,37 @@ public class KafkaUtils implements AutoCloseable {
         return ret;
     }
 
+    /**
+     * Creates a topic with partitions and replications that default to broker configuration.
+     *
+     * @since 2021.33
+     */
+    public void createTopic(String topic) {
+        createTopic(topic, -1, (short) -1);
+    }
+
+    /**
+     * Creates a topic with replication factor that defaults to broker configuration.
+     *
+     * @since 2021.33
+     */
+    public void createTopic(String topic, int partitions) {
+        createTopic(topic, partitions, (short) -1);
+    }
+
     public void createTopicWithoutReplication(String topic, int partitions) {
         createTopic(topic, partitions, (short) 1);
     }
 
+    /**
+     * Creates a topic with the given partitions and replication.
+     * Since 2021.33 partitions (or replications) below 1 defaults to broker configuration.
+     */
     public void createTopic(String topic, int partitions, short replicationFactor) {
-        log.info("Creating topic: {}, partitions: {}, replications: {}", topic, partitions, replicationFactor);
-        CreateTopicsResult ret = adminClient.createTopics(
-                Collections.singletonList(new NewTopic(topic, partitions, replicationFactor)));
+        Optional<Integer> parts = (partitions < 1) ? Optional.empty() : Optional.of(partitions);
+        Optional<Short> factor = (replicationFactor < 1) ? Optional.empty() : Optional.of(replicationFactor);
+        log.info("Creating topic: {}, partitions: {}, replications: {}", topic, parts, factor);
+        CreateTopicsResult ret = adminClient.createTopics(Collections.singletonList(new NewTopic(topic, parts, factor)));
         try {
             ret.all().get(5, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
@@ -184,6 +209,11 @@ public class KafkaUtils implements AutoCloseable {
                 log.warn("Cannot create topic, it already exists: {}", topic);
             } else if (e.getCause() instanceof org.apache.kafka.common.errors.TimeoutException) {
                 throw new StreamRuntimeException("Unable to create topic " + topic + " within the request timeout", e);
+            } else if (e.getCause() instanceof UnsupportedVersionException) {
+                throw new StreamRuntimeException(
+                        "Using default replication factor (or partitions) is only supported with Kafka broker >= 2.4. "
+                                + "Update your Kafka cluster or use kafka.default.replication.factor >= 1",
+                        e);
             } else {
                 throw new StreamRuntimeException(e);
             }

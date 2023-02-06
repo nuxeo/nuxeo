@@ -191,7 +191,8 @@ kafka.check.class=org.nuxeo.runtime.kafka.KafkaChecker
 
 kafka.enabled=false
 kafka.bootstrap.servers=localhost:9092
-kafka.default.replication.factor=1
+# a factor < 1 means broker default replication
+kafka.default.replication.factor=-1
 kafka.topicPrefix=nuxeo-
 # max duration of processing
 kafka.max.poll.interval.ms=7200000

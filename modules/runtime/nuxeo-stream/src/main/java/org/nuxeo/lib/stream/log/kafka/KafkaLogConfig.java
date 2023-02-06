@@ -64,8 +64,9 @@ public class KafkaLogConfig extends AbstractLogConfig {
             this.adminProperties = normalizeAdminProperties(adminProperties);
         }
         disableSubscribe = Boolean.valueOf(consumerProperties.getProperty(DISABLE_SUBSCRIBE_PROP, "false"));
+        // The default replication factor is taken from the broker configuration
         defaultReplicationFactor = Short.parseShort(
-                producerProperties.getProperty(DEFAULT_REPLICATION_FACTOR_PROP, "1"));
+                producerProperties.getProperty(DEFAULT_REPLICATION_FACTOR_PROP, "-1"));
     }
 
     public short getReplicatorFactor() {
