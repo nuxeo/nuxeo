@@ -52,7 +52,7 @@ public class TestKafkaUtils {
 
     protected void createDefaultTopicIfNeeded(KafkaUtils kutils) {
         if (!kutils.topicExists(DEFAULT_TOPIC)) {
-            kutils.createTopicWithoutReplication(DEFAULT_TOPIC, DEFAULT_TOPIC_PARTITION);
+            kutils.createTopic(DEFAULT_TOPIC, DEFAULT_TOPIC_PARTITION);
         }
     }
 
