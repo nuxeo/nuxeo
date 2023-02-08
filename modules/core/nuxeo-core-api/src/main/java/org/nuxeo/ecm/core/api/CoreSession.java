@@ -140,6 +140,13 @@ public interface CoreSession {
     String CHANGE_TOKEN = "changeToken";
 
     /**
+     * Disable the audit logger, a Boolean parameter passed in context data at {@link #saveDocument} time.
+     *
+     * @since 2021.34
+     */
+    String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
+
+    /**
      * User change, a Boolean parameter passed in context data at {@link #saveDocument} time.
      * <p>
      * When {@linkplain Boolean#TRUE TRUE}, it marks the document as being modified by a user change. This causes an
