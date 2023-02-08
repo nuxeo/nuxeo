@@ -265,8 +265,8 @@ public class TestESHistoryProvider {
             log.trace("Live doc history");
             entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
-            // create, 15+1 update , 2 checkin, 1 bonus
-            assertEquals(20, entries.size());
+            // create, 15 update , 2 checkin, 1 bonus
+            assertEquals(19, entries.size());
             startIdx = entries.get(0).getId();
             // endIdx = entries.get(17).getId();
 
@@ -275,14 +275,14 @@ public class TestESHistoryProvider {
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
-            assertEquals(16, entries.size());
+            assertEquals(15, entries.size());
 
             // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "eventDocumentCategory" });
             pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
-            assertEquals(19, entries.size());
+            assertEquals(18, entries.size());
 
             // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
@@ -290,7 +290,7 @@ public class TestESHistoryProvider {
                     new String[] { "eventDocumentCategory", "bonusCategory" });
             pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
-            assertEquals(20, entries.size());
+            assertEquals(19, entries.size());
 
             // filter on Date !
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
@@ -318,7 +318,7 @@ public class TestESHistoryProvider {
         entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
         // 19 - 5 updates + create + proxyPublished
-        int proxyEntriesCount = 19 - 5 + 1 + 1;
+        int proxyEntriesCount = 18 - 5 + 1 + 1;
         assertEquals(proxyEntriesCount, entries.size());
 
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
@@ -355,8 +355,8 @@ public class TestESHistoryProvider {
         log.trace("Verion {} doc history", () -> versions.get(1).getVersionLabel());
         entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
-        // creation + 5x2 updates + checkin/update + checkin + created
-        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
+        // creation + 5x2 updates + checkin + checkin + created
+        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1;
         assertEquals(versin2EntriesCount, entries.size());
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
         assertEquals(Long.valueOf(startIdx + versin2EntriesCount).longValue(),
@@ -381,8 +381,8 @@ public class TestESHistoryProvider {
         entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
         // Folder: creation + proxy published + content published + proxy under it => total of 4 => docPath=/section/
-        // File: 3 docs created (file + 2 versions), 15+1 update, 2 checkin, 1 bonus => total of 22 => docPath=/doc
-        assertEquals(26, entries.size());
+        // File: 3 docs created (file + 2 versions), 15 update, 2 checkin, 1 bonus => total of 22 => docPath=/doc
+        assertEquals(25, entries.size());
 
         pageProvider = getPageProvider(CUSTOM_HISTORY_VIEW, 4, 0, "/s");
         entries = pageProvider.getCurrentPage();
@@ -397,7 +397,7 @@ public class TestESHistoryProvider {
 
         pageProvider = getPageProvider(CUSTOM_HISTORY_VIEW, 26, 0, "/d");
         entries = pageProvider.getCurrentPage();
-        assertEquals(22, entries.size());
+        assertEquals(21, entries.size());
         // file + 2 versions
         assertEquals(1, entries.stream().map(LogEntry::getDocUUID).distinct().filter(doc.getId()::equals).count());
         assertEquals(1,
@@ -410,14 +410,14 @@ public class TestESHistoryProvider {
         searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
         pageProvider.setSearchDocumentModel(searchDoc);
         entries = pageProvider.getCurrentPage();
-        assertEquals(16, entries.size());
+        assertEquals(15, entries.size());
 
         // filter on category
         searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
         searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "eventDocumentCategory" });
         pageProvider.setSearchDocumentModel(searchDoc);
         entries = pageProvider.getCurrentPage();
-        assertEquals(21, entries.size());
+        assertEquals(20, entries.size());
 
         searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
         searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "bonusCategory" });

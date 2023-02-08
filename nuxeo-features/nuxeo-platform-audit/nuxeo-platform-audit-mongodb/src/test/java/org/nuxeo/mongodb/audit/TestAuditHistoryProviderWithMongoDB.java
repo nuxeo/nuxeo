@@ -251,8 +251,8 @@ public class TestAuditHistoryProviderWithMongoDB {
                 dump(entries);
             }
 
-            // create, 15+1 update , 2 checkin, 1 bonus
-            assertEquals(20, entries.size());
+            // create, 15 update , 2 checkin, 1 bonus
+            assertEquals(19, entries.size());
             startIdx = entries.get(0).getId();
 
             // filter on eventId
@@ -260,14 +260,14 @@ public class TestAuditHistoryProviderWithMongoDB {
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
-            assertEquals(16, entries.size());
+            assertEquals(15, entries.size());
 
             // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "eventDocumentCategory" });
             pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
-            assertEquals(19, entries.size());
+            assertEquals(18, entries.size());
 
             // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
@@ -275,7 +275,7 @@ public class TestAuditHistoryProviderWithMongoDB {
                     new String[] { "eventDocumentCategory", "bonusCategory" });
             pp.setSearchDocumentModel(searchDoc);
             entries = (List<LogEntry>) pp.getCurrentPage();
-            assertEquals(20, entries.size());
+            assertEquals(19, entries.size());
 
             // filter on Date !
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
@@ -304,8 +304,8 @@ public class TestAuditHistoryProviderWithMongoDB {
             dump(entries);
         }
 
-        // 19 - 5 updates + create + proxyPublished
-        int proxyEntriesCount = 19 - 5 + 1 + 1;
+        // 18 - 5 updates + create + proxyPublished
+        int proxyEntriesCount = 18 - 5 + 1 + 1;
         assertEquals(proxyEntriesCount, entries.size());
 
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
@@ -323,8 +323,8 @@ public class TestAuditHistoryProviderWithMongoDB {
             dump(entries);
         }
 
-        // creation + 5 updates + update + checkin + created
-        int version1EntriesCount = 1 + 5 + 1 + 1 + 1;
+        // creation + 5 updates + checkin + created
+        int version1EntriesCount = 1 + 5 + 1 + 1;
         if (version1EntriesCount == entries.size()) {
             assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
             assertEquals(Long.valueOf(startIdx + version1EntriesCount - 1).longValue(),
@@ -346,8 +346,8 @@ public class TestAuditHistoryProviderWithMongoDB {
             dump(entries);
         }
 
-        // creation + 5x2 updates + checkin/update + checkin + created
-        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
+        // creation + 5x2 updates + checkin + checkin + created
+        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1;
         assertEquals(versin2EntriesCount, entries.size());
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
         assertEquals(Long.valueOf(startIdx + versin2EntriesCount).longValue(),

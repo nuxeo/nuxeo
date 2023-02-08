@@ -52,7 +52,7 @@ public class TestDocumentAudit {
     protected TransactionalFeature transactionalFeature;
 
     @Inject
-    DocumentHistoryReader history;
+    protected DocumentHistoryReader history;
 
     protected DocumentModel doc;
 
@@ -66,6 +66,34 @@ public class TestDocumentAudit {
         List<LogEntry> entries = history.getDocumentHistory(doc, 0, 20);
         assertEquals(1, entries.size());
         assertEquals("documentCreated", entries.get(0).getEventId());
+    }
+
+    @Test
+    public void testDoNotAuditDocumentUpdatedIfSetSameValue() {
+        doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title"));
+        session.saveDocument(doc);
+        session.save();
+        transactionalFeature.nextTransaction();
+
+        List<LogEntry> entries = history.getDocumentHistory(doc, 0, 20);
+        assertEquals(1, entries.size());
+        assertEquals(DOCUMENT_CREATED, entries.get(0).getEventId());
+    }
+
+    @Test
+    public void testDoAuditDocumentUpdatedIfSetUnsetValue() {
+        String oldTitle = (String) doc.getPropertyValue("dc:title");
+        doc.setPropertyValue("dc:title", "newValue");
+        session.saveDocument(doc);
+        doc.setPropertyValue("dc:title", oldTitle);
+        session.saveDocument(doc);
+        session.save();
+        transactionalFeature.nextTransaction();
+
+        List<LogEntry> entries = history.getDocumentHistory(doc, 0, 20);
+        assertEquals(3, entries.size());
+        assertTrue(entries.stream().anyMatch(e -> DOCUMENT_CREATED.equals(e.getEventId())));
+        assertEquals(2, entries.stream().filter(e -> DOCUMENT_UPDATED.equals(e.getEventId())).count());
     }
 
     @Test
