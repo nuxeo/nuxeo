@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.bulk.action;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.api.CoreSession.DISABLE_AUDIT_LOGGER;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
@@ -52,7 +53,11 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
     public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
 
-    // duplicated from NXAuditEventsService.DISABLE_AUDIT_LOGGER
+    /**
+     * Originally duplicated from NXAuditEventsService.DISABLE_AUDIT_LOGGER to avoid circular dependency.
+     *
+     * @deprecated since 2021.34, use {@link CoreSession#DISABLE_AUDIT_LOGGER} instead
+     */
     public static final String PARAM_DISABLE_AUDIT = "disableAuditLogger";
 
     public static final String PARAM_VERSIONING_OPTION = VersioningService.VERSIONING_OPTION;
@@ -81,7 +86,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
         @Override
         public void startBucket(String bucketKey) {
             BulkCommand command = getCurrentCommand();
-            Serializable auditParam = command.getParam(PARAM_DISABLE_AUDIT);
+            Serializable auditParam = command.getParam(DISABLE_AUDIT_LOGGER);
             disableAudit = auditParam != null && Boolean.parseBoolean(auditParam.toString());
             Serializable versioningParam = command.getParam(PARAM_VERSIONING_OPTION);
             // here VersionOption=NONE means no version at all
@@ -94,7 +99,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
             long errorCount = 0;
             for (DocumentModel doc : loadDocuments(session, ids)) {
                 if (disableAudit) {
-                    doc.putContextData(PARAM_DISABLE_AUDIT, TRUE);
+                    doc.putContextData(DISABLE_AUDIT_LOGGER, TRUE);
                 }
                 if (disableVersioning) {
                     doc.putContextData(VersioningService.DISABLE_AUTOMATIC_VERSIONING, TRUE);
@@ -103,7 +108,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
                 boolean updated = false;
                 // update properties
                 for (Entry<String, Serializable> es : properties.entrySet()) {
-                    if (!PARAM_DISABLE_AUDIT.equals(es.getKey()) && !PARAM_VERSIONING_OPTION.equals(es.getKey())) {
+                    if (!DISABLE_AUDIT_LOGGER.equals(es.getKey()) && !PARAM_VERSIONING_OPTION.equals(es.getKey())) {
                         try {
                             doc.setPropertyValue(es.getKey(), es.getValue());
                             updated = true;
