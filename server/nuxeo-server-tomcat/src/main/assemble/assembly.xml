@@ -183,6 +183,11 @@
         <include name="jackson-*" />
       </fileset>
     </move>
+    <!-- Add Tomcat version to Tomcat libraries -->
+    <move todir="${distribution.dir}/lib">
+      <fileset dir="${distribution.dir}/lib" />
+      <mapper type="glob" from="tomcat-*.jar" to="tomcat-*-${tomcat.version}.jar" />
+    </move>
     <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
     <nx:rmdups dir="${distribution.dir}/lib" />
   </target>
