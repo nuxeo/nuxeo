@@ -300,11 +300,11 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
         try {
             changes = getChanges();
-            // Expecting 4 (among which 3 distinct) changes:
+            // Expecting 3 distinct changes:
             // - documentRestored for docToVersion
-            // - documentModified for docToVersion (2 occurrences)
+            // - documentModified for docToVersion
             // - documentCreated for docToVersion
-            assertEquals(4, changes.size());
+            assertEquals(3, changes.size());
             Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), "documentRestored"));
             expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), DOCUMENT_UPDATED));
