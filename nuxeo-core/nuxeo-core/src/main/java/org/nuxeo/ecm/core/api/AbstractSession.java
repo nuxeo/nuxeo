@@ -1654,7 +1654,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             notifyCheckedInVersion(docModel, checkedInVersionRef, options, checkinComment);
         }
 
-        options.putIfAbsent(DISABLE_AUDIT_LOGGER, !dirty);
+        if (!dirty) {
+            options.putIfAbsent(DISABLE_AUDIT_LOGGER, true);
+        }
         notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
         updateDocumentCount.inc();
 

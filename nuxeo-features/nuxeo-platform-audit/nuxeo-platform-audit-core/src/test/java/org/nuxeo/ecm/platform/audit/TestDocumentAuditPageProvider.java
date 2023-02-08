@@ -165,8 +165,8 @@ public class TestDocumentAuditPageProvider {
         // Get Live doc history
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
 
-        // create, 15+1 update , 2 checkin
-        assertEquals(19, entries.size());
+        // create, 15 update , 2 checkin
+        assertEquals(18, entries.size());
         long startId = entries.get(entries.size() - 1).getId();
 
         // Get Proxy history
@@ -176,8 +176,8 @@ public class TestDocumentAuditPageProvider {
 
         entries = (List<LogEntry>) pp.getCurrentPage();
 
-        // 19 - 5 updates + create + proxyPublished
-        int proxyEntriesCount = 19 - 5 + 1 + 1;
+        // 18 - 5 updates + create + proxyPublished
+        int proxyEntriesCount = 18 - 5 + 1 + 1;
         assertEquals(proxyEntriesCount, entries.size());
 
         assertEquals(startId, entries.get(proxyEntriesCount - 1).getId());
@@ -206,8 +206,8 @@ public class TestDocumentAuditPageProvider {
 
         entries = (List<LogEntry>) pp.getCurrentPage();
 
-        // creation + 5x2 updates + checkin/update + checkin + created
-        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
+        // creation + 5x2 updates + checkin + checkin + created
+        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1;
         assertEquals(versin2EntriesCount, entries.size());
         assertEquals(startId, entries.get(versin2EntriesCount - 1).getId());
         assertEquals(startId + versin2EntriesCount, entries.get(0).getId());
@@ -223,8 +223,8 @@ public class TestDocumentAuditPageProvider {
 
         List<LogEntry> entries = history.getDocumentHistory(pfouh.versions.get(1), 0, 20);
         assertNotNull(entries);
-        // creation + 5x2 updates + checkin/update + checkin + created
-        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
+        // creation + 5x2 updates + checkin + checkin + created
+        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1;
         assertEquals(versin2EntriesCount, entries.size());
 
     }
