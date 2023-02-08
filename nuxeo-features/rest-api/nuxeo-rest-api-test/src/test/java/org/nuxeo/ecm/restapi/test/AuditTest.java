@@ -54,6 +54,7 @@ import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.AuditJsonEnricher;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,11 +73,14 @@ public class AuditTest extends BaseTest {
     @Inject
     AuditLogger auditLogger;
 
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
     @Test
     public void shouldRetrieveAllLogEntries() throws Exception {
         DocumentModel doc = RestServerInit.getFile(1, session);
 
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME)) {
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -94,7 +98,7 @@ public class AuditTest extends BaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("eventId", "documentModified");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -105,7 +109,7 @@ public class AuditTest extends BaseTest {
         }
 
         queryParams.putSingle("principalName", "bender");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -115,12 +119,50 @@ public class AuditTest extends BaseTest {
     }
 
     @Test
+    public void shouldNotAuditDocumentUpdatedIfNotDirty() throws Exception {
+        DocumentModel doc = RestServerInit.getFile(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("eventId", "documentModified");
+        int nbDocModifiedEvent;
+        // Fetch nbDocModifiedEvent
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> nodes = getLogEntries(node);
+            nbDocModifiedEvent = nodes.size();
+        }
+        // Send a PUT on the doc without modification
+        JSONDocumentNode jsonDoc;
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + doc.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            jsonDoc = new JSONDocumentNode((response.getEntityInputStream()));
+        }
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), jsonDoc.asJson())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        // Wait for audit indexing
+        transactionalFeature.nextTransaction();
+
+        // Check nbDocModifiedEvent is the same
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> nodes = getLogEntries(node);
+            assertEquals(nbDocModifiedEvent, nodes.size());
+        }
+    }
+
+    @Test
     public void shouldFilterLogEntriesOnPrincipalName() throws Exception {
         DocumentModel doc = RestServerInit.getFile(1, session);
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("principalName", "Administrator");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -130,7 +172,7 @@ public class AuditTest extends BaseTest {
 
         queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("principalName", "bender");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -167,7 +209,7 @@ public class AuditTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("category", "One");
         queryParams.add("category", "Two");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -177,7 +219,7 @@ public class AuditTest extends BaseTest {
 
         queryParams = new MultivaluedMapImpl();
         queryParams.add("category", "Two");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -220,7 +262,7 @@ public class AuditTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
         queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.minusDays(1)));
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -232,7 +274,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.minusDays(1)));
         queryParams.add("endEventDate", ISODateTimeFormat.date().print(secondDate.minusDays(1)));
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -244,7 +286,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("startEventDate", DateParser.formatW3CDateTime(firstDate.minusDays(1).toDate()));
         queryParams.add("endEventDate", DateParser.formatW3CDateTime(secondDate.minusDays(1).toDate()));
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -256,7 +298,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("startEventDate", ISODateTimeFormat.date().print(firstDate.plusDays(1)));
         queryParams.add("endEventDate", ISODateTimeFormat.date().print(secondDate.plusDays(1)));
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -309,7 +351,7 @@ public class AuditTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
         queryParams.add("principalName", "leela");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -321,7 +363,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.add("principalName", "leela");
         queryParams.add("eventId", "thirdEvent");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -335,7 +377,7 @@ public class AuditTest extends BaseTest {
         queryParams.add("eventId", "thirdEvent");
         queryParams.add("startEventDate", ISODateTimeFormat.dateTime().print(firstDate.plusDays(1)));
         queryParams.add("endEventDate", ISODateTimeFormat.dateTime().print(secondDate.minus(1)));
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -386,7 +428,7 @@ public class AuditTest extends BaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -398,7 +440,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.putSingle("currentPageIndex", "0");
         queryParams.putSingle("pageSize", "2");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -416,7 +458,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.putSingle("currentPageIndex", "1");
         queryParams.putSingle("pageSize", "3");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -435,7 +477,7 @@ public class AuditTest extends BaseTest {
         queryParams.putSingle("category", "One");
         queryParams.putSingle("currentPageIndex", "2");
         queryParams.putSingle("pageSize", "3");
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -454,7 +496,7 @@ public class AuditTest extends BaseTest {
 
         Map<String, String> headers = new HashMap<>();
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", AuditJsonEnricher.NAME);
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId(), headers)) {
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + doc.getId(), headers)) {
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -511,7 +553,7 @@ public class AuditTest extends BaseTest {
 
     protected void makeSortAndPaginationCallAndVerify(DocumentModel doc, MultivaluedMap<String, String> queryParams,
             List<String> expectedCategories, List<String> expectedEvents) throws Exception {
-        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
