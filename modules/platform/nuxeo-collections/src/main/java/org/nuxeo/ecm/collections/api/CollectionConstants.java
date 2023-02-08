@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.collections.api;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 /**
  * @since 5.9.3
  */
@@ -25,6 +27,11 @@ public class CollectionConstants {
 
     public static final String DISABLE_NOTIFICATION_SERVICE = "disableNotificationService";
 
+    /**
+     * Originally duplicated from NXAuditEventsService.DISABLE_AUDIT_LOGGER to avoid circular dependency.
+     *
+     * @deprecated since 2021.34, use {@link CoreSession#DISABLE_AUDIT_LOGGER} instead
+     */
     public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
 
     public static final String COLLECTABLE_FACET = "CollectionMember";

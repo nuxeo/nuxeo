@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
@@ -99,7 +100,7 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
                         // collection member when it is added to a collection
                         collectionMember.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
                         collectionMember.putContextData(CollectionConstants.DISABLE_NOTIFICATION_SERVICE, true);
-                        collectionMember.putContextData(CollectionConstants.DISABLE_AUDIT_LOGGER, true);
+                        collectionMember.putContextData(CoreSession.DISABLE_AUDIT_LOGGER, true);
                         collectionMember.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
                         collectionMember.putContextData(VersioningService.DISABLE_AUTOMATIC_VERSIONING, true);
 
