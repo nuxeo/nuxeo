@@ -100,7 +100,7 @@ public class ThumbnailHelper {
             doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
             doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
             doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
-            doc.putContextData("disableAuditLogger", Boolean.TRUE);
+            doc.putContextData(CoreSession.DISABLE_AUDIT_LOGGER, Boolean.TRUE);
             if (doc.isVersion()) {
                 doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
             }

@@ -71,7 +71,11 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     public static final String SKIP_UPDATE_AUDIT_LOGGING = "org.nuxeo.filemanager.skip.audit.logging.forupdates";
 
-    // duplicated from Audit module to avoid circular dependency
+    /**
+     * Originally duplicated from NXAuditEventsService.DISABLE_AUDIT_LOGGER to avoid circular dependency.
+     *
+     * @deprecated since 2021.34, use {@link CoreSession#DISABLE_AUDIT_LOGGER} instead
+     */
     public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
 
     // to be used by plugin implementation to gain access to standard file
@@ -244,7 +248,7 @@ public abstract class AbstractFileImporter implements FileImporter {
             }
             if (Framework.isBooleanPropertyTrue(SKIP_UPDATE_AUDIT_LOGGING)) {
                 // skip the update event if configured to do so
-                doc.putContextData(DISABLE_AUDIT_LOGGER, true);
+                doc.putContextData(CoreSession.DISABLE_AUDIT_LOGGER, true);
             }
             if (context.isPersistDocument()) {
                 // save

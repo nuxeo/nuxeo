@@ -71,7 +71,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     public static void disableEvents(final DocumentModel doc) {
         doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
         doc.putContextData(CollectionConstants.DISABLE_NOTIFICATION_SERVICE, true);
-        doc.putContextData(CollectionConstants.DISABLE_AUDIT_LOGGER, true);
+        doc.putContextData(CoreSession.DISABLE_AUDIT_LOGGER, true);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
         doc.putContextData(DISABLE_AUTOMATIC_VERSIONING, true);
     }
