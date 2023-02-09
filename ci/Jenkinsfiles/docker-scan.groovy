@@ -66,14 +66,14 @@ pipeline {
     success {
       script {
         if (!hudson.model.Result.SUCCESS.toString().equals(currentBuild.getPreviousBuild()?.getResult())) {
-          nxSlack.success(message: "Successfully scanned Nuxeo Docker image ${IMAGE_FULLNAME}: ${BUILD_URL}")
+          nxSlack.success(message: "Successfully scanned Nuxeo Docker image `${IMAGE_NAME}`: ${RUN_DISPLAY_URL}")
         }
       }
     }
     unsuccessful {
       script {
         if (![hudson.model.Result.ABORTED.toString(), hudson.model.Result.NOT_BUILT.toString()].contains(currentBuild.result)) {
-          nxSlack.error(message: "Failed to scan Nuxeo Docker image ${IMAGE_FULLNAME}: ${BUILD_URL}")
+          nxSlack.error(message: "Failed to scan Nuxeo Docker image `${IMAGE_NAME}`: ${RUN_DISPLAY_URL}")
         }
       }
     }
