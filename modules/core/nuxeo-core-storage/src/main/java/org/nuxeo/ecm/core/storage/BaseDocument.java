@@ -89,7 +89,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class BaseDocument<T extends StateAccessor> implements Document {
 
-    protected static final Pattern PATH_INDEX_PATTERN = Pattern.compile("/-?\\d+/");
+    protected static final Pattern LIST_INDEX_PATTERN = Pattern.compile("/\\d+$");
 
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
@@ -874,7 +874,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             return false;
         }
         // remove prefix if it exists
-        String cleanedXp = SchemaManager.normalizePath(xp);
+        // replace any '/0/' by '/*/'
+        // remove any simple list index e.g. '/0'
+        String cleanedXp = LIST_INDEX_PATTERN.matcher(SchemaManager.normalizePath(xp)).replaceFirst("");
         // if `files/*/file` is a retainable property
         // so is `files` because we cannot allow to nullify it
         return Arrays.stream(rprops)

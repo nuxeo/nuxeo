@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="test-retain-blobList">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="blobList" prefix="bl" src="schema/blobList.xsd" />
+    <property schema="blobList" name="myListOfBlob" retainable="true" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="BlobList" extends="Document">
+      <schema name="blobList" />
+    </doctype>
+  </extension>
+
+</component>
