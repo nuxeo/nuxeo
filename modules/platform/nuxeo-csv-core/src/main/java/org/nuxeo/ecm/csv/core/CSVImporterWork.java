@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.UncheckedIOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -308,7 +309,7 @@ public class CSVImporterWork extends TransientStoreWork {
                     List<CSVRecord> l = parser.getRecords();
                     total = l.size();
                     it = l;
-                } catch (IOException e) {
+                } catch (UncheckedIOException e) {
                     log.warn("Could not compute total number of document to be imported");
                 }
             }
