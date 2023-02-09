@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/files/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/files/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:complexType name="blobList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:content" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="myListOfBlob" type="nxs:blobList" />
+
+</xs:schema>

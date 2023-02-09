@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -59,6 +58,12 @@ public class TestRetainedProperties {
 
     @Inject
     protected CoreSession session;
+
+    protected void assertSaveFail(DocumentModel doc) {
+        var exception = assertThrows(DocumentSecurityException.class, () -> session.saveDocument(doc));
+        assertEquals(String.format("Cannot change blob from document %s, it is under retention / hold", doc.getRef()),
+                exception.getMessage());
+    }
 
     protected DocumentModel createFileDocument(String name) {
         DocumentModel documentModel = session.createDocumentModel("/", name, "File");
@@ -133,22 +138,28 @@ public class TestRetainedProperties {
         record.refresh();
 
         record.setPropertyValue("files:files", null);
-        var exception = assertThrows(DocumentSecurityException.class, () -> session.saveDocument(record));
-        assertEquals(
-                String.format("Cannot change blob from document %s, it is under retention / hold", record.getRef()),
-                exception.getMessage());
+        assertSaveFail(record);
 
         deployer.undeploy("org.nuxeo.ecm.core.test.tests:test-retain-files-property.xml");
 
         record.setPropertyValue("files:files", null);
-        try {
-            session.saveDocument(record);
-            fail();
-        } catch (DocumentSecurityException e) {
-            assertEquals(
-                    String.format("Cannot change blob from document %s, it is under retention / hold", record.getRef()),
-                    e.getMessage());
-        }
+        assertSaveFail(record);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-retain-blobList-property.xml")
+    public void iCanRetainCustomBlobList() {
+        DocumentModel doc = session.createDocumentModel("/", "bl", "BlobList");
+        doc.setPropertyValue("blobList:myListOfBlob",
+                (Serializable) Collections.singletonList(Blobs.createBlob("foo")));
+        doc = session.createDocument(doc);
+        session.makeRecord(doc.getRef());
+        session.setLegalHold(doc.getRef(), true, null);
+        assertNotNull(doc.getRetainedProperties());
+        assertEquals(1, doc.getRetainedProperties().size());
+
+        doc.setPropertyValue("blobList:myListOfBlob/0", (Serializable) Blobs.createBlob("bar"));
+        assertSaveFail(doc);
     }
 
 }

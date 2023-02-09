@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.List;
@@ -68,6 +68,12 @@ public class TestBlobDispatcherRecord {
     @Inject
     protected BlobManager blobManager;
 
+    protected void assertSaveFail(DocumentModel doc) {
+        var exception = assertThrows(DocumentSecurityException.class, () -> session.saveDocument(doc));
+        assertEquals(String.format("Cannot change blob from document %s, it is under retention / hold", doc.getRef()),
+                exception.getMessage());
+    }
+
     @Test
     public void testDispatchRecord() throws Exception {
         String foo = "foo";
@@ -95,23 +101,11 @@ public class TestBlobDispatcherRecord {
         // the blob cannot be changed if there is a legal hold
         session.setLegalHold(doc.getRef(), true, null);
         doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("bar"));
-        try {
-            session.saveDocument(doc);
-            fail();
-        } catch (DocumentSecurityException e) {
-            assertEquals("Cannot change blob from document " + doc.getId() + ", it is under retention / hold",
-                    e.getMessage());
-        }
+        assertSaveFail(doc);
 
         // the blob cannot be deleted if there is a legal hold
         doc.setPropertyValue("file:content", null);
-        try {
-            session.saveDocument(doc);
-            fail();
-        } catch (DocumentSecurityException e) {
-            assertEquals("Cannot change blob from document " + doc.getId() + ", it is under retention / hold",
-                    e.getMessage());
-        }
+        assertSaveFail(doc);
     }
 
     @Test
@@ -142,24 +136,46 @@ public class TestBlobDispatcherRecord {
         // the blob cannot be changed if there is a legal hold
         session.setLegalHold(doc.getRef(), true, null);
         doc.setPropertyValue("files:files/0/file", (Serializable) Blobs.createBlob("bar"));
-        try {
-            session.saveDocument(doc);
-            fail();
-        } catch (DocumentSecurityException e) {
-            assertEquals("Cannot change blob from document " + doc.getId() + ", it is under retention / hold",
-                    e.getMessage());
-        }
+        assertSaveFail(doc);
 
         // the blob cannot be deleted if there is a legal hold
         doc.setPropertyValue("files:files/0/file", null);
-        try {
-            session.saveDocument(doc);
-            fail();
-        } catch (DocumentSecurityException e) {
-            assertEquals("Cannot change blob from document " + doc.getId() + ", it is under retention / hold",
-                    e.getMessage());
-        }
+        assertSaveFail(doc);
+    }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-retain-blobList-property.xml")
+    public void testDispatchRecordBlobList() throws Exception {
+        String bar = "bar";
+        String bar_test_key = "test:37b51d194a7513e45b56f6524f2d51f2";
+
+        // create a regular binary in the first blob provider
+        DocumentModel doc = session.createDocumentModel("/", "blobList", "BlobList");
+        Blob blob = Blobs.createBlob(bar, "text/plain");
+        doc.setPropertyValue("blobList:myListOfBlob", (Serializable) List.of(blob));
+        doc = session.createDocument(doc);
+
+        // check binary key
+        blob = (Blob) doc.getPropertyValue("blobList:myListOfBlob/0");
+        String key = ((ManagedBlob) blob).getKey();
+        assertEquals(bar_test_key, key);
+
+        // turn the blob into a record
+        session.makeRecord(doc.getRef());
+
+        // check that it was dispatched to the record blob provider
+        doc = session.getDocument(doc.getRef());
+        blob = (Blob) doc.getPropertyValue("blobList:myListOfBlob/0");
+        assertEquals("records1:" + doc.getId() + "-bl_myListOfBlob-0", ((ManagedBlob) blob).getKey());
+
+        // the blob cannot be changed if there is a legal hold
+        session.setLegalHold(doc.getRef(), true, null);
+        doc.setPropertyValue("blobList:myListOfBlob/0", (Serializable) Blobs.createBlob("bar"));
+        assertSaveFail(doc);
+
+        // the blob cannot be deleted if there is a legal hold
+        doc.setPropertyValue("blobList:myListOfBlob/0", null);
+        assertSaveFail(doc);
     }
 
     @Test
