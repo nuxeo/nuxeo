@@ -112,7 +112,10 @@ public class ConnectUpdateStatusInfo {
         }
 
         sb.append("?product=");
-        sb.append(PlatformVersionHelper.getPlatformId());
+        PlatformId platformId = PlatformVersionHelper.getPlatformId();
+        if (platformId != null) {
+            sb.append(platformId.asString());
+        }
         if (registred) {
             sb.append("&instance=");
             try {
