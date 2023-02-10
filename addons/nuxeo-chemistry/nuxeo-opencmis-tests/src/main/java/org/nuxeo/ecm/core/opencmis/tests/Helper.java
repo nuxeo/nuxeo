@@ -204,7 +204,6 @@ public class Helper {
         file5 = createDocument(session, file5);
         sleepForAuditGranularity();
         Framework.getService(TrashService.class).trashDocument(file5);
-        file5 = saveDocument(session, file5);
         info.put("file5id", file5.getId());
 
         DocumentModel file6 = session.createDocumentModel("/testfolder2/testfolder3", "testfile6", "Note");
