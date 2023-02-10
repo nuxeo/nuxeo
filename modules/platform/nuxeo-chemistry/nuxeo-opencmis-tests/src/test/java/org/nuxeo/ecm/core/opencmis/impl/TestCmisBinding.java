@@ -3455,7 +3455,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
             assertEquals(clt1, changeLogTokenHolder.getValue());
         }
 
-        int n = 13; // last n events
+        int n = 12; // last n events
         assertTrue(allObjects.size() >= n);
         objects = allObjects.subList(allObjects.size() - n, allObjects.size());
         checkChange(objects.get(0), "/testfolder1", //
@@ -3469,10 +3469,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkChange(objects.get(6), "/testfolder2/testfolder4", ChangeType.CREATED, "Folder");
         checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4", ChangeType.CREATED, "File");
         checkChange(objects.get(8), file5id, ChangeType.CREATED, "File");
-        checkChange(objects.get(9), file5id, ChangeType.UPDATED, "File");
-        checkChange(objects.get(10), "/testfolder2/testfolder3/testfile6", ChangeType.CREATED, "Note");
-        checkChange(objects.get(11), file6verid, ChangeType.CREATED, "Note");
-        checkChange(objects.get(12), proxyid, ChangeType.CREATED, "Note");
+        checkChange(objects.get(9), "/testfolder2/testfolder3/testfile6", ChangeType.CREATED, "Note");
+        checkChange(objects.get(10), file6verid, ChangeType.CREATED, "Note");
+        checkChange(objects.get(11), proxyid, ChangeType.CREATED, "Note");
 
         // remove a doc
 
@@ -3520,7 +3519,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         List<ObjectData> allObjects = readAllContentChanges(changeLogTokenHolder);
         assertEquals(clt1, changeLogTokenHolder.getValue());
 
-        int n = 14; // last n events
+        int n = 13; // last n events
         assertTrue(allObjects.size() >= n);
         List<ObjectData> objects = allObjects.subList(allObjects.size() - n, allObjects.size());
         checkChange(objects.get(0), "/testfolder1", //
@@ -3534,11 +3533,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkChange(objects.get(6), "/testfolder2/testfolder4", ChangeType.CREATED, "Folder");
         checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4", ChangeType.CREATED, "File");
         checkChange(objects.get(8), file5id, ChangeType.CREATED, "File");
-        checkChange(objects.get(9), file5id, ChangeType.UPDATED, "File");
-        checkChange(objects.get(10), "/testfolder2/testfolder3/testfile6", ChangeType.CREATED, "Note");
-        checkChange(objects.get(11), file6verid, ChangeType.CREATED, "Note");
-        checkChange(objects.get(12), proxyid, ChangeType.CREATED, "Note");
-        checkChange(objects.get(13), doc.getId(), ChangeType.CREATED, "File");
+        checkChange(objects.get(9), "/testfolder2/testfolder3/testfile6", ChangeType.CREATED, "Note");
+        checkChange(objects.get(10), file6verid, ChangeType.CREATED, "Note");
+        checkChange(objects.get(11), proxyid, ChangeType.CREATED, "Note");
+        checkChange(objects.get(12), doc.getId(), ChangeType.CREATED, "File");
     }
 
     protected List<ObjectData> readAllContentChanges(Holder<String> changeLogTokenHolder) {
