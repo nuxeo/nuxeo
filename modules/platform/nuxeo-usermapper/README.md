@@ -71,7 +71,7 @@ Using Groovy Scriptlet :
           import org.nuxeo.ecm.platform.usermanager.UserManager;
           import org.nuxeo.runtime.api.Framework;
 
-          UserManager um = Framework.getLocalService(UserManager.class);
+          UserManager um = Framework.getService(UserManager.class);
 
           String userId = userObject.getId();
           if (userId == null || userId.isEmpty()) {
@@ -88,7 +88,7 @@ Using Groovy Scriptlet :
           import org.nuxeo.ecm.platform.usermanager.UserManager;
           import org.nuxeo.runtime.api.Framework;
 
-          UserManager um = Framework.getLocalService(UserManager.class);
+          UserManager um = Framework.getService(UserManager.class);
           DocumentModel userModel = nuxeoPrincipal.getModel();
           ...
         ]]>

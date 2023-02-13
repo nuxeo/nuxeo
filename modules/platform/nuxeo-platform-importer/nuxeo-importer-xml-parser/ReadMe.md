@@ -381,7 +381,7 @@ Finally how you call the parser service ? As usual in Nuxeo, this is quite simpl
 ```java
     DocumentModel root = session.getRootDocument();
 	File xml = File("/where/is/my/umbrella");
-    XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+    XMLImporterService importer = Framework.getService(XMLImporterService.class);
     importer.importDocuments(root, xml);
 ```
 But you can also give a zip file and the service will parse each xml document inside:
@@ -389,7 +389,7 @@ But you can also give a zip file and the service will parse each xml document in
     File zipXml = FileUtils.getResourceFileFromContext("/it/is/in/the/kitchen/export.zip");
     DocumentModel root = session.getRootDocument();
 
-    XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+    XMLImporterService importer = Framework.getService(XMLImporterService.class);
     importer.importDocuments(root, zipXml);
 ```
 

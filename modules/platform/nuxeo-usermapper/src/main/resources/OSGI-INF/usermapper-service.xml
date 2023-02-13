@@ -69,7 +69,7 @@
           import org.nuxeo.ecm.platform.usermanager.UserManager;
           import org.nuxeo.runtime.api.Framework;
 
-              UserManager um = Framework.getLocalService(UserManager.class);
+              UserManager um = Framework.getService(UserManager.class);
 
               String userId = userObject.getId();
               if (userId == null || userId.isEmpty()) {
@@ -114,7 +114,7 @@
           import com.unboundid.scim.schema.CoreSchema;
           import com.unboundid.scim.sdk.SCIMConstants;
 
-              UserManager um = Framework.getLocalService(UserManager.class);
+              UserManager um = Framework.getService(UserManager.class);
               DocumentModel userModel = nuxeoPrincipal.getModel();
               String userId = (String) userModel.getProperty(um.getUserSchemaName(),
                       um.getUserIdField());

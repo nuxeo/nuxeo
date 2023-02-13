@@ -60,8 +60,8 @@ public class ReloadServiceInvoker {
     public ReloadServiceInvoker(ClassLoader cl) throws ReflectiveOperationException {
         Class<?> frameworkClass = cl.loadClass("org.nuxeo.runtime.api.Framework");
         Class<?> reloadServiceClass = cl.loadClass("org.nuxeo.runtime.reload.ReloadService");
-        Method getLocalService = frameworkClass.getDeclaredMethod("getService", Class.class);
-        reloadService = getLocalService.invoke(null, reloadServiceClass);
+        Method getService = frameworkClass.getDeclaredMethod("getService", Class.class);
+        reloadService = getService.invoke(null, reloadServiceClass);
         flush = reloadServiceClass.getDeclaredMethod("flush");
         reload = reloadServiceClass.getDeclaredMethod("reload");
         getOSGIBundleName = reloadServiceClass.getDeclaredMethod("getOSGIBundleName", File.class);
