@@ -4709,12 +4709,6 @@
         <artifactId>opencensus-contrib-http-servlet</artifactId>
         <version>${opencensus.version}</version>
       </dependency>
-      <!-- defined to avoid dependency graph conflict due to opencensus-exporter-trace-stackdriver which depends on it -->
-      <dependency>
-        <groupId>io.opencensus</groupId>
-        <artifactId>opencensus-contrib-http-util</artifactId>
-        <version>${opencensus.version}</version>
-      </dependency>
       <dependency>
         <groupId>io.opencensus</groupId>
         <artifactId>opencensus-exporter-trace-datadog</artifactId>
@@ -4731,47 +4725,9 @@
         <version>${opencensus.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.opencensus</groupId>
-        <artifactId>opencensus-exporter-trace-stackdriver</artifactId>
-        <version>${opencensus.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.opencensus</groupId>
-        <artifactId>opencensus-exporter-stats-stackdriver</artifactId>
-        <version>${opencensus.version}</version>
-      </dependency>
-      <dependency>
         <groupId>io.prometheus</groupId>
         <artifactId>simpleclient_httpserver</artifactId>
         <version>0.16.0</version>
-      </dependency>
-      <dependency>
-        <!-- unused dependency, declared to fix version conflict between opencensus-exporter-stats-stackdriver
-        and mysql-connector -->
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java</artifactId>
-        <version>${protobuf.java.version}</version>
-      </dependency>
-      <!-- unused dependencies, transitive dependencies from opencensus-exporter-stats-stackdriver to upgrade -->
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-auth</artifactId>
-        <version>${grpc-netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-core</artifactId>
-        <version>${grpc-netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-netty-shaded</artifactId>
-        <version>${grpc-netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-stub</artifactId>
-        <version>${grpc-netty.version}</version>
       </dependency>
 
       <dependency>

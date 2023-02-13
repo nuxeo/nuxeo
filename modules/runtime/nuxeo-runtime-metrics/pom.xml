@@ -90,14 +90,6 @@
     </dependency>
     <dependency>
       <groupId>io.opencensus</groupId>
-      <artifactId>opencensus-exporter-trace-stackdriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.opencensus</groupId>
-      <artifactId>opencensus-exporter-stats-stackdriver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.opencensus</groupId>
       <artifactId>opencensus-contrib-dropwizard5</artifactId>
     </dependency>
     <dependency>
