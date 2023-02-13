@@ -325,7 +325,7 @@ public class MongoDBTransientStore implements TransientStoreProvider {
         String param = PARAMS_KEY + "." + parameter;
         Document doc = getColl().find(filter).projection(include(param)).first();
         log.trace("{} getParameter({}, {}) -> {}", config::getName, () -> key, () -> parameter, () -> doc);
-        if (doc == null) {
+        if (doc == null || !doc.containsKey(PARAMS_KEY)) {
             return null;
         }
         return deSerializeValue(doc.get(PARAMS_KEY, Document.class).get(parameter));
