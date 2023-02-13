@@ -173,7 +173,12 @@ public class TestMongoDBSpecificTransientStore {
         assertEquals("baz", params.get("foo"));
         assertEquals(123, params.get("bar"));
         assertEquals(value, params.get("binary"));
+
+        assertNull(ts.getParameter(key, "unknown"));
         ts.remove(key);
+
+        assertNull(ts.getParameter(key, "unknown"));
+        assertNull(ts.getParameters(key));
     }
 
     @Test
@@ -191,6 +196,7 @@ public class TestMongoDBSpecificTransientStore {
         assertEquals(0, tsm.getStorageSize());
         assertNotNull(ts.getBlobs(key));
         assertTrue(ts.getBlobs(key).isEmpty());
+        ts.remove(key);
 
         ts.putBlobs(key, Collections.singletonList(new StringBlob("blah")));
         assertTrue(ts.exists(key));
@@ -199,6 +205,10 @@ public class TestMongoDBSpecificTransientStore {
         assertEquals("text/plain", blobs.get(0).getMimeType());
         assertEquals(4, ts.getSize(key));
         assertEquals(4, tsm.getStorageSize());
+        // key exists without params
+        assertNull(ts.getParameter(key, "unknown"));
+        assertNotNull(ts.getParameters(key));
+        assertTrue(ts.getParameters(key).isEmpty());
 
         ts.putBlobs("bar", Collections.singletonList(new StringBlob("blah 2")));
         assertEquals(6, tsm.getSize("bar"));
