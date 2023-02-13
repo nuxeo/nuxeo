@@ -160,11 +160,10 @@ NodeVariables["comment"]= null;}</param>
         <param type="string" name="id">logInAudit</param>
         <param type="boolean" name="isolate">false</param>
       </operation>
-      <operation id="Context.RunDocumentOperation">
+      <operation id="Context.RunDocumentOperationInNewTx">
         <param type="string" name="id">notifyInitiatorEndOfWorkflow</param>
         <param type="boolean" name="isolate">false</param>
         <param type="boolean" name="rollbackGlobalOnError">false</param>
-        <param type="boolean" name="newTx">true</param>
       </operation>
       <operation id="RunOperation">
         <param type="string" name="id">expr:WorkflowVariables["validationOrReview"] == "validation"?"validateDocument":"voidChain"</param>
