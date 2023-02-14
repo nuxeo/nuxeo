@@ -1,7 +1,0 @@
-persistence:
-  enabled: true
-primary:
-  labels:
-    usage: preview
-  podLabels:
-    usage: preview
