@@ -70,10 +70,6 @@ releases:
   - values/{{ $valuesDir }}/values-redis.yaml
 
 environments:
-  # The default environment is used for preview, enabling Nuxeo, MongoDB, Elasticsearch and Kafka.
-  default:
-    values:
-    - environments/default.yaml
   runtimeUnitTests:
     values:
     - environments/unit-tests-runtime.yaml
