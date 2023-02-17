@@ -73,15 +73,19 @@ public class DocumentRoutingEscalationListener implements EventListener {
         } else {
             var bulkService = Framework.getService(BulkService.class);
             var escalationService = Framework.getService(DocumentRoutingEscalationService.class);
-            for (String repositoryName : repositoryManager.getRepositoryNames()) {
-                if (escalationService.isExecutionRunning(repositoryName)) {
-                    log.warn(
-                            "Not scheduling Workflow Escalation execution on repository: {} because one is already running",
-                            repositoryName);
-                } else {
-                    var command = new BulkCommand.Builder(DocumentRoutingEscalationAction.ACTION_NAME,
-                            SUSPENDED_NODES_WITH_ESCALATION_QUERY, SYSTEM_USERNAME).repository(repositoryName).build();
-                    bulkService.submit(command);
+            // services might be null when the scheduler fired the event at the same time as Nuxeo is shutting down
+            if (bulkService != null && escalationService != null) {
+                for (String repositoryName : repositoryManager.getRepositoryNames()) {
+                    if (escalationService.isExecutionRunning(repositoryName)) {
+                        log.warn(
+                                "Not scheduling Workflow Escalation execution on repository: {} because one is already running",
+                                repositoryName);
+                    } else {
+                        var command = new BulkCommand.Builder(DocumentRoutingEscalationAction.ACTION_NAME,
+                                SUSPENDED_NODES_WITH_ESCALATION_QUERY, SYSTEM_USERNAME).repository(repositoryName)
+                                                                                       .build();
+                        bulkService.submit(command);
+                    }
                 }
             }
         }
