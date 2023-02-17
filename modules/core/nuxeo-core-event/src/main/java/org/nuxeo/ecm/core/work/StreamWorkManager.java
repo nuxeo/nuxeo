@@ -507,12 +507,13 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     public WorkQueueMetrics getMetrics(String queueId) {
-        LogLag lag = logManager.getLag(Name.ofUrn(NAMESPACE_PREFIX + queueId), Name.ofUrn(NAMESPACE_PREFIX + queueId));
+        Name queue = Name.ofUrn(NAMESPACE_PREFIX + queueId);
+        LogLag lag = logManager.getLag(queue, queue);
         long running = 0;
         if (lag.lag() > 0) {
             // we don't have the exact running metric
             // give an approximation that can be higher that actual one because of the over provisioning
-            running = min(lag.lag(), settings.getPartitions(queueId));
+            running = min(lag.lag(), settings.getPartitions(queue));
         }
         return new WorkQueueMetrics(queueId, lag.lag(), running, lag.lower(), 0);
     }
