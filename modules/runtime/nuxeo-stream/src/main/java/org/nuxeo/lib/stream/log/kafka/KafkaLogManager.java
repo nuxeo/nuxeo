@@ -155,6 +155,11 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
+    public boolean supportSubscribe(Name stream) {
+        return !defaultConfig.getDisableSubscribe();
+    }
+
+    @Override
     protected <M extends Externalizable> LogTailer<M> doSubscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec) {
         KafkaLogConfig config = getConfig(names.iterator().next(), group);

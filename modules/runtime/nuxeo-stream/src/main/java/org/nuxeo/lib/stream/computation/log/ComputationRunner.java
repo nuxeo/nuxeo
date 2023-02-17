@@ -172,13 +172,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         this.metadata = metadata;
         this.streamManager = streamManager;
         this.policy = policy;
-        if (metadata.inputStreams().isEmpty()) {
+        List<Name> inputStreams = metadata.inputStreams().stream().map(Name::ofUrn).collect(Collectors.toList());
+        if (inputStreams.isEmpty()) {
             this.tailer = null;
             this.context = new ComputationContextImpl(streamManager, metadata, policy, false);
             assignmentLatch.countDown();
-        } else if (streamManager.supportSubscribe()) {
-            this.tailer = streamManager.subscribe(Name.ofUrn(metadata.name()),
-                    metadata.inputStreams().stream().map(Name::ofUrn).collect(Collectors.toList()), this);
+        } else if (streamManager.supportSubscribe(inputStreams.get(0))) {
+            this.tailer = streamManager.subscribe(Name.ofUrn(metadata.name()), inputStreams, this);
             // create a spare context until the assignment is done
             this.context = new ComputationContextImpl(streamManager, metadata, policy, true);
         } else {

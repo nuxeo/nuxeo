@@ -153,6 +153,11 @@ public class UnifiedLogManager implements LogManager {
     }
 
     @Override
+    public boolean supportSubscribe(Name stream) {
+        return getManager(stream).supportSubscribe(stream);
+    }
+
+    @Override
     public <M extends Externalizable> LogTailer<M> subscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec) {
         Name name = names.iterator().next();

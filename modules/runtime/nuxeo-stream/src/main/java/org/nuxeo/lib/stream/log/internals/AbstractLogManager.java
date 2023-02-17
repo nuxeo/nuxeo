@@ -121,6 +121,11 @@ public abstract class AbstractLogManager implements LogManager {
     }
 
     @Override
+    public boolean supportSubscribe(Name stream) {
+        return false;
+    }
+
+    @Override
     public <M extends Externalizable> LogTailer<M> subscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec) {
         Objects.requireNonNull(codec);

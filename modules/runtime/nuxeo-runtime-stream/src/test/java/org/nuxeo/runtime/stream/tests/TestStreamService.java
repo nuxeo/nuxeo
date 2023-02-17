@@ -45,7 +45,9 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.Name;
+import org.nuxeo.lib.stream.log.UnifiedLogManager;
 import org.nuxeo.runtime.management.api.ProbeStatus;
+import org.nuxeo.runtime.stream.IgnoreKafka;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.stream.StreamMetricsComputation;
 import org.nuxeo.runtime.stream.StreamProbe;
@@ -246,4 +248,22 @@ public class TestStreamService {
         gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
         assertTrue(gauges.isEmpty());
     }
+
+    @Test
+    public void testMixedLogConfig() {
+        assertNotNull(service);
+        LogManager manager = service.getLogManager();
+        // We have an unified log manager on top of implementations
+        assertTrue(manager.getClass().getSimpleName(), manager instanceof UnifiedLogManager);
+        // An explicit chronicle stream defined by conf doesn't support subscribe
+        assertFalse(manager.supportSubscribe(Name.ofUrn("cq/cq-foo")));
+        if (new IgnoreKafka().shouldIgnore()) {
+            // A random stream is handled by default Kafka log manager and supports subscribe
+            assertTrue(manager.supportSubscribe(Name.ofUrn("some/stream-name")));
+        } else {
+            // A random stream is handled by default Chronicle log manager without subscribe support
+            assertFalse(manager.supportSubscribe(Name.ofUrn("some/stream-name")));
+        }
+    }
+
 }

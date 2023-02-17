@@ -100,6 +100,8 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
 
     protected Counter globalConsumersCounter;
 
+    protected boolean usingSubscribe;
+
     /**
      * @deprecated since 11.1, due to serialization issue with java 11, use
      *             {@link #ConsumerRunner(ConsumerFactory, ConsumerPolicy, LogManager, Codec, List)} which allows to
@@ -127,10 +129,12 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
 
     protected LogTailer<M> createTailer(LogManager manager, Codec<M> codec, List<LogPartition> defaultAssignments) {
         LogTailer<M> tailer;
-        if (manager.supportSubscribe()) {
-            Set<Name> names = defaultAssignments.stream().map(LogPartition::name).collect(Collectors.toSet());
+        Set<Name> names = defaultAssignments.stream().map(LogPartition::name).collect(Collectors.toSet());
+        if (manager.supportSubscribe(names.isEmpty() ? null : names.iterator().next())) {
+            usingSubscribe = true;
             tailer = manager.subscribe(Name.ofUrn(policy.getName()), names, this, codec);
         } else {
+            usingSubscribe = false;
             tailer = manager.createTailer(Name.ofUrn(policy.getName()), defaultAssignments, codec);
         }
         return tailer;
@@ -179,7 +183,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
 
     protected void setTailerPosition(LogManager manager) {
         ConsumerPolicy.StartOffset seekPosition = policy.getStartOffset();
-        if (manager.supportSubscribe() && seekPosition != ConsumerPolicy.StartOffset.LAST_COMMITTED) {
+        if (usingSubscribe && seekPosition != ConsumerPolicy.StartOffset.LAST_COMMITTED) {
             throw new UnsupportedOperationException(
                     "Tailer startOffset to " + seekPosition + " is not supported in subscribe mode");
         }
