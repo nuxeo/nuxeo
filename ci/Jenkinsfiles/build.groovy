@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.16"
+library identifier: "platform-ci-shared-library@v0.0.17"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -53,7 +53,7 @@ void runFunctionalTests(String baseDir, String tier) {
     retry(2) {
       sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -D${tier} -f ${baseDir}/pom.xml verify"
     }
-    findText regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log"
+    nxUtils.lookupText(regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log")
   } catch(err) {
     echo "${baseDir} functional tests error: ${err}"
     throw err
@@ -557,10 +557,6 @@ pipeline {
       post {
         always {
           junit testResults: '**/target/failsafe-reports/*.xml'
-        }
-        unsuccessful {
-          // findText does mark the build in FAILURE but doesn't stop the pipeline, error does
-          error "Errors were found!"
         }
       }
     }
