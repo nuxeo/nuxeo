@@ -52,8 +52,9 @@ void runFunctionalTests(String baseDir, String tier) {
   try {
     retry(2) {
       sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -D${tier} -f ${baseDir}/pom.xml verify"
+      nxUtils.lookupText(regexp: ".*ERROR.*(?=(?:\\n.*)*\\[.*FrameworkLoader\\] Nuxeo Platform is Trying to Shut Down)",
+        fileSet: "ftests/**/log/server.log")
     }
-    nxUtils.lookupText(regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log")
   } catch(err) {
     echo "${baseDir} functional tests error: ${err}"
     throw err

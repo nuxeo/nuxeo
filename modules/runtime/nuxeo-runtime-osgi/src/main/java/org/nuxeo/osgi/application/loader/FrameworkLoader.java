@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,6 +79,22 @@ public class FrameworkLoader {
     public static final String ARGS = "org.nuxeo.app.args";
 
     private static final Log log = LogFactory.getLog(FrameworkLoader.class);
+
+    /**
+     * Copied from {@code NuxeoLauncher}.
+     *
+     * @since 2023.0
+     */
+    protected static final String STOP_MAX_WAIT_PARAM = "launcher.stop.max.wait";
+
+    /**
+     * Default maximum time to wait for effective stop (in seconds).
+     * <p>
+     * Copied from {@code NuxeoLauncher}.
+     *
+     * @since 2023.0
+     */
+    protected static final String STOP_MAX_WAIT_DEFAULT = "60";
 
     private static boolean isInitialized;
 
@@ -228,7 +246,19 @@ public class FrameworkLoader {
 
     private static void doStop() throws BundleException {
         try {
+            if (log.isInfoEnabled()) {
+                var ttl = Duration.ofSeconds(
+                        Integer.parseInt(Framework.getProperty(STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT)));
+                log.info(String.format("Nuxeo Platform is Trying to Shut Down within %dm%02ds", ttl.toMinutesPart(),
+                        ttl.toSecondsPart()));
+            }
+            var begin = Instant.now();
             osgi.shutdown();
+            if (log.isInfoEnabled()) {
+                var duration = Duration.between(begin, Instant.now());
+                log.info(String.format("Nuxeo Platform has Shut Down in %dm%02ds", duration.toMinutesPart(),
+                        duration.toSecondsPart()));
+            }
         } catch (IOException e) {
             throw new BundleException("Cannot shutdown OSGi", e);
         }

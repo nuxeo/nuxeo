@@ -1953,10 +1953,12 @@ public class NuxeoLauncher {
                 // don't send too many requests to Tomcat - we're going to re-try
                 Thread.sleep(1000);
             }
-            log.info(".");
+            if (!quiet) {
+                log.info(".");
+            }
             if (!isAliveAndNotZombie(nuxeoProcess)) {
                 Duration duration = Duration.between(startTime, Instant.now());
-                log.info(String.format("Stopped in %dmin%02ds", duration.toMinutes(), duration.toSeconds() % 60));
+                log.info(String.format("Stopped in %dmin%02ds", duration.toMinutes(), duration.toSecondsPart()));
             } else if (Instant.now().isAfter(waitUntil)) {
                 log.info("No answer from server, try to kill process {}...", nuxeoProcess::pid);
                 processManager.kill(nuxeoProcess);
