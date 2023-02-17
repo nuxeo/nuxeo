@@ -15,6 +15,9 @@
   <#if "${kafka.enabled}" == "true">
     <logConfig name="default" type="kafka" default="true">
       <option name="kafkaConfig">default</option>
+      <match name="input/" />
+      <match name="internal/" />
+      <match name="retention/" />
     </logConfig>
     <logConfig name="bulk" type="kafka">
       <option name="kafkaConfig">bulk</option>

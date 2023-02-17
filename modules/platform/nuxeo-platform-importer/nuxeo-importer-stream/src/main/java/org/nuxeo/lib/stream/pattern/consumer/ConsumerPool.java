@@ -77,7 +77,7 @@ public class ConsumerPool<M extends Message> extends AbstractCallablePool<Consum
         this.factory = factory;
         this.policy = policy;
         this.defaultAssignments = getDefaultAssignments();
-        if (manager.supportSubscribe()) {
+        if (manager.supportSubscribe(defaultAssignments.get(0).iterator().next().name())) {
             log.info("Creating consumer pool using Log subscribe on {}", logName);
         } else {
             log.info("Creating consumer pool using Log assignments on {}: {}", logName, defaultAssignments);

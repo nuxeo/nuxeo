@@ -182,6 +182,21 @@ public class LogStreamManager implements StreamManager {
         processors.clear();
     }
 
+    /**
+     * Returns {@code true} if the {@link #subscribe} method is supported for the specific stream.
+     *
+     * @since 2021.34
+     */
+    public boolean supportSubscribe(Name stream) {
+        return logManager.supportSubscribe(stream);
+    }
+
+    /**
+     * Returns {@code true} if the {@link #subscribe} method is supported.
+     * Now deprecated because some implementations support subscribe only on specific streams.
+     *
+     * @deprecated since 2021.34 use {@link #supportSubscribe(Name)} instead
+     */
     public boolean supportSubscribe() {
         return logManager.supportSubscribe();
     }

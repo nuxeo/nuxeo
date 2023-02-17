@@ -172,7 +172,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     protected int getOverProvisioningFactor() {
         // Enable over provisioning only if the log can be distributed
-        if (getLogManager().supportSubscribe()) {
+        if (getLogManager().supportSubscribe(Name.ofUrn(NAMESPACE_PREFIX + "default"))) {
             return Integer.parseInt(Framework.getProperty(WORK_OVER_PROVISIONING_PROP, DEFAULT_WORK_OVER_PROVISIONING));
         }
         return 1;

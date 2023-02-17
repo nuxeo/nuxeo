@@ -287,8 +287,18 @@ public interface LogManager extends AutoCloseable {
 
     /**
      * Returns {@code true} if the Log {@link #subscribe} method is supported.
+     * Now deprecated because some implementations support subscribe only on specific Log names.
+     *
+     * @deprecated since 2021.34 use {@link #supportSubscribe(Name)} instead
      */
     boolean supportSubscribe();
+
+    /**
+     * Returns {@code true} if the {@link #subscribe} method is supported for the specific Log.
+     *
+     * @since 2021.34
+     */
+    boolean supportSubscribe(Name stream);
 
     /**
      * Creates a tailer for a consumer {@code group} and subscribe to multiple Logs. The partitions assignment is done
