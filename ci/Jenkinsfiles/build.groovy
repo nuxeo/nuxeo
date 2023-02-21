@@ -104,81 +104,76 @@ def buildUnitTestStage(env) {
   return {
     stage("Run ${env} unit tests") {
       container("${containerName}") {
-        // TODO NXP-29512: on a PR, make the build continue even if there is a test error
-        // on other environments than the dev one
-        // to remove when all test environments will be mandatory
-        catchError(buildResult: nxUtils.isPullRequest() && "dev" != env ? 'SUCCESS' : 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-          nxWithGitHubStatus(context: "utests/${env}", message: "Unit tests - ${env} environment") {
-            echo """
-            ----------------------------------------
-            Run ${env} unit tests
-            ----------------------------------------"""
-            echo "${env} unit tests: install external services"
-            nxWithHelmfileDeployment(namespace: testNamespace, environment: environment) {
-              script {
-                try {
-                  echo "${env} unit tests: run Maven"
-                  if (isDev) {
-                    // empty file required by the read-project-properties goal of the properties-maven-plugin with the
-                    // customEnvironment profile
-                    sh "touch ${HOME}/nuxeo-test-${env}.properties"
-                  } else {
-                    // prepare test framework system properties
-                    // prefix sample: nuxeo-lts-pr-48-3-mongodb
-                    def bucketPrefix = "$GITHUB_REPO-$BRANCH_NAME-$BUILD_NUMBER-${env}".toLowerCase()
-                    def testBlobProviderPrefix = "$bucketPrefix-test"
-                    def otherBlobProviderPrefix = "$bucketPrefix-other"
+        nxWithGitHubStatus(context: "utests/${env}", message: "Unit tests - ${env} environment") {
+          echo """
+          ----------------------------------------
+          Run ${env} unit tests
+          ----------------------------------------"""
+          echo "${env} unit tests: install external services"
+          nxWithHelmfileDeployment(namespace: testNamespace, environment: environment) {
+            script {
+              try {
+                echo "${env} unit tests: run Maven"
+                if (isDev) {
+                  // empty file required by the read-project-properties goal of the properties-maven-plugin with the
+                  // customEnvironment profile
+                  sh "touch ${HOME}/nuxeo-test-${env}.properties"
+                } else {
+                  // prepare test framework system properties
+                  // prefix sample: nuxeo-lts-pr-48-3-mongodb
+                  def bucketPrefix = "$GITHUB_REPO-$BRANCH_NAME-$BUILD_NUMBER-${env}".toLowerCase()
+                  def testBlobProviderPrefix = "$bucketPrefix-test"
+                  def otherBlobProviderPrefix = "$bucketPrefix-other"
 
-                    sh """
-                      cat ci/mvn/nuxeo-test-${env}.properties \
-                        ci/mvn/nuxeo-test-elasticsearch.properties \
-                        ci/mvn/nuxeo-test-s3.properties \
-                        > ci/mvn/nuxeo-test-${env}.properties~gen
-                      BUCKET_PREFIX=${bucketPrefix} \
-                        TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
-                        OTHER_BLOB_PROVIDER_PREFIX=${otherBlobProviderPrefix} \
-                        NAMESPACE=${testNamespace} \
-                        DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
-                        envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
-                    """
-                  }
-                  // run unit tests:
-                  // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
-                  // - for the given environment (see the customEnvironment profile in pom.xml):
-                  //   - in an alternative build directory
-                  //   - loading some test framework system properties
-                  def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
-                  def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
-                  def mvnCommand = """                 
-                    mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
-                      -Dcustom.environment=${env} \
-                      -Dcustom.environment.log.dir=target-${env} \
-                      -Dnuxeo.test.core=${testCore} \
-                      -Dnuxeo.test.redis.host=${redisHost} \
-                      ${kafkaOptions} \
-                      test
+                  sh """
+                    cat ci/mvn/nuxeo-test-${env}.properties \
+                      ci/mvn/nuxeo-test-elasticsearch.properties \
+                      ci/mvn/nuxeo-test-s3.properties \
+                      > ci/mvn/nuxeo-test-${env}.properties~gen
+                    BUCKET_PREFIX=${bucketPrefix} \
+                      TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
+                      OTHER_BLOB_PROVIDER_PREFIX=${otherBlobProviderPrefix} \
+                      NAMESPACE=${testNamespace} \
+                      DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                      envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
                   """
-                  retry(2) {
-                    if (isDev) {
+                }
+                // run unit tests:
+                // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
+                // - for the given environment (see the customEnvironment profile in pom.xml):
+                //   - in an alternative build directory
+                //   - loading some test framework system properties
+                def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
+                def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+                def mvnCommand = """                 
+                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
+                    -Dcustom.environment=${env} \
+                    -Dcustom.environment.log.dir=target-${env} \
+                    -Dnuxeo.test.core=${testCore} \
+                    -Dnuxeo.test.redis.host=${redisHost} \
+                    ${kafkaOptions} \
+                    test
+                """
+                retry(2) {
+                  if (isDev) {
+                    sh "${mvnCommand}"
+                  } else {
+                    // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
+                    // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
+                    def awsAccessKeyId = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'access_key_id')
+                    def awsSecretAccessKey = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'secret_access_key')
+                    withEnv([
+                      "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+                      "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+                      "AWS_REGION=${AWS_REGION}",
+                      "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
+                    ]) {
                       sh "${mvnCommand}"
-                    } else {
-                      // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
-                      // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
-                      def awsAccessKeyId = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'access_key_id')
-                      def awsSecretAccessKey = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'secret_access_key')
-                      withEnv([
-                        "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-                        "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-                        "AWS_REGION=${AWS_REGION}",
-                        "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
-                      ]) {
-                        sh "${mvnCommand}"
-                      }
                     }
                   }
-                } finally {
-                  junit allowEmptyResults: true, testResults: "**/target-${env}/surefire-reports/*.xml"
                 }
+              } finally {
+                junit allowEmptyResults: true, testResults: "**/target-${env}/surefire-reports/*.xml"
               }
             }
           }
