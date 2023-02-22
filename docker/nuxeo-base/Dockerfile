@@ -89,6 +89,9 @@ RUN dnf -y update \
     google-noto-cjk-fonts-common \
   && dnf clean all
 
+# Remove perl-Net-SSLeay example private key
+RUN rm /usr/share/doc/perl-Net-SSLeay/examples/server_key.pem
+
 # Remove setuid/setgid binaries from images for security
 RUN find / -ignore_readdir_race -perm 6000 -type f -exec chmod a-s {} \; || true
 
