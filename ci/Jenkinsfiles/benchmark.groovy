@@ -93,7 +93,12 @@ pipeline {
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
     MAVEN_ARGS = '-B -nsu -P-nexus,nexus-private,bench -Dnuxeo.bench.itests=false'
     NUXEO_DOCKER_IMAGE = "${NUXEO_DOCKER_IMAGE_WITH_VERSION.replaceAll(':.*', '')}"
-    DATA_URL = "https://maven-eu.nuxeo.org/nexus/service/local/repositories/vendor-releases/content/content/org/nuxeo/tools/testing/data-test-les-arbres-redis-1.1.gz/1.1/data-test-les-arbres-redis-1.1.gz-1.1.gz"
+    DATA_ARTIFACT_GROUP = "content.org.nuxeo.tools.testing"
+    DATA_ARTIFACT_ID = "data-test-les-arbres-redis-1.1.gz"
+    DATA_ARTIFACT_VERSION = "1.1"
+    DATA_ARTIFACT_TYPE = "gz"
+    DATA_ARTIFACT = "${DATA_ARTIFACT_ID}-${DATA_ARTIFACT_VERSION}.${DATA_ARTIFACT_TYPE}"
+    DATA_ARTIFACT_FULL_NAME = "${DATA_ARTIFACT_GROUP}:${DATA_ARTIFACT_ID}:${DATA_ARTIFACT_VERSION}:${DATA_ARTIFACT_TYPE}"
     GATLING_TESTS_PATH = "${WORKSPACE}/ftests/nuxeo-server-gatling-tests"
     REPORT_PATH = "${GATLING_TESTS_PATH}/target/reports"
     VERSION = "${NUXEO_DOCKER_IMAGE_WITH_VERSION.replaceAll('.*:', '')}"
@@ -114,16 +119,18 @@ pipeline {
 
     stage("Prepare data") {
       steps {
-        container('benchmark') {
+        container('maven') {
           echo """
             ----------------------------------------
             Load benchmark data into Redis
             ----------------------------------------
             """
-          echo "Download data..."
-          sh "curl -o /tmp/data.gz ${DATA_URL}"
-          echo "Loading data into Redis..."
-          sh "gunzip -c /tmp/data.gz | nc -N localhost 6379 > /dev/null"
+          script {
+            echo "Download data..."
+            nxMvn.copy(artifact: "${DATA_ARTIFACT_FULL_NAME}", outputDirectory: '/tmp')
+            echo "Loading data into Redis..."
+            sh "gunzip -c /tmp/${DATA_ARTIFACT} | nc -N localhost 6379 > /dev/null"
+          }
         }
       }
     }
