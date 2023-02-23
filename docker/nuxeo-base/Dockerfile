@@ -48,6 +48,8 @@ COPY --from=rpm-download /rpms /tmp/rpms
 
 RUN yum -y update \
   && yum -y --setopt=skip_missing_names_on_install=False install \
+    # required for python27-python
+    centos-release-scl-rh \
     epel-release \
     # install java first to provide it for depend packages (such as libreoffice)
     zulu11-jdk \
@@ -67,6 +69,8 @@ RUN yum -y update \
     # required by exiftool to extract binary metadata from open office document
     perl-Archive-Zip \
     poppler-utils \
+    # install Python 2.7.18
+    python27-python \
     tar \
     ufraw \
     unzip \
@@ -74,6 +78,15 @@ RUN yum -y update \
     # Add CJK fonts
     google-noto-cjk-fonts \
   && yum clean all
+
+# Enable Python 2.7.18
+ENV PATH /opt/rh/python27/root/usr/bin${PATH:+:${PATH}}
+ENV LD_LIBRARY_PATH /opt/rh/python27/root/usr/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+ENV MANPATH /opt/rh/python27/root/usr/share/man:${MANPATH}
+# For systemtap
+ENV XDG_DATA_DIRS /opt/rh/python27/root/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}
+# For pkg-config
+ENV PKG_CONFIG_PATH /opt/rh/python27/root/usr/lib64/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}
 
 # Remove setuid/setgid binaries from images for security
 RUN find / -ignore_readdir_race -perm 6000 -type f -exec chmod a-s {} \; || true
