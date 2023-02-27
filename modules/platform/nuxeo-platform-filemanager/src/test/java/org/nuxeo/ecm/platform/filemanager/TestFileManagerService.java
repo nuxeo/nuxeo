@@ -46,7 +46,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -621,6 +623,22 @@ public class TestFileManagerService {
                                      .build();
         DocumentModel doc = fileManager.createOrUpdateDocument(context);
         assertNotNull(doc.getId());
+    }
+
+    @Test
+    public void testParentPathInEmptyDocumentModelCreatedEvent() throws Exception {
+        File file = getTestFile("test-data/hello.doc");
+        Blob input = Blobs.createBlob(file, "application/msword");
+
+        FileImporterContext context = FileImporterContext.builder(coreSession, input, workspace.getPathAsString())
+                                                         .overwrite(true)
+                                                         .build();
+        try (CapturingEventListener listener = new CapturingEventListener("emptyDocumentModelCreated")) {
+            fileManager.createOrUpdateDocument(context);
+            // test if the parent path is found in the event context properties
+            assertEquals(workspace.getPathAsString(),
+                    listener.findFirstCapturedEventContext().get().getProperty(CoreEventConstants.PARENT_PATH));
+        }
     }
 
     private Object getMimeType(DocumentModel doc) {

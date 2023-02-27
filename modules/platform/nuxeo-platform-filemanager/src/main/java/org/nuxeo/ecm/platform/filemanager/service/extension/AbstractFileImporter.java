@@ -23,7 +23,9 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -34,6 +36,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -261,7 +264,9 @@ public abstract class AbstractFileImporter implements FileImporter {
             }
         } else {
             // create document model
-            doc = session.createDocumentModel(targetDocType);
+            Map<String, Object> options = new HashMap<>();
+            options.put(CoreEventConstants.PARENT_PATH, path);
+            doc = session.createDocumentModel(targetDocType, options);
             createDocument(doc, title);
             // set path
             PathSegmentService pss = Framework.getService(PathSegmentService.class);
