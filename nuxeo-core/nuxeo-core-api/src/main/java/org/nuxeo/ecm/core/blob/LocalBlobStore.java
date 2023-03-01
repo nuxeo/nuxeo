@@ -332,6 +332,11 @@ public class LocalBlobStore extends AbstractBlobStore {
             toDelete = null;
         }
 
+        @Override
+        public void reset() {
+            startTime = 0;
+        }
+
         protected void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
             for (String key : toDelete) {
                 OptionalOrUnknown<Path> fileOpt = getStoredFile(key);

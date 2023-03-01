@@ -388,6 +388,11 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
+
+        @Override
+        public void reset() {
+            startTime = 0;
+        }
     }
 
 }

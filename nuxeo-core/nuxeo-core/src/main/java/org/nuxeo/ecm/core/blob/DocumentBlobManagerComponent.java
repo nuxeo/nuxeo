@@ -408,32 +408,40 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             List<BinaryGarbageCollector> gcs = getGarbageCollectors(true);
             // start gc
             long start = System.currentTimeMillis();
-            for (BinaryGarbageCollector gc : gcs) {
-                gc.start();
+            try {
+                for (BinaryGarbageCollector gc : gcs) {
+                    gc.start();
+                }
+                // in all repositories, mark referenced binaries
+                // the marking itself will call back into the appropriate gc's mark method
+                RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+                for (String repositoryName : repositoryService.getRepositoryNames()) {
+                    log.info("Marking binaries for repository: " + repositoryName);
+                    Repository repository = repositoryService.getRepository(repositoryName);
+                    repository.markReferencedBinaries();
+                }
+                // stop gc
+                BinaryManagerStatus globalStatus = new BinaryManagerStatus();
+                for (BinaryGarbageCollector gc : gcs) {
+                    log.info("GC Binaries: " + gc.getId());
+                    gc.stop(delete);
+                    BinaryManagerStatus status = gc.getStatus();
+                    log.info("GC Binaries status: " + status);
+                    globalStatus.numBinaries += status.numBinaries;
+                    globalStatus.sizeBinaries += status.sizeBinaries;
+                    globalStatus.numBinariesGC += status.numBinariesGC;
+                    globalStatus.sizeBinariesGC += status.sizeBinariesGC;
+                }
+                globalStatus.gcDuration = System.currentTimeMillis() - start;
+                log.warn("GC Binaries Completed: " + globalStatus);
+                return globalStatus;
+            } finally {
+                for (BinaryGarbageCollector gc : gcs) {
+                    if (gc.isInProgress()) {
+                        gc.reset();
+                    }
+                }
             }
-            // in all repositories, mark referenced binaries
-            // the marking itself will call back into the appropriate gc's mark method
-            RepositoryService repositoryService = Framework.getService(RepositoryService.class);
-            for (String repositoryName : repositoryService.getRepositoryNames()) {
-                log.info("Marking binaries for repository: " + repositoryName);
-                Repository repository = repositoryService.getRepository(repositoryName);
-                repository.markReferencedBinaries();
-            }
-            // stop gc
-            BinaryManagerStatus globalStatus = new BinaryManagerStatus();
-            for (BinaryGarbageCollector gc : gcs) {
-                log.info("GC Binaries: " + gc.getId());
-                gc.stop(delete);
-                BinaryManagerStatus status = gc.getStatus();
-                log.info("GC Binaries status: " + status);
-                globalStatus.numBinaries += status.numBinaries;
-                globalStatus.sizeBinaries += status.sizeBinaries;
-                globalStatus.numBinariesGC += status.numBinariesGC;
-                globalStatus.sizeBinariesGC += status.sizeBinariesGC;
-            }
-            globalStatus.gcDuration = System.currentTimeMillis() - start;
-            log.warn("GC Binaries Completed: " + globalStatus);
-            return globalStatus;
         }, BINARY_GC_TX_TIMEOUT_SEC);
     }
 

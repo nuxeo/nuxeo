@@ -123,4 +123,8 @@ public abstract class AbstractBlobGarbageCollector implements BinaryGarbageColle
         return status;
     }
 
+    @Override
+    public void reset() {
+        startTime = 0;
+    }
 }
