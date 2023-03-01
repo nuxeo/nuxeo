@@ -344,6 +344,11 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
                         });
             startTime = 0;
         }
+
+        @Override
+        public void reset() {
+            startTime = 0;
+        }
     }
 
     @Override

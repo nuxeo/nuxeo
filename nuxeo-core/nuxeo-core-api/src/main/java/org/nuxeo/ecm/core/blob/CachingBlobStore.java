@@ -491,5 +491,10 @@ public class CachingBlobStore extends AbstractBlobStore {
         public boolean isInProgress() {
             return delegate.isInProgress();
         }
+
+        @Override
+        public void reset() {
+            delegate.reset();
+        }
     }
 }

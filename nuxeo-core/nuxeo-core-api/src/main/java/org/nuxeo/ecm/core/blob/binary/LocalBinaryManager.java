@@ -298,6 +298,11 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             startTime = 0;
         }
 
+        @Override
+        public void reset() {
+            startTime = 0;
+        }
+
         protected void deleteOld(File file, long minTime, int depth, boolean delete) {
             if (file.isDirectory()) {
                 for (File f : file.listFiles()) {

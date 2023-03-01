@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.blob.binary;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * A Garbage Collector for a {@link BinaryManager}.
  * <p>
@@ -30,6 +33,8 @@ package org.nuxeo.ecm.core.blob.binary;
  * After this, {@link #getStatus} returns information about the binaries remaining and those that have been GCed.
  */
 public interface BinaryGarbageCollector {
+
+    static final Logger log = LogManager.getLogger(BinaryGarbageCollector.class);
 
     /**
      * Gets a unique identifier for this garbage collector. Two garbage collectors that would impact the same files must
@@ -80,5 +85,15 @@ public interface BinaryGarbageCollector {
      * @return {@code true} if a GC is in progress
      */
     boolean isInProgress();
+
+    /**
+     * Reset start time. This is required if the process throws an error before the end not to block the next call to
+     * the GC
+     *
+     * @since 2021.36
+     */
+    default void reset() {
+        log.warn("Reset method is not implemented for {}", this.getClass().getName());
+    };
 
 }

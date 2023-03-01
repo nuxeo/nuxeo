@@ -97,6 +97,11 @@ public abstract class AbstractBinaryGarbageCollector<T extends CachingBinaryMana
         }
     }
 
+    @Override
+    public void reset() {
+        startTime = 0;
+    }
+
     protected void removeUnmarkedBlobsAndUpdateStatus(boolean delete) {
         // kept for backward compat, new implementations should override everything
         Set<String> unmarked = getUnmarkedBlobs();
