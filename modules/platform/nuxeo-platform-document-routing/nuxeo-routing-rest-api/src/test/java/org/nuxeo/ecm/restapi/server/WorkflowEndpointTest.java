@@ -116,7 +116,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     protected static final int NB_WF = 5;
 
-    protected static final String CANCELLED_WORKFLOWS = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'";
+    protected static final String CANCELED_WORKFLOWS = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'";
 
     @Inject
     protected EventService eventService;
@@ -1052,7 +1052,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      * Trigger the escalation rule that resumes a ParallelDocumentReview workflow instance of which all attached
      * documents have been deleted.
      * <p>
-     * The expected behaviour is that workflow instance is cancelled.
+     * The expected behaviour is that workflow instance is canceled.
      *
      * @since 8.4
      */
@@ -1107,8 +1107,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     @Test
     public void testWorkflowCleanUp() throws Exception {
         createWorkflowsThenWaitForCleanup();
-        DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
-        assertTrue(cancelled.isEmpty());
+        DocumentModelList canceled = session.query(CANCELED_WORKFLOWS);
+        assertTrue(canceled.isEmpty());
     }
 
     /**
@@ -1118,8 +1118,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     @WithFrameworkProperty(name = DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY, value = "true")
     public void testWorkflowCleanUpDisabling() throws Exception {
         createWorkflowsThenWaitForCleanup();
-        DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
-        assertEquals(NB_WF, cancelled.size());
+        DocumentModelList canceled = session.query(CANCELED_WORKFLOWS);
+        assertEquals(NB_WF, canceled.size());
     }
 
     protected void createWorkflowsThenWaitForCleanup() throws Exception {
@@ -1142,8 +1142,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         // Starts a new transaction for visibility on db that use repeatable read isolation (mysql, mariadb)
         txFeature.nextTransaction();
 
-        DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
-        assertEquals(NB_WF, cancelled.size());
+        DocumentModelList canceled = session.query(CANCELED_WORKFLOWS);
+        assertEquals(NB_WF, canceled.size());
 
         EventContext eventContext = new EventContextImpl();
         eventContext.setProperty("category", "workflowInstancesCleanup");
