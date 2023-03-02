@@ -48,6 +48,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
@@ -62,6 +63,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
@@ -80,6 +82,9 @@ import com.sun.jersey.multipart.file.StreamDataBodyPart;
 @Deploy("org.nuxeo.ecm.platform.restapi.test:multiblob-doctype.xml")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:test-conflict-batch-handler.xml")
 public class BatchUploadFixture extends BaseTest {
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Inject
     CoreSession session;
@@ -447,6 +452,88 @@ public class BatchUploadFixture extends BaseTest {
             CreateBlob.skipProtocolCheck = false;
             file.delete();
         }
+    }
+
+    // NXP-31721
+    @Test
+    public void testBatchExecuteAttachBlobs() throws IOException {
+
+        // Get batch id, used as a session id
+        String batchId = initializeNewBatch();
+
+        // Upload a file
+        String fileName1 = "Fichier accentué 1.txt";
+        String mimeType = "text/plain";
+        String data1 = "Contenu accentué du premier fichier";
+        String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/plain");
+        headers.put("X-Upload-Type", "normal");
+        headers.put("X-File-Name", fileName1);
+        headers.put("X-File-Size", fileSize1);
+        headers.put("X-File-Type", mimeType);
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0", data1,
+                headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").asText());
+            assertEquals(batchId, node.get("batchId").asText());
+            assertEquals("0", node.get("fileIdx").asText());
+            assertEquals("normal", node.get("uploadType").asText());
+            // TODO NXP-18247 when the actual uploaded size is returned
+            // assertEquals(fileSize1, node.get("uploadedSize").asText());
+        }
+
+        // Upload another file
+        String fileName2 = "Fichier accentué 2.txt";
+        String data2 = "Contenu accentué du deuxième fichier";
+        String fileSize2 = String.valueOf(getUTF8Bytes(data2).length);
+        headers = new HashMap<>();
+        headers.put("X-File-Name", fileName2);
+        headers.put("X-File-Size", fileSize2);
+        headers.put("X-File-Type", mimeType);
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/1", data2,
+                headers)) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("true", node.get("uploaded").asText());
+            assertEquals(batchId, node.get("batchId").asText());
+            assertEquals("1", node.get("fileIdx").asText());
+            assertEquals("normal", node.get("uploadType").asText());
+        }
+
+        // create a document to receive the batch
+        DocumentModel doc = session.createDocumentModel("/", "testBatchExecuteDoc", "File");
+        doc = session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // attach blobs in the batch to the document
+        String json = "{";
+        json += "\"params\": {";
+        json += "\"document\": {";
+        json += "\"entity-type\": \"document\",";
+        json += "\"uid\": \"" + doc.getId() + "\",";
+        json += "\"properties\": {";
+        json += "\"files:files\": []";
+        json += "}";
+        json += "},";
+        json += "\"xpath\": \"files:files\"";
+        json += "}";
+        json += "}";
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "upload/" + batchId + "/execute/" + AttachBlob.ID, json)) {
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        }
+        txFeature.nextTransaction();
+
+        doc = session.getDocument(doc.getRef());
+        assertNotNull(doc.getPropertyValue("files:files"));
+        assertEquals(fileName1, doc.getPropertyValue("files:files/0/file/name"));
+        assertEquals(Long.parseLong(fileSize1), doc.getPropertyValue("files:files/0/file/length"));
+        assertEquals(fileName2, doc.getPropertyValue("files:files/1/file/name"));
+        assertEquals(Long.parseLong(fileSize2), doc.getPropertyValue("files:files/1/file/length"));
     }
 
     /**
