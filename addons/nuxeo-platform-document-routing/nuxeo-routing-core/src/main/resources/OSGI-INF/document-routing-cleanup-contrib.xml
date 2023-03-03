@@ -21,4 +21,18 @@
     </listener>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="garbageCollectWokflows" bucketSize="100" batchSize="25" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <!-- GarbageCollectOrphanRoute processor -->
+    <streamProcessor name="garbageCollectWokflows" logConfig="bulk"
+      class="org.nuxeo.ecm.platform.routing.core.bulk.GarbageCollectRoutesAction"
+      defaultConcurrency="${nuxeo.bulk.action.garbageCollectWokflows.defaultConcurrency:=2}"
+      defaultPartitions="${nuxeo.bulk.action.garbageCollectWokflows.defaultPartitions:=2}">
+      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
+    </streamProcessor>
+  </extension>
+
 </component>
