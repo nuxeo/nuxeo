@@ -1163,7 +1163,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         Event event = new EventImpl(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_EVENT_NAME, eventContext);
         eventService.fireEvent(event);
 
-        awaitCleanupWorks();
+        txFeature.nextTransaction();
     }
 
     /**
@@ -1512,16 +1512,6 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         JsonNode variablesNode = node.get("variables");
         expectedVariables.forEach((k, v) -> assertEquals(v, variablesNode.get(k).asText()));
-    }
-
-    /**
-     * @since 9.1
-     */
-    protected void awaitCleanupWorks() throws InterruptedException {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
-        workManager.awaitCompletion("default", 10, TimeUnit.SECONDS);
     }
 
     protected void awaitEscalationWorks() throws InterruptedException {

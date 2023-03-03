@@ -23,6 +23,21 @@ package org.nuxeo.ecm.platform.routing.api;
  */
 public interface DocumentRoutingConstants {
 
+    /**
+     * @since 2023
+     */
+    String GC_ROUTES_ACTION_NAME = "garbageCollectWokflows";
+
+    /**
+     * @since 2023
+     */
+    String ALL_WORKFLOWS_QUERY = "SELECT ecm:uuid FROM DocumentRoute";
+
+    /**
+     * @since 2023
+     */
+    String DONE_AND_CANCELED_WORKFLOWS_QUERY = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState IN ('done', 'canceled')";
+
     // web
     String SEARCH_ROUTE_BY_ATTACHED_DOC_QUERY = "SEARCH_ROUTE_BY_ATTACHED_DOC";
 

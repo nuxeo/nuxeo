@@ -25,7 +25,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.WORKFLOW_FORCE_RESUME;
+import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_TYPE_NAME;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,6 +64,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow;
@@ -71,10 +75,11 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Features(LogCaptureFeature.class)
@@ -374,12 +379,39 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals(1, cancelledTasks.size());
         DocumentRef routeRef = route.getDocument().getRef();
 
-        routing.cleanupDoneAndCanceledRouteInstances(session.getRepositoryName(), 0);
+        routing.cleanupRouteInstances(session.getRepositoryName());
         session.save();
+        coreFeature.waitForAsyncCompletion();
         assertFalse(session.exists(routeRef));
         for (DocumentModel cancelledTask : cancelledTasks) {
             assertFalse(session.exists(cancelledTask.getRef()));
         }
+    }
+
+    @Test
+    @WithFrameworkProperty(name = "nuxeo.routing.cleanup.workflow.instances.orphan", value = "true")
+    public void testCleanup() {
+        DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
+        ws = session.createDocument(ws);
+        DocumentModel route = session.createDocumentModel("/", "dummyRoute", DOCUMENT_ROUTE_DOCUMENT_TYPE);
+        DocumentModel file = session.createDocumentModel("/ws", "file", "File");
+        file = session.createDocument(file);
+        route.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                (Serializable) Arrays.asList(file.getId()));
+        route = session.createDocument(route);
+        DocumentModel task = session.createDocumentModel("/", "dummyTask", TASK_TYPE_NAME);
+        task.setPropertyValue(TASK_PROCESS_ID_PROPERTY_NAME, route.getId());
+        task = session.createDocument(task);
+        session.save();
+        coreFeature.waitForAsyncCompletion();
+
+        assertTrue(session.exists(route.getRef()));
+        assertTrue(session.exists(task.getRef()));
+        session.removeDocument(ws.getRef());
+        routing.cleanupRouteInstances(session.getRepositoryName());
+        coreFeature.waitForAsyncCompletion();
+        assertFalse(session.exists(task.getRef()));
+        assertFalse(session.exists(task.getRef()));
     }
 
     @SuppressWarnings("unchecked")
@@ -990,7 +1022,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertEquals("test", route.getDocument().getPropertyValue("fctroute1:globalVariable"));
             doneTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'ended'");
             assertEquals(1, doneTasks.size());
-            routing.cleanupDoneAndCanceledRouteInstances(session.getRepositoryName(), 0);
+            routing.cleanupRouteInstances(session.getRepositoryName());
+            coreFeature.waitForAsyncCompletion();
             session.save();
             assertFalse(session.exists(routeRef));
             for (DocumentModel doneTask : doneTasks) {
