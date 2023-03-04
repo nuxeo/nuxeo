@@ -739,6 +739,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 log.debug("fetched blob: {} from S3 in {}ms", () -> digest, () -> System.currentTimeMillis() - t0);
             }
         }
+
+        @Override
+        public boolean exists(String digest) {
+            return amazonS3.doesObjectExist(bucketName, bucketNamePrefix + digest);
+        }
     }
 
     /**

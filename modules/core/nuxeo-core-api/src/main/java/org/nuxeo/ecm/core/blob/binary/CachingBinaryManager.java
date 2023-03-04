@@ -144,9 +144,17 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
 
         File cachedFile = fileCache.getFile(digest);
         if (cachedFile != null) {
+            log.debug("File is in the cache -> " + cachedFile.getAbsolutePath());
             // file already in cache
             if (Framework.isTestModeSet()) {
                 Framework.getProperties().setProperty("cachedBinary", digest);
+            }
+            if (fileStorage.exists(digest)) {
+                log.trace("File: {} exists in remote storage", digest);
+            } else {
+                // cacheFile has been removed from transient store => must be re-uploaded for cluster
+                log.info("File: {} does not exist in remote storage", digest);
+                fileStorage.storeFile(digest, cachedFile);
             }
             // delete tmp file, not needed anymore
             tmp.delete();
@@ -172,9 +180,11 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      * Used by {@link LazyBinary}.
      */
     public File getFile(String digest) throws IOException {
+        log.debug("Getting file: {}", digest);
         // get file from cache
         File file = fileCache.getFile(digest);
         if (file != null) {
+            log.debug("File: {} retrieved from cache : {}", digest::toString, file::getAbsolutePath);
             return file;
         }
         // fetch file from storage
@@ -182,10 +192,13 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         if (fileStorage.fetchFile(digest, tmp)) {
             // put file in cache
             file = fileCache.putFile(digest, tmp);
+            log.debug("File: {} retrieved from fileStorage: {} with path : {}", digest::toString,
+                    () -> fileStorage.getClass().getName(), file::getAbsolutePath);
             return file;
         } else {
             // file not in storage
             tmp.delete();
+            log.debug("File: {} not in storage", digest);
             return null;
         }
     }
