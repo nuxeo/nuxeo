@@ -761,6 +761,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
             }
 
         }
+
+        @Override
+        public boolean exists(String digest) {
+            return amazonS3.doesObjectExist(bucketName, bucketNamePrefix + digest);
+        }
     }
 
     /**

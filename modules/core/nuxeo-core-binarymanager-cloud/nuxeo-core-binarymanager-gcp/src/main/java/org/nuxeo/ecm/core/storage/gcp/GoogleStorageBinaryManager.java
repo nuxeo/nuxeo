@@ -227,6 +227,11 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
             }
             return false;
         }
+
+        @Override
+        public boolean exists(String digest) {
+            return bucket.get(bucketPrefix + digest) != null;
+        }
     }
 
     @Override

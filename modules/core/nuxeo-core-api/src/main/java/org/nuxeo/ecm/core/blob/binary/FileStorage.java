@@ -47,4 +47,18 @@ public interface FileStorage {
      */
     boolean fetchFile(String key, File file) throws IOException;
 
+    /**
+     * Does a blob with the given key exist in the storage.
+     * <p>
+     * The existence of the blob is checked in the storage where the blob is effectively stored. Intermediate cache is
+     * ignored.
+     *
+     * @param key the blob key
+     * @return true if it exists in the storage
+     * @since 2023
+     */
+    default boolean exists(String key) {
+        return false;
+    }
+
 }

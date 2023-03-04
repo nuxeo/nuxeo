@@ -117,6 +117,16 @@ public class AzureFileStorage implements FileStorage {
         }
     }
 
+    @Override
+    public boolean exists(String digest) {
+        try {
+            return container.getBlockBlobReference(prefix + digest).exists();
+        } catch (StorageException | URISyntaxException e) {
+            log.error(e);
+            return false;
+        }
+    }
+
     protected static boolean isMissingKey(StorageException e) {
         return e.getErrorCode().equals(StorageErrorCode.RESOURCE_NOT_FOUND.toString());
     }
