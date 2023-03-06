@@ -328,7 +328,6 @@ public interface DocumentRoutingService {
      * Imports all the route models resource templates.
      *
      * @param session the core session to use
-     *
      * @since 7.3
      */
     void importAllRouteModels(CoreSession session);
@@ -388,9 +387,7 @@ public interface DocumentRoutingService {
      * @param session the session
      * @param tasks the tasks
      * @since 5.6, was on RoutingTaskService before
-     *
-     * @deprecated The facet RoutingTask is statically attached to the new
-     *             RoutingTask Document type since 7.1
+     * @deprecated The facet RoutingTask is statically attached to the new RoutingTask Document type since 7.1
      */
     @Deprecated
     void makeRoutingTasks(CoreSession session, List<Task> tasks);
@@ -505,12 +502,24 @@ public interface DocumentRoutingService {
 
     /**
      * Query for the routes 'done' or 'canceled' and delete them. The max no of the routes that will be deleted is
-     * specified by the 'limit' parameter. When the limit is '0' all the completed routes are deleted. The routes to be
-     * deleted are ordered ascending by their creation date.
+     * specified by the 'limit' parameter. When the limit is '0' all the completed routes are deleted.
      *
      * @since 5.8
+     * @deprecated since 2023, use #{@link #cleanupRouteInstances(String)} instead.
      */
+    @Deprecated
     void cleanupDoneAndCanceledRouteInstances(String repositoryName, int limit);
+
+    /**
+     * Remove the routes in state 'done' or 'canceled' of the given repository.
+     * <p>
+     * If 'nuxeo.routing.cleanup.workflow.instances.orphan' framework property is set to true, orphan routes (for which
+     * all associated documents have been removed) will also be removed.
+     *
+     * @param repositoryName the repository name to clean up
+     * @since 2023
+     */
+    void cleanupRouteInstances(String repositoryName);
 
     /**
      * @since 5.9.3
@@ -522,9 +531,11 @@ public interface DocumentRoutingService {
      * specified by the 'limit' parameter. When the limit is '0' all the completed routes are deleted. The routes to be
      * deleted are ordered ascending by their creation date.
      *
-     * @return the number of cleaned up workflow instance
+     * @return always -1
      * @since 7.1
+     * @deprecated since 2023, use GarbageCollectRoutesAction instead
      */
+    @Deprecated
     int doCleanupDoneAndCanceledRouteInstances(String reprositoryName, int limit);
 
     /**
@@ -553,7 +564,7 @@ public interface DocumentRoutingService {
     List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session, String worflowModelName);
 
     /**
-     * Returns true id the document route is a model, false if it is just an instance i.e. a running workflow.
+     * Returns true if the document route is a model, false if it is just an instance i.e. a running workflow.
      *
      * @since 7.2
      */
@@ -572,5 +583,14 @@ public interface DocumentRoutingService {
      * @since 11.4
      */
     List<DocumentRoute> getRunnableWorkflows(CoreSession session, List<String> documentIds);
+
+    /**
+     * Remove the workflow instance if it is canceled, done or orphan. An orphan instance has all its attached document
+     * already removed.
+     *
+     * @return true if the route has been deleted, false otherwise
+     * @since 2023
+     */
+    boolean purgeDocumentRoute(CoreSession session, DocumentRoute route);
 
 }

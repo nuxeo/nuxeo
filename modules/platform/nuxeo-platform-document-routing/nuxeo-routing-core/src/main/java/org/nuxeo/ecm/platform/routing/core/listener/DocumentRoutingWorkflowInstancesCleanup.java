@@ -24,9 +24,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -39,6 +37,8 @@ public class DocumentRoutingWorkflowInstancesCleanup implements PostCommitEventL
 
     public final static String CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY = "nuxeo.routing.cleanup.workflow.instances.batch.size";
 
+    public final static String CLEANUP_WORKFLOW_INSTANCES_ORPHAN_PROPERTY = "nuxeo.routing.cleanup.workflow.instances.orphan";
+
     public final static String CLEANUP_WORKFLOW_REPO_NAME_PROPERTY = "repositoryName";
 
     public final static String CLEANUP_WORKFLOW_EVENT_NAME = "workflowInstancesCleanup";
@@ -48,11 +48,8 @@ public class DocumentRoutingWorkflowInstancesCleanup implements PostCommitEventL
         if (Framework.isBooleanPropertyTrue(CLEANUP_WORKFLOW_INSTANCES_PROPERTY)) {
             return;
         }
-        int batchSize = Integer.parseInt(
-                Framework.getProperty(CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100"));
-        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-
+        DocumentRoutingService routingService = Framework.getService(DocumentRoutingService.class);
         Set<String> repositoryNames = new HashSet<>();
         for (Event event : events) {
             if (event.getContext().hasProperty(CLEANUP_WORKFLOW_REPO_NAME_PROPERTY)) {
@@ -62,23 +59,7 @@ public class DocumentRoutingWorkflowInstancesCleanup implements PostCommitEventL
                 repositoryNames.addAll(repositoryManager.getRepositoryNames());
             }
         }
-        for (String repositoryName : repositoryNames) {
-            doCleanAndReschedule(batchSize, routing, repositoryName);
-        }
-    }
-
-    /**
-     * @since 7.1
-     */
-    private void doCleanAndReschedule(int batchSize, DocumentRoutingService routing, String repositoryName) {
-        int cleanedUpWf = routing.doCleanupDoneAndCanceledRouteInstances(repositoryName, batchSize);
-        if (cleanedUpWf == batchSize) {
-            EventContextImpl eCtx = new EventContextImpl();
-            eCtx.setProperty(CLEANUP_WORKFLOW_REPO_NAME_PROPERTY, repositoryName);
-            Event event = eCtx.newEvent(CLEANUP_WORKFLOW_EVENT_NAME);
-            EventProducer eventProducer = Framework.getService(EventProducer.class);
-            eventProducer.fireEvent(event);
-        }
+        repositoryNames.forEach(repo -> routingService.cleanupRouteInstances(repo));
     }
 
 }
