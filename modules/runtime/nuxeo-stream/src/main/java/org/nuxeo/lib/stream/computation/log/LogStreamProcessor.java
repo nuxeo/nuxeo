@@ -134,8 +134,11 @@ public class LogStreamProcessor implements StreamProcessor {
             ret.set("metadata", metaNode);
             // list streams with settings
             ArrayNode streamsNode = OBJECT_MAPPER.createArrayNode();
-            topology.streamsSet().forEach(stream -> {
-                ObjectNode item = OBJECT_MAPPER.createObjectNode();
+            topology.streamsSet()
+                    .stream()
+                    .filter(stream -> !settings.isExternal(Name.ofUrn(stream)))
+                    .forEach(stream -> {
+                        ObjectNode item = OBJECT_MAPPER.createObjectNode();
                 item.put("name", stream);
                 item.put("partitions", settings.getPartitions(stream));
                 item.put("codec", settings.getCodec(stream).getName());

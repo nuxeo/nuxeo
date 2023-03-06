@@ -125,7 +125,8 @@ public class LogStreamManager implements StreamManager {
         processor.init(topologies.get(processorName), settings.get(processorName));
         processors.put(processorName, processor);
         Map<String, String> meta = new HashMap<>();
-        meta.put("processorName",  processorName);
+        meta.put("processorName", processorName);
+        meta.put("created", Long.toString(System.currentTimeMillis() / 1000));
         meta.putAll(getSystemMetadata());
         append(PROCESSORS_STREAM, Record.of(meta.get("ip"), processor.toJson(meta).getBytes(UTF_8)));
         return processor;
