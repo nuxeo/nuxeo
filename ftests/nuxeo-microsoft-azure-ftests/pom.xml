@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ftests</groupId>
     <artifactId>nuxeo-ftests</artifactId>
-    <version>2021.34-SNAPSHOT</version>
+    <version>2021.35-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-microsoft-azure-ftests</artifactId>
