@@ -22,8 +22,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
@@ -190,15 +192,23 @@ public class StreamIntrospectionComputation extends AbstractComputation {
                                        .filter(json -> (now - json.get("timestamp").asLong()) > TTL_SECONDS)
                                        .map(json -> json.get("ip").asText())
                                        .collect(Collectors.toList());
-        log.debug("Removing nodes: {}", toRemove);
+        log.debug("Removing nodes with old metrics: {}", toRemove);
         toRemove.forEach(metrics::remove);
-        toRemove.forEach(ip -> {
-            List<String> toRemoveProcessors = processors.keySet()
-                                                        .stream()
-                                                        .filter(key -> key.startsWith(ip))
-                                                        .collect(Collectors.toList());
-            toRemoveProcessors.forEach(processors::remove);
-        });
+        Set<String> toKeep = metrics.values().stream().map(json -> json.get("ip").asText()).collect(Collectors.toSet());
+        log.debug("List of active nodes: {}", toKeep);
+        // Remove processors with inactive nodes and older than TTL
+        Iterator<Map.Entry<String, JsonNode>> entries = processors.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, JsonNode> entry = entries.next();
+            JsonNode node = entry.getValue();
+            String ip = node.at("/metadata/ip").asText();
+            if (!toKeep.contains(ip)) {
+                JsonNode created = node.at("/metadata/created");
+                if (created == null || ((now - created.asLong()) > TTL_SECONDS)) {
+                    entries.remove();
+                }
+            }
+        }
     }
 
     protected JsonNode getJson(Record record) {

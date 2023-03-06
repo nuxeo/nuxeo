@@ -218,6 +218,7 @@ codec: avro
 records: 0]
 component computation.bulk.removeProxy.192.168.192.9 [bulk/removeProxy on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: false
 no batch
@@ -226,6 +227,7 @@ computation.bulk.removeProxy.192.168.192.9==>stream.bulk.status
 stream.bulk.removeProxy==>computation.bulk.removeProxy.192.168.192.9
 component computation.audit.writer.192.168.192.9 [audit/writer on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 1
 continue on failure: false
 batch 25 25ms
@@ -241,6 +243,7 @@ rate 5min: 1.89op/s]
 stream.audit.audit==>computation.audit.writer.192.168.192.9: 2113/2123 lag: 10, latency: 1.20s
 component computation.bulk.automation.192.168.192.9 [bulk/automation on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -249,6 +252,7 @@ computation.bulk.automation.192.168.192.9==>stream.bulk.status
 stream.bulk.automation==>computation.bulk.automation.192.168.192.9
 component computation.bulk.deletion.192.168.192.9 [bulk/deletion on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -261,6 +265,7 @@ computation.bulk.deletion.192.168.192.9==>stream.bulk.status
 stream.bulk.deletion==>computation.bulk.deletion.192.168.192.9
 component computation.bulk.trash.192.168.192.9 [bulk/trash on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 1
 continue on failure: false
 no batch
@@ -269,6 +274,7 @@ computation.bulk.trash.192.168.192.9==>stream.bulk.status
 stream.bulk.trash==>computation.bulk.trash.192.168.192.9
 component computation.bulk.setProperties.192.168.192.9 [bulk/setProperties on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: false
 no batch
@@ -277,6 +283,7 @@ computation.bulk.setProperties.192.168.192.9==>stream.bulk.status
 stream.bulk.setProperties==>computation.bulk.setProperties.192.168.192.9
 component computation.stream.metrics.192.168.192.9 [stream/metrics on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 1
 continue on failure: false
 no batch
@@ -284,6 +291,7 @@ max retry: 5, delay: 1000ms]
 stream.input.null==>computation.stream.metrics.192.168.192.9
 component computation.bulk.setSystemProperties.192.168.192.9 [bulk/setSystemProperties on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: false
 no batch
@@ -292,6 +300,7 @@ computation.bulk.setSystemProperties.192.168.192.9==>stream.bulk.status
 stream.bulk.setSystemProperties==>computation.bulk.setSystemProperties.192.168.192.9
 component computation.bulk.indexCompletion.192.168.192.9 [bulk/indexCompletion on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 1
 continue on failure: false
 no batch
@@ -302,6 +311,7 @@ mean: 0.010s, p50: 0.000s, p99: 0.022s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 component computation.bulk.index.192.168.192.9 [bulk/index on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: false
 no batch
@@ -312,6 +322,7 @@ mean: 1.145s, p50: 1.293s, p99: 1.611s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 component computation.bulk.bulkIndex.192.168.192.9  <<failure>>[bulk/bulkIndex on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: false
 no batch
@@ -332,6 +343,7 @@ computation.bulk.bulkIndex.192.168.192.9==>stream.bulk.status
 stream.bulk.bulkIndex==>computation.bulk.bulkIndex.192.168.192.9
 component computation.retention.retentionExpired.192.168.192.9 [retention/retentionExpired on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 1
 continue on failure: true
 no batch
@@ -340,6 +352,7 @@ computation.retention.retentionExpired.192.168.192.9==>stream.bulk.status
 stream.retention.retentionExpired==>computation.retention.retentionExpired.192.168.192.9
 component computation.stream.introspection.192.168.192.9 [stream/introspection on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 1
 continue on failure: false
 no batch
@@ -352,6 +365,7 @@ stream.internal.processors==>computation.stream.introspection.192.168.192.9
 stream.internal.metrics==>computation.stream.introspection.192.168.192.9
 component computation.bulk.csvExport.192.168.192.9 [bulk/csvExport on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -363,6 +377,7 @@ mean: 0.112s, p50: 0.106s, p99: 0.183s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 component computation.bulk.makeBlob.192.168.192.9 [bulk/makeBlob on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -377,6 +392,7 @@ mean: 0.000s, p50: 0.000s, p99: 0.000s
 rate 5min: 1.94op/s]
 component computation.bulk.sortBlob.192.168.192.9 [bulk/sortBlob on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -387,12 +403,14 @@ mean: 0.977s, p50: 0.977s, p99: 0.977s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 component computation.bulk.zipBlob.192.168.192.9 [bulk/zipBlob on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
 max retry: 3, delay: 1000ms]
 component computation.bulk.exposeBlob.192.168.192.9 [bulk/exposeBlob on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -416,24 +434,28 @@ computation.bulk.exposeBlob.192.168.192.9==>stream.bulk.status
 stream.bulk.exposeBlob==>computation.bulk.exposeBlob.192.168.192.9
 component computation.work.videoConversion.192.168.192.9 [work/videoConversion on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
 no retry]
 component computation.work.permissionsPurge.192.168.192.9 [work/permissionsPurge on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
 no retry]
 component computation.work.blobs.192.168.192.9 [work/blobs on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
 no retry]
 component computation.work.default.192.168.192.9 [work/default on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
@@ -444,6 +466,7 @@ mean: 0.010s, p50: 0.007s, p99: 0.123s
 rate 1min: 0.00op/s, 5min: 0.01op/s]
 component computation.work.elasticSearchIndexing.192.168.192.9 [work/elasticSearchIndexing on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
@@ -454,30 +477,35 @@ mean: 0.010s, p50: 0.008s, p99: 0.045s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 component computation.work.collections.192.168.192.9 [work/collections on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
 no retry]
 component computation.work.escalation.192.168.192.9 [work/escalation on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
 no retry]
 component computation.work.renditionBuilder.192.168.192.9 [work/renditionBuilder on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
 no retry]
 component computation.work.fulltextUpdater.192.168.192.9 [work/fulltextUpdater on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
 no retry]
 component computation.work.updateACEStatus.192.168.192.9 [work/updateACEStatus on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
@@ -488,6 +516,7 @@ mean: 0.003s, p50: 0.003s, p99: 0.003s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 component computation.work.pictureViewsGeneration.192.168.192.9 [work/pictureViewsGeneration on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 4
 continue on failure: true
 no batch
@@ -505,6 +534,7 @@ stream.work.updateACEStatus==>computation.work.updateACEStatus.192.168.192.9
 stream.work.pictureViewsGeneration==>computation.work.pictureViewsGeneration.192.168.192.9
 component computation.bulk.recomputeThumbnails.192.168.192.9 [bulk/recomputeThumbnails on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -513,6 +543,7 @@ computation.bulk.recomputeThumbnails.192.168.192.9==>stream.bulk.status
 stream.bulk.recomputeThumbnails==>computation.bulk.recomputeThumbnails.192.168.192.9
 component computation.bulk.recomputeViews.192.168.192.9 [bulk/recomputeViews on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: true
 no batch
@@ -521,6 +552,7 @@ computation.bulk.recomputeViews.192.168.192.9==>stream.bulk.status
 stream.bulk.recomputeViews==>computation.bulk.recomputeViews.192.168.192.9
 component computation.bulk.scroller.192.168.192.9 [bulk/scroller on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 2
 continue on failure: false
 no batch
@@ -531,6 +563,7 @@ mean: 0.231s, p50: 0.366s, p99: 0.366s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
 component computation.bulk.status.192.168.192.9 [bulk/status on 192.168.192.9
 ----
+created: 1970-01-01T00:00:00Z
 threads: 1
 continue on failure: false
 no batch

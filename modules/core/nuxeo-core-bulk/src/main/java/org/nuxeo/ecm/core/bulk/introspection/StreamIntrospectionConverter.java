@@ -97,11 +97,12 @@ public class StreamIntrospectionConverter {
         if (node.isArray()) {
             for (JsonNode item : node) {
                 String host = item.at("/metadata/ip").asText();
+                String created = Instant.ofEpochSecond(item.at("/metadata/created").asLong()).toString();
                 // ret.append("rectangle node." + host + " {\n");
                 JsonNode computations = item.get("computations");
                 if (computations.isArray()) {
                     for (JsonNode computation : computations) {
-                        dumpComputation(host, ret, computation, streamMetrics);
+                        dumpComputation(host, ret, computation, streamMetrics, created);
                     }
                 }
                 // ret.append("}\n");
@@ -250,8 +251,7 @@ public class StreamIntrospectionConverter {
                 + "skinparam componentBackgroundColor Azure\n" //
                 + "skinparam nodebackgroundColor<<failure>> Yellow\n" //
                 + "skinparam componentbackgroundColor<<failure>> Yellow\n" //
-                + "skinparam component {\n"
-                + "  BorderColor black\n" + "  ArrowColor #CC6655\n" + "}\n";
+                + "skinparam component {\n" + "  BorderColor black\n" + "  ArrowColor #CC6655\n" + "}\n";
     }
 
     protected String getPumlIdentifierForHost(String host, String id) {
@@ -274,7 +274,8 @@ public class StreamIntrospectionConverter {
         return ret == null ? "0" : ret;
     }
 
-    protected void dumpComputation(String host, StringBuilder ret, JsonNode item, Map<String, String> metrics) {
+    protected void dumpComputation(String host, StringBuilder ret, JsonNode item, Map<String, String> metrics,
+            String created) {
         String name = item.get("name").asText();
         String threads = item.get("threads").asText();
         String continueOnFailure = item.get("continueOnFailure").asText();
@@ -282,9 +283,9 @@ public class StreamIntrospectionConverter {
         if (metrics.containsKey(name + ":" + host + ":failure")) {
             failure = " <<failure>>";
         }
-        ret.append(String.format("component %s %s[%s%n----%nthreads: %s%ncontinue on failure: %s%n%s%s]%n",
-                getPumlIdentifier("computation:" + name + ":" + host), failure, name + " on " + host, threads, continueOnFailure,
-                getBatchInfo(item), getComputationMetrics(host, name, item, metrics)));
+        ret.append(String.format("component %s %s[%s%n----%ncreated: %s%nthreads: %s%ncontinue on failure: %s%n%s%s]%n",
+                getPumlIdentifier("computation:" + name + ":" + host), failure, name + " on " + host, created, threads,
+                continueOnFailure, getBatchInfo(item), getComputationMetrics(host, name, item, metrics)));
     }
 
     protected String getComputationMetrics(String host, String name, JsonNode item, Map<String, String> metrics) {

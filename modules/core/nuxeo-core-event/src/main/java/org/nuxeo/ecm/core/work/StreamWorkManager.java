@@ -307,7 +307,7 @@ public class StreamWorkManager extends WorkManagerImpl {
             logManager = getLogManager();
             streamManager = getStreamManager();
             streamManager.register("StreamWorkManagerDisable", topologyDisabled, settings);
-            streamProcessor = streamManager.registerAndCreateProcessor("StreamWorkManager", topology, settings);
+            streamManager.register("StreamWorkManager", topology, settings);
             started = true;
             new ComponentListener().install();
             log.info("Initialized");
@@ -328,6 +328,7 @@ public class StreamWorkManager extends WorkManagerImpl {
                 log.warn("WorkManager processing has been disabled on this node");
                 return;
             }
+            streamProcessor = streamManager.createStreamProcessor("StreamWorkManager");
             streamProcessor.start();
             for (Descriptor d : getDescriptors(QUEUES_EP)) {
                 activateQueueMetrics(d.getId());
@@ -473,6 +474,9 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     public boolean shutdown(long timeout, TimeUnit timeUnit) {
+        if (streamProcessor == null) {
+            return true;
+        }
         log.info("Shutdown WorkManager in {}ms", () -> timeUnit.toMillis(timeout));
         shutdownInProgress = true;
         try {
@@ -582,6 +586,9 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     protected long getLowWaterMark(String queueId) {
+        if (streamProcessor == null) {
+            return -1L;
+        }
         if (queueId != null) {
             return streamProcessor.getLowWatermark(queueId);
         }
