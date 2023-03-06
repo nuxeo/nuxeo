@@ -19,12 +19,17 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ALL_WORKFLOWS_QUERY;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DONE_AND_CANCELED_WORKFLOWS_QUERY;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.GC_ROUTES_ACTION_NAME;
+import static org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY;
+import static org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_ORPHAN_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -53,7 +58,6 @@ import org.nuxeo.ecm.core.api.LockHelper;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
@@ -62,6 +66,9 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -747,43 +754,25 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         return DocumentRoutingConstants.DOCUMENT_ROUTING_DELEGATION_ACL + '/' + taskId;
     }
 
-    /**
-     * @since 7.1
-     */
-    private static final class WfCleaner extends UnrestrictedSessionRunner {
-
-        private static final String WORKFLOWS_QUERY = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState IN ('done', 'canceled')";
-
-        private static final String TASKS_QUERY = "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'";
-
-        private final int limit;
-
-        private int numberOfCleanedUpWorkflows = 0;
-
-        private WfCleaner(String repositoryName, int limit) {
-            super(repositoryName);
-            this.limit = limit;
+    @Override
+    public boolean purgeDocumentRoute(CoreSession session, DocumentRoute route) {
+        if (isWorkflowModel(route)) {
+            log.debug("Cannot remove route model: {}", route::getName);
+            return false;
         }
-
-        @Override
-        public void run() {
-            PartialList<Map<String, Serializable>> workflows = session.queryProjection(WORKFLOWS_QUERY, limit, 0);
-            numberOfCleanedUpWorkflows = workflows.size();
-
-            for (Map<String, Serializable> workflow : workflows) {
-                String routeDocId = workflow.get(ECM_UUID).toString();
-                final String associatedTaskQuery = String.format(TASKS_QUERY, routeDocId);
-                session.queryProjection(associatedTaskQuery, 0, 0)
-                       .stream()
-                       .map(task -> new IdRef(task.get(ECM_UUID).toString()))
-                       .forEach(session::removeDocument);
-                session.removeDocument(new IdRef(routeDocId));
+        if (!route.isDone() && !route.isCanceled()) {
+            // we need READ on all attached doc or we may have a false orphan
+            boolean isOrphan = CoreInstance.doPrivileged(session,
+                    (CoreSession s) -> route.getAttachedDocuments().stream().map(IdRef::new).noneMatch(s::exists));
+            if (!isOrphan) {
+                log.debug("Cannot remove not orphan route: {}", () -> route.getDocument().getId());
+                return false;
             }
         }
-
-        public int getNumberOfCleanedUpWf() {
-            return numberOfCleanedUpWorkflows;
-        }
+        // is either done, canceled or orphan, let's delete the route
+        // tasks linked to the route will be cleaned by DocumentRouteOrphanedListener
+        session.removeDocument(route.getDocument().getRef());
+        return true;
     }
 
     static class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
@@ -1066,15 +1055,36 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
+    @Deprecated
     public void cleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit) {
-        doCleanupDoneAndCanceledRouteInstances(reprositoryName, limit);
+        BulkService bulkService = Framework.getService(BulkService.class);
+        Builder builder = new BulkCommand.Builder(GC_ROUTES_ACTION_NAME, DONE_AND_CANCELED_WORKFLOWS_QUERY,
+                SYSTEM_USERNAME).repository(reprositoryName)
+                                .batch(Integer.parseInt(
+                                        Framework.getProperty(CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100")));
+        if (limit > 0) {
+            builder.queryLimit(limit);
+        }
+        bulkService.submit(builder.build());
     }
 
     @Override
+    public void cleanupRouteInstances(final String reprositoryName) {
+        var query = Framework.isBooleanPropertyTrue(CLEANUP_WORKFLOW_INSTANCES_ORPHAN_PROPERTY) ? ALL_WORKFLOWS_QUERY
+                : DONE_AND_CANCELED_WORKFLOWS_QUERY;
+        BulkService bulkService = Framework.getService(BulkService.class);
+        Builder builder = new BulkCommand.Builder(GC_ROUTES_ACTION_NAME, query,
+                SYSTEM_USERNAME).repository(reprositoryName)
+                                .batch(Integer.parseInt(
+                                        Framework.getProperty(CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100")));
+        bulkService.submit(builder.build());
+    }
+
+    @Override
+    @Deprecated
     public int doCleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit) {
-        WfCleaner unrestrictedSessionRunner = new WfCleaner(reprositoryName, limit);
-        unrestrictedSessionRunner.runUnrestricted();
-        return unrestrictedSessionRunner.getNumberOfCleanedUpWf();
+        cleanupDoneAndCanceledRouteInstances(reprositoryName, limit);
+        return -1;
     }
 
     @Override

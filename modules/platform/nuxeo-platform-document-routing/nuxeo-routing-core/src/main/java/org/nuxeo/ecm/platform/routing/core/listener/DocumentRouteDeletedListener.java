@@ -35,7 +35,9 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * Listener that deletes orphan Tasks.
  *
  * @since 11.1
+ * @since deprecated since 2023, tasks clean up is done by @{link DocumentRouteOrphanedListener}
  */
+@Deprecated
 public class DocumentRouteDeletedListener implements PostCommitEventListener {
 
     protected static final String QUERY_GET_TASKS_RELATED_TO_DOCUMENT_ROUTE = "SELECT * FROM " + TASK_TYPE_NAME
