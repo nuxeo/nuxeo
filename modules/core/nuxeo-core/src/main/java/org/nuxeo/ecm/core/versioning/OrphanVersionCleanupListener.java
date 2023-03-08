@@ -41,12 +41,18 @@ public class OrphanVersionCleanupListener implements PostCommitEventListener {
     /**
      * Configuration property for the maximum number of orphan versions to delete in one transaction. Default is
      * {@value #DEFAULT_COMMIT_SIZE}.
+     *
+     * @deprecated since 2023, we are now relying on BAF for orphan versions cleanup
      */
+    @Deprecated
     public static final String DEFAULT_COMMIT_SIZE_PROP = "org.nuxeo.orphanVersionsCleanup.commitSize";
 
     /**
      * Gets the maximum number of orphan versions to delete in one transaction.
+     *
+     * @deprecated since 2023, we are now relying on BAF for orphan versions cleanup
      */
+    @Deprecated
     protected long getCommitSize() {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         return configurationService.getLong(DEFAULT_COMMIT_SIZE_PROP, DEFAULT_COMMIT_SIZE);
@@ -60,8 +66,7 @@ public class OrphanVersionCleanupListener implements PostCommitEventListener {
             return;
         }
         log.debug("Starting orphan versions cleanup");
-        long n = coreService.cleanupOrphanVersions(getCommitSize());
-        log.debug("Number of orphan versions deleted: {}", n);
+        coreService.garbageCollectOrphanVersions();
     }
 
 }
