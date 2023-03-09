@@ -128,8 +128,7 @@ public class SuggestDirectoryEntries {
                     properties.put(key, value);
                 }
             }
-            if (displayObsoleteEntries && obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID)
-                    && Integer.parseInt(obj.get(SuggestConstants.OBSOLETE_FIELD_ID).toString()) > 0) {
+            if (displayObsoleteEntries && isObsolete()) {
                 obj.put(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
             }
             obj.put("directoryName", directory.getName());
@@ -208,6 +207,10 @@ public class SuggestDirectoryEntries {
             return isRoot ? null : obj.getOrDefault(SuggestConstants.ABSOLUTE_LABEL, "").toString();
         }
 
+        public boolean isObsolete() {
+            return Integer.parseInt(obj.getOrDefault(SuggestConstants.OBSOLETE_FIELD_ID, "0").toString()) > 0;
+        }
+
         public Map<String, Object> getObj() {
             return obj;
         }
@@ -276,6 +279,10 @@ public class SuggestDirectoryEntries {
         }
 
         private void mergeJsonAdapter(JSONAdapter branch) {
+            if (canSelectParent && !displayObsoleteEntries && branch.isObsolete()) {
+                log.debug("Skip obsolete {}", branch.getId());
+                return;
+            }
             JSONAdapter found = children.get(branch.getId());
             if (found != null) {
                 for (JSONAdapter branchChild : branch.children.values()) {
@@ -491,7 +498,7 @@ public class SuggestDirectoryEntries {
             Schema schema = schemaManager.getSchema(directory.getSchema());
             label = SuggestConstants.getLabelFieldName(schema, dbl10n, labelFieldName, getLang());
             Map<String, Serializable> filter = new HashMap<>(filters);
-            if (!displayObsoleteEntries) {
+            if (!displayObsoleteEntries && !canSelectParent) {
                 // Exclude obsolete
                 filter.put(SuggestConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }

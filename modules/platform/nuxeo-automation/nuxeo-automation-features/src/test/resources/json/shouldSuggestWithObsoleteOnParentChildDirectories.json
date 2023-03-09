@@ -73,7 +73,29 @@
         },
         "entity-type": "directoryEntry",
         "computedId": "10/30",
-        "absoluteLabel": "Parent 10/Sub 30"
+        "absoluteLabel": "Parent 10/Sub 30",
+        "children": [
+          {
+            "parent": "30",
+            "ordering": 10000000,
+            "obsolete": 1,
+            "id": "30",
+            "displayLabel": "Sub Sub 30",
+            "label": "Sub Sub 30",
+            "warn_message": "obsolete",
+            "directoryName": "subsubdir",
+            "properties": {
+              "parent": "30",
+              "ordering": 10000000,
+              "obsolete": 1,
+              "id": "30",
+              "label": "Sub Sub 30"
+            },
+            "entity-type": "directoryEntry",
+            "computedId": "10/30/30",
+            "absoluteLabel": "Parent 10/Sub 30/Sub Sub 30"
+          }
+        ]
       }
     ]
   },
