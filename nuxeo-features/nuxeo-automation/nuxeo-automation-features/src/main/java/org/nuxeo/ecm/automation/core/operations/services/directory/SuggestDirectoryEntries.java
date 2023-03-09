@@ -129,11 +129,8 @@ public class SuggestDirectoryEntries {
                     properties.put(key, value);
                 }
             }
-            if (displayObsoleteEntries) {
-                if (obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID)
-                        && Integer.parseInt(obj.get(SuggestConstants.OBSOLETE_FIELD_ID).toString()) > 0) {
-                    obj.put(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
-                }
+            if (displayObsoleteEntries && isObsolete()) {
+                obj.put(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
             }
             obj.put("directoryName", directory.getName());
             obj.put("properties", properties);
@@ -284,6 +281,10 @@ public class SuggestDirectoryEntries {
         }
 
         private void mergeJsonAdapter(JSONAdapter branch) {
+            if (canSelectParent && !displayObsoleteEntries && branch.isObsolete()) {
+                log.debug("Skip obsolete " + branch.getId());
+                return;
+            }
             JSONAdapter found = children.get(branch.getId());
             if (found != null) {
                 for (JSONAdapter branchChild : branch.children.values()) {
@@ -508,7 +509,7 @@ public class SuggestDirectoryEntries {
             label = SuggestConstants.getLabelFieldName(schema, dbl10n, labelFieldName, getLang());
 
             Map<String, Serializable> filter = new HashMap<>();
-            if (!displayObsoleteEntries) {
+            if (!displayObsoleteEntries && !canSelectParent) {
                 // Exclude obsolete
                 filter.put(SuggestConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }
