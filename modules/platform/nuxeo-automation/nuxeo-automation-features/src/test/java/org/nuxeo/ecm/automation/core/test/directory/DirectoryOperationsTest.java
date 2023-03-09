@@ -406,6 +406,7 @@ public class DirectoryOperationsTest {
     }
 
     /** NXP-28113 */
+    /** NXP-31052 */
     @Test
     @Deploy("org.nuxeo.ecm.automation.features:test-parent-child-directories.xml")
     public void shouldSuggestWithParentSelectionOnParentChildDirectories() throws Exception {
@@ -415,6 +416,18 @@ public class DirectoryOperationsTest {
         Blob result = (Blob) service.run(ctx, chain);
         assertNotNull(result);
         assertJSON("json/shouldSuggestWithParentSelectionOnParentChildDirectories.json", result);
+    }
+
+    /** NXP-31052 */
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.features:test-parent-child-directories.xml")
+    public void shouldSuggestWithObsoleteOnParentChildDirectories() throws Exception {
+        OperationParameters params = new OperationParameters(SuggestDirectoryEntries.ID,
+                Map.of("directoryName", "subsubdir", "canSelectParent", true, "displayObsoleteEntries", true));
+        OperationChain chain = new OperationChain("filterChain", List.of(params));
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+        assertJSON("json/shouldSuggestWithObsoleteOnParentChildDirectories.json", result);
     }
 
     /** NXP-28113 */
