@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.migration.test.dummy" version="1.0">
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+    <migration id="dummy-bulk-migration">
+      <description label="migration.dummy.bulk">Dummy Bulk Migration</description>
+      <class>org.nuxeo.ecm.core.migrator.DummyBulkMigrator</class>
+      <defaultState>before</defaultState>
+      <state id="before">
+        <description label="migration.dummy.before">before dummy migration state</description>
+      </state>
+      <state id="after">
+        <description label="migration.dummy.after">after dummy migration state</description>
+      </state>
+
+      <step id="before-to-after" fromState="before" toState="after">
+        <description label="migration.dummy.before-to-after">Migrate dummy state from before to after</description>
+      </step>
+    </migration>
+  </extension>
+
+</component>
