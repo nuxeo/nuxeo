@@ -21,7 +21,10 @@ package org.nuxeo.ecm.core.migrator;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.ONE_MINUTE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.MIGRATION_PROCESSOR_NAME;
 import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.PARAM_MIGRATION_ID;
 import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.PARAM_MIGRATION_STEP;
 
@@ -40,6 +43,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.migration.MigrationService;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,6 +66,9 @@ public class TestBulkMigrator {
 
     @Inject
     protected MigrationService migrationService;
+
+    @Inject
+    protected StreamService streamService;
 
     @Inject
     protected TransactionalFeature txFeature;
@@ -120,5 +127,25 @@ public class TestBulkMigrator {
         bulkStatus = bulkService.getStatus(bulkStatus.getId());
         assertEquals(BulkStatus.State.COMPLETED, bulkStatus.getState());
         assertEquals(20, bulkStatus.getProcessed());
+    }
+
+    @Test
+    public void testBulkMigrationStartStopProcessor() {
+        var processor = streamService.getStreamManager().getProcessor(MIGRATION_PROCESSOR_NAME);
+        // processor could not exist (test is first to run) or could be terminated (test is run another one)
+        assertTrue(processor == null || processor.isTerminated());
+
+        // run the migration
+        migrationService.probeAndRun(DummyBulkMigrator.MIGRATION_ID);
+
+        // only assert that processor exists, its terminated state could be random
+        processor = streamService.getStreamManager().getProcessor(MIGRATION_PROCESSOR_NAME);
+        assertNotNull(processor);
+
+        // await its end
+        await().atMost(ONE_MINUTE).until(() -> !migrationService.getStatus(DummyBulkMigrator.MIGRATION_ID).isRunning());
+
+        // assert it is terminated
+        assertTrue(processor.isTerminated());
     }
 }

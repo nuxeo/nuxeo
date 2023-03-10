@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -103,8 +104,7 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
 
     @Override
     public int getApplicationStartedOrder() {
-        // let RedisComponent start before us (Redis starts before WorkManager that starts before events)
-        return -500 + 10;
+        return ComponentStartOrders.PUB_SUB;
     }
 
     // ===== delegation to actual implementation =====

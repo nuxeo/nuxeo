@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.pubsub.ClusterActionService" version="1.0">
+
+  <require>org.nuxeo.runtime.cluster.ClusterService</require>
+  <require>org.nuxeo.runtime.pubsub.PubSubService</require>
+
+  <documentation>
+    The ClusterActionPubSubService allows to send simple action to another nodes.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.pubsub.ClusterActionService" />
+  </service>
+
+  <implementation class="org.nuxeo.runtime.pubsub.ClusterActionServiceImpl" />
+
+</component>

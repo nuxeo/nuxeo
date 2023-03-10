@@ -32,7 +32,9 @@ import org.nuxeo.runtime.stream.StreamService;
  * PubSub to propagate an action to all nodes in the cluster.
  *
  * @since 2021.25
+ * @deprecated since 2023.0, use {@link org.nuxeo.runtime.pubsub.ClusterActionService} instead
  */
+@Deprecated
 public class ClusterActionPubSub extends AbstractPubSubBroker<ClusterAction> {
     private static final Logger log = LogManager.getLogger(ClusterActionPubSub.class);
 
