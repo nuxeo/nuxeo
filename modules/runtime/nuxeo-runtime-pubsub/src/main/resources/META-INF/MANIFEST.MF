@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.runtime.pubsub;singleton:=true
-Nuxeo-Component: OSGI-INF/pubsub-service.xml
+Nuxeo-Component: OSGI-INF/pubsub-service.xml,
+  OSGI-INF/cluster-action-pubsub-service.xml

@@ -25,7 +25,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @since 2021.25
+ * @deprecated since 2023.0, use {@link org.nuxeo.runtime.pubsub.ClusterActionService} instead
  */
+@Deprecated
 public class RestAPIServiceImpl extends DefaultComponent implements RestAPIService {
     protected ClusterActionPubSub clusterStreamActionPubSub;
 

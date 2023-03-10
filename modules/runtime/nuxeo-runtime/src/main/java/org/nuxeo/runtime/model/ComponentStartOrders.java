@@ -28,6 +28,19 @@ public class ComponentStartOrders {
     /** @since 11.5 */
     public static final int CAPABILITIES = -2000;
 
+    /** @since 2023.0 */
+    public static final int CLUSTER_SERVICE = -1000;
+
+    /**
+     * Let RedisComponent start before us (Redis starts before WorkManager that starts before events).
+     * 
+     * @since 2023.0
+     */
+    public static final int PUB_SUB = -500 + 10;
+
+    /** @since 2023.0 */
+    public static final int CLUSTER_ACTIONS = Math.min(CLUSTER_SERVICE, PUB_SUB) + 10;
+
     // @since 2021.14
     public static final int MONGODB = 40;
 

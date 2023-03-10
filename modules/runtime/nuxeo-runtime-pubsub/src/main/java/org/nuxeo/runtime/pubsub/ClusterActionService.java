@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2022 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,31 @@
  * limitations under the License.
  *
  * Contributors:
- *     bdelbosc
+ *     Kevin Leturc <kevin.leturc@hyland.com>
  */
-package org.nuxeo.ecm.restapi.server;
+package org.nuxeo.runtime.pubsub;
+
+import java.util.function.Consumer;
 
 /**
- * @since 2021.25
- * @deprecated since 2023.0, use {@link org.nuxeo.runtime.pubsub.ClusterActionService} instead
+ * @since 2023.0
  */
-@Deprecated
-public interface RestAPIService {
+public interface ClusterActionService {
+
+    /**
+     * Registers an action for a requested propagation
+     */
+    void registerAction(String action, Consumer<ClusterActionMessage> consumer);
 
     /**
      * Propagate an action to all others nodes in the cluster.
      */
-    void propagateAction(String action, String param);
+    default void executeAction(String action, String param) {
+        executeAction(new ClusterActionMessage(action, param));
+    }
+
+    /**
+     * Propagate an action to all others nodes in the cluster.
+     */
+    void executeAction(ClusterActionMessage message);
 }

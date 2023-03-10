@@ -35,6 +35,7 @@ import org.nuxeo.runtime.capabilities.CapabilitiesService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -47,8 +48,13 @@ public class ClusterServiceImpl extends DefaultComponent implements ClusterServi
 
     private static final Logger log = LogManager.getLogger(ClusterServiceImpl.class);
 
-    /** Very early as other services depend on us. */
-    public static final int APPLICATION_STARTED_ORDER = -1000;
+    /**
+     * Very early as other services depend on us.
+     * 
+     * @deprecated since 2023.0, use {@link ComponentStartOrders#CLUSTER_SERVICE} instead
+     */
+    @Deprecated
+    public static final int APPLICATION_STARTED_ORDER = ComponentStartOrders.CLUSTER_SERVICE;
 
     public static final String XP_CONFIG = "configuration";
 
@@ -67,7 +73,7 @@ public class ClusterServiceImpl extends DefaultComponent implements ClusterServi
 
     @Override
     public int getApplicationStartedOrder() {
-        return APPLICATION_STARTED_ORDER;
+        return ComponentStartOrders.CLUSTER_SERVICE;
     }
 
     @Override

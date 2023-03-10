@@ -27,6 +27,8 @@ import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.MigrationAction.A
 import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.MigrationAction.ACTION_NAME;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
+import static org.nuxeo.runtime.pubsub.ClusterActionServiceImpl.STREAM_START_PROCESSOR_ACTION;
+import static org.nuxeo.runtime.pubsub.ClusterActionServiceImpl.STREAM_STOP_PROCESSOR_ACTION;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -46,11 +48,13 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.migration.Migration;
 import org.nuxeo.runtime.migration.MigrationDescriptor;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
 import org.nuxeo.runtime.migration.MigrationService.Migrator;
 import org.nuxeo.runtime.migration.MigrationServiceImpl;
+import org.nuxeo.runtime.pubsub.ClusterActionService;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -64,6 +68,8 @@ public abstract class AbstractBulkMigrator implements Migrator {
     public static final String PARAM_MIGRATION_ID = "migrationId";
 
     public static final String PARAM_MIGRATION_STEP = "migrationStep";
+
+    protected static final String MIGRATION_PROCESSOR_NAME = "migration";
 
     protected final MigrationDescriptor descriptor;
 
@@ -108,6 +114,9 @@ public abstract class AbstractBulkMigrator implements Migrator {
         if (!descriptor.getSteps().containsKey(step)) {
             throw new NuxeoException("Unknown migration step: " + step + " for migration: " + descriptor.getId());
         }
+        // start the migration processor
+        Framework.getService(ClusterActionService.class)
+                 .executeAction(STREAM_START_PROCESSOR_ACTION, MIGRATION_PROCESSOR_NAME);
 
         var bulkService = Framework.getService(BulkService.class);
         migrationContext.reportProgress("Initializing", 0, -1);
@@ -128,12 +137,13 @@ public abstract class AbstractBulkMigrator implements Migrator {
                 log.warn("Migration: {} is shutting down", descriptor::getId);
                 // abort all bulk actions
                 bulkIds.forEach(bulkService::abort);
-                return;
+                break;
             }
             try {
                 log.trace("Sleep a bit before checking status for migration: {}", descriptor::getId);
                 Thread.sleep(Duration.ofSeconds(1).toMillis());
             } catch (InterruptedException e) {
+                // don't stop the migration processor, Nuxeo is shutting down
                 Thread.currentThread().interrupt();
                 throw new NuxeoException(e);
             }
@@ -149,6 +159,17 @@ public abstract class AbstractBulkMigrator implements Migrator {
             }
             migrationContext.reportProgress(finish ? "Done" : "Migrating content", processed, total);
         } while (!finish);
+        // stop the migration processor
+        var noMigrationRunning = Framework.getService(MigrationService.class)
+                                          .getMigrations()
+                                          .stream()
+                                          .filter(m -> !descriptor.getId().equals(m.getId()))
+                                          .map(Migration::getStatus)
+                                          .noneMatch(MigrationService.MigrationStatus::isRunning);
+        if (noMigrationRunning) {
+            Framework.getService(ClusterActionService.class)
+                     .executeAction(STREAM_STOP_PROCESSOR_ACTION, MIGRATION_PROCESSOR_NAME);
+        }
     }
 
     protected BulkCommand createBulkCommand(String repositoryName, String migrationId, String migrationStep) {

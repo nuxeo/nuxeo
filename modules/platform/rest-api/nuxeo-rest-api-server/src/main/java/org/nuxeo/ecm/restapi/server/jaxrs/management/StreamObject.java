@@ -21,8 +21,8 @@ package org.nuxeo.ecm.restapi.server.jaxrs.management;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KEY;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KV_STORE;
-import static org.nuxeo.ecm.restapi.server.ClusterActionPubSub.START_CONSUMER_ACTION;
-import static org.nuxeo.ecm.restapi.server.ClusterActionPubSub.STOP_CONSUMER_ACTION;
+import static org.nuxeo.runtime.pubsub.ClusterActionServiceImpl.STREAM_START_CONSUMER_ACTION;
+import static org.nuxeo.runtime.pubsub.ClusterActionServiceImpl.STREAM_STOP_CONSUMER_ACTION;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -41,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionConverter;
-import org.nuxeo.ecm.restapi.server.RestAPIService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -51,6 +50,8 @@ import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
+import org.nuxeo.runtime.pubsub.ClusterActionService;
+import org.nuxeo.runtime.pubsub.ClusterActionServiceImpl;
 import org.nuxeo.runtime.stream.StreamService;
 
 /**
@@ -104,15 +105,13 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     @PUT
     @Path("/consumer/stop")
     public void stopConsumer(@QueryParam("consumer") String consumer) {
-        Framework.getService(StreamService.class).stopComputation(Name.ofUrn(consumer));
-        Framework.getService(RestAPIService.class).propagateAction(STOP_CONSUMER_ACTION, consumer);
+        Framework.getService(ClusterActionService.class).executeAction(STREAM_STOP_CONSUMER_ACTION, consumer);
     }
 
     @PUT
     @Path("/consumer/start")
     public void startConsumer(@QueryParam("consumer") String consumer) {
-        Framework.getService(StreamService.class).restartComputation(Name.ofUrn(consumer));
-        Framework.getService(RestAPIService.class).propagateAction(START_CONSUMER_ACTION, consumer);
+        Framework.getService(ClusterActionService.class).executeAction(STREAM_START_CONSUMER_ACTION, consumer);
     }
 
     @GET
