@@ -482,7 +482,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         executor.execute(new MigratorWithContext(migration, progressReporter, afterMigration));
     }
 
-    protected Migrator getMigrator(String id) {
+    public Migrator getMigrator(String id) {
         MigrationDescriptor descr = getDescriptor(XP_CONFIG, id);
         if (descr == null) {
             throw new IllegalArgumentException("Unknown migration: " + id);
@@ -493,7 +493,13 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                     "Invalid class not implementing Migrator: " + klass.getName() + " for migration: " + id);
         }
         try {
-            Migrator migrator = (Migrator) klass.getConstructor().newInstance();
+            Migrator migrator;
+            try {
+                migrator = (Migrator) klass.getConstructor(MigrationDescriptor.class).newInstance(descr);
+            } catch (NoSuchMethodException e) {
+                log.trace("No constructor with MigrationDescriptor found for migration: {}", id);
+                migrator = (Migrator) klass.getConstructor().newInstance();
+            }
             if (invalidator != null) {
                 migrator = new InvalidatorMigrator(id, migrator, invalidator);
             }
