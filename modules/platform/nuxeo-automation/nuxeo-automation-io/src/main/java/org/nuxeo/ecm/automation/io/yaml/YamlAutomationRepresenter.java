@@ -31,6 +31,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.automation.core.OperationChainContribution.Operation;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -45,7 +46,7 @@ import org.yaml.snakeyaml.representer.Representer;
 public class YamlAutomationRepresenter extends Representer {
 
     public YamlAutomationRepresenter() {
-        super();
+        super(new DumperOptions());
         this.addClassTag(OperationDocumentation.class, Tag.MAP);
         this.representers.put(OperationDocumentation.class, new ChainRepr());
         this.addClassTag(Operation.class, Tag.MAP);
