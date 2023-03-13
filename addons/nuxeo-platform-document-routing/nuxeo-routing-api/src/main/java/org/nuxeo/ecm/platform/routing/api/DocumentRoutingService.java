@@ -571,7 +571,7 @@ public interface DocumentRoutingService {
      * If 'nuxeo.routing.cleanup.workflow.instances.orphan' framework property is set to true, orphan routes (for which
      * all associated documents have been removed) will also be removed.
      *
-     * @param repositoryName
+     * @param repositoryName the repository name to clean up
      * @since 2023
      */
     void cleanupRouteInstances(String repositoryName);
