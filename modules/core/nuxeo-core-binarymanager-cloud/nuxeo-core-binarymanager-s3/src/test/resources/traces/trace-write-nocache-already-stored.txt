@@ -5,9 +5,9 @@ participant S3 order 3
 == Write (no cache, already stored) ==
 Nuxeo -> tmp: write
                                 hnote right: bin_${TMP1}.tmp
-Nuxeo --> S3: getObjectMetadata
+Nuxeo --> S3: doesObjectExist
                                 hnote right: nocache/acbd18db4cc2f85cedef654fccc4a4d8
-Nuxeo <-- S3: exists (3 bytes)
+Nuxeo <-- S3: exists
 tmp --> tmp: delete
                                 hnote right: bin_${TMP1}.tmp
 @enduml

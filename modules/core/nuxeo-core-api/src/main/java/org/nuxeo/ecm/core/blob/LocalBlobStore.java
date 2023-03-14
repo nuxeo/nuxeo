@@ -225,6 +225,12 @@ public class LocalBlobStore extends AbstractBlobStore {
     }
 
     @Override
+    public boolean exists(String key) {
+        Path file = pathStrategy.getPathForKey(key);
+        return Files.exists(file);
+    }
+
+    @Override
     public void clear() {
         try {
             FileUtils.cleanDirectory(pathStrategy.dir.toFile());

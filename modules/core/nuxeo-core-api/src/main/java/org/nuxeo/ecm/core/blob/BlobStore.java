@@ -291,6 +291,24 @@ public interface BlobStore {
     void deleteBlob(String key);
 
     /**
+     * Does a blob with the given key exist in the blob store.
+     * <p>
+     * The existence of the blob is checked in the store where the blob is effectively stored. Intermediate cache is
+     * ignored.
+     *
+     * @param key the blob key
+     * @return true if it exists in the blob store
+     * @since 2023
+     */
+    default boolean exists(String key) {
+        BlobStore unwrapped = this.unwrap();
+        if (unwrapped == this) {
+            return false;
+        }
+        return unwrapped.exists(key);
+    }
+
+    /**
      * Returns the binary garbage collector (GC).
      * <p>
      * Several calls to this method will return the same GC, so that its status can be monitored using

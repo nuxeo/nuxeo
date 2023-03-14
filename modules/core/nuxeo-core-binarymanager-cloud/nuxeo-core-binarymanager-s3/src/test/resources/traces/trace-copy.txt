@@ -3,7 +3,7 @@ participant Nuxeo order 1
 participant Cache order 2
 participant S3 order 3
 == Copy ==
-Nuxeo --> S3: getObjectMetadata
+Nuxeo --> S3: doesObjectExist
                                 hnote right: other/acbd18db4cc2f85cedef654fccc4a4d8
 Nuxeo <-- S3: missing
 Nuxeo -> S3: copyObject

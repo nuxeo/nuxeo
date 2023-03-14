@@ -9,9 +9,9 @@ Cache --> Cache: rename
                                 hnote right of Cache: ${TMP2}
 Nuxeo <-- Cache: missing
                                 hnote right: acbd18db4cc2f85cedef654fccc4a4d8
-Nuxeo --> S3: getObjectMetadata
+Nuxeo --> S3: doesObjectExist
                                 hnote right: base/acbd18db4cc2f85cedef654fccc4a4d8
-Nuxeo <-- S3: exists (3 bytes)
+Nuxeo <-- S3: exists
                                 hnote right of Cache: ${TMP3}
 Cache --> Cache: rename
                                 hnote right of Cache: acbd18db4cc2f85cedef654fccc4a4d8

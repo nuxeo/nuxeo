@@ -259,6 +259,11 @@ public class InMemoryBlobStore extends AbstractBlobStore {
     }
 
     @Override
+    public boolean exists(String key) {
+        return map.containsKey(key);
+    }
+
+    @Override
     public void clear() {
         map.clear();
         legalHold.clear();

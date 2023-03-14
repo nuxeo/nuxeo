@@ -36,14 +36,20 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Tests the pure caching aspects of the CachingBlobStore.
  *
  * @since 11.5
  */
+@RunWith(FeaturesRunner.class)
+@Features({ RuntimeFeature.class })
 public class TestCachingBlobStoreCaching {
 
     protected static final String XPATH = "content";
@@ -71,8 +77,13 @@ public class TestCachingBlobStoreCaching {
 
     protected CachingBlobStore getStore(long maxSize, long maxCount, long minAge) {
         BlobStore emptyStore = new EmptyBlobStore("empty", "empty", KeyStrategyDocId.instance());
-        CachingConfiguration config = new CachingConfiguration(dir, maxSize, maxCount, minAge);
-        CachingBlobStore store = new CachingBlobStore("test", "test", emptyStore, config);
+        return getStore(emptyStore, dir, "test", maxSize, maxCount, minAge);
+    }
+
+    protected CachingBlobStore getStore(BlobStore target, Path directory, String name, long maxSize, long maxCount,
+            long minAge) {
+        CachingConfiguration config = new CachingConfiguration(directory, maxSize, maxCount, minAge);
+        CachingBlobStore store = new CachingBlobStore(name, name, target, config);
         store.clearOldBlobsInterval = 0; // clear immediately
         clock = new MutableClock();
         store.clock = clock;
@@ -237,6 +248,41 @@ public class TestCachingBlobStoreCaching {
         id = "foo/bar/baz";
         key = store.writeBlob(new BlobContext(BLOB_30, id, XPATH));
         assertEquals(id, key);
+    }
+
+    // NXP-31730
+    @Test
+    public void testCachingBlobStoreInvalidateOnDelete() throws IOException {
+        // Create 2 caching blob store sharing the same final store
+        BlobStore inMemory = new InMemoryBlobStore("inMemory", new KeyStrategyDigest("MD5"), false, true);
+        Path dir1 = Files.createTempDirectory(dir, "first.");
+        Path dir2 = Files.createTempDirectory(dir, "second.");
+        CachingBlobStore firstStore = getStore(inMemory, dir1, "test1", 100, 100, 60);
+        CachingBlobStore secondStore = getStore(inMemory, dir2, "test2", 100, 100, 60);
+
+        // Use first caching store to create a blob
+        var key = firstStore.writeBlob(new BlobContext(BLOB_30, "foo", XPATH));
+        assertTrue(firstStore.getFile(key).isPresent());
+        // 2nd caching store does not know the blob yet
+        assertTrue(secondStore.getFile(key).isUnknown());
+        // Force load the blob into 2nd caching store
+        secondStore.getStream(key);
+        assertTrue(secondStore.getFile(key).isPresent());
+
+        // delete the blob from the 1st caching blob and thus the final store
+        firstStore.deleteBlob(key);
+        assertFalse(firstStore.exists(key));
+        assertFalse(secondStore.exists(key));
+
+        // the blob has been effectively deleted from the final store
+        assertTrue(inMemory.getFile(key).isMissing());
+        // but still in the 2nd caching store
+        assertTrue(secondStore.getFile(key).isPresent());
+        // writing to the 2nd caching store also writes to final store
+        secondStore.writeBlob(new BlobContext(BLOB_30, "bar", XPATH));
+        assertTrue(inMemory.getStream(key).isPresent());
+        assertTrue(firstStore.exists(key));
+        assertTrue(secondStore.exists(key));
     }
 
     protected static class MutableClock extends Clock {
