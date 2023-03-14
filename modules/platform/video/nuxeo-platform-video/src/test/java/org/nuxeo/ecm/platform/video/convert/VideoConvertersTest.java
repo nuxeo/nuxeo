@@ -26,9 +26,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.Assume;
 import org.junit.Test;
@@ -41,8 +42,6 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.video.VideoFeature;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -53,59 +52,55 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(VideoFeature.class)
 public class VideoConvertersTest {
 
+    @Inject
+    protected ConversionService cs;
+
+    @Inject
+    protected CommandLineExecutorService cles;
+
     // http://www.elephantsdream.org/
-    public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
+    public static final String ELEPHANTS_DREAM = "/elephantsdream-160-mpeg4-su-ac3.avi";
 
     protected static BlobHolder getTestBlobFromPath() throws IOException {
-        String path = "/" + ELEPHANTS_DREAM;
-        try (InputStream is = VideoConvertersTest.class.getResourceAsStream(path)) {
-            assertNotNull(String.format("Failed to load resource: %s", path), is);
+        try (InputStream is = VideoConvertersTest.class.getResourceAsStream(ELEPHANTS_DREAM)) {
+            assertNotNull(String.format("Failed to load resource: %s", ELEPHANTS_DREAM), is);
             return new SimpleBlobHolder(Blobs.createBlob(is, "video/mp4"));
         }
     }
 
-    protected BlobHolder applyConverter(String converter, Double position, Double duration) throws Exception {
-        ConversionService cs = Framework.getService(ConversionService.class);
+    protected BlobHolder applyConverter(String converter, Map<String, Serializable> params) throws IOException {
         assertTrue(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getTestBlobFromPath();
-        Map<String, Serializable> params = new HashMap<>();
-        if (position != null) {
-            params.put("position", position);
-        }
-        if (duration != null) {
-            params.put("duration", duration);
-        }
         BlobHolder result = cs.convert(converter, in, params);
         assertNotNull(result);
         return result;
     }
 
     @Test
-    public void testStoryboardConverter() throws Exception {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
-        Assume.assumeTrue("ffmpeg-screenshot-resize is not available, skipping test", ca.isAvailable());
-        BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER, null, 653.53);
-        List<Blob> blobs = result.getBlobs();
+    public void testStoryboardConverter() throws IOException {
+        var blobs = extractStoryboard(Constants.STORYBOARD_CONVERTER);
         assertEquals(9, blobs.size());
         assertEquals("0.00-seconds.jpeg", blobs.get(0).getFilename());
         assertEquals("72.61-seconds.jpeg", blobs.get(1).getFilename());
         assertEquals("580.92-seconds.jpeg", blobs.get(8).getFilename());
     }
 
+    protected List<Blob> extractStoryboard(String converter) throws IOException {
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
+        Assume.assumeTrue("ffmpeg-screenshot-resize is not available, skipping test", ca.isAvailable());
+        return applyConverter(converter, Map.of("duration", 653.53)).getBlobs();
+    }
+
     @Test
-    public void testScreenshotConverter() throws Exception {
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        assertNotNull(cles);
+    public void testScreenshotConverter() throws IOException {
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
-        BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER, null, null);
+        BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER, null);
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("video-screenshot-00000.000.jpeg", blobs.get(0).getFilename());
 
-        result = applyConverter(Constants.SCREENSHOT_CONVERTER, 10.0, null);
+        result = applyConverter(Constants.SCREENSHOT_CONVERTER, Map.of("position", 10.0));
         blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("video-screenshot-00010.000.jpeg", blobs.get(0).getFilename());
