@@ -300,7 +300,7 @@ public class S3BlobStore extends AbstractBlobStore {
             log.debug("Writing s3://" + bucketName + "/" + bucketKey);
         }
 
-        if (getKeyStrategy().useDeDuplication() && exists(bucketKey)) {
+        if (getKeyStrategy().useDeDuplication() && bucketKeyExists(bucketKey)) {
             return null; // no key version used with deduplication
         }
 
@@ -383,23 +383,22 @@ public class S3BlobStore extends AbstractBlobStore {
         return OptionalOrUnknown.unknown();
     }
 
-    protected boolean exists(String bucketKey) {
-        try {
-            logTrace("-->", "getObjectMetadata");
-            logTrace("hnote right: " + bucketKey);
-            ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketKey);
-            if (log.isDebugEnabled()) {
-                log.debug("Blob s3://" + bucketName + "/" + bucketKey + " already exists");
-            }
-            logTrace("<--", "exists (" + metadata.getContentLength() + " bytes)");
-            return true;
-        } catch (AmazonServiceException e) {
-            if (isMissingKey(e)) {
-                logTrace("<--", "missing");
-                return false;
-            }
-            throw e;
+    @Override
+    public boolean exists(String key) {
+        return bucketKeyExists(bucketKey(key));
+    }
+
+    protected boolean bucketKeyExists(String bucketKey) {
+        logTrace("-->", "doesObjectExist");
+        logTrace("hnote right: " + bucketKey);
+        boolean exists = amazonS3.doesObjectExist(bucketName, bucketKey);
+        if (exists) {
+            log.debug("Blob s3://{}/{} already exists", bucketName, bucketKey);
+            logTrace("<--", "exists");
+        } else {
+            logTrace("<--", "missing");
         }
+        return exists;
     }
 
     /** @return object length, or -1 if missing */
@@ -617,7 +616,7 @@ public class S3BlobStore extends AbstractBlobStore {
                     + bucketKey);
         }
 
-        if (getKeyStrategy().useDeDuplication() && exists(bucketKey)) {
+        if (getKeyStrategy().useDeDuplication() && bucketKeyExists(bucketKey)) {
             return key;
         }
 

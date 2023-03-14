@@ -8,7 +8,7 @@ Nuxeo -> Cache_tmp: write 3 bytes
 									hnote right: bin_${TMP1}.tmp
 Cache_tmp --> Cache_tmp: rename
 									hnote right of Cache_tmp: ${TMP2}
-Nuxeo --> S3_tmp: getObjectMetadata
+Nuxeo --> S3_tmp: doesObjectExist
 									hnote right: ${TMP3}/tx/${TMP4}
 Nuxeo <-- S3_tmp: missing
 Nuxeo -> S3_tmp: write 3 bytes
@@ -22,7 +22,7 @@ end
 									hnote right of Cache_tmp: ${TMP4}
 Cache_tmp -> Cache: move
 									hnote right: acbd18db4cc2f85cedef654fccc4a4d8
-Nuxeo --> S3: getObjectMetadata
+Nuxeo --> S3: doesObjectExist
 									hnote right: ${TMP3}/acbd18db4cc2f85cedef654fccc4a4d8
 Nuxeo <-- S3: missing
 Nuxeo -> S3: copyObject
