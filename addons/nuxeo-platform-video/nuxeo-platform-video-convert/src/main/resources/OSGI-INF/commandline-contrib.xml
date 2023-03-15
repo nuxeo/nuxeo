@@ -18,7 +18,7 @@
       <commandLine>ffmpeg</commandLine>
       <!-- It's important to put the -ss option before the -i option for
         faster (though less accurate) seek / skip to position in the input file -->
-      <parameterString> -y -ss #{position} -i #{inFilePath} -vframes 1 -f image2 #{outFilePath}</parameterString>
+      <parameterString> -y -ss #{position} -i #{inFilePath} -frames:v 1 -f image2 #{outFilePath}</parameterString>
       <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)
       </installationDirective>
     </command>
@@ -28,11 +28,8 @@
       <!-- It's important to put the -ss option before the -i option for faster
         (though less accurate) seek / skip to position in the input file.
 
-        The -vframes 1 option tell to take only one screenshot. This is
-        necessary as apparent the use of the "-s" option forces ffmpeg to
-        switch in "many output files" mode.
-      -->
-      <parameterString> -y -ss #{position} -i #{inFilePath} -vframes 1 -f image2 -s #{width}x#{height} #{outFilePath}</parameterString>
+        The -frames:v 1 option tell to take only one screenshot. -->
+      <parameterString> -y -ss #{position} -i #{inFilePath} -frames:v 1 -f image2 -vf scale=#{width}:#{height} #{outFilePath}</parameterString>
       <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)
       </installationDirective>
     </command>
