@@ -41,7 +41,9 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.video.VideoFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -57,6 +59,9 @@ public class VideoConvertersTest {
 
     @Inject
     protected CommandLineExecutorService cles;
+
+    @Inject
+    protected ImagingService imagingService;
 
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "/elephantsdream-160-mpeg4-su-ac3.avi";
@@ -89,6 +94,44 @@ public class VideoConvertersTest {
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
         Assume.assumeTrue("ffmpeg-screenshot-resize is not available, skipping test", ca.isAvailable());
         return applyConverter(converter, Map.of("duration", 653.53)).getBlobs();
+    }
+
+    // NXP-29615
+    @Test
+    public void testStoryboardConverterAspectRatio() throws IOException {
+        // sample Aspect Ratio should be preserved
+        assertStoryboardSampleAspectRatio(Constants.STORYBOARD_CONVERTER, 128, 80);
+    }
+
+    // NXP-29615
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video:test-storyboard-converter-width-override.xml")
+    public void testStoryboardConverterAspectRatioCustomWidth() throws IOException {
+        // resizing with overridden width
+        assertStoryboardSampleAspectRatio(Constants.STORYBOARD_CONVERTER + "Width", 130, 80);
+    }
+
+    // NXP-29615
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video:test-storyboard-converter-width-height-override.xml")
+    public void testStoryboardConverterAspectRatioCustomWidthHeight() throws IOException {
+        // resizing with overridden width and height
+        assertStoryboardSampleAspectRatio(Constants.STORYBOARD_CONVERTER + "WidthHeight", 125, 53);
+    }
+
+    // NXP-29615
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video:test-storyboard-converter-height-override.xml")
+    public void testStoryboardConverterAspectRatioCustomHeight() throws IOException {
+        // resizing with overridden height while keeping Sample Aspect Ratio
+        assertStoryboardSampleAspectRatio(Constants.STORYBOARD_CONVERTER + "Height", 176, 110);
+    }
+
+    protected void assertStoryboardSampleAspectRatio(String converter, int experctedWidth, int expectedHeight) throws IOException {
+        var blob = extractStoryboard(converter).get(0);
+        var imageInfo = imagingService.getImageInfo(blob);
+        assertEquals(experctedWidth, imageInfo.getWidth());
+        assertEquals(expectedHeight, imageInfo.getHeight());
     }
 
     @Test
