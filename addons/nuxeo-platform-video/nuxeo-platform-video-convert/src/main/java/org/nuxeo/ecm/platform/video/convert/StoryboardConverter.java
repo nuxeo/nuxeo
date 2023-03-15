@@ -161,7 +161,8 @@ public class StoryboardConverter implements Converter {
     }
 
     protected void fillWidthAndHeightParameters(CmdParameters cmdParameters, Map<String, Serializable> parameters) {
-        String screenshotWidth = commonParams.getOrDefault(WIDTH_PARAM, "130");
+        // following the BaseVideoConversionConverter, width is adjusted to a parameterizable height
+        String screenshotWidth = commonParams.getOrDefault(WIDTH_PARAM, "-1");
         String screenshotHeight = commonParams.getOrDefault(HEIGHT_PARAM, "80");
         if (parameters.containsKey(ORIGINAL_WIDTH_PARAM) && parameters.containsKey(ORIGINAL_HEIGHT_PARAM)) {
             long originalWidth = (long) parameters.get(ORIGINAL_WIDTH_PARAM);
