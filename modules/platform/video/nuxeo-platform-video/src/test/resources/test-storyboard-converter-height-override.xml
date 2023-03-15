@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.video.converters.test.height">
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+    <converter name="videoStoryboardHeight"
+      class="org.nuxeo.ecm.platform.video.convert.StoryboardConverter">
+      <sourceMimeType>video/*</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+      <parameters>
+        <parameter name="height">110</parameter>
+      </parameters>
+    </converter>
+  </extension>
+</component>
