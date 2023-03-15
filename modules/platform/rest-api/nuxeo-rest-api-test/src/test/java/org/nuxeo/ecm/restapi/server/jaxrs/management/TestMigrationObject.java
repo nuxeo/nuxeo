@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
 
@@ -48,6 +49,13 @@ public class TestMigrationObject extends ManagementBaseTest {
             assertEquals(SC_OK, response.getStatus());
             String json = response.getEntity(String.class);
             assertJsonResponse(json, "json/testGet.json");
+        }
+    }
+
+    @Test
+    public void testGetWrongMigration() {
+        try (CloseableClientResponse response = httpClientRule.get("/management/migration/doesNotExistMigration")) {
+            assertEquals(SC_NOT_FOUND, response.getStatus());
         }
     }
 

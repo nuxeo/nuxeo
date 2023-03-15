@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -47,7 +49,11 @@ public class MigrationObject extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("{migrationId}")
     public Migration doGet(@PathParam("migrationId") String migrationId) {
-        return Framework.getService(MigrationService.class).getMigration(migrationId);
+        Migration migration = Framework.getService(MigrationService.class).getMigration(migrationId);
+        if (migration == null) {
+            throw new NuxeoException("No such migration: " + migrationId, SC_NOT_FOUND);
+        }
+        return migration;
     }
 
     @GET
