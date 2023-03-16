@@ -35,12 +35,18 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
+import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.MetricName;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
 
 /**
  * A computation that reads processor and metrics streams to build a representation of stream activities in the cluster.
@@ -70,6 +76,12 @@ public class StreamIntrospectionComputation extends AbstractComputation {
 
     protected String model;
 
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
+    protected int scaleMetric = 0;
+
+    protected int currentWorkerNodes = 1;
+
     public StreamIntrospectionComputation() {
         super(NAME, 2, 0);
     }
@@ -82,6 +94,20 @@ public class StreamIntrospectionComputation extends AbstractComputation {
             log.warn("Instance elected to introspect Nuxeo Stream activity");
         }
         loadModel(getKvStore().getString(INTROSPECTION_KEY));
+        MetricName gaugeName = MetricName.build("nuxeo", "streams", "scale", "metric");
+        registry.remove(gaugeName);
+        registry.register(gaugeName, (Gauge<Integer>) this::getScaleMetric);
+        gaugeName = MetricName.build("nuxeo", "cluster", "worker", "count");
+        registry.remove(gaugeName);
+        registry.register(gaugeName, (Gauge<Integer>) this::getCurrentWorkerNodes);
+    }
+
+    protected int getCurrentWorkerNodes() {
+        return currentWorkerNodes;
+    }
+
+    protected int getScaleMetric() {
+        return scaleMetric;
     }
 
     protected void loadModel(String modelJson) {
@@ -159,6 +185,16 @@ public class StreamIntrospectionComputation extends AbstractComputation {
     protected void updateModel() {
         KeyValueStore kv = getKvStore();
         kv.put(INTROSPECTION_KEY, model);
+        StreamIntrospectionConverter convert = new StreamIntrospectionConverter(model);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode activity = mapper.readTree(convert.getActivity());
+            scaleMetric = activity.at("/scale/metric").asInt();
+            currentWorkerNodes = activity.at("/scale/currentNodes").asInt();
+            log.trace("Scale metric: {}, worker nodes: {}, activity: {}", scaleMetric, currentWorkerNodes, activity);
+        } catch (JsonProcessingException e) {
+            log.warn("Invalid json model: {}", e::getMessage);
+        }
     }
 
     protected KeyValueStore getKvStore() {

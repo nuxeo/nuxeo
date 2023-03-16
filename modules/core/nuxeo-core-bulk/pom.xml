@@ -20,6 +20,10 @@
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-metrics</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.lib.stream</groupId>
       <artifactId>nuxeo-stream</artifactId>
     </dependency>

@@ -345,7 +345,7 @@ public class StreamIntrospectionConverter {
         JsonNode nodes = getClusterNodes();
         int workerCount = 0;
         for (JsonNode node : nodes) {
-            if ("worker".equals(node.get("type").asText())) {
+            if ("worker".equals(node.at("/type").asText())) {
                 workerCount++;
             }
         }
@@ -359,7 +359,7 @@ public class StreamIntrospectionConverter {
 
     protected JsonNode getScaleMetrics(int workerCount, ArrayNode computations) {
         int scale = 1; // always keep a worker nodes
-        int current = workerCount;
+        int current = workerCount > 0 ? workerCount : 1;
         for (JsonNode computation : computations) {
             int nodes = computation.at("/current/nodes").asInt();
             int bNodes = computation.at("/best/nodes").asInt();
@@ -381,12 +381,12 @@ public class StreamIntrospectionConverter {
         Map<JsonNode, ObjectNode> computations = new HashMap<>();
         JsonNode metrics = root.get("metrics");
         if (!metrics.isArray()) {
-            // TODO log pb
+            // no data available ?
             return ret;
         }
         JsonNode processors = root.get("processors");
         if (!processors.isArray()) {
-            // TODO log pb
+            // no data available
             return ret;
         }
         // create a map of stream/partitions
