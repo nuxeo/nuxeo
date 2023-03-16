@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk.introspection;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +32,8 @@ import org.nuxeo.lib.stream.log.Name;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @since 11.5
@@ -150,7 +153,6 @@ public class StreamIntrospectionConverter {
                 JsonNode hostMetrics = host.get("metrics");
                 if (hostMetrics.isArray()) {
                     for (JsonNode metric : hostMetrics) {
-
                         if (metric.has("stream")) {
                             String key = metric.get("k").asText();
                             String streamName = Name.urnOfId(metric.get("stream").asText());
@@ -334,6 +336,225 @@ public class StreamIntrospectionConverter {
         } else {
             ret += "no retry";
         }
+        return ret;
+    }
+
+    public String getActivity() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode ret = mapper.getNodeFactory().objectNode();
+        JsonNode nodes = getClusterNodes();
+        int workerCount = 0;
+        for (JsonNode node : nodes) {
+            if ("worker".equals(node.get("type").asText())) {
+                workerCount++;
+            }
+        }
+        JsonNode computations = getActiveComputations();
+        JsonNode scale = getScaleMetrics(workerCount, (ArrayNode) computations);
+        ret.set("scale", scale);
+        ret.set("nodes", nodes);
+        ret.set("computations", computations);
+        return ret.toString();
+    }
+
+    protected JsonNode getScaleMetrics(int workerCount, ArrayNode computations) {
+        int scale = 1; // always keep a worker nodes
+        int current = workerCount;
+        for (JsonNode computation : computations) {
+            int nodes = computation.at("/current/nodes").asInt();
+            int bNodes = computation.at("/best/nodes").asInt();
+            if (bNodes > nodes && bNodes > scale) {
+                current = nodes;
+                scale = bNodes;
+            }
+        }
+        ObjectNode ret = new ObjectMapper().getNodeFactory().objectNode();
+        ret.put("currentNodes", current);
+        ret.put("bestNodes", scale);
+        ret.put("metric", scale - current);
+        return ret;
+    }
+
+    protected JsonNode getActiveComputations() {
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode ret = mapper.getNodeFactory().arrayNode();
+        Map<JsonNode, ObjectNode> computations = new HashMap<>();
+        JsonNode metrics = root.get("metrics");
+        if (!metrics.isArray()) {
+            // TODO log pb
+            return ret;
+        }
+        JsonNode processors = root.get("processors");
+        if (!processors.isArray()) {
+            // TODO log pb
+            return ret;
+        }
+        // create a map of stream/partitions
+        Map<String, Integer> partitions = new HashMap<>();
+        for (JsonNode stream : root.get("streams")) {
+            partitions.put(Name.ofUrn(stream.get("name").asText()).getId(), stream.get("partitions").asInt());
+        }
+        // create a map of computation/threads
+        Map<String, Integer> threads = new HashMap<>();
+        for (JsonNode item : processors) {
+            ArrayNode comps = (ArrayNode) item.get("computations");
+            for (JsonNode comp : comps) {
+                String name = Name.ofUrn(comp.get("name").asText()).getId();
+                threads.put(name, comp.get("threads").asInt());
+            }
+        }
+        // find computation with lag
+        for (JsonNode node : metrics) {
+            for (JsonNode metric : node.at("/metrics")) {
+                if ("nuxeo.streams.global.stream.group.lag".equals(metric.get("k").asText())
+                        && (metric.get("v").asInt() > 0)) {
+                    ObjectNode comp = computations.get(metric.get("group"));
+                    if (comp == null) {
+                        comp = mapper.getNodeFactory().objectNode();
+                        comp.set("computation", metric.get("group"));
+                        comp.set("streams", mapper.getNodeFactory().objectNode());
+                    }
+                    ObjectNode streams = (ObjectNode) comp.get("streams");
+                    ObjectNode stream = mapper.getNodeFactory().objectNode();
+                    stream.set("stream", metric.get("stream"));
+                    stream.put("partitions", partitions.get(metric.get("stream").asText()));
+                    stream.set("lag", metric.get("v"));
+                    streams.set(metric.get("stream").asText(), stream);
+                    comp.set("nodes", mapper.getNodeFactory().arrayNode());
+                    computations.put(metric.get("group"), comp);
+                }
+            }
+        }
+        // get latency, end
+        for (JsonNode node : metrics) {
+            for (JsonNode metric : node.at("/metrics")) {
+                if ("nuxeo.streams.global.stream.group.latency".equals(metric.get("k").asText())
+                        && (metric.get("v").asInt() > 0)) {
+                    ObjectNode comp = computations.get(metric.get("group"));
+                    if (comp != null) {
+                        ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
+                        stream.set("latency", metric.get("v"));
+                    }
+                } else if ("nuxeo.streams.global.stream.group.end".equals(metric.get("k").asText())) {
+                    ObjectNode comp = computations.get(metric.get("group"));
+                    if (comp != null) {
+                        ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
+                        stream.set("end", metric.get("v"));
+                    }
+                }
+            }
+        }
+        // then metrics per node
+        for (JsonNode node : metrics) {
+            JsonNode ip = node.get("ip");
+            JsonNode ts = node.get("timestamp");
+            for (JsonNode metric : node.at("/metrics")) {
+                if ("nuxeo.streams.computation.processRecord".equals(metric.get("k").asText())
+                        && (metric.get("count").asInt() > 0)) {
+                    ObjectNode comp = computations.get(metric.get("computation"));
+                    if (comp != null) {
+                        ObjectNode compInstance = mapper.getNodeFactory().objectNode();
+                        compInstance.set("ip", ip);
+                        compInstance.put("threads", threads.get(metric.get("computation").asText()));
+                        compInstance.set("timestamp", ts);
+                        compInstance.set("count", metric.get("count"));
+                        compInstance.set("sum", metric.get("sum"));
+                        compInstance.set("rate1m", metric.get("rate1m"));
+                        compInstance.set("rate5m", metric.get("rate5m"));
+                        compInstance.set("min", metric.get("min"));
+                        compInstance.set("p50", metric.get("p50"));
+                        compInstance.set("mean", metric.get("mean"));
+                        compInstance.set("p95", metric.get("p95"));
+                        compInstance.set("max", metric.get("max"));
+                        compInstance.set("stddev", metric.get("stddev"));
+                        ((ArrayNode) comp.get("nodes")).add(compInstance);
+                    }
+                }
+            }
+        }
+        // create cluster metrics
+        for (ObjectNode comp : computations.values()) {
+            int count = 0;
+            int threadsCount = 0;
+            float rate1m = 0;
+            int threadsPerNode = 0;
+            for (JsonNode node : comp.get("nodes")) {
+                count += 1;
+                threadsPerNode = node.get("threads").asInt();
+                threadsCount += threadsPerNode;
+                rate1m += (float) node.get("rate1m").asDouble();
+            }
+            int lag = 0;
+            int part = 0;
+            for (Iterator<JsonNode> iter = comp.get("streams").elements(); iter.hasNext();) {
+                JsonNode stream = iter.next();
+                if (stream.get("lag").asInt() > lag) {
+                    lag = stream.get("lag").asInt();
+                    part = partitions.get(stream.get("stream").asText());
+                }
+            }
+            if (count == 0 || lag == 0) {
+                continue;
+            }
+            int eta = (int) (lag / rate1m);
+            ObjectNode current = mapper.getNodeFactory().objectNode();
+            current.put("nodes", count);
+            current.put("threads", threadsCount);
+            current.put("rate1m", rate1m);
+            current.put("eta", eta);
+            ObjectNode best = mapper.getNodeFactory().objectNode();
+            int bestNodes = (int) Math.ceil((double) part / (double) threadsPerNode);
+            int bestThreads = part;
+            int bestEta = (int) (lag / (rate1m * bestThreads / threadsCount));
+            best.put("nodes", bestNodes);
+            best.put("threads", bestThreads);
+            best.put("rate1m", rate1m * bestThreads / threadsCount);
+            best.put("eta", bestEta);
+            comp.set("current", current);
+            comp.set("best", best);
+        }
+        computations.values().forEach(ret::add);
+        return ret;
+    }
+
+    protected JsonNode getClusterNodes() {
+        Map<JsonNode, ObjectNode> nodes = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode ret = mapper.getNodeFactory().arrayNode();
+        JsonNode processors = root.get("processors");
+        if (processors.isArray()) {
+            for (JsonNode item : processors) {
+                nodes.put(item.at("/metadata/ip"), item.at("/metadata").deepCopy());
+            }
+        }
+        JsonNode metrics = root.get("metrics");
+        if (processors.isArray()) {
+            for (JsonNode item : metrics) {
+                ObjectNode node = nodes.get(item.at("/ip"));
+                if (node == null) {
+                    continue;
+                }
+                node.set("nodeId", item.at("/nodeId"));
+                node.put("alive", Instant.ofEpochSecond(item.at("/timestamp").asLong()).toString());
+                node.put("created", Instant.ofEpochSecond(node.at("/created").asLong()).toString());
+                node.remove("processorName");
+                JsonNode hostMetrics = item.get("metrics");
+                if (hostMetrics.isArray()) {
+                    String nodeType = "front";
+                    for (JsonNode it : hostMetrics) {
+                        if ("nuxeo.streams.computation.running".equals(it.get("k").asText())) {
+                            if ("work-common".equals(it.get("computation").asText())) {
+                                // assume that a node with a work/common computation is a worker node
+                                nodeType = "worker";
+                                break;
+                            }
+                        }
+                    }
+                    node.put("type", nodeType);
+                }
+            }
+        }
+        nodes.values().forEach(ret::add);
         return ret;
     }
 

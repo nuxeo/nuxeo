@@ -29,13 +29,15 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionConverter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @since 11.5
  */
 public class TestIntrospection {
 
     @Test
-    public void testPumlConvertion() throws Exception {
+    public void testPumlConversion() throws Exception {
         String json = readFile("data/introspection.json");
         StreamIntrospectionConverter convert = new StreamIntrospectionConverter(json);
         String puml = convert.getPuml();
@@ -44,11 +46,29 @@ public class TestIntrospection {
     }
 
     @Test
-    public void testPumlConvertionSimple() throws Exception {
+    public void testPumlConversionSimple() throws Exception {
         String json = readFile("data/simple.json");
         StreamIntrospectionConverter convert = new StreamIntrospectionConverter(json);
         String puml = convert.getPuml();
         assertEquals(readFile("data/simple.puml"), puml);
+    }
+
+    @Test
+    public void testScaleUp() throws Exception {
+        String in = readFile("data/introspection-cluster.json");
+        StreamIntrospectionConverter convert = new StreamIntrospectionConverter(in);
+        String out = convert.getActivity();
+        ObjectMapper mapper = new ObjectMapper();
+        assertEquals(mapper.readTree(readFile("data/scale-up.json")), mapper.readTree(out));
+    }
+
+    @Test
+    public void testScaleDown() throws Exception {
+        String in = readFile("data/introspection-cluster-idle.json");
+        StreamIntrospectionConverter convert = new StreamIntrospectionConverter(in);
+        String out = convert.getActivity();
+        ObjectMapper mapper = new ObjectMapper();
+        assertEquals(mapper.readTree(readFile("data/scale-down.json")), mapper.readTree(out));
     }
 
     @Test

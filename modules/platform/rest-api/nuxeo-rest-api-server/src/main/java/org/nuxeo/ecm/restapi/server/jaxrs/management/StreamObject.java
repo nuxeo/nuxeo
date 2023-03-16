@@ -278,6 +278,13 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
                 + lagList + "}";
     }
 
+    @GET
+    @Path("/scale")
+    public String scale() {
+        String json = getJson();
+        return new StreamIntrospectionConverter(json).getActivity();
+    }
+
     protected String getJson() {
         return getKvStore().getString(INTROSPECTION_KEY);
     }
