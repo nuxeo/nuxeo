@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -77,6 +78,9 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
 
     @Inject
     protected HotDeployer hotDeployer;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     protected KeyValueStore workflowModelKV;
 
@@ -192,7 +196,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
     @Test
     public void testImportRouteModel() {
         // re-import routes created by test repository init after initial import
-        service.importAllRouteModels(session);
+        importAllRouteModels();
 
         DocumentModel modelsRoot = session.getDocument(new PathRef("/document-route-models-root/"));
         assertNotNull(modelsRoot);
@@ -240,7 +244,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
         var myRouteId = myRoute.getId();
 
         // re-importing the same route doesn't overwrite the current document as digest hasn't changed
-        service.importAllRouteModels(session);
+        importAllRouteModels();
 
         myRoute = session.getDocument(new PathRef("/document-route-models-root/myRoute"));
         assertEquals(myRouteId, myRoute.getId());
@@ -248,7 +252,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
 
         // removing the digest and importing again will overwrite the current document
         workflowModelKV.put("digest-myRoute", (String) null);
-        service.importAllRouteModels(session);
+        importAllRouteModels();
 
         myRoute = session.getDocument(new PathRef("/document-route-models-root/myRoute"));
         assertNotEquals(myRouteId, myRoute.getId());
@@ -277,6 +281,11 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
         zipDigest = getMD5Digest(myRouteBisFile);
         kvDigest = workflowModelKV.getString("digest-myRoute");
         assertEquals(zipDigest, kvDigest);
+    }
+
+    protected void importAllRouteModels() {
+        service.importAllRouteModels(session);
+        coreFeature.waitForAsyncCompletion();
     }
 
     protected String getMD5Digest(File file) {
