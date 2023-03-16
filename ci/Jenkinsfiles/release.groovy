@@ -46,38 +46,9 @@ pipeline {
     DOCKER_NAMESPACE = 'nuxeo'
     BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
-    NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
   }
 
   stages {
-
-    stage('Notify promotion start on slack') {
-      steps {
-        script {
-          nxSlack.send(color: '#0167FF', message: "Starting to release nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
-        }
-      }
-    }
-
-    stage('Check parameters') {
-      steps {
-        script {
-          if (NUXEO_BUILD_VERSION == '') {
-            currentBuild.result = 'ABORTED';
-            currentBuild.description = 'Missing required parameter BUILD_VERSION, aborting build.'
-            error(currentBuild.description)
-          }
-          echo """
-          ----------------------------------------
-          Build version:   ${NUXEO_BUILD_VERSION}
-          Current version: ${CURRENT_VERSION}
-          Release version: ${RELEASE_VERSION}
-          ----------------------------------------
-          """
-        }
-      }
-    }
-
     stage('Set Kubernetes labels') {
       steps {
         container('maven') {
@@ -85,6 +56,18 @@ pipeline {
             nxK8s.setPodLabel()
           }
         }
+      }
+    }
+
+    stage('Info') {
+      steps {
+        echo """
+        ----------------------------------------
+        Build version:   ${NUXEO_BUILD_VERSION}
+        Current version: ${CURRENT_VERSION}
+        Release version: ${RELEASE_VERSION}
+        ----------------------------------------
+        """
       }
     }
 
@@ -194,60 +177,12 @@ pipeline {
         }
       }
     }
-
-    stage('Trigger downstream jobs') {
-      parallel {
-        stage('Trigger JSF UI release') {
-          steps {
-            script {
-              def parameters = [
-                string(name: 'NUXEO_BRANCH', value: "${NUXEO_BRANCH}"),
-                string(name: 'NUXEO_BUILD_VERSION', value: "${NUXEO_BUILD_VERSION}"),
-              ]
-              echo """
-              -----------------------------------------------------
-              Trigger JSF UI release with parameters: ${parameters}
-              -----------------------------------------------------
-              """
-              build(
-                job: "nuxeo/lts/release-nuxeo-jsf-ui",
-                parameters: parameters,
-                wait: false
-              )
-            }
-          }
-        }
-
-        stage('Trigger Benchmark tests') {
-          steps {
-            script {
-              def parameters = [
-                string(name: 'NUXEO_BRANCH', value: "v${RELEASE_VERSION}"),
-                string(name: 'NUXEO_DOCKER_IMAGE', value: "${PRIVATE_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_BENCHMARK_IMAGE_NAME}:${NUXEO_BUILD_VERSION}"),
-                booleanParam(name: 'INSTALL_NEEDED_PACKAGES', value: false),
-              ]
-              echo """
-              -----------------------------------------------------
-              Trigger benchmark tests with parameters: ${parameters}
-              -----------------------------------------------------
-              """
-              build(
-                job: "nuxeo/lts/nuxeo-benchmark",
-                parameters: parameters,
-                wait: false
-              )
-            }
-          }
-        }
-      }
-    }
-
   }
+
   post {
-    success {
+    always {
       script {
         currentBuild.description = "Release ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}"
-        nxSlack.success(message: "Successfully released nuxeo/nuxeo-lts ${RELEASE_VERSION} from build ${NUXEO_BUILD_VERSION}: ${BUILD_URL}")
       }
     }
     unsuccessful {
