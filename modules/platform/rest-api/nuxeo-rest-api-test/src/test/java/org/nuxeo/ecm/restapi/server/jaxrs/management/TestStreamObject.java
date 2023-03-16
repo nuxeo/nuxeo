@@ -56,4 +56,16 @@ public class TestStreamObject extends ManagementBaseTest {
         }
     }
 
+
+    @Test
+    public void testScale() throws IOException {
+        try (CloseableClientResponse response = httpClientRule.get("/management/stream/scale")) {
+            assertEquals(SC_OK, response.getStatus());
+            JsonNode result = mapper.readTree(response.getEntityInputStream());
+            assertTrue(result.isObject());
+            assertTrue(result.at("/scale").isObject());
+        }
+    }
+
+
 }

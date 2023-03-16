@@ -1,0 +1,30 @@
+{
+  "scale": {
+    "currentNodes": 1,
+    "bestNodes": 1,
+    "metric": 0
+  },
+  "nodes": [
+    {
+      "hostname": "nuxeo",
+      "cpuCores": "16",
+      "created": "2023-03-10T08:55:46Z",
+      "ip": "172.27.0.7",
+      "jvmHeapSize": "2147483648",
+      "nodeId": "nuxeo1",
+      "alive": "2023-03-10T09:04:46Z",
+      "type": "front"
+    },
+    {
+      "hostname": "nuxeo2",
+      "cpuCores": "16",
+      "created": "2023-03-10T08:55:56Z",
+      "ip": "172.27.0.8",
+      "jvmHeapSize": "2147483648",
+      "nodeId": "nuxeo2",
+      "alive": "2023-03-10T09:04:58Z",
+      "type": "worker"
+    }
+  ],
+  "computations": []
+}

@@ -1,0 +1,113 @@
+{
+  "scale": {
+    "currentNodes": 1,
+    "bestNodes": 6,
+    "metric": 5
+  },
+  "nodes": [
+    {
+      "hostname": "nuxeo",
+      "cpuCores": "16",
+      "created": "2023-03-10T08:55:46Z",
+      "ip": "172.27.0.7",
+      "jvmHeapSize": "2147483648",
+      "nodeId": "nuxeo1",
+      "alive": "2023-03-10T09:04:46Z",
+      "type": "front"
+    },
+    {
+      "hostname": "nuxeo2",
+      "cpuCores": "16",
+      "created": "2023-03-10T08:55:56Z",
+      "ip": "172.27.0.8",
+      "jvmHeapSize": "2147483648",
+      "nodeId": "nuxeo2",
+      "alive": "2023-03-10T09:04:58Z",
+      "type": "worker"
+    }
+  ],
+  "computations": [
+    {
+      "computation": "bulk-makeBlob",
+      "streams": {
+        "bulk-makeBlob": {
+          "stream": "bulk-makeBlob",
+          "partitions": 3,
+          "lag": 55,
+          "end": 2032,
+          "latency": 85340305
+        }
+      },
+      "nodes": [
+        {
+          "ip": "172.27.0.8",
+          "threads": 2,
+          "timestamp": 1678439098,
+          "count": 176,
+          "sum": 31765342,
+          "rate1m": 1.069237387958875,
+          "rate5m": 0.4534031511581195,
+          "min": 1.00107E-4,
+          "p50": 1.30692E-4,
+          "mean": 1.7029590241373935E-4,
+          "p95": 3.70754E-4,
+          "max": 0.001149035,
+          "stddev": 9.831805544029706E-5
+        }
+      ],
+      "current": {
+        "nodes": 1,
+        "threads": 2,
+        "rate1m": 1.0692374,
+        "eta": 51
+      },
+      "best": {
+        "nodes": 2,
+        "threads": 3,
+        "rate1m": 1.6038561,
+        "eta": 34
+      }
+    },
+    {
+      "computation": "bulk-csvExport",
+      "streams": {
+        "bulk-csvExport": {
+          "stream": "bulk-csvExport",
+          "partitions": 12,
+          "lag": 46,
+          "end": 2079,
+          "latency": 95844
+        }
+      },
+      "nodes": [
+        {
+          "ip": "172.27.0.8",
+          "threads": 2,
+          "timestamp": 1678439098,
+          "count": 176,
+          "sum": 602486542242,
+          "rate1m": 1.069237387958875,
+          "rate5m": 0.4534031511581195,
+          "min": 0.565528808,
+          "p50": 3.309264707,
+          "mean": 3.425377699470227,
+          "p95": 6.768989816,
+          "max": 8.524464747,
+          "stddev": 1.6281256028737054
+        }
+      ],
+      "current": {
+        "nodes": 1,
+        "threads": 2,
+        "rate1m": 1.0692374,
+        "eta": 43
+      },
+      "best": {
+        "nodes": 6,
+        "threads": 12,
+        "rate1m": 6.4154243,
+        "eta": 7
+      }
+    }
+  ]
+}
