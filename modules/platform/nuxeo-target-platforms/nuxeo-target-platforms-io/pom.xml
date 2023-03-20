@@ -15,14 +15,27 @@
       <groupId>org.nuxeo.utils</groupId>
       <artifactId>nuxeo-target-platforms-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.utils</groupId>
       <artifactId>nuxeo-target-platforms-core</artifactId>
     </dependency>
 
+    <!-- tests -->
+    <dependency>
+      <groupId>org.nuxeo.utils</groupId>
+      <artifactId>nuxeo-target-platforms-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -51,9 +64,15 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-login</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
       <groupId>org.skyscreamer</groupId>
       <artifactId>jsonassert</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>

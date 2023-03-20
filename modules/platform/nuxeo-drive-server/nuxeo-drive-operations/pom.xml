@@ -14,6 +14,7 @@
   </description>
 
   <dependencies>
+    <!-- Nuxeo -->
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
@@ -79,6 +80,7 @@
       <artifactId>nuxeo-drive-core</artifactId>
     </dependency>
 
+    <!-- Third parties -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -96,6 +98,7 @@
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
 
+    <!-- Tests -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -136,6 +139,11 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -193,4 +201,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

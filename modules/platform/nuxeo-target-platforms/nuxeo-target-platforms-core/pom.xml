@@ -7,12 +7,12 @@
   </parent>
   <artifactId>nuxeo-target-platforms-core</artifactId>
   <name>Nuxeo Target Platforms - Core Module</name>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.utils</groupId>
       <artifactId>nuxeo-target-platforms-api</artifactId>
     </dependency>
+    <!-- nuxeo -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
@@ -23,18 +23,17 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
+      <artifactId>nuxeo-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
+    <!-- Needed by contribution -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
-      <scope>runtime</scope>
+      <artifactId>nuxeo-platform-directory-core</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-sql</artifactId>
@@ -61,9 +60,19 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-login</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <!-- tests -->
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
     </dependency>
   </dependencies>
 
@@ -89,4 +98,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

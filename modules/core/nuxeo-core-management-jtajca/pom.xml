@@ -20,6 +20,10 @@
       <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-dbcp</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.dropwizard.metrics5</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
@@ -69,10 +73,19 @@
       <artifactId>nuxeo-core-event</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.datadoghq</groupId>
       <artifactId>dd-trace-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
@@ -82,6 +95,11 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-impl</artifactId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 

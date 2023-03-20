@@ -11,6 +11,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
@@ -28,9 +32,14 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
 
+    <!-- Test Scope -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -87,4 +96,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>

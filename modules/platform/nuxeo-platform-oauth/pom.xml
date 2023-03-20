@@ -128,6 +128,7 @@
       <artifactId>javax.inject</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
@@ -156,4 +157,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

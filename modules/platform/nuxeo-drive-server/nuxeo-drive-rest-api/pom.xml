@@ -13,6 +13,7 @@
   <description>Nuxeo Drive REST API</description>
 
   <dependencies>
+    <!-- Nuxeo -->
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
@@ -22,11 +23,17 @@
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
 
+    <!-- Third parties -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
+    </dependency>
 
+    <!-- Tests -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -60,5 +67,7 @@
       <artifactId>nuxeo-platform-tag</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
+
 </project>
