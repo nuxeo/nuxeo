@@ -394,6 +394,14 @@ public interface DocumentModel extends Serializable {
     String getCheckinComment();
 
     /**
+     * Returns the checkin date (the date the version was created) if the document model is a version.
+     *
+     * @return the checkin date, or {@code null}
+     * @since 2023
+     */
+    Calendar getCheckinDate();
+
+    /**
      * Gets the version series id for this document.
      * <p>
      * All documents and versions derived by a check in or checkout from the same original document share the same
@@ -916,6 +924,8 @@ public interface DocumentModel extends Serializable {
         public String versionSeriesId;
 
         public String checkinComment;
+
+        public Calendar checkinDate;
 
         public ACP acp;
 

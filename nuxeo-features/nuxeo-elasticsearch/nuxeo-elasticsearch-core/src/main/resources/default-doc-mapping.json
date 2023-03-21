@@ -142,6 +142,9 @@
       "type": "keyword",
       "ignore_above": 256
     },
+    "ecm:versionCreated": {
+      "type": "date"
+    },
     "ecm:versionVersionableId": {
       "type": "keyword",
       "ignore_above": 256

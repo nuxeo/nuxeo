@@ -290,6 +290,7 @@ public class DocumentModelFactory {
             refresh.isVersionSeriesCheckedOut = doc.isVersionSeriesCheckedOut();
             refresh.versionSeriesId = doc.getVersionSeriesId();
             refresh.checkinComment = doc.getCheckinComment();
+            refresh.checkinDate = doc.getVersionCreationDate();
             refresh.isRecord = doc.isRecord();
             refresh.retainUntil = doc.getRetainUntil();
             refresh.hasLegalHold = doc.hasLegalHold();
