@@ -260,10 +260,12 @@ public class TestCompareCoreWithES {
 
     @Test
     public void testSearchOnVersions() {
-        testQueries(new String[] { "select * from Document where ecm:isVersion = 0 order by dc:title",
-                "select * from Document where ecm:isVersion = 1 order by dc:title",
-                "select * from Document where ecm:isCheckedInVersion = 0 order by dc:title",
-                "select * from Document where ecm:isCheckedInVersion = 1 order by dc:title",
+        testQueries(new String[] { "select * from Document where ecm:isVersion = 0 order by ecm:uuid",
+                "select * from Document where ecm:isVersion = 1 order by ecm:uuid",
+                "select * from Document where ecm:isCheckedInVersion = 0 order by ecm:uuid",
+                "select * from Document where ecm:isCheckedInVersion = 1 order by ecm:uuid",
+                "select * from Document where ecm:versionDescription = 'for testing' order by ecm:uuid",
+                "select * from Document where ecm:versionCreated IS NOT NULL order by ecm:uuid",
                 // TODO: fix, ES results sounds correct
                 // "select * from Document where ecm:isCheckedIn = 0 order by dc:title",
                 // "select * from Document where ecm:isCheckedIn = 1 order by dc:title"
