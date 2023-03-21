@@ -213,7 +213,7 @@ public class TestSQLRepositoryVersioning {
         // create a first version
         file.setProperty("file", "content", new StringBlob("A"));
         file = session.saveDocument(file);
-        file.checkIn(VersioningOption.MINOR, null);
+        file.checkIn(VersioningOption.MINOR, "A");
 
         checkVersions(file, "0.1");
 
@@ -222,7 +222,7 @@ public class TestSQLRepositoryVersioning {
         file.setProperty("file", "content", new StringBlob("B"));
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
-        file.checkIn(VersioningOption.MINOR, null);
+        file.checkIn(VersioningOption.MINOR, "B");
 
         checkVersions(file, "0.1", "0.2");
 
@@ -230,7 +230,7 @@ public class TestSQLRepositoryVersioning {
         file.setProperty("file", "content", new StringBlob("C"));
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
-        file.checkIn(VersioningOption.MINOR, null);
+        file.checkIn(VersioningOption.MINOR, "C");
         file.checkOut(); // to allow deleting last version
 
         checkVersions(file, "0.1", "0.2", "0.3");
@@ -240,6 +240,7 @@ public class TestSQLRepositoryVersioning {
         List<String> actual = new LinkedList<>();
         for (DocumentModel ver : session.getVersions(doc.getRef())) {
             assertTrue(ver.isVersion());
+            assertNotNull(ver.getCheckinDate());
             actual.add(ver.getVersionLabel());
         }
         // build a debug list of versions and creation times
@@ -640,6 +641,7 @@ public class TestSQLRepositoryVersioning {
         assertNotSame(versionSeriesId, proxy.getId());
         assertEquals("0.1", proxy.getVersionLabel());
         assertNull(proxy.getCheckinComment());
+        assertNotNull(proxy.getCheckinDate());
         assertFalse(proxy.isMajorVersion());
         assertTrue(proxy.isLatestVersion());
         assertFalse(proxy.isLatestMajorVersion());
@@ -986,13 +988,17 @@ public class TestSQLRepositoryVersioning {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
-        DocumentRef v1ref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
+        DocumentRef v1ref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, "description");
         session.checkOut(doc.getRef());
-        session.checkIn(doc.getRef(), VersioningOption.MINOR, null);
+        session.checkIn(doc.getRef(), VersioningOption.MINOR, "description");
 
         // versions on the doc
         List<DocumentModel> vers = session.getVersions(doc.getRef());
         assertEquals(2, vers.size());
+        vers.stream().forEach(ver -> {
+            assertNotNull(ver.getCheckinDate());
+            assertTrue("description".equals(ver.getCheckinComment()));
+        });
         List<DocumentRef> verRefs = session.getVersionsRefs(doc.getRef());
         assertEquals(2, verRefs.size());
 

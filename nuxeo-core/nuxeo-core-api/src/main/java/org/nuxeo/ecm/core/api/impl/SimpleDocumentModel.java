@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -569,6 +570,11 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public String getCheckinComment() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Calendar getCheckinDate() {
         throw new UnsupportedOperationException();
     }
 

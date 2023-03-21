@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -356,6 +357,11 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public String getCheckinComment() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Calendar getCheckinDate() {
         throw new UnsupportedOperationException();
     }
 

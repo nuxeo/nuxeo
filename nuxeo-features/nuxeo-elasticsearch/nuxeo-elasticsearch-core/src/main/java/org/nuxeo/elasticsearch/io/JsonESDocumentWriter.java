@@ -89,9 +89,14 @@ public class JsonESDocumentWriter {
             jg.writeStringField("ecm:parentId", parentRef.toString());
         }
         jg.writeStringField("ecm:currentLifeCycleState", doc.getCurrentLifeCycleState());
-        if (doc.isVersion()) {
+        if (doc.isVersion() || doc.isProxy()) {
             jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
             jg.writeStringField("ecm:versionVersionableId", doc.getVersionSeriesId());
+            jg.writeStringField("ecm:versionDescription", doc.getCheckinComment());
+            Calendar cd = doc.getCheckinDate();
+            if (cd != null) {
+                jg.writeStringField("ecm:versionCreated", cd.toInstant().toString());
+            }
         }
         if (doc.isProxy()) {
             jg.writeStringField("ecm:proxyVersionableId", doc.getVersionSeriesId());
