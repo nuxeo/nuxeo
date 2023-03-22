@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -247,6 +248,21 @@ public abstract class AbstractDirectoryTest {
 
             // password check
             assertTrue(session.authenticate("user_0", "pass_0"));
+        }
+    }
+
+    // NXP-31734
+    @Test
+    public void testCreateEntryWithoutId() throws Exception {
+        try (Session session = getSession()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("password", "pass_0");
+            map.put("intField", 5L);
+            map.put("dateField", getCalendar(1982, 3, 25, 16, 30, 47, 0));
+            map.put("groups", Arrays.asList("members", "administrators"));
+            DirectoryException e = assertThrows("Should not be possible to create an entry without id",
+                    DirectoryException.class, () -> session.createEntry(map));
+            assertEquals("Missing id", e.getMessage());
         }
     }
 
