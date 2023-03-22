@@ -127,7 +127,7 @@ public class MongoDBSession extends BaseSession {
                                                         HashMap::putAll);
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         String idFieldName = getPrefixedIdField();
-        String id = String.valueOf(fieldMap.get(idFieldName));
+        String id;
         if (autoincrementId) {
             Document filter = MongoDBSerializationHelper.fieldMapToBson(MONGODB_ID, directoryName);
             Bson update = Updates.inc(MONGODB_SEQ, 1L);
@@ -136,6 +136,12 @@ public class MongoDBSession extends BaseSession {
             fieldMap.put(idFieldName, longId);
             newDocMap.put(idFieldName, longId);
             id = String.valueOf(longId);
+        } else {
+            Object rawId = fieldMap.get(idFieldName);
+            if (rawId == null) {
+                throw new DirectoryException("Missing id");
+            }
+            id = String.valueOf(rawId);
         }
 
         if (isMultiTenant()) {

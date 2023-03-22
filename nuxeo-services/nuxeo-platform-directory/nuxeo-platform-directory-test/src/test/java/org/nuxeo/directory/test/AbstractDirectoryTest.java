@@ -250,6 +250,25 @@ public abstract class AbstractDirectoryTest {
         }
     }
 
+    // NXP-31734
+    @Test
+    public void testCreateEntryWithoutId() throws Exception {
+        try (Session session = getSession()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("password", "pass_0");
+            map.put("intField", 5L);
+            map.put("dateField", getCalendar(1982, 3, 25, 16, 30, 47, 0));
+            map.put("groups", Arrays.asList("members", "administrators"));
+            try {
+                session.createEntry(map);
+                fail("Should not be possible to create an entry without id");
+            } catch (DirectoryException e) {
+                // Expected
+                assertEquals("Missing id", e.getMessage());
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry() throws Exception {
