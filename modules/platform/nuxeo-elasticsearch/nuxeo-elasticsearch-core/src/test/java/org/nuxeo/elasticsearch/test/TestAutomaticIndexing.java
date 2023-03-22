@@ -1271,4 +1271,37 @@ public class TestAutomaticIndexing {
         assertEquals(0, ret.totalSize());
     }
 
+    @Test
+    public void shouldExtractTextFromHtmlWhenIndexingNote() throws Exception {
+        // Create a plain text note with html content
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "note", "Note");
+        doc.setPropertyValue("note:note", "<guten>tag</guten><i>some</i> <b>text</b> to <img src='data:image/png;base64,ABC;'/> search");
+        doc.setPropertyValue("note:mime_type", "text/plain");
+        doc = session.createDocument(doc);
+        session.saveDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+        // Text is searchable
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Note Where ecm:isVersion=0 AND ecm:fulltext='some text to search'"));
+        assertEquals(1, ret.totalSize());
+        // HTML tags are indexed and searchable because note is plain text
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Note WHERE ecm:isVersion=0 AND ecm:fulltext='guten tag base64'"));
+        assertEquals(1, ret.totalSize());
+
+        // Fix the mime type
+        doc.setPropertyValue("note:mime_type", "text/html");
+        session.saveDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+        // Text is searchable
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Note Where ecm:isVersion=0 AND ecm:fulltext='some text to search'"));
+        assertEquals(1, ret.totalSize());
+        // no more HTML tags
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Note WHERE ecm:isVersion=0 AND ecm:fulltext='guten tag base64'"));
+        assertEquals(0, ret.totalSize());
+    }
+
 }
