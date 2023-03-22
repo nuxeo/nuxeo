@@ -217,7 +217,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         }
 
         String extension = FilenameUtils.getExtension(filename);
-        return StringUtils.isNotBlank(extension) ? extension : null;
+        return StringUtils.isNotBlank(extension) ? extension.toLowerCase() : null;
     }
 
     @Override
