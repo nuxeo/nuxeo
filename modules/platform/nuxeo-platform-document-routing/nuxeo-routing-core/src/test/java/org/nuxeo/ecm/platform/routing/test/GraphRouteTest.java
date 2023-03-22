@@ -399,6 +399,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertTrue(session.exists(route.getRef()));
         assertTrue(session.exists(task.getRef()));
         session.removeDocument(ws.getRef());
+        coreFeature.waitForAsyncCompletion();
         routing.cleanupRouteInstances(session.getRepositoryName());
         coreFeature.waitForAsyncCompletion();
         assertFalse(session.exists(route.getRef()));
