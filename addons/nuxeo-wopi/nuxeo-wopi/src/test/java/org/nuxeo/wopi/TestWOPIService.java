@@ -150,6 +150,9 @@ public class TestWOPIService {
         blob.setFilename("file.docx");
         assertEquals("https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?IsLicensedUser=1&",
                 wopiService.getActionURL(blob, ACTION_VIEW));
+        blob.setFilename("file.DOCX");
+        assertEquals("https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?IsLicensedUser=1&",
+                wopiService.getActionURL(blob, ACTION_VIEW));
     }
 
     @Test
@@ -160,6 +163,8 @@ public class TestWOPIService {
         // extension not supported by Nuxeo
         Blob blobTwo = createBlob("two", "two.pdf");
         Blob blobThree = createBlob("three", "three.rtf");
+        // uppercase extension
+        Blob blobFour = createBlob("four", "four.DOCX");
 
         WOPIBlobInfo info = wopiService.getWOPIBlobInfo(blob);
         assertEquals("Excel", info.appName);
@@ -174,6 +179,11 @@ public class TestWOPIService {
         assertEquals("Word", info.appName);
         assertEquals(1, info.actions.size());
         assertTrue(info.actions.contains(ACTION_EDIT));
+
+        info = wopiService.getWOPIBlobInfo(blobFour);
+        assertEquals("Word", info.appName);
+        assertEquals(1, info.actions.size());
+        assertTrue(info.actions.contains(ACTION_VIEW));
     }
 
     // creates a blob that's actually backed by a blob provider, as wopi service requires it
