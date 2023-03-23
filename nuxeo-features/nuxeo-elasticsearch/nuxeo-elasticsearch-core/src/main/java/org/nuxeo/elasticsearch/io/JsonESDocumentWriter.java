@@ -53,6 +53,9 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
+import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.TextExtractor;
+
 /**
  * JSon writer that outputs a format ready to eat by elasticsearch.
  *
@@ -220,7 +223,14 @@ public class JsonESDocumentWriter {
                     + downloadService.getDownloadUrl(doc, null, null) + "/";
             writer.filesBaseUrl(blobUrlPrefix);
         }
-
+        if ("note".equals(schema) && "text/html".equals(doc.getPropertyValue("note:mime_type"))) {
+            Property mimeType = doc.getProperty("note:mime_type");
+            writer.writeProperty(jg, mimeType);
+            jg.writeFieldName("note:note");
+            String html = (String) doc.getPropertyValue("note:note");
+            jg.writeString(extractTextFromHtml(html));
+            return;
+        }
         for (Property p : properties) {
             try {
                 writer.writeProperty(jg, p);
@@ -229,6 +239,19 @@ public class JsonESDocumentWriter {
                         e);
             }
         }
+    }
+
+    protected static String extractTextFromHtml(String html) {
+        if (StringUtils.isBlank(html)) {
+            return "";
+        }
+        Source source = new Source(html);
+        source.fullSequentialParse();
+        TextExtractor extractor = source.getTextExtractor();
+        extractor.setConvertNonBreakingSpaces(true);
+        extractor.setExcludeNonHTMLElements(true);
+        extractor.setIncludeAttributes(false);
+        return extractor.toString();
     }
 
 }
