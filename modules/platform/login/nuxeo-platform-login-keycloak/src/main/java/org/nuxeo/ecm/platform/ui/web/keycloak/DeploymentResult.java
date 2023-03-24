@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.keycloak;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,8 +69,8 @@ public class DeploymentResult {
 
     public DeploymentResult invokeOn(AdapterDeploymentContext deploymentContext) {
 
-        // In Tomcat, a HttpServletRequest and a HttpServletResponse are wrapped in a Facades
-        request = unwrapRequest((RequestFacade) httpServletRequest);
+        // In Tomcat, a HttpServletRequest and a HttpServletResponse are wrapped in a Facades or ApplicationHttpRequest
+        request = unwrapRequest(httpServletRequest);
         facade = new CatalinaHttpFacade(httpServletResponse, request);
 
         if (keycloakDeployment == null) {
@@ -83,16 +85,23 @@ public class DeploymentResult {
     }
 
     /**
-     * Get the wrapper {@link Request} hidden in a {@link RequestFacade} object
+     * Get the wrapper {@link Request} hidden in a {@link HttpServletRequest} or in {@link RequestFacade} object
      *
-     * @param requestFacade, the main RequestFacade object
-     * @return the wrapper {@link Request} in {@link RequestFacade}
+     * @param httpRequest, the HTTP request
+     * @return the wrapper {@link Request} in {@link HttpServletRequest}
+     * @since 2021.36
      */
-    private Request unwrapRequest(RequestFacade requestFacade) {
-        try {
-            return (Request) FieldUtils.readField(requestFacade, "request", true);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+    private Request unwrapRequest(ServletRequest servletRequest) {
+        if (servletRequest instanceof RequestFacade) {
+            try {
+                return (Request) FieldUtils.readField(servletRequest, "request", true);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
         }
+        if (servletRequest instanceof ServletRequestWrapper) {
+            return unwrapRequest(((ServletRequestWrapper) servletRequest).getRequest());
+        }
+        throw new RuntimeException("Non supported object to unwrap the request:" + servletRequest);
     }
 }
