@@ -52,6 +52,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @since 2023
@@ -71,6 +72,24 @@ public class TestDocumentBlobGC {
 
     @Inject
     protected DocumentBlobManager documentBlobManager;
+
+    @Test
+    @WithFrameworkProperty(name = "nuxeo.bulk.action.blobGC.enabled", value = "false")
+    public void testDisableBlobDelete() {
+        assumeTrue("MongoDB feature only", !coreFeature.getStorageConfiguration().isVCS());
+        DocumentModel doc = session.createDocumentModel("/", "doc1", "File");
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("toBeRemoved"));
+        doc = session.createDocument(doc);
+        session.save();
+        DocumentRef ref = doc.getRef();
+        ManagedBlob blob = (ManagedBlob) session.getDocument(ref).getPropertyValue("file:content");
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob.getProviderId());
+        assertNotNull(blobProvider.getFile(blob));
+        session.removeDocument(ref);
+        coreFeature.waitForAsyncCompletion();
+        assertFalse(session.exists(ref));
+        assertNotNull(blobProvider.getFile(blob));
+    }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-delete.xml")
