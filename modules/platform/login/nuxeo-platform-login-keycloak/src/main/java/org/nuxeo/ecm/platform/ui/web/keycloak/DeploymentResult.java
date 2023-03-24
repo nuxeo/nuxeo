@@ -99,8 +99,8 @@ public class DeploymentResult {
                 throw new RuntimeException(e);
             }
         }
-        if (servletRequest instanceof ServletRequestWrapper) {
-            return unwrapRequest(((ServletRequestWrapper) servletRequest).getRequest());
+        if (servletRequest instanceof ServletRequestWrapper srw) {
+            return unwrapRequest(srw.getRequest());
         }
         throw new RuntimeException("Non supported object to unwrap the request:" + servletRequest);
     }
