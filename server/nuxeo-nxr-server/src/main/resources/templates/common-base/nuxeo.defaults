@@ -361,6 +361,7 @@ nuxeo.bulk.action.automationUi.defaultConcurrency=2
 nuxeo.bulk.action.automationUi.defaultPartitions=2
 nuxeo.bulk.action.blobGC.defaultConcurrency=1
 nuxeo.bulk.action.blobGC.defaultPartitions=1
+nuxeo.bulk.action.blobGC.enabled=true
 nuxeo.bulk.action.csvExport.defaultConcurrency=2
 nuxeo.bulk.action.csvExport.defaultPartitions=2
 nuxeo.bulk.action.deletion.defaultConcurrency=2
