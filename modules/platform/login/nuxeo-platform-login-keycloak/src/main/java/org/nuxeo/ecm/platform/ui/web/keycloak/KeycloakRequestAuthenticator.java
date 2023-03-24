@@ -45,6 +45,7 @@ import org.keycloak.adapters.tomcat.GenericPrincipalFactory;
 import org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve;
 import org.keycloak.enums.TokenStore;
 import org.keycloak.representations.AccessToken;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +149,28 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
 
     @Override
     protected OAuthRequestAuthenticator createOAuthAuthenticator() {
-        return new OAuthRequestAuthenticator(this, facade, deployment, sslRedirectPort, tokenStore);
+        return new OAuthRequestAuthenticator(this, facade, deployment, sslRedirectPort, tokenStore) {
+
+            @Override
+            protected String getRequestUrl() {
+                final StringBuilder sb = new StringBuilder(VirtualHostHelper.getServerURL(request));
+                if (VirtualHostHelper.getServerURL(request).endsWith("/")) {
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+                sb.append(request.getRequestURI());
+                if (request.getQueryString() != null) {
+                    sb.append("?");
+                    sb.append(request.getQueryString());
+                }
+                return sb.toString();
+            }
+
+            @Override
+            protected String stripOauthParametersFromRedirect() {
+                return super.stripOauthParametersFromRedirect().replace(VirtualHostHelper.getServerURL(request, true),
+                        VirtualHostHelper.getServerURL(request));
+            }
+        };
     }
 
     @Override
