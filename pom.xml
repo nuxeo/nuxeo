@@ -4246,7 +4246,7 @@
       <dependency>
         <groupId>com.datadoghq</groupId>
         <artifactId>dd-trace-api</artifactId>
-        <version>0.115.0</version>
+        <version>0.115.1</version>
       </dependency>
 
       <!-- Nashorn -->
