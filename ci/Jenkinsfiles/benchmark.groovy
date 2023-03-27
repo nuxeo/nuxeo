@@ -188,9 +188,15 @@ pipeline {
 
     stage("Compute reports") {
       environment {
-        GAT_REPORT_VERSION = '6.1'
-        GAT_REPORT_URL = "https://maven-eu.nuxeo.org/nexus/service/local/repositories/vendor-releases/content/org/nuxeo/tools/gatling-report/${GAT_REPORT_VERSION}/gatling-report-${GAT_REPORT_VERSION}-capsule-fat.jar"
-        GAT_REPORT_JAR = "${GATLING_TESTS_PATH}/target/gatling-report-capsule-fat.jar"
+        GAT_REPORT_ARTIFACT_GROUP = 'org.nuxeo.tools'
+        GAT_REPORT_ARTIFACT_ID = 'gatling-report'
+        GAT_REPORT_ARTIFACT_VERSION = '6.1'
+        GAT_REPORT_ARTIFACT_TYPE = 'jar'
+        GAT_REPORT_ARTIFACT_CLASSIFIER = 'capsule-fat'
+        GAT_REPORT_ARTIFACT = "${GAT_REPORT_ARTIFACT_ID}-${GAT_REPORT_ARTIFACT_VERSION}-${GAT_REPORT_ARTIFACT_CLASSIFIER}.${GAT_REPORT_ARTIFACT_TYPE}"
+        GAT_REPORT_ARTIFACT_DIR = "${GATLING_TESTS_PATH}/target"
+        GAT_REPORT_ARTIFACT_FULL_NAME = "${GAT_REPORT_ARTIFACT_GROUP}:${GAT_REPORT_ARTIFACT_ID}:${GAT_REPORT_ARTIFACT_VERSION}:${GAT_REPORT_ARTIFACT_TYPE}:${GAT_REPORT_ARTIFACT_CLASSIFIER}"
+
         JAVA_MODULES_ARGLINE = '--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED'
         MUSTACHE_TEMPLATE = "${GATLING_TESTS_PATH}/target/report-template.mustache"
       }
@@ -199,7 +205,7 @@ pipeline {
           dir("${GATLING_TESTS_PATH}") {
             script {
               // download gatling tools
-              sh "curl -o ${GAT_REPORT_JAR} ${GAT_REPORT_URL}"
+              nxMvn.copy(artifact: GAT_REPORT_ARTIFACT_FULL_NAME, outputDirectory: GAT_REPORT_ARTIFACT_DIR)
               // download mustache template
               sh "curl -o ${MUSTACHE_TEMPLATE} https://raw.githubusercontent.com/nuxeo/nuxeo-bench/master/report-templates/data.mustache"
               // prepare the report
@@ -215,7 +221,7 @@ pipeline {
               sh 'mkdir -p ${REPORT_PATH}'
               sh 'mv target/gatling/* ${REPORT_PATH}'
               // build stats
-              sh 'java ${JAVA_MODULES_ARGLINE} -jar ${GAT_REPORT_JAR} -f -o ${REPORT_PATH} -n data.yml -t ${MUSTACHE_TEMPLATE} ' +
+              sh 'java ${JAVA_MODULES_ARGLINE} -jar ${GAT_REPORT_ARTIFACT_DIR}/${GAT_REPORT_ARTIFACT} -f -o ${REPORT_PATH} -n data.yml -t ${MUSTACHE_TEMPLATE} ' +
                   '-m import,bulk,mbulk,exportcsv,create,createasync,nav,search,update,updateasync,bench,crud,crudasync,reindex ' +
                   '${REPORT_PATH}/sim10massstreamimport/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim15bulkupdatedocuments/detail/simulation.log.gz ' +
