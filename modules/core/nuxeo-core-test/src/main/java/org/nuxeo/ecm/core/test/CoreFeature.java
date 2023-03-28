@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.DummyLoginFeature;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.blob.stream.StreamOrphanBlobGC;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -55,10 +56,12 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.core.work.WorkManagerFeature;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -139,12 +142,31 @@ public class CoreFeature implements RunnerFeature {
         return storageConfiguration;
     }
 
+    /**
+     *  Wait for document's blob GC to be done.
+     */
+    protected boolean awaitBlobGC(Duration duration) throws InterruptedException {
+        StreamService service = Framework.getService(StreamService.class);
+        org.nuxeo.lib.stream.log.LogManager logManager = service.getLogManager();
+        // when there is no lag between producer and consumer we are done
+        long deadline = System.currentTimeMillis() + duration.toMillis();
+        while (logManager.getLag(Name.ofUrn(StreamOrphanBlobGC.STREAM_NAME),
+                Name.ofUrn(StreamOrphanBlobGC.COMPUTATION_NAME)).lag() > 0) {
+            Thread.sleep(50);
+            if (System.currentTimeMillis() > deadline) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public void initialize(FeaturesRunner runner) {
         runner.getFeature(RuntimeFeature.class).registerHandler(new CoreDeployer());
 
         storageConfiguration = new StorageConfiguration(this);
         txFeature = runner.getFeature(TransactionalFeature.class);
+        txFeature.addWaiter(this::awaitBlobGC);
         loginFeature = runner.getFeature(DummyLoginFeature.class);
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -34,7 +33,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.awaitility.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -61,8 +59,6 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestDocumentBlobGC {
-
-    protected static final Duration AWAIT_DURATION = Duration.TWO_SECONDS;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -119,12 +115,11 @@ public class TestDocumentBlobGC {
 
         session.removeDocument(doc2.getRef());
         assertTrue(documentBlobManager.deleteBlob(doc2.getRepositoryName(), key, false));
+        coreFeature.waitForAsyncCompletion();
 
         // Assert blob does not exist anymore
         BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob1.getProviderId());
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider.getFile(blob1));
-        });
+        assertNull(blobProvider.getFile(blob1));
     }
 
     @Test
@@ -159,18 +154,15 @@ public class TestDocumentBlobGC {
         // Remove 1st doc
         session.removeDocument(doc1.getRef());
         coreFeature.waitForAsyncCompletion();
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider1.getFile(blob1));
-        });
+        assertNull(blobProvider1.getFile(blob1));
+
         // 2nd blob has not been deleted
         assertNotNull(blobProvider2.getFile(blob2));
 
         // Remove 2nd doc
         session2.removeDocument(doc2.getRef());
         coreFeature.waitForAsyncCompletion();
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider2.getFile(blob2));
-        });
+        assertNull(blobProvider2.getFile(blob2));
     }
 
     @Test
@@ -194,9 +186,7 @@ public class TestDocumentBlobGC {
         coreFeature.waitForAsyncCompletion();
 
         // Assert blob does not exist anymore
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider.getFile(blob));
-        });
+        assertNull(blobProvider.getFile(blob));
     }
 
     @Test
@@ -261,9 +251,7 @@ public class TestDocumentBlobGC {
 
         assertFalse(session.exists(ref));
 
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider.getFile(blob));
-        });
+        assertNull(blobProvider.getFile(blob));
     }
 
     @Test
@@ -288,9 +276,7 @@ public class TestDocumentBlobGC {
         coreFeature.waitForAsyncCompletion();
         blobs.forEach(blob -> {
             BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob.getProviderId());
-            await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-                assertNull(blobProvider.getFile(blob));
-            });
+            assertNull(blobProvider.getFile(blob));
         });
     }
 
@@ -306,18 +292,14 @@ public class TestDocumentBlobGC {
         DocumentRef ref = doc.getRef();
         ManagedBlob blob = (ManagedBlob) session.getDocument(ref).getPropertyValue("file:content");
         BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob.getProviderId());
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNotNull(blobProvider.getFile(blob));
-        });
+        assertNotNull(blobProvider.getFile(blob));
 
         // Replace blob
         doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("after"));
         doc = session.saveDocument(doc);
         coreFeature.waitForAsyncCompletion();
 
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider.getFile(blob));
-        });
+        assertNull(blobProvider.getFile(blob));
     }
 
     @Test
@@ -377,9 +359,7 @@ public class TestDocumentBlobGC {
         coreFeature.waitForAsyncCompletion();
 
         // Assert blob does not exist anymore
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider.getFile(blob));
-        });
+        assertNull(blobProvider.getFile(blob));
     }
 
 }

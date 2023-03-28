@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -31,7 +30,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.awaitility.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -54,8 +52,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ CoreFeature.class, S3BlobProviderFeature.class })
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestS3DocumentBlobGC {
-
-    protected static final Duration AWAIT_DURATION = Duration.TWO_SECONDS;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -96,29 +92,25 @@ public class TestS3DocumentBlobGC {
         session.removeDocument(doc1.getRef());
         coreFeature.waitForAsyncCompletion();
         BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob1.getProviderId());
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider.getFile(attachement11));
-            assertNotNull(blobProvider.getFile(blob1));
-            assertNotNull(blobProvider.getFile(blob2));
-            // attachement12 is not deleted because it is the same than
-            // attachement21 that is still referenced by doc2
-            assertNotNull(blobProvider.getFile(attachement12));
-            assertNotNull(blobProvider.getFile(attachement21));
-            assertNotNull(blobProvider.getFile(attachement22));
-        });
+        assertNull(blobProvider.getFile(attachement11));
+        assertNotNull(blobProvider.getFile(blob1));
+        assertNotNull(blobProvider.getFile(blob2));
+        // attachement12 is not deleted because it is the same than
+        // attachement21 that is still referenced by doc2
+        assertNotNull(blobProvider.getFile(attachement12));
+        assertNotNull(blobProvider.getFile(attachement21));
+        assertNotNull(blobProvider.getFile(attachement22));
 
         session.removeDocument(doc2.getRef());
         coreFeature.waitForAsyncCompletion();
 
         // Assert blobs does not exist anymore
-        await().atMost(AWAIT_DURATION).untilAsserted(() -> {
-            assertNull(blobProvider.getFile(blob1));
-            assertNull(blobProvider.getFile(blob2));
-            assertNull(blobProvider.getFile(attachement11));
-            assertNull(blobProvider.getFile(attachement12));
-            assertNull(blobProvider.getFile(attachement21));
-            assertNull(blobProvider.getFile(attachement22));
-        });
+        assertNull(blobProvider.getFile(blob1));
+        assertNull(blobProvider.getFile(blob2));
+        assertNull(blobProvider.getFile(attachement11));
+        assertNull(blobProvider.getFile(attachement12));
+        assertNull(blobProvider.getFile(attachement21));
+        assertNull(blobProvider.getFile(attachement22));
     }
 
 }
