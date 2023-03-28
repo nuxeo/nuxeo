@@ -103,6 +103,7 @@ public class StreamOrphanBlobGC implements StreamProcessorTopology {
                     throw new NuxeoException(e);
                 }
             }
+            context.askForCheckpoint();
         }
 
     }
