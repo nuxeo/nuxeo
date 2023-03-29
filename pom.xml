@@ -2342,6 +2342,12 @@
         <artifactId>transport-netty4-client</artifactId>
         <version>${opensearch.version}</version>
       </dependency>
+      <!-- specify a jna version compatible with ARM architecture -->
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>5.13.0</version>
+      </dependency>
 
       <!-- need a version more recent than the one pulled by transport-netty4-client -->
       <dependency>
