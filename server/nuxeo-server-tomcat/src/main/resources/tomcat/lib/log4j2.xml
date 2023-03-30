@@ -256,6 +256,8 @@
     <Logger name="net.openhft.chronicle.core.io.BackgroundResourceReleaser" level="error" /> <!-- Hide already released warnings -->
 
     <Logger name="org.elasticsearch.bootstrap" level="error" />
+    <!-- Remove WARN on deprecated on [ignore_throttled] parameter -->
+    <Logger name="org.elasticsearch.client.RestClient" level="error" />
 
     <!-- See org.nuxeo.ecm.platform.ui.web.shield.ErrorPageForwarder and
     org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib in
