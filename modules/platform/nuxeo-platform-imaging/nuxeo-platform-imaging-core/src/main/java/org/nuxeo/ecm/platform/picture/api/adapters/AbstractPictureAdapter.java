@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_CROP_Y;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_INFO_PROPERTY;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BY_LINE;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BY_LINE_TITLE;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CAPTION;
@@ -265,6 +266,11 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.setPropertyValue("iptc:time_created", (String) metadata.get(META_TIME_CREATED));
         doc.setPropertyValue("iptc:urgency", (String) metadata.get(META_URGENCY));
         doc.setPropertyValue("iptc:writer", (String) metadata.get(META_WRITER));
+    }
+
+    @Override
+    public void clearInfo() {
+        doc.setPropertyValue(PICTURE_INFO_PROPERTY, null);
     }
 
     protected void clearViews() {

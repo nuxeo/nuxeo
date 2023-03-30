@@ -20,7 +20,9 @@ package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_INFO_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -74,9 +76,10 @@ public class TestPictureViewsHelper {
         assertFalse(pictureViews.isEmpty());
         Calendar lastModificationDateBefore = (Calendar) doc.getPropertyValue("dc:modified");
         assertNotNull(lastModificationDateBefore);
-        
+
         PictureViewsHelper ph = new PictureViewsHelper();
-        ph.computePictureViews(session, doc.getId(), "file:content", s -> {});
+        ph.computePictureViews(session, doc.getId(), "file:content", s -> {
+        });
 
         // wait for picture views generation
         txFeature.nextTransaction();
@@ -87,6 +90,38 @@ public class TestPictureViewsHelper {
         Calendar lastModificationAfter = (Calendar) doc.getPropertyValue("dc:modified");
         assertNotNull(lastModificationAfter);
         assertEquals(lastModificationDateBefore.getTimeInMillis(), lastModificationAfter.getTimeInMillis());
+    }
+
+    // NXP-31342
+    @Test
+    public void testPictureInfoReset() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "pictureDoc", "Picture");
+        doc = session.createDocument(doc);
+        // wait for picture views generation
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+        Serializable originalPictureInfo = doc.getPropertyValue(PICTURE_INFO_PROPERTY);
+        assertNotNull(originalPictureInfo);
+
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg",
+                StandardCharsets.UTF_8.name(), "test.jpg");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.saveDocument(doc);
+        // wait for picture views generation
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+        // Picture info has evolved
+        assertNotEquals(originalPictureInfo, doc.getPropertyValue(PICTURE_INFO_PROPERTY));
+
+        // When nullifying main blob
+        doc.setPropertyValue("file:content", null);
+        doc = session.saveDocument(doc);
+        // Picture info is immediately back to the original empty one
+        assertEquals(originalPictureInfo, doc.getPropertyValue(PICTURE_INFO_PROPERTY));
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+        // even after async recomputation
+        assertEquals(originalPictureInfo, doc.getPropertyValue(PICTURE_INFO_PROPERTY));
     }
 
 }

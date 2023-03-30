@@ -97,4 +97,11 @@ public interface PictureResourceAdapter {
      */
     String getFirstViewXPath();
 
+    /**
+     * Clear the picture info.
+     *
+     * @since 2023
+     */
+    void clearInfo();
+
 }
