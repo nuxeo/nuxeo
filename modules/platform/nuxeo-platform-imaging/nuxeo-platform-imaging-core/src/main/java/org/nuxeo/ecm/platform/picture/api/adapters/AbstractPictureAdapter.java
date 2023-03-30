@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_CROP_Y;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_INFO_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -124,6 +125,12 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             session = doc.getCoreSession();
         }
         return session;
+    }
+
+
+    @Override
+    public void clearInfo() {
+        doc.setPropertyValue(PICTURE_INFO_PROPERTY, null);
     }
 
     protected void clearViews() {
