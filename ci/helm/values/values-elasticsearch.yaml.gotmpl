@@ -1,4 +1,5 @@
-image: "docker.elastic.co/elasticsearch/elasticsearch-oss"
+image: "docker.elastic.co/elasticsearch/{{ env "ELASTICSEARCH_IMAGE" | default "elasticsearch-oss" }}"
+imageTag: {{ env "ELASTICSEARCH_IMAGE_TAG" | default "7.9.2" }}
 clusterName: elasticsearch
 replicas: 1
 minimumMasterNodes: 1
