@@ -84,8 +84,7 @@
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
-          "type": "text",
-          "boost": 2
+          "type": "text"
         }
       }
     },
@@ -96,8 +95,7 @@
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
-          "type": "text",
-          "boost": 1.5
+          "type": "text"
         }
       }
     },

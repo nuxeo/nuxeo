@@ -84,8 +84,7 @@
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
-          "type": "text",
-          "boost": 2
+          "type": "text"
         },
         "lowercase": {
           "analyzer": "lowercase_analyzer",
@@ -104,8 +103,7 @@
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
-          "type": "text",
-          "boost": 1.5
+          "type": "text"
         },
         "lowercase": {
           "analyzer": "lowercase_analyzer",
