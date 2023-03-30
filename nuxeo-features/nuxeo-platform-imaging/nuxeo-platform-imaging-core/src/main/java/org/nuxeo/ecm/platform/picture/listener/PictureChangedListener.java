@@ -97,6 +97,8 @@ public class PictureChangedListener implements EventListener {
     }
 
     protected void preFillPictureViews(CoreSession session, DocumentModel doc) {
+        PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
+        adapter.clearInfo();
         try {
             URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(getEmptyPicturePath());
             if (fileUrl == null) {
@@ -126,7 +128,6 @@ public class PictureChangedListener implements EventListener {
                 emptyPictureImageInfo = imagingService.getImageInfo(blob);
             }
 
-            PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             adapter.preFillPictureViews(blob, pictureConversions, emptyPictureImageInfo);
         } catch (IOException e) {
             log.error("Error while pre-filling picture views: " + e.getMessage(), e);
