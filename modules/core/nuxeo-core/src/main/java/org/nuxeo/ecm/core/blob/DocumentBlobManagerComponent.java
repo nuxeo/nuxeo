@@ -520,7 +520,8 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         }
         BlobProvider blobProvider = getBlobProvider(providerId);
         if (blobProvider == null) {
-            throw new IllegalArgumentException("Unknown blob provider: " + providerId + " for blob marked for deletion: " + key);
+            throw new IllegalArgumentException(
+                    "Unknown blob provider: " + providerId + " for blob marked for deletion: " + key);
         }
         if (!(blobProvider instanceof BlobStoreBlobProvider)) {
             log.debug("Unsupported blob provider class: {} for provider: {} for blob marked for deletion: {}",
@@ -548,8 +549,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             String k = colon > 0 ? key.substring(colon + 1) : key;
             BlobStore blobStore = ((BlobStoreBlobProvider) blobProvider).store;
             blobStore.deleteBlob(k);
-            es.fireEvent(new BlobEventContext(repositoryName, managedBlob).newEvent(
-                    BLOBS_DELETED_DOMAIN_EVENT));
+            es.fireEvent(new BlobEventContext(repositoryName, managedBlob).newEvent(BLOBS_DELETED_DOMAIN_EVENT));
         } else {
             log.info("Blob: {} from repository: {}, provider: {} can be deleted", key, repositoryName, providerId);
         }
@@ -559,15 +559,16 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     @Override
     public boolean hasSharedStorage() {
         List<String> sharedStorages = getGarbageCollectors().stream()
-                .map(BinaryGarbageCollector::getId)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet()
-                .stream()
-                .filter(p -> p.getValue() > 1)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+                                                            .map(BinaryGarbageCollector::getId)
+                                                            .collect(Collectors.groupingBy(Function.identity(),
+                                                                    Collectors.counting()))
+                                                            .entrySet()
+                                                            .stream()
+                                                            .filter(p -> p.getValue() > 1)
+                                                            .map(Map.Entry::getKey)
+                                                            .collect(Collectors.toList());
         if (!sharedStorages.isEmpty()) {
-            log.warn ("Shared storages detected: {}", sharedStorages);
+            log.warn("Shared storages detected: {}", sharedStorages);
             return true;
         }
         return false;
