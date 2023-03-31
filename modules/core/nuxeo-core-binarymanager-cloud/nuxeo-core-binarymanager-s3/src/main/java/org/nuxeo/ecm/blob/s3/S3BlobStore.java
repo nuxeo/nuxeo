@@ -414,7 +414,7 @@ public class S3BlobStore extends AbstractBlobStore {
         } catch (AmazonServiceException e) {
             if (isMissingKey(e)) {
                 logTrace("<--", "missing");
-            } else  {
+            } else {
                 log.warn("Cannot get length of: s3://" + bucketName + "/" + bucketKey, e);
             }
             return -1;
@@ -622,7 +622,8 @@ public class S3BlobStore extends AbstractBlobStore {
 
         // copy the blob
         try {
-            String versionId = copyOrMoveBlob(sourceBlobStore.config, sourceBucketKey, sourceVersionId, config, bucketKey, move);
+            String versionId = copyOrMoveBlob(sourceBlobStore.config, sourceBucketKey, sourceVersionId, config,
+                    bucketKey, move);
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("Copied s3://" + sourceBucketName + "/" + sourceBucketKey + " to s3://" + bucketName + "/"
@@ -807,7 +808,8 @@ public class S3BlobStore extends AbstractBlobStore {
                         throw new IOException("Cannot set legal hold on non-versioned blob");
                     }
                     boolean hold = blobUpdateContext.updateLegalHold.hold;
-                    ObjectLockLegalHoldStatus status = hold ? ObjectLockLegalHoldStatus.ON : ObjectLockLegalHoldStatus.OFF;
+                    ObjectLockLegalHoldStatus status = hold ? ObjectLockLegalHoldStatus.ON
+                            : ObjectLockLegalHoldStatus.OFF;
                     ObjectLockLegalHold legalHold = new ObjectLockLegalHold().withStatus(status);
                     SetObjectLegalHoldRequest request = new SetObjectLegalHoldRequest();
                     request.withBucketName(bucketName) //
@@ -935,7 +937,7 @@ public class S3BlobStore extends AbstractBlobStore {
                     status.sizeBinaries += length;
                     status.numBinaries++;
                     toDelete.add(key);
-                     if (toDelete.size() % WARN_OBJECTS_THRESHOLD == 0) {
+                    if (toDelete.size() % WARN_OBJECTS_THRESHOLD == 0) {
                         log.warn("Listing {} in progress, {} objects ...", getId(), toDelete.size());
                     }
                 }
