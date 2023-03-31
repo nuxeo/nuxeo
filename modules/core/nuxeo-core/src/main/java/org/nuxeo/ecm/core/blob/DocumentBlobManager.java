@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -186,5 +187,26 @@ public interface DocumentBlobManager {
      * @since 7.4
      */
     boolean isBinariesGarbageCollectionInProgress();
+
+    /**
+     * Are the blobs from a repository stored in a provider with the same name.
+     *
+     * @return true if the blobs are dispatched to the provider with the same name than the repository
+     * @since 2023
+     */
+    default boolean isUseRepositoryName() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Gets the list of the provider ids that are used by the given repository.
+     *
+     * @param repository the repository name
+     * @return the list of provider ids where blob can be dispatched for the given repository
+     * @since 2023
+     */
+    default Collection<String> getProviderIds(String repository) {
+        throw new UnsupportedOperationException();
+    }
 
 }

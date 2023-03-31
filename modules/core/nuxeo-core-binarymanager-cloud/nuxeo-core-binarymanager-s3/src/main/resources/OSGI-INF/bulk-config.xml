@@ -2,6 +2,11 @@
 <component name="org.nuxeo.ecm.core.storage.s3.bulk.config" version="1.0.0">
 
   <require>org.nuxeo.runtime.stream.service</require>
+  <require>org.nuxeo.ecm.core.scroll.service</require>
+
+  <extension point="scroll" target="org.nuxeo.ecm.core.scroll.service">
+    <scroll type="generic" name="s3BlobScroll" class="org.nuxeo.ecm.blob.s3.S3BlobScroll" />
+  </extension>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <action name="s3SetBlobLength" inputStream="bulk/s3SetBlobLength" bucketSize="100" batchSize="25" httpEnabled="true"

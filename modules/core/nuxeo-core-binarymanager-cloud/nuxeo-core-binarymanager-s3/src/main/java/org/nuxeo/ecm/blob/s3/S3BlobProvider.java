@@ -68,6 +68,11 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
 
     private static final Logger log = LogManager.getLogger(S3BlobProvider.class);
 
+    /**
+     * @since 2023
+     */
+    public static final String STORE_SCROLL_NAME = "s3BlobScroll";
+
     // public for tests
     public S3BlobStoreConfiguration config;
 
@@ -148,8 +153,7 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
         }
     }
 
-    protected URI getURICloudFront(String bucketKey, ManagedBlob blob, Date expiration)
-            throws URISyntaxException {
+    protected URI getURICloudFront(String bucketKey, ManagedBlob blob, Date expiration) throws URISyntaxException {
         String[] parts = bucketKey.split(String.valueOf(VER_SEP));
         bucketKey = parts[0];
         CloudFrontConfiguration cloudFront = config.cloudFront;
@@ -250,6 +254,11 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
                                .withDownloadable(downloadable)
                                .withDownloadableUntil(downloadableUntil)
                                .withOngoingRestore(ongoingRestore);
+    }
+
+    @Override
+    public String getStoreScrollName() {
+        return STORE_SCROLL_NAME;
     }
 
 }

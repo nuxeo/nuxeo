@@ -269,6 +269,15 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         legalHold.clear();
     }
 
+    /**
+     * Gets an iterator over the blob keys.
+     *
+     * @since 2023
+     */
+    public Iterator<String> getKeyIterator() {
+        return map.keySet().iterator();
+    }
+
     @Override
     public BinaryGarbageCollector getBinaryGarbageCollector() {
         return gc;

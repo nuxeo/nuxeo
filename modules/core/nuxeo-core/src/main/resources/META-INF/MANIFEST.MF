@@ -50,6 +50,7 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
   OSGI-INF/asyncdigest-listener-contrib.xml,
   OSGI-INF/proxy-creation-configuration-contrib.xml,
   OSGI-INF/core-domain-event-producer-contrib.xml,
+  OSGI-INF/scroll-contrib.xml,
   OSGI-INF/bulk-migration-action-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.naming,

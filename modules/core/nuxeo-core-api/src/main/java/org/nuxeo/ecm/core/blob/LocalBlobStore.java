@@ -57,6 +57,22 @@ public class LocalBlobStore extends AbstractBlobStore {
         gc = new LocalBlobGarbageCollector();
     }
 
+    /**
+     * Get the root directory of the store.
+     *
+     * @since 2023
+     */
+    public Path getDirectory() {
+        return pathStrategy.dir;
+    }
+
+    /**
+     * @since 2023
+     */
+    public PathStrategy getPathStrategy() {
+        return pathStrategy;
+    }
+
     @Override
     protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         Path tmp = pathStrategy.createTempFile();

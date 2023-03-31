@@ -254,4 +254,13 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
         store.deleteBlob(blobContext);
     }
 
+    /**
+     * Gets the name of the scroll to scroll the blobs of the underlying blob store.
+     *
+     * @since 2023
+     */
+    public String getStoreScrollName() {
+        throw new UnsupportedOperationException();
+    }
+
 }
