@@ -79,6 +79,12 @@ public interface BlobDispatcher {
     BlobDispatch getBlobProvider(Document doc, Blob blob, String xpath);
 
     /**
+     * @return true if the blobs are dispatched to the provider with the same name than the repository.
+     * @since 2023
+     */
+    boolean isUseRepositoryName();
+
+    /**
      * Notifies the blob dispatcher that a set of xpaths have changed on a document.
      *
      * @param doc the document

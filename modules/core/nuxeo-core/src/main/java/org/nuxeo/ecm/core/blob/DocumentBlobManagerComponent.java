@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -662,6 +663,16 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isUseRepositoryName() {
+        return getBlobDispatcher().isUseRepositoryName();
+    }
+
+    @Override
+    public Collection<String> getProviderIds(String repository) {
+        return isUseRepositoryName() ? List.of(repository) : getBlobDispatcher().getBlobProviderIds();
     }
 
 }

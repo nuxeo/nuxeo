@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.blob;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -84,6 +83,11 @@ public class DummyBlobDispatcher implements BlobDispatcher {
 
     @Override
     public void notifyBeforeRemove(Document doc) {
+    }
+
+    @Override
+    public boolean isUseRepositoryName() {
+        return false;
     }
 
 }

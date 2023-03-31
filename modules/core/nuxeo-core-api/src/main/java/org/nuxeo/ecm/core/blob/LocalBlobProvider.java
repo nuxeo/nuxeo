@@ -34,6 +34,11 @@ public class LocalBlobProvider extends BlobStoreBlobProvider {
 
     private static final Logger log = LogManager.getLogger(LocalBlobProvider.class);
 
+    /**
+     * @since 2023
+     */
+    public static final String STORE_SCROLL_NAME = "localBlobScroll";
+
     protected LocalBlobStoreConfiguration config;
 
     @Override
@@ -73,6 +78,11 @@ public class LocalBlobProvider extends BlobStoreBlobProvider {
     // used by DownloadServiceImpl for accelerated download
     public Path getStorageDir() {
         return config.storageDir;
+    }
+
+    @Override
+    public String getStoreScrollName() {
+        return STORE_SCROLL_NAME;
     }
 
 }

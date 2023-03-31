@@ -28,6 +28,11 @@ import java.util.Map;
  */
 public class InMemoryBlobProvider extends BlobStoreBlobProvider {
 
+    /**
+     * @since 2023
+     */
+    public static final String STORE_SCROLL_NAME = "inMemoryBlobScroll";
+
     protected DigestConfiguration digestConfiguration;
 
     @Override
@@ -64,4 +69,8 @@ public class InMemoryBlobProvider extends BlobStoreBlobProvider {
         return digestConfiguration.digestAlgorithm;
     }
 
+    @Override
+    public String getStoreScrollName() {
+        return STORE_SCROLL_NAME;
+    }
 }

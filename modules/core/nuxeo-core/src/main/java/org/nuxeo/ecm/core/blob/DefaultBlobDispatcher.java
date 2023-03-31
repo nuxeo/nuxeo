@@ -51,8 +51,8 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.BlobEventContext;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
+import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -547,6 +547,11 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                         "Cannot remove main blob from document " + doc.getUUID() + ", it is under retention / hold");
             }
         }
+    }
+
+    @Override
+    public boolean isUseRepositoryName() {
+        return useRepositoryName;
     }
 
 }
