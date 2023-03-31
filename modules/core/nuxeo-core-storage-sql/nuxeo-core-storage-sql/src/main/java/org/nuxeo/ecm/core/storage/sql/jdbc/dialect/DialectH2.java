@@ -203,6 +203,21 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
+    public String toBooleanValueString(boolean bool) {
+        return bool ? "true" : "false";
+    }
+
+    @Override
+    public String getTableName(String name) {
+        if ("locks".equalsIgnoreCase(name)) {
+            name = "nx_locks";
+        } else if ("roles".equalsIgnoreCase(name)) {
+            name = "nx_roles";
+        }
+        return super.getTableName(name);
+    }
+
+    @Override
     public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
             Model model) {
         throw new UnsupportedOperationException();

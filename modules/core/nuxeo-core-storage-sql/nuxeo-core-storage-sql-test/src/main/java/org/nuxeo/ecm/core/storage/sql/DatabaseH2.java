@@ -53,7 +53,7 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected static final String DRIVER = "org.h2.Driver";
 
-    protected static final String URL_FORMAT = "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1";
+    protected static final String URL_FORMAT = "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;MODE=LEGACY";
 
     protected String url;
 
