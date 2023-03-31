@@ -77,11 +77,11 @@ CALL NX_UPGRADE_LASTCONTRIBUTOR();
 
 #CATEGORY: upgradeLocks
 
-ALTER TABLE locks DROP CONSTRAINT locks_id_hierarchy_fk;
+ALTER TABLE nx_locks DROP CONSTRAINT locks_id_hierarchy_fk;
 
-DELETE FROM locks WHERE lock IS NULL;
+DELETE FROM nx_locks WHERE lock IS NULL;
 
-UPDATE locks SET
+UPDATE nx_locks SET
   owner = SUBSTRING(lock, 1, POSITION(':', lock) - 1),
   created = PARSEDATETIME(SUBSTRING(lock, POSITION(':', lock) + 1), 'MMM d, yyyy', 'en_US')
   WHERE owner IS NULL;

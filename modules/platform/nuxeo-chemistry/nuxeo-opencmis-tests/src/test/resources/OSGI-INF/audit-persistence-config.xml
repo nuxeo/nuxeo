@@ -5,7 +5,7 @@
     point="hibernate">
     <hibernateConfiguration name="nxaudit-logs">
       <properties>
-        <property name="hibernate.connection.url">jdbc:h2:mem:</property>
+        <property name="hibernate.connection.url">jdbc:h2:mem:;MODE=LEGACY</property>
         <property name="hibernate.connection.driver_class">org.h2.Driver</property>
         <property name="hibernate.connection.auto_commit">true</property>
         <property name="hibernate.connection.pool_size">1</property>

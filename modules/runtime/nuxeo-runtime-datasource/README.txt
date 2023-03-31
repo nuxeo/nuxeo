@@ -6,7 +6,7 @@ Example contribution for a non-XA datasource:
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/foo" driverClassName="org.h2.Driver"
         maxActive="20" maxIdle="5" maxWait="10000">
-      <property name="url">jdbc:h2:/home/db;DB_CLOSE_ON_EXIT=false</property>
+      <property name="url">jdbc:h2:/home/db;DB_CLOSE_ON_EXIT=false;MODE=LEGACY</property>
       <property name="username">nuxeo</property>
       <property name="password">nuxeo</property>
     </datasource>

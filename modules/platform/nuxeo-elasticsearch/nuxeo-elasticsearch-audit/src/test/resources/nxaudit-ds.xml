@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/nxaudit-logs" driverClassName="org.h2.Driver"
       maxTotal="20" minTotal="5">
-      <property name="url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</property>
+      <property name="url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=LEGACY</property>
     </datasource>
   </extension>
 </component>

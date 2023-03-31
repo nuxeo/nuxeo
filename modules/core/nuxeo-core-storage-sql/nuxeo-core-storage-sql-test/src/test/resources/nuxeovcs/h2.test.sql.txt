@@ -57,14 +57,14 @@ CREATE TABLE dublincore (
   title VARCHAR(255)
 );
 
-# create old table locks with constraints
+# create old table nx_locks with constraints
 
-CREATE TABLE locks (
+CREATE TABLE nx_locks (
   id ${idType} NOT NULL,
   lock VARCHAR(255)
 );
 
-ALTER TABLE locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
+ALTER TABLE nx_locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
 
 
 ############################################################
@@ -74,7 +74,7 @@ ALTER TABLE locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
 
 # old foreign keys
 
-ALTER TABLE locks ADD CONSTRAINT locks_id_hierarchy_fk FOREIGN KEY (id)
+ALTER TABLE nx_locks ADD CONSTRAINT locks_id_hierarchy_fk FOREIGN KEY (id)
   REFERENCES hierarchy ON DELETE CASCADE;
 
 # create old values in old tables
@@ -189,9 +189,9 @@ INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000
 
 # lock doc
 #IF: testUpgradeLocks
-INSERT INTO locks (id, lock)
+INSERT INTO nx_locks (id, lock)
   VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bob:Jan 26, 2011');
 
 #IF: testUpgradeLocks
-INSERT INTO locks (id, lock)
+INSERT INTO nx_locks (id, lock)
   VALUES ('11111111-2222-3333-4444-555555555555', NULL);

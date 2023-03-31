@@ -17,7 +17,7 @@
 
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/repository_second" driverClassName="org.h2.Driver">
-      <property name="url">jdbc:h2:mem:other;DB_CLOSE_DELAY=-1</property>
+      <property name="url">jdbc:h2:mem:other;DB_CLOSE_DELAY=-1;MODE=LEGACY</property>
       <property name="second">pfouh</property>
     </datasource>
   </extension>

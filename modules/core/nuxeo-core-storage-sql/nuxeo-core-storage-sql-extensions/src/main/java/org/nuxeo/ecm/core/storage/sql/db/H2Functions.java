@@ -251,7 +251,6 @@ public class H2Functions extends EmbeddedFunctions {
     }
 
     public static ResultSet getAncestorsIds(Connection conn, String idsString) throws SQLException {
-        Set<String> ids = split(idsString);
         DatabaseMetaData meta = conn.getMetaData();
         SimpleResultSet result = new SimpleResultSet();
         result.addColumn("ID", Types.VARCHAR, 0, 0); // String id
@@ -260,7 +259,7 @@ public class H2Functions extends EmbeddedFunctions {
             return result;
         }
 
-        LinkedList<String> todo = new LinkedList<>(ids);
+        LinkedList<String> todo = new LinkedList<>(split(idsString));
         Set<String> done = new HashSet<>();
         Set<String> res = new HashSet<>();
         List<String> debugIds = null;
