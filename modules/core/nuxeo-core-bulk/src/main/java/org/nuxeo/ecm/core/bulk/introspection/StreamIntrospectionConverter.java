@@ -433,13 +433,17 @@ public class StreamIntrospectionConverter {
                     ObjectNode comp = computations.get(metric.get("group"));
                     if (comp != null) {
                         ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
-                        stream.set("latency", metric.get("v"));
+                        if (stream != null) {
+                            stream.set("latency", metric.get("v"));
+                        }
                     }
                 } else if ("nuxeo.streams.global.stream.group.end".equals(metric.get("k").asText())) {
                     ObjectNode comp = computations.get(metric.get("group"));
                     if (comp != null) {
                         ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
-                        stream.set("end", metric.get("v"));
+                        if (stream != null) {
+                            stream.set("end", metric.get("v"));
+                        }
                     }
                 }
             }
