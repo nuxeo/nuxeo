@@ -4234,7 +4234,7 @@
       <dependency>
         <groupId>com.google.code.externalsortinginjava</groupId>
         <artifactId>externalsortinginjava</artifactId>
-        <version>0.6.1</version>
+        <version>0.6.2</version>
       </dependency>
 
       <dependency>
