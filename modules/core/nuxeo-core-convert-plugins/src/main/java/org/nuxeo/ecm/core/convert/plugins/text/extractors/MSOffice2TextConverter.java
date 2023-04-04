@@ -32,10 +32,8 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.extractor.ExtractorFactory;
 import org.apache.poi.extractor.POITextExtractor;
-import org.apache.poi.ooxml.extractor.ExtractorFactory;
-import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
-import org.apache.xmlbeans.XmlException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -71,7 +69,7 @@ public class MSOffice2TextConverter implements Converter {
                 Blob blob = Blobs.createBlob(is, "text/plain", "UTF-8");
                 return new SimpleCachableBlobHolder(blob);
             }
-        } catch (IOException | OpenXML4JException | XmlException e) {
+        } catch (IOException e) {
             throw new ConversionException("Error during MSOffice2Text conversion", blobHolder, e);
         } finally {
             if (f != null) {

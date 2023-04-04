@@ -119,6 +119,13 @@
       <artifactId>scimcore</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- for tests, keep a version of xmlbeans compatible with the old version of scimcore (no upgrade available) -->
+    <dependency>
+      <groupId>org.apache.xmlbeans</groupId>
+      <artifactId>xmlbeans</artifactId>
+      <scope>test</scope>
+      <version>3.1.0</version>
+    </dependency>
     <dependency>
       <groupId>info.simplecloud.scimproxy</groupId>
       <artifactId>compliance</artifactId>
