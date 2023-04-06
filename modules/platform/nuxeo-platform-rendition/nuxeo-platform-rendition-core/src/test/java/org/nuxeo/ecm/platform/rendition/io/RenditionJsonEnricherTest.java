@@ -64,6 +64,8 @@ public class RenditionJsonEnricherTest extends AbstractJsonWriterTest.Local<Docu
         json.properties(1);
         json = json.has("renditions").isArray();
         assertTrue(json.getNode().size() > 0);
+        json = json.get(0).has("url").isText();
+        assertTrue(json.getNode().asText().contains(file.getRepositoryName()));
     }
 
 }
