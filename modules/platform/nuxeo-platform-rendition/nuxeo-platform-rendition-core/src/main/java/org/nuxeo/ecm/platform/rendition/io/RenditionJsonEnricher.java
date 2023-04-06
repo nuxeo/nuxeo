@@ -41,7 +41,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class RenditionJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-    public static final String RENDITION_REST_URL_FORMAT = "%sapi/v1/id/%s/@rendition/%s";
+    public static final String RENDITION_REST_URL_FORMAT = "%sapi/v1/repo/%s/id/%s/@rendition/%s";
 
     public static final String NAME = "renditions";
 
@@ -63,8 +63,8 @@ public class RenditionJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
                 jg.writeStringField("name", rendition.getName());
                 jg.writeStringField("kind", rendition.getKind());
                 jg.writeStringField("icon", ctx.getBaseUrl().replaceAll("/$", "") + rendition.getIcon());
-                jg.writeStringField("url", String.format(RENDITION_REST_URL_FORMAT, ctx.getBaseUrl(), document.getId(),
-                        rendition.getName()));
+                jg.writeStringField("url", String.format(RENDITION_REST_URL_FORMAT, ctx.getBaseUrl(),
+                        document.getRepositoryName(), document.getId(), rendition.getName()));
                 jg.writeEndObject();
             }
             jg.writeEndArray();
