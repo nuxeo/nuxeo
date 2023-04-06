@@ -29,7 +29,7 @@ org.nuxeo.ecm.product.version=2021.36-SNAPSHOT
 #nuxeo.db.user=
 #nuxeo.db.password=
 
-nuxeo.pubsub.provider=
+nuxeo.pubsub.provider=stream
 nuxeo.keyvalue.provider=
 nuxeo.work.queuing=
 nuxeo.lock.manager=
