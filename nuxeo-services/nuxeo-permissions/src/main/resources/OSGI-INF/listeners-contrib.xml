@@ -8,7 +8,7 @@
       <event>documentSecurityUpdated</event>
     </listener>
 
-    <listener name="permissionGarbageCollectorListener" async="true" postCommit="false"
+    <listener name="permissionGarbageCollectorListener" async="true" postCommit="true"
       class="org.nuxeo.ecm.permissions.PermissionGarbageCollectorListener"
       enabled="${nuxeo.aceinfo.gc.enabled:=false}">
       <event>documentRemoved</event>

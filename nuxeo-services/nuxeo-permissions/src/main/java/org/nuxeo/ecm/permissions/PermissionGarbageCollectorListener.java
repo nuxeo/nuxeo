@@ -24,8 +24,9 @@ import java.util.Collections;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -36,27 +37,29 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 1010-HF70
  */
-public class PermissionGarbageCollectorListener implements EventListener {
+public class PermissionGarbageCollectorListener implements PostCommitEventListener {
 
     @Override
-    public void handleEvent(Event event) {
-        EventContext ctx = event.getContext();
-        if (!(ctx instanceof DocumentEventContext)) {
+    public void handleEvent(EventBundle events) {
+        if (!events.containsEventName(DOCUMENT_REMOVED)) {
             return;
         }
-
-        if (DOCUMENT_REMOVED.equals(event.getName())) {
-            cleanAceInfo((DocumentEventContext) ctx);
-        }
-    }
-
-    protected void cleanAceInfo(DocumentEventContext ctx) {
-        Framework.doPrivileged(() -> {
-            DocumentModel doc = ctx.getSourceDocument();
-            DirectoryService directoryService = Framework.getService(DirectoryService.class);
-            try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
-                session.query(Collections.singletonMap("docId", doc.getId())).forEach(session::deleteEntry);
+        for (Event e : events) { // NOSONAR
+            if (!DOCUMENT_REMOVED.equals(e.getName())) {
+                continue;
             }
-        });
+            EventContext eventContext = e.getContext();
+            if (!(eventContext instanceof DocumentEventContext)) {
+                continue;
+            }
+            DocumentEventContext ctx = (DocumentEventContext) eventContext;
+            Framework.doPrivileged(() -> {
+                DocumentModel doc = ctx.getSourceDocument();
+                DirectoryService directoryService = Framework.getService(DirectoryService.class);
+                try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+                    session.query(Collections.singletonMap("docId", doc.getId())).forEach(session::deleteEntry);
+                }
+            });
+        }
     }
 }
