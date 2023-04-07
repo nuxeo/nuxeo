@@ -23,8 +23,8 @@ import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -35,27 +35,28 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 2023.0
  */
-public class PermissionGarbageCollectorListener implements EventListener {
+public class PermissionGarbageCollectorListener implements PostCommitEventListener {
 
     @Override
-    public void handleEvent(Event event) {
-        EventContext ctx = event.getContext();
-        if (!(ctx instanceof DocumentEventContext)) {
+    public void handleEvent(EventBundle events) {
+        if (!events.containsEventName(DOCUMENT_REMOVED)) {
             return;
         }
-
-        if (DOCUMENT_REMOVED.equals(event.getName())) {
-            cleanAceInfo((DocumentEventContext) ctx);
-        }
-    }
-
-    protected void cleanAceInfo(DocumentEventContext ctx) {
-        Framework.doPrivileged(() -> {
-            var doc = ctx.getSourceDocument();
-            var directoryService = Framework.getService(DirectoryService.class);
-            try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
-                session.query(Map.of("docId", doc.getId())).forEach(session::deleteEntry);
+        for (Event e : events) { // NOSONAR
+            if (!DOCUMENT_REMOVED.equals(e.getName())) {
+                continue;
             }
-        });
+            var eventContext = e.getContext();
+            if (!(eventContext instanceof DocumentEventContext ctx)) {
+                continue;
+            }
+            Framework.doPrivileged(() -> {
+                var doc = ctx.getSourceDocument();
+                var directoryService = Framework.getService(DirectoryService.class);
+                try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+                    session.query(Map.of("docId", doc.getId())).forEach(session::deleteEntry);
+                }
+            });
+        }
     }
 }
