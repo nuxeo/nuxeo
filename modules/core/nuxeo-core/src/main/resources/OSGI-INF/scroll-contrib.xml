@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.core.scroll.contrib" version="1.0">
   <require>org.nuxeo.ecm.core.scroll.service</require>
   <extension point="scroll" target="org.nuxeo.ecm.core.scroll.service">
+    <scroll type="generic" name="repositoryBlobScroll" class="org.nuxeo.ecm.core.blob.scroll.RepositoryBlobScroll" />
     <scroll type="generic" name="inMemoryBlobScroll" class="org.nuxeo.ecm.core.blob.scroll.InMemoryBlobScroll" />
     <scroll type="generic" name="localBlobScroll" class="org.nuxeo.ecm.core.blob.scroll.LocalBlobScroll" />
   </extension>
