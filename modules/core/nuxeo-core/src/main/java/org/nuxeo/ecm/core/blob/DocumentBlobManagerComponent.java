@@ -498,7 +498,8 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             // Else it probably means there must are shared storages.
             throw new IllegalArgumentException("Repository name cannot be null or empty");
         }
-        Repository repository = Framework.getService(RepositoryService.class).getRepository(repositoryName);
+        RepositoryService rs = Framework.getService(RepositoryService.class);
+        Repository repository = rs.getRepository(repositoryName);
         if (repository == null) {
             throw new IllegalArgumentException("Unkonwn repository: " + repositoryName);
         }
@@ -508,6 +509,9 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         }
         if (hasSharedStorage()) {
             throw new UnsupportedOperationException("Cannot perform delete on shared storage.");
+        }
+        if (!isUseRepositoryName() && rs.getRepositoryNames().size() > 1) {
+            throw new UnsupportedOperationException("Cannot perform delete on cross-repository shared storage.");
         }
         int colon = key.indexOf(':');
         String providerId;
