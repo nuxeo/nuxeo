@@ -146,6 +146,9 @@ public class CoreFeature implements RunnerFeature {
      *  Wait for document's blob GC to be done.
      */
     protected boolean awaitBlobGC(Duration duration) throws InterruptedException {
+        if (Framework.isBooleanPropertyFalse(StreamOrphanBlobGC.ENABLED_PROPERTY_NAME)) {
+            return true;
+        }
         StreamService service = Framework.getService(StreamService.class);
         org.nuxeo.lib.stream.log.LogManager logManager = service.getLogManager();
         // when there is no lag between producer and consumer we are done

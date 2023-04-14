@@ -47,6 +47,8 @@ public class StreamOrphanBlobGC implements StreamProcessorTopology {
 
     private static final Logger log = LogManager.getLogger(StreamOrphanBlobGC.class);
 
+    public static final String ENABLED_PROPERTY_NAME = "nuxeo.bulk.action.blobGC.enabled";
+
     public static final String COMPUTATION_NAME = "blob/gc";
 
     public static final String STREAM_NAME = "source/blob";
@@ -63,7 +65,7 @@ public class StreamOrphanBlobGC implements StreamProcessorTopology {
 
         protected final Codec<BlobDomainEvent> codec;
 
-        protected boolean canPerformDelete;
+        protected Boolean canDelete;
 
         public BlobGCComputation(String name) {
             super(name, 1, 0);
@@ -74,18 +76,33 @@ public class StreamOrphanBlobGC implements StreamProcessorTopology {
             return Framework.getService(DocumentBlobManager.class);
         }
 
-        @Override
-        public void init(ComputationContext context) {
-            RepositoryService rs = Framework.getService(RepositoryService.class);
-            boolean allReposWithBlobKeys = rs.getRepositoryNames()
-                                             .stream()
-                                             .allMatch(repo -> rs.getRepository(repo)
-                                                                 .hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS));
-            boolean hasSharedStorage = getDocumentBlobManager().hasSharedStorage();
-            if (allReposWithBlobKeys && hasSharedStorage) {
-                log.warn("Cannot delete blob because a shared storage has been detected.");
+        protected boolean canPerformDelete() {
+            if (canDelete == null) {
+                RepositoryService rs = Framework.getService(RepositoryService.class);
+                boolean allReposWithBlobKeys = rs.getRepositoryNames().stream().allMatch(repo -> {
+                    if (!rs.getRepository(repo).hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS)) {
+                        log.warn("Cannot delete blobs because ecm:blobKeys capabilty is missing on repository: {}",
+                                repo);
+                        return false;
+                    }
+                    return true;
+                });
+                boolean hasCrossRepositoryStorage = !getDocumentBlobManager().isUseRepositoryName()
+                        && rs.getRepositoryNames().size() > 1;
+                if (hasCrossRepositoryStorage) {
+                    log.warn("Cannot delete blobs on cross-repository shared storage.");
+                }
+                boolean hasSharedStorage = getDocumentBlobManager().hasSharedStorage();
+                if (hasSharedStorage) {
+                    log.warn("Cannot delete blobs because a shared storage has been detected.");
+                }
+                boolean disabled = Framework.isBooleanPropertyFalse(ENABLED_PROPERTY_NAME);
+                if (disabled) {
+                    log.trace("Computation is disabled.");
+                }
+                canDelete = allReposWithBlobKeys && !hasCrossRepositoryStorage && !hasSharedStorage && !disabled;
             }
-            canPerformDelete = allReposWithBlobKeys && !hasSharedStorage;
+            return canDelete;
         }
 
         @Override
@@ -93,7 +110,7 @@ public class StreamOrphanBlobGC implements StreamProcessorTopology {
             BlobDomainEvent bde = codec.decode(record.getData());
             log.trace("Processsing blob domain event: {} for repository: {}, docId: {}, blobKey: {}", bde.event,
                     bde.repository, bde.docId, bde.blobKey);
-            if (canPerformDelete && BLOBS_CANDIDATE_FOR_DELETION_EVENT.equals(bde.event)) {
+            if (canPerformDelete() && BLOBS_CANDIDATE_FOR_DELETION_EVENT.equals(bde.event)) {
                 try {
                     getDocumentBlobManager().deleteBlob(bde.repository, bde.blobKey, false);
                 } catch (IllegalArgumentException e) {

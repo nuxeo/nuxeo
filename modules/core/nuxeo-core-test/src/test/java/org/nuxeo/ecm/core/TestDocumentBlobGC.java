@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.stream.StreamOrphanBlobGC;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -70,7 +71,7 @@ public class TestDocumentBlobGC {
     protected DocumentBlobManager documentBlobManager;
 
     @Test
-    @WithFrameworkProperty(name = "nuxeo.bulk.action.blobGC.enabled", value = "false")
+    @WithFrameworkProperty(name = StreamOrphanBlobGC.ENABLED_PROPERTY_NAME, value = "false")
     public void testDisableBlobDelete() {
         assumeTrue("MongoDB feature only", !coreFeature.getStorageConfiguration().isVCS());
         DocumentModel doc = session.createDocumentModel("/", "doc1", "File");
@@ -360,6 +361,57 @@ public class TestDocumentBlobGC {
 
         // Assert blob does not exist anymore
         assertNull(blobProvider.getFile(blob));
+    }
+
+    // NXP-31833
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-cross-repo-provider-delete.xml")
+    public void testBlobDeleteCrossRepositoryProvider() throws IOException {
+        assumeTrue("MongoDB feature only", !coreFeature.getStorageConfiguration().isVCS());
+        final String CONTENT = "multiRepo";
+        // Create 2 docs in 2 different repos but referencing the same blob as main content
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1.setPropertyValue("file:content", (Serializable) Blobs.createBlob(CONTENT));
+        doc1 = session.createDocument(doc1);
+        final String repoName2 = "test2";
+        CoreSession session2 = CoreInstance.getCoreSession(repoName2);
+        DocumentModel doc2 = session2.createDocumentModel("/", "doc2", "File");
+        doc2.setPropertyValue("file:content", (Serializable) Blobs.createBlob(CONTENT));
+        doc2 = session2.createDocument(doc2);
+        session2.save();
+
+        // check that the doc shares the 2 blobs
+        ManagedBlob blob1 = (ManagedBlob) doc1.getPropertyValue("file:content");
+        ManagedBlob blob2 = (ManagedBlob) doc2.getPropertyValue("file:content");
+        assertEquals(blob1.getKey(), blob2.getKey());
+
+        assertThrows(UnsupportedOperationException.class,
+                () -> documentBlobManager.deleteBlob(repoName2, blob2.getKey(), false));
+
+        BlobProvider blobProvider1 = Framework.getService(BlobManager.class).getBlobProvider(blob1.getProviderId());
+        BlobProvider blobProvider2 = Framework.getService(BlobManager.class).getBlobProvider(blob2.getProviderId());
+        assertNotNull(blobProvider1.getFile(blob1));
+        assertNotNull(blobProvider2.getFile(blob2));
+
+        // Force 1st blob to move to another blob store (with blob dispatcher rule)
+        doc1.setPropertyValue("dc:source", "foo");
+        doc1 = session.saveDocument(doc1);
+        coreFeature.waitForAsyncCompletion();
+        // Assert blob2 still exists
+        assertNotNull(blobProvider2.getFile(blob2));
+
+        // Remove reference to the blob from doc1
+        doc1.setPropertyValue("file:content", null);
+        doc1 = session.saveDocument(doc1);
+        coreFeature.waitForAsyncCompletion();
+        // Assert blob2 still exists
+        assertNotNull(blobProvider2.getFile(blob2));
+
+        // Remove doc1
+        session.removeDocument(doc1.getRef());
+        coreFeature.waitForAsyncCompletion();
+        // Assert blob2 still exists
+        assertNotNull(blobProvider2.getFile(blob2));
     }
 
 }
