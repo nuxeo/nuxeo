@@ -321,11 +321,17 @@ public class ESRestClient implements ESClient {
     }
 
     protected void deleteAlias(String aliasName) {
+        String indexName = getFirstIndexForAlias(aliasName);
+        if (indexName == null) {
+            // there is no alias to delete
+            return;
+        }
         Response response = performRequestWithTracing(
-                new Request("DELETE", String.format("/_all/_alias/%s", aliasName)));
+                new Request("DELETE", String.format("/%s/_alias/%s", indexName, aliasName)));
         int code = response.getStatusLine().getStatusCode();
         if (code != HttpStatus.SC_OK) {
-            throw new IllegalStateException(String.format("Deleting %s alias: %s", aliasName, response));
+            throw new IllegalStateException(
+                    String.format("Fail to delete alias %s -> %s: %s", aliasName, indexName, response));
         }
     }
 
