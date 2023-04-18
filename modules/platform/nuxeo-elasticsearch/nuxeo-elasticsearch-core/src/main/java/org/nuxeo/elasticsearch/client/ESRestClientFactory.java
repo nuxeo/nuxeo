@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
@@ -101,6 +102,9 @@ public class ESRestClientFactory implements ESClientFactory {
     @Deprecated
     public static final String DEPRECATED_TRUST_STORE_TYPE_OPT = "keystore.type";
 
+    /** @since 2021.37 */
+    public static final String SSL_CERTIFICATE_VERIFICATION_OPT = "sslCertificateVerification";
+
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
         if (node != null) {
@@ -161,6 +165,9 @@ public class ESRestClientFactory implements ESClientFactory {
         builder.setHttpClientConfigCallback(httpClientBuilder -> {
             httpClientBuilder.setSSLContext(sslContext);
             httpClientBuilder.setDefaultCredentialsProvider(credentialProvider);
+            if (Boolean.FALSE.toString().equals(config.getOption(SSL_CERTIFICATE_VERIFICATION_OPT))) {
+                httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            }
             return httpClientBuilder;
         });
     }
