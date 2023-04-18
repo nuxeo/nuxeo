@@ -171,6 +171,7 @@ elasticsearch.restClient.truststore.type=
 elasticsearch.restClient.keystore.path=
 elasticsearch.restClient.keystore.password=
 elasticsearch.restClient.keystore.type=
+elasticsearch.restClient.ssl.certificate.verification=true
 
 elasticsearch.check.classpath=${nuxeo.home}/nxserver/bundles/nuxeo-{common,core-api,elasticsearch-core}*.jar
 elasticsearch.check.class=org.nuxeo.elasticsearch.ElasticSearchChecker

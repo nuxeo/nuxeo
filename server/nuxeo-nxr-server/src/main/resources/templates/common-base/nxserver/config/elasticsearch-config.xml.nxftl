@@ -25,6 +25,7 @@
       <option name="keyStorePath">${elasticsearch.restClient.keystore.path}</option>
       <option name="keyStorePassword">${elasticsearch.restClient.keystore.password}</option>
       <option name="keyStoreType">${elasticsearch.restClient.keystore.type}</option>
+      <option name="sslCertificateVerification">${elasticsearch.restClient.ssl.certificate.verification}</option>
       <!-- deprecated since 10.3, and actually referring to the trustStore -->
 <#if (elasticsearch.restClient.keystorePath)?has_content>
       <option name="keystore.path">${elasticsearch.restClient.keystorePath}</option>
