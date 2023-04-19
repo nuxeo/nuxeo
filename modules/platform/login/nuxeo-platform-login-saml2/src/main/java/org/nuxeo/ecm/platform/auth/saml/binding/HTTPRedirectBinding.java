@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class HTTPRedirectBinding extends SAMLBinding {
         if (transport instanceof HTTPInTransport) {
             HTTPTransport t = (HTTPTransport) transport;
             return "GET".equalsIgnoreCase(t.getHTTPMethod())
-                && (t.getParameterValue(SAML_REQUEST) != null || t.getParameterValue(SAML_RESPONSE) != null);
+                    && (t.getParameterValue(SAML_REQUEST) != null || t.getParameterValue(SAML_RESPONSE) != null);
         } else {
             return false;
         }

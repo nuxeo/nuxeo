@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.sso;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.metadata.Endpoint;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * WebSSO (Single Sign On) profile.

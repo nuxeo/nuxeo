@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Nuxeo - initial API and implementation
  *
  */
-
 package org.nuxeo.ecm.platform.auth.saml.user;
 
 import java.util.Map;
@@ -30,7 +29,6 @@ import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
  * @author tiry
  * @since 7.4
  */
-
 public interface UserResolver {
 
     void init(Map<String, String> parameters);

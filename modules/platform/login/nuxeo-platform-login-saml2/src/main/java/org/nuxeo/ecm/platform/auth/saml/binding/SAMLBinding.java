@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.opensaml.ws.message.encoder.MessageEncoder;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.ws.transport.InTransport;
 import org.opensaml.ws.transport.OutTransport;
+import org.opensaml.xml.security.SecurityException;
 
 /**
  * Based class for SAML bindings, used for parsing messages.
@@ -69,8 +70,7 @@ public abstract class SAMLBinding {
      *
      * @param context the message to decode
      */
-    public void decode(MessageContext context) throws org.opensaml.xml.security.SecurityException,
-            MessageDecodingException {
+    public void decode(MessageContext context) throws SecurityException, MessageDecodingException {
         decoder.decode(context);
     }
 

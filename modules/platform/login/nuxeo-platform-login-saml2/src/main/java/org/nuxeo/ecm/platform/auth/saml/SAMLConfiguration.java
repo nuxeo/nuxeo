@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *      Nelson Silva
- */
-
+ *      Nelson Silva */
 package org.nuxeo.ecm.platform.auth.saml;
 
 import java.util.ArrayList;

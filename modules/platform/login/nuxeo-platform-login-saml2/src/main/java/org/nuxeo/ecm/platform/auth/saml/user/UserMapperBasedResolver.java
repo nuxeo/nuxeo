@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Nuxeo - initial API and implementation
  *
  */
-
 package org.nuxeo.ecm.platform.auth.saml.user;
 
 import java.util.Map;
@@ -64,8 +63,9 @@ public class UserMapperBasedResolver implements UserResolver {
 
     @Override
     public String findOrCreateNuxeoUser(SAMLCredential userInfo) {
-        NuxeoPrincipal principal = Framework.getService(UserMapperService.class).getOrCreateAndUpdateNuxeoPrincipal(
-                mapperName, userInfo, createIfNeeded, update, null);
+        NuxeoPrincipal principal = Framework.getService(UserMapperService.class)
+                                            .getOrCreateAndUpdateNuxeoPrincipal(mapperName, userInfo, createIfNeeded,
+                                                    update, null);
 
         if (principal != null) {
             return principal.getName();
