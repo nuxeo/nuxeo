@@ -42,6 +42,7 @@ public class DefaultNuxeoComputationPolicy implements StreamComputationPolicy {
                                                            descriptor.maxDelay.toMillis(), TimeUnit.MILLISECONDS);
         // NuxeoException and ConcurrentUpdateException are assignable from RuntimeException
         retryPolicy.retryOn(RuntimeException.class, TimeoutException.class, IOException.class, SQLException.class);
+        retryPolicy.abortOn(StreamNoRetryException.class);
         ComputationPolicyBuilder builder = descriptor.createPolicyBuilder();
         builder.retryPolicy(retryPolicy);
         return builder.build();

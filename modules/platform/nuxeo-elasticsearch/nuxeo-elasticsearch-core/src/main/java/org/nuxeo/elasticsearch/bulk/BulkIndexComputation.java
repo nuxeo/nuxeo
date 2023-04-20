@@ -26,7 +26,6 @@ import java.util.Arrays;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -51,6 +50,7 @@ import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamNoRetryException;
 
 /**
  * A computation that submits elasticsearch requests using the bulk API.
@@ -108,12 +108,13 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
 
     @Override
     public void processTimer(ComputationContext context, String key, long timestamp) {
-        if (abort) {
-            throw new NuxeoException("Terminate computation due to previous error");
-        }
         if (updates) {
             // flush is sync because bulkProcessor is initialized with setConcurrentRequests(0)
             bulkProcessor.flush();
+            if (abort) {
+                destroy();
+                throw new StreamNoRetryException("Aborting computation " + metadata.name() + " due to previous error.");
+            }
             context.askForCheckpoint();
             updates = false;
         }
@@ -188,7 +189,7 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
         MutableBoolean inError = new MutableBoolean(false);
         Arrays.stream(response.getItems()).filter(BulkItemResponse::isFailed).forEach(item -> {
             if (item.getFailure().getStatus() != RestStatus.CONFLICT) {
-                log.warn("Failure in bulk indexing: " + item.getFailureMessage());
+                log.info("Failure in bulk indexing: " + item.getFailureMessage());
                 inError.setTrue();
             } else if (log.isDebugEnabled()) {
                 log.debug("Skipping version conflict: " + item.getFailureMessage());
