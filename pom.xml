@@ -152,7 +152,7 @@
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
-    <okhttp.version>4.10.0</okhttp.version>
+    <okhttp.version>4.11.0</okhttp.version>
     <protobuf.java.version>3.21.12</protobuf.java.version>
   </properties>
 
