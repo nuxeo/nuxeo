@@ -22,10 +22,4 @@ podLabels:
   {{- end }}
   resource: pod
   team: platform
-tolerations:
-  - key: team
-    operator: Equal
-    value: platform
-    effect: NoSchedule
-nodeSelector:
-  team: platform
+{{ readFile "values-tolerations-nodeselector.yaml" }}

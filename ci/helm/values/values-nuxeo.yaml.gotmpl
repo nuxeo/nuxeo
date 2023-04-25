@@ -42,10 +42,4 @@ ingress:
   - hosts:
     - {{ $publicDomain }}
     secretName: platform-cluster-tls
-tolerations:
-- effect: NoSchedule
-  key: team
-  operator: Equal
-  value: platform
-nodeSelector:
-  team: platform
+{{ readFile "values-tolerations-nodeselector.yaml" }}

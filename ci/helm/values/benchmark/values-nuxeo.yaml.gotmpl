@@ -81,15 +81,4 @@ ingress:
   annotations:
     # set a timeout of 4 hours as we have a long running import
     nginx.ingress.kubernetes.io/proxy-read-timeout: "14400"
-tolerations:
-- effect: NoSchedule
-  key: team
-  operator: Equal
-  value: platform
-- key: usage
-  operator: Equal
-  value: benchmark
-  effect: NoSchedule
-nodeSelector:
-  team: platform
-  usage: benchmark
+{{ readFile "values-tolerations-nodeselector.yaml" }}
