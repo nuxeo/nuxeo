@@ -30,13 +30,7 @@ podLabels:
   {{- end }}
   resource: pod
   team: platform
-tolerations:
-  - key: team
-    operator: Equal
-    value: platform
-    effect: NoSchedule
-nodeSelector:
-  team: platform
+{{ readFile "values-tolerations-nodeselector.yaml" }}
 zookeeper:
   image:
     tag: "3.6.2"
@@ -47,10 +41,4 @@ zookeeper:
     {{- end }}
     resource: pod
     team: platform
-  tolerations:
-    - key: team
-      operator: Equal
-      value: platform
-      effect: NoSchedule
-  nodeSelector:
-    team: platform
+{{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}

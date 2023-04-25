@@ -22,10 +22,4 @@ service:
     {{- end }}
     resource: service
     team: platform
-tolerations:
-  - key: team
-    operator: Equal
-    value: platform
-    effect: NoSchedule
-nodeSelector:
-  team: platform
+{{ readFile "values-tolerations-nodeselector.yaml" }}

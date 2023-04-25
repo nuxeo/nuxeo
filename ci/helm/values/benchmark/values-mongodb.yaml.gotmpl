@@ -26,15 +26,4 @@ affinity:
           - opensearch
           - mongodb
       topologyKey: "kubernetes.io/hostname"
-tolerations:
-- key: team
-  operator: Equal
-  value: platform
-  effect: NoSchedule
-- key: usage
-  operator: Equal
-  value: benchmark
-  effect: NoSchedule
-nodeSelector:
-  team: platform
-  usage: benchmark
+{{ readFile "values-tolerations-nodeselector.yaml" }}
