@@ -40,6 +40,7 @@ pipeline {
     TEST_KAFKA_PORT = '9092'
     ELASTICSEARCH_IMAGE = 'elasticsearch'
     ELASTICSEARCH_IMAGE_TAG = "${params.ELASTICSEARCH_IMAGE_TAG}"
+    ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION = nxUtils.getMajorDotMinorVersion(version: ELASTICSEARCH_IMAGE_TAG)
     REPOSITORY_BACKEND = 'mongodb'
   }
 
@@ -54,7 +55,15 @@ pipeline {
       }
     }
 
-    stage('Install required SNAPSHOT artifacts') {
+    stage('Initialization') {
+      steps {
+        script {
+          currentBuild.description = "${NUXEO_BRANCH}/${ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION}"
+        }
+      }
+    }
+
+    stage('Compile') {
       when {
         expression { !isNuxeoTag() }
       }
@@ -75,7 +84,7 @@ pipeline {
           def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${TEST_NAMESPACE}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
 
           container("maven-${REPOSITORY_BACKEND}") {
-            nxWithGitHubStatus(context: "utests/es-" + nxUtils.getMajorDotMinorVersion(version: ELASTICSEARCH_IMAGE_TAG), message: "Unit tests - ES $ELASTICSEARCH_IMAGE_TAG environment", commitSha: env.SCM_REF) {
+            nxWithGitHubStatus(context: "utests/es-${ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION}", message: "Unit tests - ES ${ELASTICSEARCH_IMAGE_TAG} environment", commitSha: env.SCM_REF) {
               echo """
               ----------------------------------------
               Run ${REPOSITORY_BACKEND} unit tests against Elasticsearch ${ELASTICSEARCH_IMAGE_TAG}
