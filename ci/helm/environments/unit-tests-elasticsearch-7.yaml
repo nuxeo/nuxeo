@@ -1,13 +1,13 @@
 nuxeo:
   enabled: false
 mongodb:
-  enabled: false
+  enabled: true
 postgresql:
-  enabled: true
-opensearch:
-  enabled: true
-elasticsearch7:
   enabled: false
+opensearch:
+  enabled: false
+elasticsearch7:
+  enabled: true
 elasticsearch8:
   enabled: false
 kafka:

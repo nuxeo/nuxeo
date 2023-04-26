@@ -6,6 +6,10 @@ postgresql:
   enabled: false
 opensearch:
   enabled: false
+elasticsearch7:
+  enabled: false
+elasticsearch8:
+  enabled: false
 kafka:
   enabled: false
 redis:

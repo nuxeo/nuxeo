@@ -1,0 +1,13 @@
+imageTag: {{ env "ELASTICSEARCH_IMAGE_TAG" | default "8.7.0" }}
+# Disable security features, enabled by default.
+# This also prevents the container from automatically generating certificates and the following settings at startup:
+# - xpack.security.enrollment.enabled: true
+# - xpack.security.http.ssl.enabled: true
+# - xpack.security.transport.ssl.enabled: true
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: false
+# Don't create SSL certificates.
+createCert: false
+# Use HTTP for readiness probe since xpack.security.http.ssl.enabled is set to false.
+protocol: http

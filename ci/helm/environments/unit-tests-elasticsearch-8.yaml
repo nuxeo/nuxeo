@@ -1,15 +1,15 @@
 nuxeo:
   enabled: false
 mongodb:
-  enabled: false
+  enabled: true
 postgresql:
-  enabled: true
+  enabled: false
 opensearch:
-  enabled: true
+  enabled: false
 elasticsearch7:
   enabled: false
 elasticsearch8:
-  enabled: false
+  enabled: true
 kafka:
   enabled: true
 redis:

@@ -22,7 +22,7 @@ boolean isNuxeoTag() {
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-platform-lts-2021'
+    label 'jenkins-nuxeo-platform-lts-2023'
   }
   options {
     timeout(time: 8, unit: 'HOURS')
@@ -38,7 +38,6 @@ pipeline {
     TEST_REDIS_K8S_OBJECT = 'redis-master'
     TEST_KAFKA_K8S_OBJECT = 'kafka'
     TEST_KAFKA_PORT = '9092'
-    ELASTICSEARCH_IMAGE = 'elasticsearch'
     ELASTICSEARCH_IMAGE_TAG = "${params.ELASTICSEARCH_IMAGE_TAG}"
     ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION = nxUtils.getMajorDotMinorVersion(version: ELASTICSEARCH_IMAGE_TAG)
     REPOSITORY_BACKEND = 'mongodb'
@@ -90,7 +89,9 @@ pipeline {
               Run ${REPOSITORY_BACKEND} unit tests against Elasticsearch ${ELASTICSEARCH_IMAGE_TAG}
               ----------------------------------------"""
               echo "${REPOSITORY_BACKEND} unit tests: install external services"
-              nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE}", environment: "mongodbUnitTests") {
+              def environment = "elasticsearch${nxUtils.getMajorVersion(version: ELASTICSEARCH_IMAGE_TAG)}UnitTests"
+              echo "Helmfile environment = ${environment}"
+              nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE}", environment: environment) {
                 try {
                   echo "${REPOSITORY_BACKEND} unit tests: prepare env variables for Maven tests"
                   sh """

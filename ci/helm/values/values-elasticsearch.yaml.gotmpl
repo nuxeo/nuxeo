@@ -1,0 +1,31 @@
+clusterName: elasticsearch
+replicas: 1
+minimumMasterNodes: 1
+resources:
+  requests:
+    cpu: "250m"
+    memory: "1024Mi"
+  limits:
+    cpu: "500m"
+    memory: "1024Mi"
+esJavaOpts: "-Xmx380m -Xms380m"
+labels:
+  {{- if (env "BRANCH_NAME") }}
+  branch: {{ env "BRANCH_NAME" | quote }}
+  {{- end }}
+  resource: pod
+  team: platform
+service:
+  labels:
+    {{- if (env "BRANCH_NAME") }}
+    branch: {{ env "BRANCH_NAME" | quote }}
+    {{- end }}
+    resource: service
+    team: platform
+tolerations:
+  - key: team
+    operator: Equal
+    value: platform
+    effect: NoSchedule
+nodeSelector:
+  team: platform
