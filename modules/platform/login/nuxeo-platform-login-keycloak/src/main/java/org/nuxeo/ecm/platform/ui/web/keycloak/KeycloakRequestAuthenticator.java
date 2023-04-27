@@ -31,12 +31,12 @@ import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.AdapterTokenStore;
-import org.keycloak.adapters.spi.AuthChallenge;
-import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.OAuthRequestAuthenticator;
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
 import org.keycloak.adapters.RequestAuthenticator;
+import org.keycloak.adapters.spi.AuthOutcome;
+import org.keycloak.adapters.spi.HttpFacade;
 import org.keycloak.adapters.tomcat.CatalinaCookieTokenStore;
 import org.keycloak.adapters.tomcat.CatalinaHttpFacade;
 import org.keycloak.adapters.tomcat.CatalinaSessionTokenStore;
@@ -67,6 +67,10 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
 
     protected LoginConfig loginConfig;
 
+    public HttpFacade getFacade() {
+        return facade;
+    }
+
     public KeycloakRequestAuthenticator(Request request, HttpServletResponse response, CatalinaHttpFacade facade,
             KeycloakDeployment deployment) {
         super(facade, deployment);
@@ -82,22 +86,10 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
         if (outcome == AuthOutcome.AUTHENTICATED) {
             return AuthOutcome.AUTHENTICATED;
         }
-        AuthChallenge challenge = getChallenge();
-        if (challenge != null) {
-            if (loginConfig == null) {
-                loginConfig = request.getContext().getLoginConfig();
-            }
-            if (challenge.getResponseCode() >= 400) {
-                if (forwardToErrorPageInternal(request, response, loginConfig)) {
-                    return AuthOutcome.FAILED;
-                }
-            }
-            challenge.challenge(facade);
-        }
         return AuthOutcome.FAILED;
     }
 
-    protected boolean forwardToErrorPageInternal(Request request, HttpServletResponse response, Object loginConfig) {
+    protected boolean forwardToErrorPageInternal() {
         if (loginConfig == null) {
             return false;
         }
