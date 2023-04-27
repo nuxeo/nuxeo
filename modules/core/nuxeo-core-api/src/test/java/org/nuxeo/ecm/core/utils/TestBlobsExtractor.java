@@ -44,6 +44,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
@@ -185,8 +186,7 @@ public class TestBlobsExtractor {
                 new HashSet<>(blobPaths));
     }
 
-    @Test
-    public void testGetBlobs() {
+    protected void doTestGetBlobs(boolean hasDynamicBlob) {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
 
         Blob blob1 = createBlob("file1.txt");
@@ -219,8 +219,20 @@ public class TestBlobsExtractor {
         Blob blob6 = createBlob("file6.txt");
         doc.setPropertyValue("dyn:blob", (Serializable) blob6);
         blobs = extractor.getBlobs(doc);
-        assertEquals(6, blobs.size());
-        assertTrue(blobs.contains(blob6));
+        assertEquals(hasDynamicBlob ? 6 : 5, blobs.size());
+        assertTrue(!hasDynamicBlob ^ blobs.contains(blob6));
+    }
+
+    @Test
+    public void testGetBlobs() {
+        doTestGetBlobs(true);
+    }
+
+    // NXP-31834
+    @Test
+    @WithFrameworkProperty(name = BlobsExtractor.LIST_ONLY_DOC_TYPE_BLOB_PROPERTY_NAME, value = "true")
+    public void testGetBlobsLegacy() {
+        doTestGetBlobs(false);
     }
 
     @Test

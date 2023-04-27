@@ -49,6 +49,14 @@ import org.nuxeo.runtime.api.Framework;
 public class BlobsExtractor {
 
     /**
+     * Framework boolean property name to fall back on legacy behavior. If true, only blobs referenced by static schemas
+     * (attached to the doc type of a document) will be listed i.e. blobs added through dynamic facets will be ignored.
+     *
+     * @since 2021.37
+     */
+    public static final String LIST_ONLY_DOC_TYPE_BLOB_PROPERTY_NAME = "nuxeo.document.blob.extractor.legacy";
+
+    /**
      * Local cache of blob paths per doc type.
      */
     protected final Map<String, List<String>> docBlobPaths = new ConcurrentHashMap<>();
@@ -151,12 +159,17 @@ public class BlobsExtractor {
      * @return the list of blob properties
      */
     public List<Property> getBlobsProperties(DocumentModel doc) {
+        List<String> paths;
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        List<String> paths = Arrays.stream(doc.getSchemas())
-                                   .map(schemaManager::getSchema)
-                                   .map(this::getBlobPaths)
-                                   .flatMap(Collection::stream)
-                                   .collect(Collectors.toList());
+        if (Framework.isBooleanPropertyTrue(LIST_ONLY_DOC_TYPE_BLOB_PROPERTY_NAME)) {
+            paths = getBlobPaths(doc.getDocumentType());
+        } else {
+            paths = Arrays.stream(doc.getSchemas())
+                          .map(schemaManager::getSchema)
+                          .map(this::getBlobPaths)
+                          .flatMap(Collection::stream)
+                          .collect(Collectors.toList());
+        }
         List<Property> properties = new ArrayList<>();
         for (String path : paths) {
             if (!isInterestingPath(path)) {
