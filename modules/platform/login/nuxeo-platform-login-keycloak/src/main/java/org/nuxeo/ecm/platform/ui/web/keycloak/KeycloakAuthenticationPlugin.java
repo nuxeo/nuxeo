@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.KeycloakDeployment;
+import org.keycloak.adapters.spi.AuthChallenge;
 import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.representations.AccessToken;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -67,6 +68,8 @@ public class KeycloakAuthenticationPlugin
     private String keycloakConfigFile = PROTOCOL_CLASSPATH + "keycloak.json";
 
     private KeycloakAuthenticatorProvider keycloakAuthenticatorProvider;
+
+    private ThreadLocal<KeycloakRequestAuthenticator> localKeycloakAuthenticator = new ThreadLocal<>();
 
     protected String mappingName = DEFAULT_MAPPING_NAME;
 
@@ -99,7 +102,26 @@ public class KeycloakAuthenticationPlugin
 
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
-        return Boolean.TRUE;
+        KeycloakRequestAuthenticator authenticator = localKeycloakAuthenticator.get();
+        try {
+            if (authenticator != null) {
+                AuthChallenge challenge = authenticator.getChallenge();
+                if (challenge != null) {
+                    if (authenticator.loginConfig == null) {
+                        authenticator.loginConfig = authenticator.request.getContext().getLoginConfig();
+                    }
+                    if (challenge.getResponseCode() >= 400) {
+                        if (authenticator.forwardToErrorPageInternal()) {
+                            return Boolean.TRUE;
+                        }
+                    }
+                    challenge.challenge(authenticator.getFacade());
+                }
+            }
+            return Boolean.FALSE;
+        } finally {
+            localKeycloakAuthenticator.remove();
+        }
     }
 
     @Override
@@ -115,6 +137,8 @@ public class KeycloakAuthenticationPlugin
         log.debug("KEYCLOAK will handle identification");
 
         KeycloakRequestAuthenticator authenticator = keycloakAuthenticatorProvider.provide(httpRequest, httpResponse);
+        // need to keep the KeycloakRequestAuthenticator because it contains the challenge computed from the request
+        localKeycloakAuthenticator.set(authenticator);
         KeycloakDeployment deployment = keycloakAuthenticatorProvider.getResolvedDeployment();
         String keycloakNuxeoApp = deployment.getResourceName();
 
