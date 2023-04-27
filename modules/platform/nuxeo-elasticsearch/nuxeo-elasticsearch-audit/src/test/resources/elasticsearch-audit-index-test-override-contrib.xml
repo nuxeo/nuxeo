@@ -9,11 +9,11 @@
         {
           "properties" : {
             "eventDate": {
-              "format": "dateOptionalTime",
+              "format": "date_optional_time",
               "type": "date"
             },
             "logDate": {
-              "format": "dateOptionalTime",
+              "format": "date_optional_time",
               "type": "date"
             },
             "extended": {
