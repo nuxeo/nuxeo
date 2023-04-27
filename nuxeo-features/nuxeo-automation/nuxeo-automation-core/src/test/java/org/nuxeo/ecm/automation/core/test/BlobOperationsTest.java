@@ -25,6 +25,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,10 +66,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -300,8 +303,7 @@ public class BlobOperationsTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test
-    public void testGetAllDocumentBlobsOperation() throws Exception {
+    protected void doTestGetAllDocumentBlobsOperation(int expectedBlobsCount) throws IOException, OperationException {
         // Create a file
         Blob mainFile = Blobs.createBlob("the blob content");
         // Create files list
@@ -322,6 +324,8 @@ public class BlobOperationsTest {
         docFile.setPropertyValue("file:content", (Serializable) mainFile);
         docFile.setPropertyValue("files:files", files);
         docFile = session.createDocument(docFile);
+        docFile.addFacet("DynamicFacet");
+        docFile.setPropertyValue("dyn:blob", (Serializable) blob);
         session.save();
         // execute operation chain containing GetAllDocumentBlobs one
         OperationContext ctx = new OperationContext(session);
@@ -330,7 +334,21 @@ public class BlobOperationsTest {
         chain.add(FetchContextDocument.ID);
         chain.add(GetAllDocumentBlobs.ID);
         files = (ArrayList<Map<String, Serializable>>) service.run(ctx, chain);
-        assertEquals(files.size(), 2);
+        assertEquals(expectedBlobsCount, files.size());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blobsextractor-types-contrib.xml")
+    public void testGetAllDocumentBlobsOperation() throws IOException, OperationException {
+        doTestGetAllDocumentBlobsOperation(3);
+    }
+
+    // NXP-31834
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blobsextractor-types-contrib.xml")
+    @WithFrameworkProperty(name = BlobsExtractor.LIST_ONLY_DOC_TYPE_BLOB_PROPERTY_NAME, value = "true")
+    public void testGetAllDocumentBlobsLegacyOperation() throws IOException, OperationException {
+        doTestGetAllDocumentBlobsOperation(2);
     }
 
     @Test
