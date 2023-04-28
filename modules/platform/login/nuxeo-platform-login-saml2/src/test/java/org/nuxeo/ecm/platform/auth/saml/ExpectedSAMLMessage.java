@@ -25,14 +25,14 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.io.Unmarshaller;
-import org.opensaml.xml.io.UnmarshallingException;
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.parse.XMLParserException;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Unmarshaller;
+import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.saml.common.SAMLObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.XMLParserException;
 
 /**
  * @since 2023.0
@@ -57,10 +57,11 @@ public record ExpectedSAMLMessage<O extends SAMLObject> (String message, Functio
 
     protected SAMLObject unmarshallSAMLMessage(String message) {
         try (var is = IOUtils.toInputStream(message, UTF_8)) {
-            Document messageDoc = new BasicParserPool().parse(is);
+            Document messageDoc = XMLObjectProviderRegistrySupport.getParserPool().parse(is);
             Element messageElem = messageDoc.getDocumentElement();
 
-            Unmarshaller unmarshaller = Configuration.getUnmarshallerFactory().getUnmarshaller(messageElem);
+            Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport.getUnmarshallerFactory()
+                                                                        .getUnmarshaller(messageElem);
 
             return (SAMLObject) unmarshaller.unmarshall(messageElem);
         } catch (IOException | XMLParserException | UnmarshallingException e) {

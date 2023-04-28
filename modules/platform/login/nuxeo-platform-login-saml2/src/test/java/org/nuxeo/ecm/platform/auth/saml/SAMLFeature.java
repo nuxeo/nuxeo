@@ -51,10 +51,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.xml.util.Base64;
+import org.opensaml.saml.common.SAMLObject;
 
 import com.google.inject.Binder;
+
+import net.shibboleth.utilities.java.support.codec.Base64Support;
+import net.shibboleth.utilities.java.support.codec.DecodingException;
+import net.shibboleth.utilities.java.support.codec.EncodingException;
 
 /**
  * @since 2023.0
@@ -65,7 +68,7 @@ import com.google.inject.Binder;
 @WithFrameworkProperty(name = ENTITY_ID, value = "http://localhost:8080/login")
 public class SAMLFeature implements RunnerFeature {
 
-    public static final String ALGORITHM_SIGNATURE_RSA_SHA1 = "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
+    public static final String ALGORITHM_SIGNATURE_RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
     protected SAMLAuthenticationProvider samlAuthenticationProvider;
 
@@ -94,24 +97,24 @@ public class SAMLFeature implements RunnerFeature {
     }
 
     public static String decodeCompressSAMLMessage(String message) {
-        byte[] decodedBytes = Base64.decode(message);
-        if (decodedBytes == null) {
-            throw new AssertionError("Unable to Base64 decode message");
-        }
-
-        try (var is = new InflaterInputStream(new ByteArrayInputStream(decodedBytes), new Inflater(true))) {
-            return IOUtils.toString(is, UTF_8);
+        try {
+            byte[] decodedBytes = Base64Support.decode(message);
+            try (var is = new InflaterInputStream(new ByteArrayInputStream(decodedBytes), new Inflater(true))) {
+                return IOUtils.toString(is, UTF_8);
+            }
         } catch (IOException e) {
             throw new AssertionError("Unable to decompress the message", e);
+        } catch (DecodingException e) {
+            throw new AssertionError("Unable to Base64 decode message", e);
         }
     }
 
     public static String encodeSAMLMessage(String message) {
-        String encodedBytes = Base64.encodeBytes(message.getBytes(), Base64.DONT_BREAK_LINES);
-        if (encodedBytes == null) {
-            throw new AssertionError("Unable to Base64 encode message");
+        try {
+            return Base64Support.encodeURLSafe(message.getBytes());
+        } catch (EncodingException e) {
+            throw new AssertionError("Unable to Base64 encode message", e);
         }
-        return encodedBytes;
     }
 
     public static String formatXML(String xml) {

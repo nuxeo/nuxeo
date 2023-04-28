@@ -155,6 +155,7 @@
     <opencensus.version>0.31.1</opencensus.version>
     <okhttp.version>4.11.0</okhttp.version>
     <protobuf.java.version>3.23.2</protobuf.java.version>
+    <opensaml.version>4.3.0</opensaml.version>
   </properties>
 
   <dependencyManagement>
@@ -3408,25 +3409,44 @@
       <!-- saml -->
       <dependency>
         <groupId>org.opensaml</groupId>
-        <artifactId>opensaml</artifactId>
-        <version>2.6.6</version>
-        <scope>compile</scope>
+        <artifactId>opensaml-messaging-impl</artifactId>
+        <version>${opensaml.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensaml</groupId>
+        <artifactId>opensaml-profile-impl</artifactId>
+        <version>${opensaml.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensaml</groupId>
+        <artifactId>opensaml-saml-impl</artifactId>
+        <version>${opensaml.version}</version>
         <exclusions>
+          <!-- exclude storage as we don't need it -->
           <exclusion>
-            <artifactId>xml-apis</artifactId>
-            <groupId>org.apache.xerces</groupId>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-storage-api</artifactId>
+          </exclusion>
+          <!-- exclude velocity as it is used by outbound POST binding that we don't support -->
+          <exclusion>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.opensaml</groupId>
+        <artifactId>opensaml-security-api</artifactId>
+        <version>${opensaml.version}</version>
+        <exclusions>
+          <!-- exclude bouncycastle as we use the jdk15 version -->
+          <exclusion>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
           </exclusion>
           <exclusion>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>serializer</artifactId>
-            <groupId>org.apache.xerces</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <groupId>org.slf4j</groupId>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

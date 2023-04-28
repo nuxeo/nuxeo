@@ -18,17 +18,15 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.getSAMLHttpCookie;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.getSAMLSessionCookie;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.setLoginError;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
@@ -40,17 +38,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.auth.saml.binding.HTTPPostBinding;
-import org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding;
-import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
-import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
-import org.nuxeo.ecm.platform.auth.saml.slo.SLOProfile;
-import org.nuxeo.ecm.platform.auth.saml.slo.SLOProfileImpl;
-import org.nuxeo.ecm.platform.auth.saml.sso.WebSSOProfile;
-import org.nuxeo.ecm.platform.auth.saml.sso.WebSSOProfileImpl;
+import org.nuxeo.ecm.platform.auth.saml.processor.SAMLProcessorFactory;
+import org.nuxeo.ecm.platform.auth.saml.processor.SLOOutboundProcessor;
+import org.nuxeo.ecm.platform.auth.saml.processor.WebSSOOutboundProcessor;
 import org.nuxeo.ecm.platform.auth.saml.user.AbstractUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.EmailBasedUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.UserMapperBasedResolver;
@@ -60,52 +52,12 @@ import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
-import org.nuxeo.ecm.platform.web.common.CookieHelper;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.usermapper.service.UserMapperService;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.common.SAMLException;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.binding.BasicSAMLMessageContext;
-import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.LogoutRequest;
-import org.opensaml.saml2.core.LogoutResponse;
-import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.encryption.Decrypter;
-import org.opensaml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver;
-import org.opensaml.saml2.metadata.EntityDescriptor;
-import org.opensaml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.saml2.metadata.RoleDescriptor;
-import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.SingleLogoutService;
-import org.opensaml.saml2.metadata.SingleSignOnService;
-import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
-import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.security.MetadataCredentialResolver;
-import org.opensaml.ws.message.decoder.MessageDecodingException;
-import org.opensaml.ws.transport.InTransport;
-import org.opensaml.ws.transport.http.HttpServletRequestAdapter;
-import org.opensaml.ws.transport.http.HttpServletResponseAdapter;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.encryption.ChainingEncryptedKeyResolver;
-import org.opensaml.xml.encryption.InlineEncryptedKeyResolver;
-import org.opensaml.xml.encryption.SimpleRetrievalMethodEncryptedKeyResolver;
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.security.BasicSecurityConfiguration;
-import org.opensaml.xml.security.SecurityHelper;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.keyinfo.KeyInfoCredentialResolver;
-import org.opensaml.xml.security.keyinfo.StaticKeyInfoCredentialResolver;
-import org.opensaml.xml.signature.SignatureTrustEngine;
-import org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine;
+import org.opensaml.core.config.InitializationException;
+import org.opensaml.core.xml.config.GlobalParserPoolInitializer;
+import org.opensaml.xmlsec.config.DecryptionParserPoolInitializer;
+import org.opensaml.xmlsec.config.GlobalAlgorithmRegistryInitializer;
 
 /**
  * A SAML2 authentication provider.
@@ -137,42 +89,10 @@ public class SAMLAuthenticationProvider
 
     protected static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
 
-    /*
-     * SAML Constants
-     * @since 11.2
-     */
-    public static final String SAML_SESSION_KEY = "SAML_SESSION";
-
-    // Supported SAML Bindings
-    // TODO: Allow registering new bindings
-    protected static List<SAMLBinding> bindings = new ArrayList<>();
-
-    static {
-        bindings.add(new HTTPPostBinding());
-        bindings.add(new HTTPRedirectBinding());
-    }
-
-    // Decryption key resolver
-    protected static ChainingEncryptedKeyResolver encryptedKeyResolver = new ChainingEncryptedKeyResolver();
-
-    static {
-        encryptedKeyResolver.getResolverChain().add(new InlineEncryptedKeyResolver());
-        encryptedKeyResolver.getResolverChain().add(new EncryptedElementTypeEncryptedKeyResolver());
-        encryptedKeyResolver.getResolverChain().add(new SimpleRetrievalMethodEncryptedKeyResolver());
-    }
-
-    // Profiles supported by the IdP
-    protected Map<String, AbstractSAMLProfile> profiles = new HashMap<>();
-
     protected UserResolver userResolver;
 
-    protected KeyManager keyManager;
-
-    protected SignatureTrustEngine trustEngine;
-
-    protected Decrypter decrypter;
-
-    protected MetadataProvider metadataProvider;
+    /** @since 2023.0 */
+    protected SAMLProcessorFactory processorFactory;
 
     @Override
     public void initPlugin(Map<String, String> parameters) {
@@ -204,61 +124,20 @@ public class SAMLAuthenticationProvider
 
         // Initialize the OpenSAML library
         try {
-            DefaultBootstrap.bootstrap();
-        } catch (ConfigurationException e) {
-            log.error("Failed to bootstrap OpenSAML", e);
+            // don't use InitializationService.initialize
+            // because it tries to configure MetricRegistry for version 4.x whereas we have 5.x
+            new org.opensaml.core.xml.config.XMLObjectProviderInitializer().init();
+            new org.opensaml.saml.config.impl.XMLObjectProviderInitializer().init();
+            new org.opensaml.xmlsec.config.impl.XMLObjectProviderInitializer().init();
+            new GlobalParserPoolInitializer().init();
+            new GlobalAlgorithmRegistryInitializer().init();
+            new DecryptionParserPoolInitializer().init();
+        } catch (InitializationException e) {
+            throw new NuxeoException("Failed to initialize OpenSAML library", e);
         }
-        initializeSecurity(parameters);
 
-        // Read the IdP metadata and initialize the supported profiles
-        try {
-            // Read the IdP metadata
-            initializeMetadataProvider(parameters);
-
-            // Setup Signature Trust Engine
-            MetadataCredentialResolver metadataCredentialResolver = new MetadataCredentialResolver(metadataProvider);
-            trustEngine = new ExplicitKeySignatureTrustEngine(metadataCredentialResolver,
-                    org.opensaml.xml.Configuration.getGlobalSecurityConfiguration()
-                                                  .getDefaultKeyInfoCredentialResolver());
-
-            // Setup decrypter
-            Credential encryptionCredential = getKeyManager().getEncryptionCredential();
-            if (encryptionCredential != null) {
-                KeyInfoCredentialResolver resolver = new StaticKeyInfoCredentialResolver(encryptionCredential);
-                decrypter = new Decrypter(null, resolver, encryptedKeyResolver);
-                decrypter.setRootInNewDocument(true);
-            }
-
-            // Process IdP roles
-            for (RoleDescriptor roleDescriptor : getIdPDescriptor().getRoleDescriptors()) {
-
-                // Web SSO role
-                if (roleDescriptor.getElementQName().equals(IDPSSODescriptor.DEFAULT_ELEMENT_NAME)
-                        && roleDescriptor.isSupportedProtocol(org.opensaml.common.xml.SAMLConstants.SAML20P_NS)) {
-
-                    IDPSSODescriptor idpSSO = (IDPSSODescriptor) roleDescriptor;
-
-                    // SSO
-                    for (SingleSignOnService sso : idpSSO.getSingleSignOnServices()) {
-                        if (sso.getBinding().equals(SAMLConstants.SAML2_REDIRECT_BINDING_URI)) {
-                            addProfile(new WebSSOProfileImpl(sso));
-                            break;
-                        }
-                    }
-
-                    // SLO
-                    for (SingleLogoutService slo : idpSSO.getSingleLogoutServices()) {
-                        if (slo.getBinding().equals(SAMLConstants.SAML2_REDIRECT_BINDING_URI)) {
-                            addProfile(new SLOProfileImpl(slo));
-                            break;
-                        }
-                    }
-                }
-            }
-
-        } catch (MetadataProviderException e) {
-            log.warn("Failed to register IdP: {}", e.getMessage(), e);
-        }
+        processorFactory = new SAMLProcessorFactory(parameters);
+        ;
 
         // contribute icon and link to the Login Screen
         if (StringUtils.isNotBlank(parameters.get("name"))) {
@@ -267,108 +146,14 @@ public class SAMLAuthenticationProvider
         }
     }
 
-    protected void addProfile(AbstractSAMLProfile profile) {
-        profile.setTrustEngine(trustEngine);
-        profile.setDecrypter(decrypter);
-        profiles.put(profile.getProfileIdentifier(), profile);
-    }
-
-    protected static final String SIGNATURE_ALGORITHM = "SignatureAlgorithm";
-
-    protected static final String DIGEST_ALGORITHM = "DigestAlgorithm";
-
-    protected void initializeSecurity(Map<String, String> parameters) {
-        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
-        for (Entry<String, String> es : parameters.entrySet()) {
-            String key = es.getKey();
-            String value = es.getValue();
-            if (key.startsWith(SIGNATURE_ALGORITHM)) {
-                String keyAlgorithm = SecurityHelper.getKeyAlgorithmFromURI(value);
-                if (keyAlgorithm == null && key.contains(".")) {
-                    keyAlgorithm = key.substring(key.lastIndexOf('.') + 1);
-                }
-                config.registerSignatureAlgorithmURI(keyAlgorithm, value);
-            } else if (DIGEST_ALGORITHM.equals(key)) {
-                config.setSignatureReferenceDigestMethod(value);
-            }
-        }
-    }
-
-    protected void initializeMetadataProvider(Map<String, String> parameters) throws MetadataProviderException {
-        AbstractMetadataProvider metadataProvider;
-
-        String metadataUrl = parameters.get("metadata");
-        if (metadataUrl == null) {
-            throw new MetadataProviderException(
-                    "No metadata URI set for provider " + parameters.getOrDefault("name", ""));
-        }
-
-        int requestTimeout = parameters.containsKey("timeout") ? Integer.parseInt(parameters.get("timeout")) : 5;
-
-        if (metadataUrl.startsWith("http:") || metadataUrl.startsWith("https:")) {
-            metadataProvider = new HTTPMetadataProvider(metadataUrl, requestTimeout * 1000);
-        } else { // file
-            metadataProvider = new FilesystemMetadataProvider(new File(metadataUrl));
-        }
-
-        metadataProvider.setParserPool(new BasicParserPool());
-        metadataProvider.initialize();
-
-        this.metadataProvider = metadataProvider;
-    }
-
-    protected EntityDescriptor getIdPDescriptor() throws MetadataProviderException {
-        return (EntityDescriptor) metadataProvider.getMetadata();
-    }
-
-    /**
-     * Returns a Login URL to use with HTTP Redirect
-     */
-    protected String getSSOUrl(HttpServletRequest request, HttpServletResponse response) {
-        WebSSOProfile sso = (WebSSOProfile) profiles.get(WebSSOProfile.PROFILE_URI);
-        if (sso == null) {
-            return null;
-        }
-
-        // Create and populate the context
-        @SuppressWarnings("rawtypes")
-        SAMLMessageContext context = new BasicSAMLMessageContext();
-        populateLocalContext(context, request);
-
-        // Store the requested URL in the Relay State
-        String requestedUrl = getRequestedUrl(request);
-        if (requestedUrl != null) {
-            context.setRelayState(requestedUrl);
-        }
-
-        // Build Uri
-        HTTPRedirectBinding binding = (HTTPRedirectBinding) getBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
-        String loginURL = sso.getEndpoint().getLocation();
-        try {
-            AuthnRequest authnRequest = sso.buildAuthRequest(request);
-            authnRequest.setDestination(sso.getEndpoint().getLocation());
-            context.setOutboundSAMLMessage(authnRequest);
-            loginURL = binding.buildRedirectURL(context, sso.getEndpoint().getLocation());
-        } catch (SAMLException e) {
-            log.error("Failed to build redirect URL", e);
-        }
-        return loginURL;
-    }
-
-    protected String getRequestedUrl(HttpServletRequest request) {
-        String requestedUrl = (String) request.getAttribute(NXAuthConstants.REQUESTED_URL);
-        if (requestedUrl == null) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                requestedUrl = (String) session.getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
-            }
-        }
-        return requestedUrl;
-    }
-
     @Override
     public String computeUrl(HttpServletRequest request, String requestedUrl) {
-        return getSSOUrl(request, null);
+        var processor = processorFactory.retrieveOutboundProcessor(WebSSOOutboundProcessor.PROFILE_URI);
+
+        var catchRedirectResponse = new CatchRedirectHttpServletResponse();
+        processor.execute(request, catchRedirectResponse);
+
+        return catchRedirectResponse.getLocation();
     }
 
     @Override
@@ -385,7 +170,7 @@ public class SAMLAuthenticationProvider
             }
         }
 
-        String loginURL = getSSOUrl(request, response);
+        String loginURL = computeUrl(request, null);
         try {
             response.sendRedirect(loginURL);
         } catch (IOException e) {
@@ -398,88 +183,22 @@ public class SAMLAuthenticationProvider
     // Retrieves user identification information from the request.
     @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest request, HttpServletResponse response) {
-
-        HttpServletRequestAdapter inTransport = new HttpServletRequestAdapter(request);
-        SAMLBinding binding = getBinding(inTransport);
-
-        // Check if we support this binding
-        if (binding == null) {
-            return null;
-        }
-
-        HttpServletResponseAdapter outTransport = new HttpServletResponseAdapter(response, request.isSecure());
-
-        // Create and populate the context
-        @SuppressWarnings("rawtypes")
-        SAMLMessageContext context = new BasicSAMLMessageContext();
-        context.setInboundMessageTransport(inTransport);
-        context.setOutboundMessageTransport(outTransport);
-        populateLocalContext(context, request);
-
-        // Decode the message
-        try {
-            binding.decode(context);
-        } catch (org.opensaml.xml.security.SecurityException | MessageDecodingException e) {
-            log.error("Error during SAML decoding", e);
-            return null;
-        }
-
-        // Set Peer context info if needed
-        try {
-            if (context.getPeerEntityId() == null) {
-                context.setPeerEntityId(getIdPDescriptor().getEntityID());
-            }
-            if (context.getPeerEntityMetadata() == null) {
-                context.setPeerEntityMetadata(getIdPDescriptor());
-            }
-            if (context.getPeerEntityRole() == null) {
-                context.setPeerEntityRole(IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
-            }
-        } catch (MetadataProviderException e) {
-            //
-        }
-
-        // Check for a response processor for this profile
-        AbstractSAMLProfile processor = getProcessor(context);
-
+        var processor = processorFactory.retrieveInboundProcessor(request).orElse(null);
+        // Check if the inbound binding is supported
         if (processor == null) {
-            log.warn("Unsupported profile encountered in the context {}", context::getCommunicationProfileId);
+            return null;
+        }
+        processor.execute(request, response);
+
+        // check for processing errors
+        if (request.getAttribute(LOGIN_ERROR) != null) {
             return null;
         }
 
-        // Set the communication profile
-        context.setCommunicationProfileId(processor.getProfileIdentifier());
-
-        // Delegate handling the message to the processor
-        SAMLObject message = context.getInboundSAMLMessage();
-
-        // Handle SLO
-        // TODO - Try to handle IdP initiated SLO somewhere else
-        if (processor instanceof SLOProfile) {
-            SLOProfile slo = (SLOProfile) processor;
-            try {
-                // Handle SLO response
-                if (message instanceof LogoutResponse) {
-                    slo.processLogoutResponse(context);
-                    // Handle SLO request
-                } else if (message instanceof LogoutRequest) {
-                    SAMLCredential credential = getSamlCredential(request);
-                    slo.processLogoutRequest(context, credential);
-                }
-            } catch (SAMLException e) {
-                log.debug("Error processing SAML message", e);
-            }
-            return null;
-        }
-
-        // Handle SSO
-        SAMLCredential credential;
-
-        try {
-            credential = ((WebSSOProfile) processor).processAuthenticationResponse(context);
-        } catch (SAMLException e) {
-            log.error("Error processing SAML message", e);
-            sendError(request, ERROR_AUTH);
+        // handle SLO
+        var credential = (SAMLCredential) request.getAttribute("SAMLCredential");
+        if (credential == null) {
+            // credential may be null in case of SLO
             return null;
         }
 
@@ -487,22 +206,18 @@ public class SAMLAuthenticationProvider
 
         if (userId.isEmpty()) {
             log.warn("Failed to resolve user with NameID: {}", credential.getNameID().getValue());
-            sendError(request, ERROR_USER);
+            setLoginError(request, ERROR_USER);
             return null;
         }
 
-        // Store session id in a cookie
-        if (credential.getSessionIndexes() != null && !credential.getSessionIndexes().isEmpty()) {
-            String nameValue = credential.getNameID().getValue();
-            String nameFormat = defaultIfBlank(credential.getNameID().getFormat(), NameIDType.UNSPECIFIED);
-            String sessionId = credential.getSessionIndexes().get(0);
-            Cookie cookie = CookieHelper.createCookie(request, SAML_SESSION_KEY,
-                    String.join("|", sessionId, nameValue, nameFormat));
+        // store session id in a cookie
+        getSAMLSessionCookie(credential).ifPresent(samlSessionCookie -> {
+            Cookie cookie = samlSessionCookie.toCookie(request);
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
-        }
+        });
 
-        // Redirect to URL in relay state if any
+        // redirect to URL in relay state if any
         HttpSession session = request.getSession(!response.isCommitted());
         if (session != null) {
             if (StringUtils.isNotEmpty(credential.getRelayState())) {
@@ -513,57 +228,6 @@ public class SAMLAuthenticationProvider
         UserIdentificationInfo userIdent = new UserIdentificationInfo(userId.get());
         userIdent.setCredentialsChecked(true);
         return userIdent;
-    }
-
-    protected AbstractSAMLProfile getProcessor(@SuppressWarnings("rawtypes") SAMLMessageContext context) {
-        String profileId;
-        SAMLObject message = context.getInboundSAMLMessage();
-        if (message instanceof LogoutResponse || message instanceof LogoutRequest) {
-            profileId = SLOProfile.PROFILE_URI;
-        } else {
-            profileId = WebSSOProfile.PROFILE_URI;
-        }
-
-        return profiles.get(profileId);
-    }
-
-    protected SAMLBinding getBinding(String bindingURI) {
-        for (SAMLBinding binding : bindings) {
-            if (binding.getBindingURI().equals(bindingURI)) {
-                return binding;
-            }
-        }
-        return null;
-    }
-
-    protected SAMLBinding getBinding(InTransport transport) {
-        for (SAMLBinding binding : bindings) {
-            if (binding.supports(transport)) {
-                return binding;
-            }
-        }
-        return null;
-    }
-
-    protected void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context,
-            HttpServletRequest request) {
-        // Set local info
-        context.setLocalEntityId(SAMLConfiguration.getEntityId());
-        context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
-
-        // Set local entity role metadata
-        String baseURL = VirtualHostHelper.getBaseURL(request);
-        baseURL += (baseURL.endsWith("/") ? "" : "/") + LoginScreenHelper.getStartupPagePath();
-        SPSSODescriptor descriptor = SAMLConfiguration.getSPSSODescriptor(baseURL);
-        context.setLocalEntityRoleMetadata(descriptor);
-
-        context.setMetadataProvider(metadataProvider);
-
-        // Set the signing key
-        keyManager = Framework.getService(KeyManager.class);
-        if (getKeyManager().getSigningCredential() != null) {
-            context.setOutboundSAMLMessageSigningCredential(getKeyManager().getSigningCredential());
-        }
     }
 
     @Override
@@ -580,61 +244,15 @@ public class SAMLAuthenticationProvider
      * Returns a Logout URL to use with HTTP Redirect
      */
     protected String getSLOUrl(HttpServletRequest request, HttpServletResponse response) {
-        SLOProfile slo = (SLOProfile) profiles.get(SLOProfile.PROFILE_URI);
-        if (slo == null) {
+        var processor = processorFactory.retrieveOutboundProcessor(SLOOutboundProcessor.PROFILE_URI);
+        if (processor == null) {
             return null;
         }
 
-        String logoutURL = slo.getEndpoint().getLocation();
+        var catchRedirectResponse = new CatchRedirectHttpServletResponse();
+        processor.execute(request, catchRedirectResponse);
 
-        SAMLCredential credential = getSamlCredential(request);
-
-        // Create and populate the context
-        @SuppressWarnings("rawtypes")
-        SAMLMessageContext context = new BasicSAMLMessageContext();
-        populateLocalContext(context, request);
-
-        try {
-            LogoutRequest logoutRequest = slo.buildLogoutRequest(context, credential);
-            logoutRequest.setDestination(slo.getEndpoint().getLocation());
-            context.setOutboundSAMLMessage(logoutRequest);
-
-            HTTPRedirectBinding binding = (HTTPRedirectBinding) getBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
-            logoutURL = binding.buildRedirectURL(context, slo.getEndpoint().getLocation());
-        } catch (SAMLException e) {
-            log.error("Failed to get SAML Logout request", e);
-        }
-
-        return logoutURL;
-    }
-
-    protected SAMLCredential getSamlCredential(HttpServletRequest request) {
-        SAMLCredential credential = null;
-
-        // Retrieve the SAMLCredential credential from cookie
-        Cookie cookie = getCookie(request, SAML_SESSION_KEY);
-        if (cookie != null) {
-            String[] parts = cookie.getValue().split("\\|");
-            String sessionId = parts[0];
-            String nameValue = parts[1];
-            String nameFormat = parts[2];
-            if (isBlank(nameFormat) || "null".equals(nameFormat)) {
-                nameFormat = NameIDType.UNSPECIFIED;
-            }
-
-            NameID nameID = (NameID) Configuration.getBuilderFactory()
-                                                  .getBuilder(NameID.DEFAULT_ELEMENT_NAME)
-                                                  .buildObject(NameID.DEFAULT_ELEMENT_NAME);
-            nameID.setValue(nameValue);
-            nameID.setFormat(nameFormat);
-
-            List<String> sessionIndexes = new ArrayList<>();
-            sessionIndexes.add(sessionId);
-
-            credential = new SAMLCredential(nameID, sessionIndexes);
-        }
-
-        return credential;
+        return catchRedirectResponse.getLocation();
     }
 
     @Override
@@ -654,36 +272,9 @@ public class SAMLAuthenticationProvider
             return Boolean.FALSE;
         }
 
-        Cookie cookie = getCookie(request, SAML_SESSION_KEY);
-        if (cookie != null) {
-            removeCookie(response, cookie);
-        }
+        getSAMLHttpCookie(request).ifPresent(cookie -> removeCookie(response, cookie));
 
         return Boolean.TRUE;
-    }
-
-    protected void sendError(HttpServletRequest req, String key) {
-        String msg = I18NUtils.getMessageString("messages", key, null, req.getLocale());
-        req.setAttribute(LOGIN_ERROR, msg);
-    }
-
-    protected KeyManager getKeyManager() {
-        if (keyManager == null) {
-            keyManager = Framework.getService(KeyManager.class);
-        }
-        return keyManager;
-    }
-
-    protected Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
-        Cookie[] cookies = httpRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cooky : cookies) {
-                if (cookieName.equals(cooky.getName())) {
-                    return cooky;
-                }
-            }
-        }
-        return null;
     }
 
     protected void removeCookie(HttpServletResponse httpResponse, Cookie cookie) {

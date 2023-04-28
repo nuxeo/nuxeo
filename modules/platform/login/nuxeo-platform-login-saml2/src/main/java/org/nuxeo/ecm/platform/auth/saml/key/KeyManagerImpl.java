@@ -33,14 +33,17 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.opensaml.common.SAMLRuntimeException;
-import org.opensaml.xml.security.CriteriaSet;
-import org.opensaml.xml.security.SecurityException;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.credential.KeyStoreCredentialResolver;
-import org.opensaml.xml.security.criteria.EntityIDCriteria;
+import org.opensaml.core.criterion.EntityIdCriterion;
+import org.opensaml.saml.common.SAMLRuntimeException;
+import org.opensaml.security.SecurityException;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.security.credential.impl.KeyStoreCredentialResolver;
+
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
+import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 /**
  * An implementation of {@link KeyManager} that uses a JKS key store.
@@ -51,7 +54,7 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
 
     private static final String KEYSTORE_TYPE = "JKS";
 
-    KeyDescriptor config;
+    protected KeyDescriptor config;
 
     private KeyStore keyStore;
 
@@ -89,15 +92,11 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
                         "Unable to find keyStore at " + new File(".").getAbsolutePath() + File.separator + path);
             }
             try (InputStream keystoreIS = new FileInputStream(rootKeystoreFile)) {
-                ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
+                ks = KeyStore.getInstance(KEYSTORE_TYPE);
                 ks.load(keystoreIS, password.toCharArray());
             }
-        } catch (KeyStoreException | IOException e) {
-            throw new SecurityException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException(e);
-        } catch (CertificateException e) {
-            throw new SecurityException(e);
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
+            throw new SecurityException("Unable to load the key store", e);
         }
         return ks;
     }
@@ -111,11 +110,8 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     @Override
     public Credential getCredential(String keyName) {
         try {
-            CriteriaSet cs = new CriteriaSet();
-            EntityIDCriteria criteria = new EntityIDCriteria(keyName);
-            cs.add(criteria);
-            return resolveSingle(cs);
-        } catch (org.opensaml.xml.security.SecurityException e) {
+            return resolveSingle(new CriteriaSet(new EntityIdCriterion(keyName)));
+        } catch (ResolverException e) {
             throw new SAMLRuntimeException("Can't obtain SP signing key", e);
         }
     }
@@ -174,13 +170,14 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
         return getCredential(config.getTlsKey());
     }
 
+    @NotNull
     @Override
-    public Iterable<Credential> resolve(CriteriaSet criteria) throws org.opensaml.xml.security.SecurityException {
+    public Iterable<Credential> resolve(CriteriaSet criteria) throws ResolverException {
         return credentialResolver.resolve(criteria);
     }
 
     @Override
-    public Credential resolveSingle(CriteriaSet criteria) throws SecurityException {
+    public Credential resolveSingle(CriteriaSet criteria) throws ResolverException {
         return credentialResolver.resolveSingle(criteria);
     }
 

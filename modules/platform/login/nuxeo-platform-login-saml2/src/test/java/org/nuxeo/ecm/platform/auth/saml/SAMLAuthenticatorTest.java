@@ -22,27 +22,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.auth.saml.SAMLAuthenticationProvider.SAML_SESSION_KEY;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration.SKEW_TIME_MS;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.assertSAMLMessage;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.encodeSAMLMessage;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.extractQueryParam;
-import static org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding.SAML_REQUEST;
-import static org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding.SAML_RESPONSE;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.SAML_SESSION_KEY;
+import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding.SAML_REQUEST;
+import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding.SAML_RESPONSE;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
 import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletRequest;
 import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletResponse;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -50,10 +52,8 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.LogoutRequest;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.security.BasicSecurityConfiguration;
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.LogoutRequest;
 
 /**
  * @since 6.0
@@ -80,42 +80,6 @@ public class SAMLAuthenticatorTest {
             user.setPropertyValue(userManager.getUserEmailField(), "user@dummy");
             user = userManager.createUser(user);
         }
-    }
-
-    protected static final String RSA_SHA1 = "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
-
-    protected static final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-
-    protected static final String RSA_WHIRLPOOL = "http://www.w3.org/2007/05/xmldsig-more#rsa-whirlpool";
-
-    protected static final String SHA1 = "http://www.w3.org/2000/09/xmldsig#sha1";
-
-    protected static final String SHA256 = "http://www.w3.org/2001/04/xmlenc#sha256";
-
-    @Test
-    public void testInitSignatureAlgorithm() {
-        // default config
-        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
-        assertEquals(RSA_SHA1, config.getSignatureAlgorithmURI("RSA"));
-        // contribute SHA-256
-        samlAuth.initPlugin(Map.of("SignatureAlgorithm", RSA_SHA256));
-        config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
-        assertEquals(RSA_SHA256, config.getSignatureAlgorithmURI("RSA"));
-        // contribute Whirlpool, not known to OpenSAML 2
-        samlAuth.initPlugin(Map.of("SignatureAlgorithm.RSA", RSA_WHIRLPOOL));
-        config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
-        assertEquals(RSA_WHIRLPOOL, config.getSignatureAlgorithmURI("RSA"));
-    }
-
-    @Test
-    public void testInitDigestAlgorithm() {
-        // default config
-        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
-        assertEquals(SHA1, config.getSignatureReferenceDigestMethod());
-        // contribute SHA-256
-        samlAuth.initPlugin(Map.of("DigestAlgorithm", SHA256));
-        config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
-        assertEquals(SHA256, config.getSignatureReferenceDigestMethod());
     }
 
     @Test
@@ -225,6 +189,7 @@ public class SAMLAuthenticatorTest {
                 <saml2p:LogoutRequest xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"
                                       Destination="http://localhost:8080/login"
                                       ID="%s" IssueInstant="%s" Version="2.0">
+                                      Version="2.0">
                   <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">http://dummy</saml2:Issuer>
                   <saml2:NameID xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Format="format">user@dummy</saml2:NameID>
                   <saml2p:SessionIndex>sessionId</saml2p:SessionIndex>
@@ -240,6 +205,33 @@ public class SAMLAuthenticatorTest {
         var responseHandler = MockHttpServletResponse.init();
 
         var info = samlAuth.handleRetrieveIdentity(requestHandler.mock(), responseHandler.mock());
+        assertNull(info);
+    }
+
+    @Test
+    public void testRetrieveIdentityOnSingleLogoutResponse() {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+
+        // TODO check url
+        String url = "http://localhost:8080/login";
+        var samlResponse = """
+                <samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                                      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                                      ID="%s" Destination="%s" IssueInstant="%s"
+                                      InResponseTo="_21df91a89767879fc0f7df6a1490c6000c81644d" Version="2.0">
+                  <saml:Issuer>http://dummy</saml:Issuer>
+                  <samlp:Status>
+                    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+                  </samlp:Status>
+                </samlp:LogoutResponse>
+                """.formatted("_" + UUID.randomUUID(), url, Instant.now());
+        var encodedSamlResponse = encodeSAMLMessage(samlResponse);
+        when(req.getMethod()).thenReturn("POST");
+        when(req.getRequestURL()).thenReturn(new StringBuffer(url));
+        when(req.getParameter("SAMLResponse")).thenReturn(encodedSamlResponse);
+
+        var info = samlAuth.handleRetrieveIdentity(req, resp);
         assertNull(info);
     }
 
@@ -266,21 +258,15 @@ public class SAMLAuthenticatorTest {
         assertSAMLMessage(expected, actual);
     }
 
-    // NXP17044: strips scheme to fix validity check with reverse proxies
-    @Test
-    public void testUriComparator() {
-        assertTrue(SAMLBinding.uriComparator.compare("https://dummy", "http://dummy"));
-    }
-
     // NXP-24766
     // skewTime=60s by default, regular skewTime mechanism is tested in retrieveIdentity with notOnOrAfter=now
     // condition to validate is: now - skewTime < notOnOrAfter
     @Test
-    @WithFrameworkProperty(name = SKEW_TIME_MS, value = "0")
+    @WithFrameworkProperty(name = SKEW_TIME_MS, value = "1")
     public void testInvalidNotOnOrAfterTimeSkew() {
         Instant now = Instant.now();
         Instant notBefore = now.minusSeconds(30);
-        // setting notOnOrAfter in the past with skewTime=0 makes the condition invalid
+        // setting notOnOrAfter in the past with skewTime=1 makes the condition invalid
         Instant notOnOrAfter = now.minusSeconds(30);
         var samlResponse = """
                 <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
@@ -335,10 +321,10 @@ public class SAMLAuthenticatorTest {
     // skewTime=60s by default, regular skewTime mechanism is tested in retrieveIdentity with notBefore=now
     // condition to validate is: notBefore < now + skewTime
     @Test
-    @WithFrameworkProperty(name = SKEW_TIME_MS, value = "0")
+    @WithFrameworkProperty(name = SKEW_TIME_MS, value = "1")
     public void testInvalidNotBeforeTimeSkew() {
         Instant now = Instant.now();
-        // setting notBefore in the future with skewTime=0 makes the condition invalid
+        // setting notBefore in the future with skewTime=1 makes the condition invalid
         Instant notBefore = now.plusSeconds(30);
         Instant notOnOrAfter = now.plusSeconds(30);
         var samlResponse = """

@@ -22,13 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.auth.saml.SAMLAuthenticationProvider.SAML_SESSION_KEY;
-import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.ALGORITHM_SIGNATURE_RSA_SHA1;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.ALGORITHM_SIGNATURE_RSA_SHA256;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.assertSAMLMessage;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.encodeSAMLMessage;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.extractQueryParam;
-import static org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding.SAML_REQUEST;
-import static org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding.SAML_RESPONSE;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.SAML_SESSION_KEY;
+import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding.SAML_REQUEST;
+import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding.SAML_RESPONSE;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -48,8 +48,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.LogoutRequest;
 
 /**
  * @since 2023.0
@@ -92,7 +92,7 @@ public class SAMLAuthenticatorWithKeyManagerTest {
                 """
                         <saml2p:AuthnRequest xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" AssertionConsumerServiceURL="null://null/nuxeo/home.html" Destination="http://dummy/SSORedirect" ID="%s" IssueInstant="%s" Version="2.0">
                           <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">http://localhost:8080/login</saml2:Issuer>
-                          <saml2p:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"/>
+                          <saml2p:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"/>
                         </saml2p:AuthnRequest>
                         """,
                 AuthnRequest::getID, AuthnRequest::getIssueInstant);
@@ -111,7 +111,7 @@ public class SAMLAuthenticatorWithKeyManagerTest {
                 """
                         <saml2p:AuthnRequest xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" AssertionConsumerServiceURL="null://null/nuxeo/home.html" Destination="http://dummy/SSORedirect" ID="%s" IssueInstant="%s" Version="2.0">
                           <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">http://localhost:8080/login</saml2:Issuer>
-                          <saml2p:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"/>
+                          <saml2p:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"/>
                         </saml2p:AuthnRequest>
                         """,
                 AuthnRequest::getID, AuthnRequest::getIssueInstant);
@@ -217,7 +217,7 @@ public class SAMLAuthenticatorWithKeyManagerTest {
                         <saml2p:LogoutRequest xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" Destination="http://dummy/SLORedirect" ID="%s" IssueInstant="%s" Version="2.0">
                           <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">http://localhost:8080/login</saml2:Issuer>
                           <saml2:NameID xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Format="format">user@dummy</saml2:NameID>
-                          <saml2p:SessionIndex>sessionId</saml2p:SessionIndex>
+                          <saml2p:SessionIndex xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol">sessionId</saml2p:SessionIndex>
                         </saml2p:LogoutRequest>
                         """,
                 LogoutRequest::getID, LogoutRequest::getIssueInstant);
@@ -225,7 +225,7 @@ public class SAMLAuthenticatorWithKeyManagerTest {
         assertSAMLMessage(expected, actual);
 
         var signatureAlgorithm = extractQueryParam(logoutURL, "SigAlg");
-        assertEquals(ALGORITHM_SIGNATURE_RSA_SHA1, signatureAlgorithm);
+        assertEquals(ALGORITHM_SIGNATURE_RSA_SHA256, signatureAlgorithm);
 
         var signature = extractQueryParam(logoutURL, "Signature");
         assertNotNull(signature);

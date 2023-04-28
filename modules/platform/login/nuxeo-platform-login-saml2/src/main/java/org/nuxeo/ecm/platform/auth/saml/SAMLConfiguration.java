@@ -14,39 +14,40 @@
  * limitations under the License.
  *
  * Contributors:
- *      Nelson Silva */
+ *      Nelson Silva
+ */
 package org.nuxeo.ecm.platform.auth.saml;
+
+import static java.util.stream.Collectors.toSet;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.buildSAMLObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.namespace.QName;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
 import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
+import org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding;
 import org.nuxeo.runtime.api.Framework;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml2.metadata.EntityDescriptor;
-import org.opensaml.saml2.metadata.KeyDescriptor;
-import org.opensaml.saml2.metadata.NameIDFormat;
-import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.SingleLogoutService;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.security.SecurityHelper;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.credential.UsageType;
-import org.opensaml.xml.security.keyinfo.KeyInfoGenerator;
-import org.opensaml.xml.signature.KeyInfo;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.core.NameIDType;
+import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml.saml2.metadata.KeyDescriptor;
+import org.opensaml.saml.saml2.metadata.NameIDFormat;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.SingleLogoutService;
+import org.opensaml.security.SecurityException;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.security.credential.UsageType;
+import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
+import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
+import org.opensaml.xmlsec.signature.KeyInfo;
 
 /**
  * @since 7.3
@@ -83,10 +84,9 @@ public class SAMLConfiguration {
     }
 
     public static List<String> getLoginBindings() {
-        Set<String> supportedBindings = new HashSet<>();
-        for (SAMLBinding binding : SAMLAuthenticationProvider.bindings) {
-            supportedBindings.add(binding.getBindingURI());
-        }
+        Set<String> supportedBindings = Stream.of(SAMLInboundBinding.values())
+                                              .map(SAMLInboundBinding::getBindingURI)
+                                              .collect(toSet());
         List<String> bindings = new ArrayList<>();
         String[] suffixes = Framework.getProperty(LOGIN_BINDINGS, DEFAULT_LOGIN_BINDINGS).split(",");
         for (String sufix : suffixes) {
@@ -119,7 +119,7 @@ public class SAMLConfiguration {
     public static EntityDescriptor getEntityDescriptor(String baseURL) {
 
         // Entity Descriptor
-        EntityDescriptor descriptor = build(EntityDescriptor.DEFAULT_ELEMENT_NAME);
+        EntityDescriptor descriptor = buildSAMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
         // descriptor.setID(id);
         descriptor.setEntityID(getEntityId());
 
@@ -133,7 +133,7 @@ public class SAMLConfiguration {
      * Returns the {@link SPSSODescriptor} for the Nuxeo Service Provider
      */
     public static SPSSODescriptor getSPSSODescriptor(String baseURL) {
-        SPSSODescriptor spDescriptor = build(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
+        SPSSODescriptor spDescriptor = buildSAMLObject(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
         spDescriptor.setAuthnRequestsSigned(getAuthnRequestsSigned());
         spDescriptor.setWantAssertionsSigned(getWantAssertionsSigned());
         spDescriptor.addSupportedProtocol(SAMLConstants.SAML20P_NS);
@@ -162,7 +162,7 @@ public class SAMLConfiguration {
         // LOGIN
         int index = 0;
         for (String binding : getLoginBindings()) {
-            AssertionConsumerService consumer = build(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+            AssertionConsumerService consumer = buildSAMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
             consumer.setLocation(baseURL);
             consumer.setBinding(binding);
             consumer.setIsDefault(index == 0);
@@ -171,7 +171,7 @@ public class SAMLConfiguration {
         }
 
         // LOGOUT - SAML2_POST_BINDING_URI
-        SingleLogoutService logoutService = build(SingleLogoutService.DEFAULT_ELEMENT_NAME);
+        SingleLogoutService logoutService = buildSAMLObject(SingleLogoutService.DEFAULT_ELEMENT_NAME);
         logoutService.setLocation(baseURL);
         logoutService.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         spDescriptor.getSingleLogoutServices().add(logoutService);
@@ -179,7 +179,7 @@ public class SAMLConfiguration {
     }
 
     private static KeyDescriptor buildKeyDescriptor(UsageType type, KeyInfo key) {
-        KeyDescriptor descriptor = build(KeyDescriptor.DEFAULT_ELEMENT_NAME);
+        KeyDescriptor descriptor = buildSAMLObject(KeyDescriptor.DEFAULT_ELEMENT_NAME);
         descriptor.setUse(type);
         descriptor.setKeyInfo(key);
         return descriptor;
@@ -191,8 +191,8 @@ public class SAMLConfiguration {
 
         // Populate nameIDs
         for (String nameIDValue : nameIDs) {
-            NameIDFormat nameID = build(NameIDFormat.DEFAULT_ELEMENT_NAME);
-            nameID.setFormat(nameIDValue);
+            NameIDFormat nameID = buildSAMLObject(NameIDFormat.DEFAULT_ELEMENT_NAME);
+            nameID.setURI(nameIDValue);
             formats.add(nameID);
         }
 
@@ -201,16 +201,14 @@ public class SAMLConfiguration {
 
     private static KeyInfo generateKeyInfoForCredential(Credential credential) {
         try {
-            KeyInfoGenerator keyInfoGenerator = SecurityHelper.getKeyInfoGenerator(credential, null, null);
+            KeyInfoGenerator keyInfoGenerator = DefaultSecurityConfigurationBootstrap.buildBasicKeyInfoGeneratorManager()
+                                                                                     .getDefaultManager()
+                                                                                     .getFactory(credential)
+                                                                                     .newInstance();
             return keyInfoGenerator.generate(credential);
-        } catch (org.opensaml.xml.security.SecurityException e) {
+        } catch (SecurityException e) {
             log.error("Failed to  generate key info.");
         }
         return null;
     }
-
-    private static <T extends SAMLObject> T build(QName qName) {
-        return (T) Configuration.getBuilderFactory().getBuilder(qName).buildObject(qName);
-    }
-
 }

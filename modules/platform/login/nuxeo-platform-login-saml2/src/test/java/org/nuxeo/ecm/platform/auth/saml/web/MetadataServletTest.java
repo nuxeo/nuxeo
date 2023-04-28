@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.formatXML;
 
 import java.io.IOException;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.auth.saml.SAMLFeature;
@@ -31,8 +30,6 @@ import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletRequest;
 import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.xml.ConfigurationException;
 
 /**
  * @since 2023.0
@@ -41,15 +38,10 @@ import org.opensaml.xml.ConfigurationException;
 @Features(SAMLFeature.class)
 public class MetadataServletTest {
 
-    @BeforeClass
-    public static void initLibrary() throws ConfigurationException {
-        DefaultBootstrap.bootstrap();
-    }
-
     @Test
     public void testDoGet() throws IOException {
         var requestHandler = MockHttpServletRequest.init("GET", "http://localhost:8080/nuxeo/saml/metadata");
-        var responseHandler = MockHttpServletResponse.init().withWriter();
+        var responseHandler = MockHttpServletResponse.init().withOutputStream();
 
         new MetadataServlet().doGet(requestHandler.mock(), responseHandler.mock());
 

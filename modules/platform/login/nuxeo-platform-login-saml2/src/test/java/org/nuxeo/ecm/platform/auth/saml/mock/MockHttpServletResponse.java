@@ -22,9 +22,8 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -32,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.nuxeo.ecm.core.io.DummyServletOutputStream;
 
 /**
  * @since 2023.0
@@ -40,7 +40,7 @@ public class MockHttpServletResponse {
 
     protected final HttpServletResponse mock;
 
-    protected StringWriter responseWriter;
+    protected ByteArrayOutputStream responseOutputStream;
 
     protected List<Cookie> cookies;
 
@@ -53,10 +53,10 @@ public class MockHttpServletResponse {
         return new MockHttpServletResponse(response);
     }
 
-    public MockHttpServletResponse withWriter() {
+    public MockHttpServletResponse withOutputStream() {
         try {
-            responseWriter = new StringWriter();
-            when(mock.getWriter()).thenReturn(new PrintWriter(responseWriter));
+            responseOutputStream = new ByteArrayOutputStream();
+            when(mock.getOutputStream()).thenReturn(new DummyServletOutputStream(responseOutputStream));
             return this;
         } catch (IOException e) {
             throw new AssertionError("Unexpected error", e);
@@ -87,9 +87,9 @@ public class MockHttpServletResponse {
     }
 
     public String getResponseString() {
-        if (responseWriter == null) {
-            throw new AssertionError("The response writer wasn't initialized, consider using withWriter.");
+        if (responseOutputStream == null) {
+            throw new AssertionError("The response writer wasn't initialized, consider using withOutputStream.");
         }
-        return responseWriter.toString();
+        return responseOutputStream.toString();
     }
 }

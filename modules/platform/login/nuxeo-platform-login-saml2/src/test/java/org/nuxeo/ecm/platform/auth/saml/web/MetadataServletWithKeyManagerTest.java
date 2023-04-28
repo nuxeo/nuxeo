@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.formatXML;
 
 import javax.inject.Inject;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.auth.saml.SAMLFeature;
@@ -32,9 +31,8 @@ import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletRequest;
 import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.util.Base64;
+
+import net.shibboleth.utilities.java.support.codec.Base64Support;
 
 /**
  * @since 2023.0
@@ -46,19 +44,15 @@ public class MetadataServletWithKeyManagerTest {
     @Inject
     protected KeyManagerFeature keyManagerFeature;
 
-    @BeforeClass
-    public static void initLibrary() throws ConfigurationException {
-        DefaultBootstrap.bootstrap();
-    }
-
     @Test
     public void testDoGet() throws Exception {
         var requestHandler = MockHttpServletRequest.init("GET", "http://localhost:8080/nuxeo/saml/metadata");
-        var responseHandler = MockHttpServletResponse.init().withWriter();
+        var responseHandler = MockHttpServletResponse.init().withOutputStream();
 
         new MetadataServlet().doGet(requestHandler.mock(), responseHandler.mock());
 
-        String encodedCertificate = Base64.encodeBytes(keyManagerFeature.getCertificate().getEncoded());
+        String encodedCertificate = Base64Support.encode(keyManagerFeature.getCertificate().getEncoded(),
+                Base64Support.CHUNKED);
         var expected = """
                 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://localhost:8080/login">
                   <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">

@@ -14,14 +14,15 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nelson Silva <nelson.silva@inevo.pt> */
+ *     Nelson Silva <nelson.silva@inevo.pt>
+ */
 package org.nuxeo.ecm.platform.auth.saml;
 
 import java.io.Serializable;
 import java.util.List;
 
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml.saml2.core.Attribute;
+import org.opensaml.saml.saml2.core.NameID;
 
 /**
  * @since 6.0
@@ -41,9 +42,18 @@ public class SAMLCredential {
 
     private Serializable additionalData;
 
+    /**
+     * @deprecated since 2023.0
+     */
+    @Deprecated(forRemoval = true, since = "2023.0")
     public SAMLCredential(NameID nameID, List<String> sessionIndexes) {
         this.nameID = nameID;
         this.sessionIndexes = sessionIndexes;
+    }
+
+    public SAMLCredential(NameID nameID, List<String> sessionIndexes, String remoteEntityID, String relayState,
+            List<Attribute> attributes, String localEntityID) {
+        this(nameID, sessionIndexes, remoteEntityID, relayState, attributes, localEntityID, null);
     }
 
     public SAMLCredential(NameID nameID, List<String> sessionIndexes, String remoteEntityID, String relayState,

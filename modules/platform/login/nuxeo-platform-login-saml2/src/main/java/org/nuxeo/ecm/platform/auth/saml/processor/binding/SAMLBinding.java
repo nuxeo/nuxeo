@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,21 @@
  * limitations under the License.
  *
  * Contributors:
- *     Kevin Leturc <kleturc@nuxeo.com>
+ *     Kevin Leturc <kevin.leturc@hyland.com>
  */
-package org.nuxeo.common.function;
+package org.nuxeo.ecm.platform.auth.saml.processor.binding;
+
+import org.opensaml.saml.common.xml.SAMLConstants;
 
 /**
- * Helper class to handle {@link java.util.function} classes.
- *
- * @since 11.1
+ * @since 2023.0
  */
-public class FunctionUtils {
-
-    private FunctionUtils() {
-        // utility class
-    }
+public sealed interface SAMLBinding permits SAMLInboundBinding,SAMLOutboundBinding {
 
     /**
-     * Method allowing to throw a checked exception as an unchecked one.
+     * Returns the URI that identifies this binding as listed in {@link SAMLConstants} for instance.
      *
-     * @param <T> type of exception to throw
-     * @param <R> type of returned object to hide
+     * @return the binding URI
      */
-    @SuppressWarnings("unchecked")
-    protected static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
+    String getBindingURI();
 }
