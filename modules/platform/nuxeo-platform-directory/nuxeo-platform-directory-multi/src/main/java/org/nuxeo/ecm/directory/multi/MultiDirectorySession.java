@@ -397,7 +397,7 @@ public class MultiDirectorySession extends BaseSession {
             }
             // ok we have the data
             try {
-                return BaseSession.createEntryModel(null, schemaName, entryId, map, isReadOnlyEntry);
+                return BaseSession.createEntryModel(schemaName, entryId, map, isReadOnlyEntry);
             } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }
@@ -597,7 +597,8 @@ public class MultiDirectorySession extends BaseSession {
                 // if entry does not exist, create it
                 dirInfo.getSession().createEntry(map);
             } else {
-                final DocumentModel entry = BaseSession.createEntryModel(null, dirInfo.dirSchemaName, id, null);
+                final DocumentModel entry = BaseSession.createEntryModel(dirInfo.dirSchemaName, id, null);
+
                 entry.setProperties(dirInfo.dirSchemaName, map);
                 dirInfo.getSession().updateEntry(entry);
             }
@@ -741,7 +742,7 @@ public class MultiDirectorySession extends BaseSession {
                 }
                 final Map<String, Object> map = e.getValue();
                 seen.put(id, sourceInfo.source.name);
-                final DocumentModel entry = BaseSession.createEntryModel(null, schemaName, id, map,
+                final DocumentModel entry = BaseSession.createEntryModel(schemaName, id, map,
                         readOnlyEntries.contains(id));
                 results.add(entry);
             }
