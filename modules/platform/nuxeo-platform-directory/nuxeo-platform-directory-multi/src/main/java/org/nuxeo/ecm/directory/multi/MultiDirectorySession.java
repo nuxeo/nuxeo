@@ -38,6 +38,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
@@ -501,9 +503,27 @@ public class MultiDirectorySession extends BaseSession {
             } else {
                 final DocumentModel entry = BaseSession.createEntryModel(dirInfo.dirSchemaName, id, null);
 
-                entry.setProperties(dirInfo.dirSchemaName, map);
+                // Make sure a null string in the field map is set to an empty string in the entry property, to avoid
+                // non-dirty false detection and guarantee that setting a field to blank is actually saved.
+                // Such a null string field can be sent from the JSF UI.
+                setProperties(entry, dirInfo.dirSchemaName, map);
                 dirInfo.getSession().updateEntry(entry);
             }
+        }
+    }
+
+    /**
+     * Sets the properties of the given {@code doc} and {@code schema} to the values provided by the given {@code map},
+     * ensuring that any {@code null} value gets transformed to an empty string for a string property.
+     */
+    protected static void setProperties(DocumentModel doc, String schema, Map<String, Object> map) {
+        for (Entry<String, Object> e : map.entrySet()) {
+            Property property = doc.getPropertyObject(schema, e.getKey());
+            Object value = e.getValue();
+            if (property instanceof StringProperty && value == null) {
+                value = "";
+            }
+            property.setValue(value);
         }
     }
 
