@@ -886,4 +886,18 @@ public class TestMultiDirectory {
         assertTrue(BaseSession.isReadOnlyEntry(results.get(3)));
     }
 
+    // NXP-27871
+    @Test
+    public void testNullifytStringProperty() {
+        DocumentModel entry = dir.getEntry("1");
+        assertNotNull(entry);
+        assertEquals("foo1", entry.getProperty("schema3", "thefoo"));
+
+        // set string property to null, expect empty string after update
+        entry.setProperty("schema3", "thefoo", null);
+        dir.updateEntry(entry);
+        entry = dir.getEntry("1");
+        assertEquals("", entry.getProperty("schema3", "thefoo"));
+    }
+
 }
