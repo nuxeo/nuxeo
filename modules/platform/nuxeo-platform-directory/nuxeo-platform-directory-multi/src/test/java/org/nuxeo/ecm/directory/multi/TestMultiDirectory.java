@@ -90,7 +90,7 @@ public class TestMultiDirectory {
     protected MemoryDirectoryDescriptor desc3;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // create and register mem directories
         Map<String, Object> e;
 
@@ -169,7 +169,7 @@ public class TestMultiDirectory {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (dir != null) {
             dir.close();
         }
@@ -179,7 +179,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         DocumentModel entry;
         entry = dir.getEntry("1");
         assertEquals("1", entry.getProperty("schema3", "uid"));
@@ -202,7 +202,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -243,7 +243,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testAuthenticate() throws Exception {
+    public void testAuthenticate() {
         // sub dirs
         try (Session dir1 = memdir1.getSession(); //
                 Session dir3 = memdir3.getSession()) {
@@ -263,7 +263,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testUpdateEntry() throws Exception {
+    public void testUpdateEntry() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -305,7 +305,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testUpdateReadonlyMultidir() throws Exception {
+    public void testUpdateReadonlyMultidir() {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
         try (MultiDirectorySession readonlyDir = readonlyMultidir.getSession();
                 Session dir1 = memdir1.getSession();
@@ -338,7 +338,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testUpdatePartialReadOnlyMultidir() throws Exception {
+    public void testUpdatePartialReadOnlyMultidir() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -386,7 +386,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testDeleteEntry() throws Exception {
+    public void testDeleteEntry() {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -411,7 +411,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery() {
         Map<String, Serializable> filter = new HashMap<>();
         DocumentModelList entries;
         DocumentModel e;
@@ -494,7 +494,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testQueryFulltext() throws Exception {
+    public void testQueryFulltext() {
         Map<String, Serializable> filter = new HashMap<>();
         Set<String> fulltext = new HashSet<>();
         DocumentModelList entries;
@@ -506,7 +506,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testQueryWithBuilder() throws Exception {
+    public void testQueryWithBuilder() {
 
         // everything (empty predicates)
         QueryBuilder queryBuilder = new QueryBuilder();
@@ -634,7 +634,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testGetProjection() throws Exception {
+    public void testGetProjection() {
         Map<String, Serializable> filter = new HashMap<>();
         List<String> list;
 
@@ -719,9 +719,9 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testCreateFromModel() throws Exception {
+    public void testCreateFromModel() {
         String schema = "schema3";
-        DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
+        DocumentModel entry = BaseSession.createEntryModel(schema, null, null);
         entry.setProperty("schema3", "uid", "yo");
 
         assertNull(dir.getEntry("yo"));
@@ -731,20 +731,20 @@ public class TestMultiDirectory {
         // create one with existing same id, must fail
         entry.setProperty("schema3", "uid", "1");
         try {
-            entry = dir.createEntry(entry);
+            dir.createEntry(entry);
             fail("Should raise an error, entry already exists");
         } catch (DirectoryException e) {
         }
     }
 
     @Test
-    public void testHasEntry() throws Exception {
+    public void testHasEntry() {
         assertTrue(dir.hasEntry("1"));
         assertFalse(dir.hasEntry("foo"));
     }
 
     @Test
-    public void testReadOnlyEntryFromMultidirectory() throws Exception {
+    public void testReadOnlyEntryFromMultidirectory() {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
         try (MultiDirectorySession readonlyDir = readonlyMultidir.getSession()) {
             // all should be readonly
@@ -756,7 +756,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testReadOnlyEntryFromGetEntry() throws Exception {
+    public void testReadOnlyEntryFromGetEntry() {
 
         // by default no backing dir is readonly
         assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
@@ -798,7 +798,7 @@ public class TestMultiDirectory {
     }
 
     @Test
-    public void testReadOnlyEntryInQueryResults() throws Exception {
+    public void testReadOnlyEntryInQueryResults() {
         Map<String, String> orderBy = new HashMap<>();
         orderBy.put("schema3:uid", "asc");
         DocumentModelComparator comp = new DocumentModelComparator(orderBy);
