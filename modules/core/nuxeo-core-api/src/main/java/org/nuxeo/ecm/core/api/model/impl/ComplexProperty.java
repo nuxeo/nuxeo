@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -45,6 +47,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class ComplexProperty extends AbstractProperty implements Map<String, Property> {
+
+    private static final Logger log = LogManager.getLogger(ComplexProperty.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -198,6 +202,10 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
         Map<String, Serializable> map = (Map<String, Serializable>) value;
         for (Entry<String, Serializable> entry : map.entrySet()) {
             Property property = get(entry.getKey());
+            if (property == null) {
+                log.debug("Ignoring unknown property: {}", entry::getKey);
+                continue;
+            }
             property.init(entry.getValue());
         }
         removePhantomFlag();
