@@ -34,10 +34,7 @@ public class WOPIModule extends WebEngineModule {
 
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> result = new HashSet<>();
-        result.add(WOPIRoot.class);
-        result.add(FilesEndpoint.class);
-        return result;
+        return super.getClasses();
     }
 
     @Override
