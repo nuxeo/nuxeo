@@ -53,7 +53,7 @@ public class WOPILockSecurityPolicy extends LockSecurityPolicy {
         if (Access.DENY.equals(access) && LockHelper.isLocked(repositoryName, docUUID) && LockHelper.isWOPIRequest()) {
             // locked by another user but WOPI lock and WOPI request, don't block
             log.debug(
-                    "Security: repository={} docId={} user={} Document is locked by another user but it has a WOPI lock and the current user belongs to a WOPI session, don't block WRITE permission",
+                    "Security - repository: {} docId: {} user: {} - Document is locked by another user but it has a WOPI lock and the current user belongs to a WOPI session, don't block WRITE permission",
                     repositoryName, docUUID, principal);
             return Access.UNKNOWN;
         }

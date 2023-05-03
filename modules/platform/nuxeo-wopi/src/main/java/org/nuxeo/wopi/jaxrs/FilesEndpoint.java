@@ -783,8 +783,8 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected void logRequest(String operation, String... headers) {
-        log.debug("Request: repository={} docId={} xpath={} user={} fileId={} operation={}{}", doc::getRepositoryName,
-                doc::getId, () -> xpath, session::getPrincipal, () -> fileId, () -> operation,
+        log.debug("Request - repository: {} docId: {} xpath: {} user: {} fileId: {} operation: {} - {}",
+                doc::getRepositoryName, doc::getId, () -> xpath, session::getPrincipal, () -> fileId, () -> operation,
                 () -> getHeaderString(headers));
     }
 
@@ -793,8 +793,8 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected void logCondition(Supplier<String> condition) {
-        log.debug("Condition: repository={} docId={} xpath={} user={} fileId={} {}", doc::getRepositoryName, doc::getId,
-                () -> xpath, session::getPrincipal, () -> fileId, condition::get);
+        log.debug("Condition - repository: {} docId: {} xpath: {} user: {} fileId: {} - {}", doc::getRepositoryName,
+                doc::getId, () -> xpath, session::getPrincipal, () -> fileId, condition::get);
     }
 
     protected void logNuxeoAction(String action) {
@@ -802,7 +802,7 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected void logNuxeoAction(Supplier<String> action) {
-        log.debug("Nuxeo action: repository={} docId={} xpath={} user={} fileId={} {}", doc::getRepositoryName,
+        log.debug("Nuxeo action - repository: {} docId: {} xpath: {} user: {} fileId: {} - {}", doc::getRepositoryName,
                 doc::getId, () -> xpath, session::getPrincipal, () -> fileId, action::get);
     }
 
@@ -811,7 +811,8 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected void logResponse(String operation, int status, Object entity, String... headers) {
-        log.debug("Response: repository={} docId={} xpath={} user={} fileId={} operation={} status={}{}{}",
+        log.debug(
+                "Response - repository: {} docId: {} xpath: {} user: {} fileId: {} operation: {} status: {} entity: {} headers: {}",
                 doc::getRepositoryName, doc::getId, () -> xpath, session::getPrincipal, () -> fileId, () -> operation,
                 () -> status, () -> getEntityString(entity), () -> getHeaderString(headers));
     }

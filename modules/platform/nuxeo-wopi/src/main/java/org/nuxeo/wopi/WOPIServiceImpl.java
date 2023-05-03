@@ -138,7 +138,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         try {
             discovery = WOPIDiscovery.read(discoveryBytes);
         } catch (NuxeoException e) {
-            log.error("Error while reading WOPI discovery {}", e::getMessage);
+            log.error("Error while reading WOPI discovery: {}", e::getMessage);
             log.debug(e, e);
             return false;
         }
@@ -268,7 +268,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     }
 
     protected byte[] fetchDiscovery() {
-        log.debug("Fetching WOPI discovery from discovery URL {}", discoveryURL);
+        log.debug("Fetching WOPI discovery from discovery URL: {}", discoveryURL);
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
         HttpGet request = new HttpGet(discoveryURL);
         try (CloseableHttpClient httpClient = httpClientBuilder.build();
@@ -299,7 +299,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         private static final long serialVersionUID = 1L;
 
         @Override
-        public void serialize(OutputStream out) throws IOException {
+        public void serialize(OutputStream out) {
             // nothing to write, sending the message itself is enough
         }
     }
@@ -307,7 +307,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     public class WOPIDiscoveryInvalidator extends AbstractPubSubBroker<WOPIDiscoveryInvalidation> {
 
         @Override
-        public WOPIDiscoveryInvalidation deserialize(InputStream in) throws IOException {
+        public WOPIDiscoveryInvalidation deserialize(InputStream in) {
             return new WOPIDiscoveryInvalidation();
         }
 

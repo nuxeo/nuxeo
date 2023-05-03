@@ -96,14 +96,14 @@ public class Helpers {
             // prevent server error
         }
         if (blob == null) {
-            log.debug("Blobs: repository={} docId={} xpath={} Cannot find blob", doc::getRepositoryName, doc::getId,
-                    () -> xpath);
+            log.debug("Blob - repository: {} docId: {} xpath: {} - Cannot find blob", doc::getRepositoryName,
+                    doc::getId, () -> xpath);
             return null;
         }
         // ignore blob providers that don't support sync
         if (!supportsSync(blob)) {
             log.debug(
-                    "Blobs: repository={} docId={} xpath={} Ignoring blob as it is backed by a BlobProvider preventing sync",
+                    "Blob - repository: {} docId: {} xpath: {} - Ignoring blob as it is backed by a BlobProvider preventing sync",
                     doc::getRepositoryName, doc::getId, () -> xpath);
             return null;
         }
