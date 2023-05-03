@@ -116,6 +116,14 @@ public class TemporaryKeyStore extends ExternalResource {
         return keyStorePath;
     }
 
+    public KeyStoreEntry<KeyPair> getKeyPair(String alias) {
+        return keyPairEntries.stream()
+                             .filter(entry -> alias.equals(entry.alias()))
+                             .findFirst()
+                             .orElseThrow(() -> new AssertionError(
+                                     String.format("The keyPair with alias: %s doesn't exist", alias)));
+    }
+
     public static final class Builder {
 
         protected final String keyStoreType;

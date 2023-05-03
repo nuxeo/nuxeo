@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.auth.saml.key.test">
+
+  <extension target="org.nuxeo.ecm.platform.auth.saml.key.KeyManager" point="configuration">
+    <configuration>
+      <keystoreFilePath>${nuxeo.test.keyManager.store.path}</keystoreFilePath>
+      <keystorePassword>password</keystorePassword>
+      <passwords>
+        <password key="saml">password</password>
+      </passwords>
+      <signingKey>saml</signingKey>
+      <encryptionKey>saml</encryptionKey>
+    </configuration>
+  </extension>
+
+</component>

@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo SAML v2 Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.saml2.test;singleton:=true

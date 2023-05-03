@@ -20,84 +20,99 @@ package org.nuxeo.ecm.platform.auth.saml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.encodeSAMLMessage;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Locale;
+import java.time.Instant;
 import java.util.Map;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
+import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletRequest;
+import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpServletResponse;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.usermapper.test.UserMapperFeature;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.ws.message.decoder.MessageDecodingException;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.io.Unmarshaller;
-import org.opensaml.xml.io.UnmarshallingException;
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.parse.XMLParserException;
-import org.opensaml.xml.util.Base64;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
+/**
+ * @since 7.4
+ */
 @RunWith(FeaturesRunner.class)
-@Features(UserMapperFeature.class)
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.login.saml2")
-@Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
+@Features({ SAMLFeature.class, UserMapperFeature.class })
+@Deploy("org.nuxeo.ecm.platform.login.saml2.test:OSGI-INF/usermapper-contribs.xml")
 public class SAMLAuthenticatorWithMapperTest {
 
     @Inject
     protected UserManager userManager;
 
-    private SAMLAuthenticationProvider samlAuth;
+    protected MockHttpServletRequest requestHandler;
 
-    protected void initAuthProvider(boolean noCreateOrUpdate) throws URISyntaxException {
-        String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
-        Map<String, String> params = new HashMap<>();
-        params.put("metadata", metadata);
-        String createOrUpdate = String.valueOf(!noCreateOrUpdate);
-        params.put("userResolverCreateIfNeeded", createOrUpdate);
-        params.put("userResolverUpdate", createOrUpdate);
-        params = Collections.unmodifiableMap(params);
+    protected MockHttpServletResponse responseHandler;
 
-        samlAuth = new SAMLAuthenticationProvider();
-        samlAuth.initPlugin(params);
+    @Before
+    public void before() {
+        String url = "http://localhost:8080/login";
+        Instant now = Instant.now();
+        var samlResponse = """
+                <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                                ID="%s" Destination="%s" IssueInstant="%s"
+                                InResponseTo="_a5947jig4cb55ii746a2963a67bf65" Version="2.0">
+                  <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">http://dummy</saml:Issuer>
+                  <samlp:Status xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+                    <samlp:StatusCode xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                                      Value="urn:oasis:names:tc:SAML:2.0:status:Success">
+                    </samlp:StatusCode>
+                  </samlp:Status>
+                  <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                                  ID="%s" IssueInstant="%s"
+                                  Version="2.0">
+                    <saml:Issuer>http://dummy</saml:Issuer>
+                    <saml:Subject>
+                      <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+                                   NameQualifier="http://dummy">user@dummy</saml:NameID>
+                      <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                        <saml:SubjectConfirmationData InResponseTo="_a5947jig4cb55ii746a2963a67bf65"
+                                                      Recipient="%s"/>
+                      </saml:SubjectConfirmation>
+                    </saml:Subject>
+                    <saml:Conditions NotBefore="%s" NotOnOrAfter="%s">
+                      <saml:AudienceRestriction>
+                        <saml:Audience>%s</saml:Audience>
+                      </saml:AudienceRestriction>
+                    </saml:Conditions>
+                    <saml:AuthnStatement AuthnInstant=""
+                                         SessionIndex="s2008f616d6f2b777082bbf1a8a135d1a9f3d53501">
+                      <saml:AuthnContext>
+                        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+                        </saml:AuthnContextClassRef>
+                      </saml:AuthnContext>
+                    </saml:AuthnStatement>
+                  </saml:Assertion>
+                </samlp:Response>
+                """.formatted("_" + UUID.randomUUID(), url, now, "_" + UUID.randomUUID(), now, url, now, now, url);
+        var encodedSamlResponse = encodeSAMLMessage(samlResponse);
+
+        requestHandler = MockHttpServletRequest.init("POST", url)
+                                               .withAttributes()
+                                               .whenGetParameterThenReturn("SAMLResponse", encodedSamlResponse)
+                                               .whenGetParameterThenReturn("RelayState", "/relay");
+        responseHandler = MockHttpServletResponse.init();
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testRetrieveIdentityDefaultSettings() throws Exception {
-        initAuthProvider(false);
+        var samlAuth = initAuthProvider(true);
 
-        HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
-                "text/html");
-        HttpServletResponse resp = mock(HttpServletResponse.class);
-
-        UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
+        UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(requestHandler.mock(), responseHandler.mock());
         assertEquals("user@dummy", info.getUserName());
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
@@ -105,15 +120,10 @@ public class SAMLAuthenticatorWithMapperTest {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testUserDoesNotExistAndNoCreation() throws Exception {
-        initAuthProvider(true);
+        var samlAuth = initAuthProvider(false);
 
-        HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
-                "text/html");
-        HttpServletResponse resp = mock(HttpServletResponse.class);
-
-        UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
+        UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(requestHandler.mock(), responseHandler.mock());
         assertNull(info);
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
@@ -121,9 +131,9 @@ public class SAMLAuthenticatorWithMapperTest {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-readonly-contribs.xml")
+    @Deploy("org.nuxeo.ecm.platform.login.saml2.test:OSGI-INF/usermapper-readonly-contribs.xml")
     public void testUserExistsAndNoCreation() throws Exception {
-        initAuthProvider(true);
+        var samlAuth = initAuthProvider(false);
 
         DocumentModel user = userManager.getUserModel("user");
         if (user == null) {
@@ -133,59 +143,22 @@ public class SAMLAuthenticatorWithMapperTest {
             user = userManager.createUser(user);
         }
 
-        HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
-                "text/html");
-        HttpServletResponse resp = mock(HttpServletResponse.class);
-
-        UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
-        assertEquals("user@dummy", info.getUserName());
+        UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(requestHandler.mock(), responseHandler.mock());
+        assertEquals(user.getId(), info.getUserName());
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
-        assertEquals("user@dummy", principal.getEmail());
+        assertEquals(user.getId(), principal.getEmail());
     }
 
-    protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType)
-            throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        URL urlP = new URL(url);
-        File file = new File(getClass().getResource(messageFile).toURI());
-        String message = Base64.encodeFromFile(file.getAbsolutePath());
-        when(request.getMethod()).thenReturn(method);
-        when(request.getContentLength()).thenReturn(message.length());
-        when(request.getContentType()).thenReturn(contentType);
-        when(request.getParameter("SAMLart")).thenReturn(null);
-        when(request.getParameter("SAMLRequest")).thenReturn(null);
-        when(request.getParameter("SAMLResponse")).thenReturn(message);
-        when(request.getParameter("RelayState")).thenReturn("");
-        when(request.getParameter("Signature")).thenReturn("");
-        when(request.getRequestURI()).thenReturn(urlP.getPath());
-        when(request.getRequestURL()).thenReturn(new StringBuffer(url));
-        when(request.getAttribute("javax.servlet.request.X509Certificate")).thenReturn(null);
-        when(request.isSecure()).thenReturn(false);
-        when(request.getLocale()).thenReturn(Locale.ENGLISH);
-        // when(request.getAttribute(SAMLConstants.LOCAL_ENTITY_ID)).thenReturn(null);
-        return request;
-    }
+    protected SAMLAuthenticationProvider initAuthProvider(boolean createOrUpdate) throws URISyntaxException {
+        String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
+        String createOrUpdateString = String.valueOf(createOrUpdate);
+        Map<String, String> params = Map.of("metadata", metadata, //
+                "userResolverCreateIfNeeded", createOrUpdateString, //
+                "userResolverUpdate", createOrUpdateString);
 
-    protected SAMLObject decodeMessage(String message) {
-        try {
-            byte[] decodedBytes = Base64.decode(message);
-            if (decodedBytes == null) {
-                throw new MessageDecodingException("Unable to Base64 decode incoming message");
-            }
-
-            InputStream is = new ByteArrayInputStream(decodedBytes);
-            is = new InflaterInputStream(is, new Inflater(true));
-
-            Document messageDoc = new BasicParserPool().parse(is);
-            Element messageElem = messageDoc.getDocumentElement();
-
-            Unmarshaller unmarshaller = Configuration.getUnmarshallerFactory().getUnmarshaller(messageElem);
-
-            return (SAMLObject) unmarshaller.unmarshall(messageElem);
-        } catch (MessageDecodingException | XMLParserException | UnmarshallingException e) {
-            //
-        }
-        return null;
+        var samlAuth = new SAMLAuthenticationProvider();
+        samlAuth.initPlugin(params);
+        return samlAuth;
     }
 }
