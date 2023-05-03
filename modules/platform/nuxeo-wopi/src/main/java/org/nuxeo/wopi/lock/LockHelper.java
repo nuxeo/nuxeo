@@ -74,7 +74,7 @@ public class LockHelper {
      * @see #addLock(String, String)
      */
     public static void addLock(String fileId, String repository, String docId, String lock) {
-        log.debug("Locking: fileId={} Adding lock {}", fileId, lock);
+        log.debug("Locking - fileId: {} - Adding lock {}", fileId, lock);
         doPrivilegedOnLockDirectory(session -> {
             Map<String, Object> entryMap = new HashMap<>();
             entryMap.put(LOCK_DIRECTORY_FILE_ID, fileId);
@@ -116,7 +116,7 @@ public class LockHelper {
      * Updates the WOPI lock stored for the given file id with the given lock and a fresh timestamp.
      */
     public static void updateLock(String fileId, String lock) {
-        log.debug("Locking: fileId={} Updating lock {}", fileId, lock);
+        log.debug("Locking - fileId: {} - Updating lock {}", fileId, lock);
         doPrivilegedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(fileId);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_LOCK, lock);
@@ -129,7 +129,7 @@ public class LockHelper {
      * Updates the WOPI lock stored for the given file id with a fresh timestamp.
      */
     public static void refreshLock(String fileId) {
-        log.debug("Locking: fileId={} Refreshing lock", fileId);
+        log.debug("Locking - fileId: {} - Refreshing lock", fileId);
         doPrivilegedOnLockDirectory(session -> {
             DocumentModel entry = session.getEntry(fileId);
             entry.setProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP, System.currentTimeMillis());
@@ -141,7 +141,7 @@ public class LockHelper {
      * Removes the WOPI lock stored for the given file id.
      */
     public static void removeLock(String fileId) {
-        log.debug("Locking: fileId={} Removing lock", fileId);
+        log.debug("Locking - fileId: {} - Removing lock", fileId);
         doPrivilegedOnLockDirectory((Session session) -> session.deleteEntry(fileId));
     }
 
@@ -149,7 +149,7 @@ public class LockHelper {
      * Removes all the WOPI locks stored for the given repository and doc id.
      */
     public static void removeLocks(String repository, String docId) {
-        log.debug("Locking: repository={} docId={} Document was unlocked in Nuxeo, removing related WOPI locks",
+        log.debug("Locking - repository: {} docId: {} - Document was unlocked in Nuxeo, removing related WOPI locks",
                 repository, docId);
         QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(LOCK_DIRECTORY_REPOSITORY, repository))
                                                       .and(Predicates.eq(LOCK_DIRECTORY_DOC_ID, docId));

@@ -171,11 +171,11 @@ public class TestFilesEndpoint {
 
     protected String multipleBlobsDocFileId;
 
-    protected String multipleBlobsDocAttachementId;
+    protected String multipleBlobsDocAttachmentId;
 
     protected Blob expectedFileBlob;
 
-    protected Blob expectedAttachementBlob;
+    protected Blob expectedAttachmentBlob;
 
     ObjectMapper mapper;
 
@@ -227,14 +227,12 @@ public class TestFilesEndpoint {
         setPermissions(folder, userPermissions);
 
         expectedFileBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.txt"));
-        expectedAttachementBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-attachment.txt"));
+        expectedAttachmentBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-attachment.txt"));
 
         CoreSession johnSession = coreFeature.getCoreSession("john");
         blobDoc = johnSession.createDocumentModel("/wopi", "blobDoc", "File");
         blobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) expectedFileBlob);
         blobDoc = johnSession.createDocument(blobDoc);
-        // retrieve the blob to get an updated digest
-        expectedFileBlob = (Blob) blobDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
         blobDocFileId = FileInfo.computeFileId(blobDoc, FILE_CONTENT_PROPERTY);
 
         zeroLengthBlobDoc = johnSession.createDocumentModel("/wopi", "zeroLengthBlobDoc", "File");
@@ -260,15 +258,13 @@ public class TestFilesEndpoint {
         multipleBlobsDoc = johnSession.createDocumentModel("/wopi", "multipleBlobsDoc", "File");
         multipleBlobsDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) expectedFileBlob);
         List<Map<String, Serializable>> files = Collections.singletonList(
-                Collections.singletonMap("file", (Serializable) expectedAttachementBlob));
+                Collections.singletonMap("file", (Serializable) expectedAttachmentBlob));
         multipleBlobsDoc.setPropertyValue("files:files", (Serializable) files);
         multipleBlobsDoc = johnSession.createDocument(multipleBlobsDoc);
-        // retrieve the blob to get an updated digest
-        files = (List<Map<String, Serializable>>) multipleBlobsDoc.getPropertyValue("files:files");
-        expectedAttachementBlob = (Blob) files.get(0).get("file");
+        expectedAttachmentBlob = (Blob) files.get(0).get("file");
 
         multipleBlobsDocFileId = FileInfo.computeFileId(multipleBlobsDoc, FILE_CONTENT_PROPERTY);
-        multipleBlobsDocAttachementId = FileInfo.computeFileId(multipleBlobsDoc, FILES_FIRST_FILE_PROPERTY);
+        multipleBlobsDocAttachmentId = FileInfo.computeFileId(multipleBlobsDoc, FILES_FIRST_FILE_PROPERTY);
     }
 
     protected void setPermissions(DocumentModel doc, Map<String, String> userPermissions) {
@@ -314,8 +310,6 @@ public class TestFilesEndpoint {
         convertibleBlob.setFilename(convertibleFilename);
         convertibleBlobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) convertibleBlob);
         convertibleBlobDoc = session.createDocument(convertibleBlobDoc);
-        // retrieve the blob to get an updated digest
-        convertibleBlob = (Blob) convertibleBlobDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
         String convertibleBlobDocFileId = FileInfo.computeFileId(convertibleBlobDoc, FILE_CONTENT_PROPERTY);
         transactionalFeature.nextTransaction();
         toReplace.put(DOC_ID_VAR, convertibleBlobDoc.getId());
@@ -960,7 +954,7 @@ public class TestFilesEndpoint {
 
         // success - 200 - conversion from suggested filename with a custom WOPI base URL
         headers.put(SUGGESTED_TARGET, "bar.docx");
-        String customWOPIBaseURL = "http://foo";
+        String customWOPIBaseURL = "https://foo";
         try {
             Framework.getProperties().setProperty(WOPI_BASE_URL_PROPERTY, customWOPIBaseURL);
             try (CloseableClientResponse response = post(johnToken, data, headers, hugeBlobDocFileId)) {
@@ -1039,7 +1033,7 @@ public class TestFilesEndpoint {
     public void testOnAttachment() throws IOException, JSONException {
         DocumentRef multipleBlobsDocRef = multipleBlobsDoc.getRef();
         // CheckFileInfo
-        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachmentId)) {
             Map<String, String> toReplace = new HashMap<>();
             toReplace.put(REPOSITORY_VAR, multipleBlobsDoc.getRepositoryName());
             toReplace.put(DOC_ID_VAR, multipleBlobsDoc.getId());
@@ -1051,17 +1045,17 @@ public class TestFilesEndpoint {
         }
 
         // GetFile
-        try (CloseableClientResponse response = get(joeToken, multipleBlobsDocAttachementId, CONTENTS_PATH)) {
+        try (CloseableClientResponse response = get(joeToken, multipleBlobsDocAttachmentId, CONTENTS_PATH)) {
             assertEquals(200, response.getStatus());
             Blob actualBlob = Blobs.createBlob(response.getEntityInputStream());
-            assertEquals(expectedAttachementBlob.getString(), actualBlob.getString());
+            assertEquals(expectedAttachmentBlob.getString(), actualBlob.getString());
         }
 
         // Lock
         Map<String, String> headers = new HashMap<>();
         headers.put(OVERRIDE, Operation.LOCK.name());
         headers.put(LOCK, "foo");
-        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachmentId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
@@ -1072,7 +1066,7 @@ public class TestFilesEndpoint {
         // PutFile
         String data = "new attachment";
         headers.put(OVERRIDE, Operation.PUT.name());
-        try (CloseableClientResponse response = post(johnToken, data, headers, multipleBlobsDocAttachementId,
+        try (CloseableClientResponse response = post(johnToken, data, headers, multipleBlobsDocAttachmentId,
                 CONTENTS_PATH)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
@@ -1090,7 +1084,7 @@ public class TestFilesEndpoint {
         headers.put(OVERRIDE, Operation.PUT_RELATIVE.name());
         headers.put(FILE_CONVERSION, "True");
         headers.put(SUGGESTED_TARGET, ".docx");
-        try (CloseableClientResponse response = post(johnToken, data, headers, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = post(johnToken, data, headers, multipleBlobsDocAttachmentId)) {
             // a version is done before updating the document, thus 0.1+
             assertPutRelativeFileCreateVersionResponse(response, multipleBlobsDoc.getRef(), FILES_FIRST_FILE_PROPERTY,
                     "test-attachment.docx", getBaseURL(), data, "0.1+");
@@ -1114,7 +1108,7 @@ public class TestFilesEndpoint {
 
         // Lock files:files/0/file
         headers.put(LOCK, "fooAttachment");
-        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachmentId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
             // doc is still locked
@@ -1138,7 +1132,7 @@ public class TestFilesEndpoint {
         // Unlock files:files/0/file
         headers.put(OVERRIDE, Operation.UNLOCK.name());
         // fail - 409 - lock mismatch
-        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachmentId)) {
             assertEquals(409, response.getStatus());
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
@@ -1158,7 +1152,7 @@ public class TestFilesEndpoint {
 
         // Unlock files:files/0/file
         headers.put(LOCK, "fooAttachment");
-        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachmentId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
             // document is now unlocked, no more WOPI lock set
@@ -1197,22 +1191,22 @@ public class TestFilesEndpoint {
         // Lock files:files/0/file
         headers.put(LOCK, "fooAttachment");
         headers.remove(OLD_LOCK);
-        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachmentId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
-            String lock = LockHelper.getLock(multipleBlobsDocAttachementId);
+            String lock = LockHelper.getLock(multipleBlobsDocAttachmentId);
             assertEquals("fooAttachment", lock);
         }
 
         // Unlock and relock files:files/0/file
         headers.put(LOCK, "barAttachment");
         headers.put(OLD_LOCK, "fooAttachment");
-        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachmentId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
-            String lock = LockHelper.getLock(multipleBlobsDocAttachementId);
+            String lock = LockHelper.getLock(multipleBlobsDocAttachmentId);
             assertEquals("barAttachment", lock);
         }
     }
@@ -1263,7 +1257,7 @@ public class TestFilesEndpoint {
         }
 
         // files:files/0/file
-        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachmentId)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals("0", node.get("Version").asText());
         }
@@ -1273,7 +1267,7 @@ public class TestFilesEndpoint {
         session.saveDocument(doc);
         transactionalFeature.nextTransaction();
 
-        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachementId)) {
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachmentId)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals("1", node.get("Version").asText());
         }
