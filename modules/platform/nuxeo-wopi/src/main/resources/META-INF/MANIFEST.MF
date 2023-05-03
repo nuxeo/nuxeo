@@ -15,3 +15,4 @@ Nuxeo-Component: OSGI-INF/auth-contrib.xml,
  OSGI-INF/security-policies-contrib.xml,
  OSGI-INF/versioning-policies-contrib.xml,
  OSGI-INF/wopi-service.xml
+Nuxeo-AllowOverride: true
