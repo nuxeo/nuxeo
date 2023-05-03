@@ -12,11 +12,12 @@
       <plugins>
         <plugin>BASIC_AUTH</plugin>
         <plugin>TOKEN_AUTH</plugin>
+        <plugin>OAUTH2_AUTH</plugin>
+        <plugin>JWT_AUTH</plugin>
         <plugin>CAS2_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH_FOR_CAS2</plugin>
         <plugin>FORM_AUTH</plugin>
         <plugin>WEBENGINE_FORM_AUTH</plugin>
-        <plugin>WEBSERVICES_AUTH</plugin>
       </plugins>
     </authenticationChain>
   </extension>
