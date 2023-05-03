@@ -523,7 +523,7 @@ pipeline {
             ----------------------------------------
             Package
             ----------------------------------------"""
-            sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -f packages/pom.xml -DskipTests install"
+            sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -T4C -f packages/pom.xml -DskipTests install"
           }
         }
       }
