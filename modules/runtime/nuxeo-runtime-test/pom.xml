@@ -150,6 +150,16 @@
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>htmlunit-driver</artifactId>
     </dependency>
+    <!-- declared here because no occurrences exist elsewhere, html-unit-driver depends on it -->
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+    </dependency>
+    <!-- declared here because xalan:xalan starting from 2.7.3 doesn't depend on it anymore (bug) -->
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>serializer</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.concordion</groupId>

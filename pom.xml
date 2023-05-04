@@ -104,6 +104,7 @@
     <restlet.version>2.4.3</restlet.version>
     <jmock.version>2.12.0</jmock.version>
     <wro4j.version>1.10.1</wro4j.version>
+    <xalan.version>2.7.3</xalan.version>
 
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
@@ -3599,7 +3600,19 @@
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
-        <version>2.7.2</version>
+        <version>${xalan.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>serializer</artifactId>
+        <version>${xalan.version}</version>
+        <exclusions>
+          <!-- exposes a package conflicting with JDK -->
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -3662,19 +3675,6 @@
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
         <version>9.5</version>
-      </dependency>
-
-      <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>serializer</artifactId>
-        <version>2.7.2</version>
-        <exclusions>
-          <!-- exposes a package conflicting with JDK -->
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
