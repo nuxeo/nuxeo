@@ -27,6 +27,7 @@ import static org.nuxeo.wopi.TestConstants.FILE_SCHEMA;
 import static org.nuxeo.wopi.TestConstants.REPOSITORY_VAR;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -157,4 +159,29 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         doc.setACP(acp, true);
     }
 
+    // NXP-31828
+    @Test
+    @Deploy("org.nuxeo.wopi:OSGI-INF/test-download-permissions-contrib.xml")
+    public void testWithDenyDownloadPolicy() throws IOException {
+        // create test doc
+        DocumentModel doc = session.createDocumentModel("/", "wopiDoc", "File");
+        doc = session.createDocument(doc);
+
+        // no blob
+        JsonAssert json = jsonAssert(doc, getRenderingContext());
+        json = json.has("properties").has(FILE_CONTENT_PROPERTY);
+        json.isNull();
+
+        // blob with a supported extension
+        Blob blob = createBlob("dummy content");
+        blob.setFilename("content.docx");
+        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
+        doc = session.saveDocument(doc);
+
+        // no wopi object as the download policy denies the download
+        json = jsonAssert(doc, getRenderingContext());
+        json = json.has("properties").has(FILE_CONTENT_PROPERTY);
+        json = json.isObject();
+        json.hasNot("wopi");
+    }
 }

@@ -93,14 +93,24 @@ public class WOPIJsonEnricher extends AbstractJsonEnricher<BlobProperty> {
         }
 
         Blob blob = (Blob) blobProperty.getValue();
-        WOPIBlobInfo info = Framework.getService(WOPIService.class).getWOPIBlobInfo(blob);
+        if (blob == null) {
+            return;
+        }
+
+        String xpath = getXPath(blobProperty);
+        WOPIService wopiService = Framework.getService(WOPIService.class);
+        if (!wopiService.checkDownloadBlob(doc, xpath, blob)) {
+            return;
+        }
+
+        WOPIBlobInfo info = wopiService.getWOPIBlobInfo(blob);
         if (info == null) {
             return;
         }
 
         jg.writeFieldName(NAME);
         jg.writeStartObject();
-        writeWOPIBlobInfo(jg, info, doc, getXPath(blobProperty));
+        writeWOPIBlobInfo(jg, info, doc, xpath);
         jg.writeEndObject();
     }
 

@@ -46,11 +46,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.kv.KeyValueService;
@@ -76,6 +78,9 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     public static final String WOPI_PROPERTY_NAMESPACE = "org.nuxeo.wopi";
 
     public static final String SUPPORTED_APP_NAMES_PROPERTY_KEY = "supportedAppNames";
+
+    // @since 2021.37
+    public static final String DOWNLOAD_REASON = "download";
 
     protected static final String WOPI_DISCOVERY_INVAL_PUBSUB_TOPIC = "wopiDiscoveryInval";
 
@@ -292,6 +297,11 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     protected KeyValueStore getKeyValueStore() {
         return Framework.getService(KeyValueService.class).getKeyValueStore(WOPI_KEY_VALUE_STORE_NAME);
+    }
+
+    @Override
+    public boolean checkDownloadBlob(DocumentModel doc, String xpath, Blob blob) {
+        return Framework.getService(DownloadService.class).checkPermission(doc, xpath, blob, DOWNLOAD_REASON, Map.of());
     }
 
     public static class WOPIDiscoveryInvalidation implements SerializableMessage {

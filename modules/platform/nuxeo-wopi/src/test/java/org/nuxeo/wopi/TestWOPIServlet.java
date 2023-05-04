@@ -150,6 +150,18 @@ public class TestWOPIServlet {
         doGet(url, response -> assertEquals(404, response.getStatusLine().getStatusCode()));
     }
 
+    // NXP-31828
+    @Test
+    @Deploy("org.nuxeo.wopi:OSGI-INF/test-download-permissions-contrib.xml")
+    public void testWithDenyDownloadPolicy() throws IOException {
+        // ask for a supported blob
+        String url = Helpers.getWOPIURL(getBaseURL(), "view", docxDoc, FILE_CONTENT_PROPERTY);
+        doGet(url, response -> assertEquals(404, response.getStatusLine().getStatusCode()));
+
+        url = Helpers.getWOPIURL(getBaseURL(), "edit", docxDoc, FILE_CONTENT_PROPERTY);
+        doGet(url, response -> assertEquals(404, response.getStatusLine().getStatusCode()));
+    }
+
     protected void doGet(String url, Consumer<CloseableHttpResponse> consumer) throws IOException {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
         try (CloseableHttpClient httpClient = httpClientBuilder.build()) {

@@ -107,6 +107,14 @@ public class Helpers {
                     doc::getRepositoryName, doc::getId, () -> xpath);
             return null;
         }
+
+        // check that the current user can actually download the blob
+        if (!Framework.getService(WOPIService.class).checkDownloadBlob(doc, xpath, blob)) {
+            log.debug("Blob - repository: {} docId: {} xpath: {} - Current user cannot download blob",
+                    doc::getRepositoryName, doc::getId, () -> xpath);
+            return null;
+        }
+
         return blob;
     }
 
