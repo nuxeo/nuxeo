@@ -1,0 +1,13 @@
+<component name="org.nuxeo.wopi.download.permissions.test">
+
+  <extension target="org.nuxeo.ecm.core.io.download.DownloadService" point="permissions">
+    <permission name="alwaysDenyPerm">
+      <script>
+        function run() {
+          return false;
+        }
+      </script>
+    </permission>
+  </extension>
+
+</component>

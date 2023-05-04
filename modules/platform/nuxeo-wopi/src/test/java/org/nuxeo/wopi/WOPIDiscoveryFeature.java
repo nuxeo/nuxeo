@@ -27,11 +27,10 @@ import static org.nuxeo.wopi.Constants.WOPI_KEY_VALUE_STORE_NAME;
 
 import java.io.File;
 
-import javax.inject.Inject;
-
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -44,20 +43,15 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  */
 public class WOPIDiscoveryFeature implements RunnerFeature {
 
-    @Inject
-    protected KeyValueService keyValueService;
-
-    @Inject
-    protected WOPIService wopiService;
-
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
-        KeyValueStore keyValueStore = keyValueService.getKeyValueStore(WOPI_KEY_VALUE_STORE_NAME);
+        KeyValueStore keyValueStore = Framework.getService(KeyValueService.class)
+                                               .getKeyValueStore(WOPI_KEY_VALUE_STORE_NAME);
         File testDiscoveryFile = FileUtils.getResourceFileFromContext("test-discovery.xml");
         keyValueStore.put(WOPI_DISCOVERY_KEY, org.apache.commons.io.FileUtils.readFileToByteArray(testDiscoveryFile));
         try (CapturingEventListener capturingEventListener = new CapturingEventListener(WOPI_DISCOVERY_REFRESH_EVENT)) {
             // force re-loading of discovery after filling the KeyValue
-            ((WOPIServiceImpl) wopiService).loadDiscovery();
+            ((WOPIServiceImpl) Framework.getService(WOPIService.class)).loadDiscovery();
             // check that the refreshWOPIDiscovery event has been fired
             assertTrue(capturingEventListener.hasBeenFired(WOPI_DISCOVERY_REFRESH_EVENT));
         }
