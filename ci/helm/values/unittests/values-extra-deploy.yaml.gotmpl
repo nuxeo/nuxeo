@@ -1,0 +1,30 @@
+extraDeploy:
+  {{- if .Values.elasticsearch.enabled }}
+  # Elasticsearch PDB doesn't allow us to customize the minAvailable spec
+  - |
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: elasticsearch-master
+      labels: {{"{{-"}} include "extra-deploy.labels.standard" . | nindent 4 {{"}}"}}
+    spec:
+      minAvailable: 1
+      selector:
+        matchLabels:
+          app: elasticsearch-master
+  {{- end }}
+  {{- if .Values.mongodb.enabled }}
+  # MongoDB doesn't have a PDB for the standalone deployment
+  - |
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: mongodb
+      labels: {{"{{-"}} include "extra-deploy.labels.standard" . | nindent 4 {{"}}"}}
+    spec:
+      minAvailable: 1
+      selector:
+        matchLabels:
+          app: mongodb
+          release: mongodb
+  {{- end }}

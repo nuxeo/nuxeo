@@ -1,3 +1,7 @@
+# we use this local chart to deploy PodDisruptionBudget which isn't needed in the benchmark context as all pods request
+# all the available resource of the underlying node, so a pod can't be moved to another node by the autoscaler
+extra-deploy:
+  enabled: false
 nuxeo:
   enabled: true
 mongodb:
