@@ -1,0 +1,15 @@
+extraDeploy:
+  {{- if or .Values.elasticsearch7.enabled .Values.elasticsearch8.enabled }}
+  # Elasticsearch PDB doesn't allow us to customize the minAvailable spec
+  - |
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: elasticsearch-master
+      labels: {{"{{-"}} include "extra-deploy.labels.standard" . | nindent 4 {{"}}"}}
+    spec:
+      minAvailable: 1
+      selector:
+        matchLabels:
+          app: elasticsearch-master
+  {{- end }}

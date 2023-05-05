@@ -1,0 +1,3 @@
+## Extra objects to deploy (value evaluated as a template)
+##
+extraDeploy: []

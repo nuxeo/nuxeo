@@ -5,3 +5,20 @@ labels:
   usage: utests
 podLabels:
   usage: utests
+extraDeploy:
+  # use extra deploy because MongoDB doesn't have a PDB for the standalone deployment
+  - |
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: {{"{{"}} template "mongodb.fullname" . {{"}}"}}
+      labels: {{"{{-"}} include "common.labels.standard" . | nindent 4 {{"}}"}}
+        app.kubernetes.io/component: mongodb
+        {{"{{-"}} if .Values.labels {{"}}"}}
+        {{"{{-"}} include "common.tplvalues.render" (dict "value" .Values.labels "context" $) | nindent 4 {{"}}"}}
+        {{"{{-"}} end {{"}}"}}
+    spec:
+      minAvailable: 1
+      selector:
+        matchLabels: {{"{{-"}} include "common.labels.matchLabels" . | nindent 6 {{"}}"}}
+          app.kubernetes.io/component: mongodb

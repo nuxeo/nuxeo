@@ -19,6 +19,12 @@ helmDefaults:
   wait: true
 
 releases:
+- name: extra-deploy
+  chart: extra-deploy
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: extra-deploy.enabled
+  values:
+    - values/{{ $valuesDir }}/values-extra-deploy.yaml.gotmpl
 - name: nuxeo
   chart: nuxeo/nuxeo
   version: 3.0.1
