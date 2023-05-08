@@ -402,14 +402,39 @@ public class ESRestClient implements ESClient {
 
     @Override
     public DeleteResponse delete(DeleteRequest request) {
+        if (ReplicationRequest.DEFAULT_TIMEOUT == request.timeout()) {
+            // use a longer timeout than the default one
+            request.timeout(LONG_TIMEOUT);
+        }
+        // 3 retries with backoff of 20s jitter 0.5:
+        // retry 1: 20s +/-10 [t+10, t+30]
+        // retry 2: 40s +/-20 [t+30 t+90]
+        // retry 3: 80S +/-40 [t+70, t+210]
+        RetryPolicy policy = new RetryPolicy().withMaxRetries(3)
+                                              .withBackoff(20, 200, TimeUnit.SECONDS)
+                                              .withJitter(0.5)
+                                              .retryOn(TooManyRequestsRetryableException.class);
+        AtomicReference<DeleteResponse> response = new AtomicReference<>();
+        Failsafe.with(policy)
+                .onRetry(failure -> log.warn("Retrying delete ... " + request.getDescription()))
+                .onRetriesExceeded(failure -> log.warn(
+                        "Give up delete after " + policy.getMaxRetries() + " retries: " + request.getDescription()))
+                .run(() -> response.set(doDelete(request)));
+        return response.get();
+    }
+
+    protected DeleteResponse doDelete(DeleteRequest request) throws TooManyRequestsRetryableException {
         try {
-            if (ReplicationRequest.DEFAULT_TIMEOUT == request.timeout()) {
-                // use a longer timeout than the default one
-                request.timeout(LONG_TIMEOUT);
-            }
             return client.delete(request, COMPAT_ES_OPTIONS);
-        } catch (IOException e) {
+        } catch (OpenSearchStatusException e) {
+            if (RestStatus.TOO_MANY_REQUESTS.equals(e.status())) {
+                log.warn("Detecting overloaded Elastic delete response: " + e.getMessage());
+                throw new TooManyRequestsRetryableException(e.getMessage());
+            }
             throw new NuxeoException(e);
+        } catch (IOException e) {
+            log.warn("Elastic delete timeout, might be overloaded", e);
+            throw new TooManyRequestsRetryableException(e.getMessage());
         }
     }
 
