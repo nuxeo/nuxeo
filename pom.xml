@@ -112,6 +112,7 @@
     <batik.version>1.16</batik.version>
     <jmock.version>2.12.0</jmock.version>
     <wro4j.version>1.9.0</wro4j.version>
+    <xalan.version>2.7.3</xalan.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
@@ -4179,7 +4180,19 @@
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
-        <version>2.7.2</version>
+        <version>${xalan.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>serializer</artifactId>
+        <version>${xalan.version}</version>
+        <exclusions>
+          <!-- exposes a package conflicting with JDK -->
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -4281,19 +4294,6 @@
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
         <version>7.3.1</version>
-      </dependency>
-
-      <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>serializer</artifactId>
-        <version>2.7.2</version>
-        <exclusions>
-          <!-- exposes a package conflicting with JDK -->
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
