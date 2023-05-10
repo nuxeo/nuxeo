@@ -278,6 +278,15 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         return map.keySet().iterator();
     }
 
+    /**
+     * Gets the blob length.
+     *
+     * @since 2023
+     */
+    public long getLength(String key) {
+        return map.get(key).length;
+    }
+
     @Override
     public BinaryGarbageCollector getBinaryGarbageCollector() {
         return gc;

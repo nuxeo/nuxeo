@@ -30,7 +30,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -43,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
+import org.nuxeo.ecm.core.blob.scroll.AbstractBlobScroll;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -75,7 +79,7 @@ public class TestRepositoryBlobScroll {
     @Inject
     protected RepositoryService repositoryService;
 
-    protected List<String> expected = new ArrayList<>();
+    protected Map<String, Long> expected = new TreeMap<>();
 
     @Before
     public void createDocuments() {
@@ -86,9 +90,9 @@ public class TestRepositoryBlobScroll {
                 doc.setPropertyValue("dc:source", "foo");
             }
             doc = session.createDocument(doc);
-            expected.add(((ManagedBlob) doc.getPropertyValue("file:content")).getKey());
+            ManagedBlob managedBlob = (ManagedBlob) doc.getPropertyValue("file:content");
+            expected.put(managedBlob.getKey(), managedBlob.getLength());
         }
-        Collections.sort(expected);
         coreFeature.waitForAsyncCompletion();
     }
 
@@ -115,7 +119,9 @@ public class TestRepositoryBlobScroll {
                 i += next.size();
             } while (i < NB_FILE);
             Collections.sort(actual);
-            assertEquals("Unexpected scolled blobs", expected, actual);
+            assertEquals("Unexpected scolled blobs", expected,
+                    actual.stream()
+                          .collect(Collectors.toMap(AbstractBlobScroll::getBlobKey, AbstractBlobScroll::getBlobSize)));
             assertFalse(scroll.hasNext());
             assertThrows("Should not be able to scroll beyond limit.", NoSuchElementException.class,
                     () -> scroll.next());
