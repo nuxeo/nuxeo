@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
@@ -189,7 +190,10 @@ public interface DocumentBlobManager {
      *            about them), if {@code true} delete them
      * @return a status about the number of garbage collected binaries
      * @since 7.4
+     * @deprecated since 2023, this FullGC implementation does not scale on large repositories, use
+     *             {@link GarbageCollectOrphanBlobsAction} instead
      */
+    @Deprecated
     BinaryManagerStatus garbageCollectBinaries(boolean delete);
 
     /**
