@@ -38,9 +38,12 @@ import org.nuxeo.runtime.api.Framework;
  * Endpoint to manage the binaries.
  *
  * @since 11.3
+ * @deprecated since 2023, this FullGC implementation does not scale on large repositories, use {@link BlobsObject}
+ *             instead
  */
 @WebObject(type = ManagementObject.MANAGEMENT_OBJECT_PREFIX + "binaries")
 @Produces(APPLICATION_JSON)
+@Deprecated
 public class BinariesObject extends AbstractResource<ResourceTypeImpl> {
 
     /**
