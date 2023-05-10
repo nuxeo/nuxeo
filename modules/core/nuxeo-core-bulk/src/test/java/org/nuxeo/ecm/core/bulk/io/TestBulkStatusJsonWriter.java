@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START_TIME;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SKIP_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
@@ -73,6 +74,7 @@ public class TestBulkStatusJsonWriter extends AbstractJsonWriterTest.Local<BulkS
         json.has(STATUS_SCROLL_END_TIME).isEquals(status.getScrollEndTime().toString());
         json.has(STATUS_COMPLETED_TIME).isEquals(status.getCompletedTime().toString());
         json.has(STATUS_TOTAL).isEquals(0);
+        json.has(STATUS_SKIP_COUNT).isEquals(0);
         json.has(STATUS_PROCESSED).isEquals(0);
         json.has(STATUS_RESULT).has("result").isEquals("test");
     }

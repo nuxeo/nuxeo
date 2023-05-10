@@ -32,6 +32,7 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_START_T
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START_TIME;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SKIP_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
@@ -64,6 +65,7 @@ public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus>
         jg.writeStringField(STATUS_COMMAND_ID, entity.getId());
         jg.writeStringField(STATUS_STATE, entity.getState() != null ? entity.getState().toString() : null);
         jg.writeNumberField(STATUS_PROCESSED, entity.getProcessed());
+        jg.writeNumberField(STATUS_SKIP_COUNT, entity.getSkipCount());
         jg.writeBooleanField(STATUS_HAS_ERROR, entity.hasError());
         jg.writeNumberField(STATUS_ERROR_COUNT, entity.getErrorCount());
         if (entity.getErrorMessage() != null) {

@@ -24,8 +24,6 @@ import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +91,6 @@ public class WordCountAction implements StreamProcessorTopology {
     }
 
     protected class CountAggregatorComputation extends AbstractComputation {
-        protected final Map<String, Integer> counters = new HashMap<>();
 
         public CountAggregatorComputation() {
             super("test/countAggregator", 1, 1);
@@ -105,18 +102,14 @@ public class WordCountAction implements StreamProcessorTopology {
             DataBucket data = BulkCodecs.getDataBucketCodec().decode(record.getData());
             // get the word count
             Integer wordCount = Integer.valueOf(data.getDataAsString());
-            // aggregate
-            Integer total = counters.getOrDefault(data.getCommandId(), 0) + wordCount;
-            counters.put(data.getCommandId(), total);
 
             // update command status with the current total result
-            Map<String, Serializable> result = Collections.singletonMap("wordCount", total);
+            Map<String, Serializable> result = Map.of("wordCount", wordCount);
             BulkStatus delta = BulkStatus.deltaOf(data.getCommandId());
             delta.setProcessed(data.getCount());
-            delta.setResult(result);
+            delta.mergeResult(result);
             AbstractBulkComputation.updateStatus(context, delta);
             context.askForCheckpoint();
-            // TODO: cleanup the counters map
         }
 
     }
