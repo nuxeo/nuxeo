@@ -29,7 +29,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -41,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
+import org.nuxeo.ecm.core.blob.scroll.AbstractBlobScroll;
 import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -76,14 +80,14 @@ public abstract class AbstractTestBlobScroll {
 
     @Test
     public void testBlobScroll() throws IOException {
-        List<String> expected = new ArrayList<>();
+        Map<String, Long> expected = new TreeMap<>();
         for (int i = 0; i < NB_FILE; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
             doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(CONTENT + i));
             doc = session.createDocument(doc);
-            expected.add(((ManagedBlob) doc.getPropertyValue("file:content")).getKey());
+            ManagedBlob managedBlob = (ManagedBlob) doc.getPropertyValue("file:content");
+            expected.put(managedBlob.getKey(), managedBlob.getLength());
         }
-        Collections.sort(expected);
         coreFeature.waitForAsyncCompletion();
         ScrollRequest request = GenericScrollRequest.builder(getScrollName(), getProviderId()).size(SIZE).build();
         assertTrue(scrollService.exists(request));
@@ -99,7 +103,9 @@ public abstract class AbstractTestBlobScroll {
                 i += next.size();
             } while (i < NB_FILE);
             Collections.sort(actual);
-            assertEquals("Unexpected scolled blobs", expected, actual);
+            assertEquals("Unexpected scolled blobs", expected,
+                    actual.stream()
+                          .collect(Collectors.toMap(AbstractBlobScroll::getBlobKey, AbstractBlobScroll::getBlobSize)));
             assertFalse(scroll.hasNext());
             assertThrows("Should not be able to scroll beyond limit.", NoSuchElementException.class,
                     () -> scroll.next());
@@ -111,7 +117,9 @@ public abstract class AbstractTestBlobScroll {
             List<String> actual = scroll.next();
             assertEquals(NB_FILE, actual.size());
             Collections.sort(actual);
-            assertEquals("Unexpected scolled blobs", expected, actual);
+            assertEquals("Unexpected scolled blobs", expected,
+                    actual.stream()
+                          .collect(Collectors.toMap(AbstractBlobScroll::getBlobKey, AbstractBlobScroll::getBlobSize)));
             assertFalse(scroll.hasNext());
         }
     }

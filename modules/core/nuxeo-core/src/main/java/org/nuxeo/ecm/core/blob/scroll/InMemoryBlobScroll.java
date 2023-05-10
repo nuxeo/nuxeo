@@ -35,9 +35,12 @@ public class InMemoryBlobScroll extends AbstractBlobScroll<InMemoryBlobProvider>
 
     protected Iterator<String> it;
 
+    protected InMemoryBlobStore store;
+
     @Override
     public void init(InMemoryBlobProvider inMemoryBlobProvider) {
-        this.it = ((InMemoryBlobStore) inMemoryBlobProvider.store.unwrap()).getKeyIterator();
+        this.store = (InMemoryBlobStore) inMemoryBlobProvider.store.unwrap();
+        this.it = store.getKeyIterator();
     }
 
     @Override
@@ -52,7 +55,8 @@ public class InMemoryBlobScroll extends AbstractBlobScroll<InMemoryBlobProvider>
         }
         List<String> result = new ArrayList<>();
         for (int i = size; i > 0 && it.hasNext(); i--) {
-            addTo(result, it.next());
+            var next = it.next();
+            addTo(result, next, () -> store.getLength(next));
         }
         return result;
     }

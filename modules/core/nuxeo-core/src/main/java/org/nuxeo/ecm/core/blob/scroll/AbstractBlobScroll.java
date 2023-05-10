@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob.scroll;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -38,11 +39,15 @@ import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Abstract class to scroll blobs from a blob provider, the scroll query is the provider id.
+ *
  * @since 2023
  */
 public abstract class AbstractBlobScroll<T extends BlobStoreBlobProvider> implements Scroll {
 
     private static final Logger log = LogManager.getLogger(AbstractBlobScroll.class);
+
+    protected static final String SIZE_DELIMITER = ":";
 
     protected boolean isKeyPrefixed;
 
@@ -81,13 +86,13 @@ public abstract class AbstractBlobScroll<T extends BlobStoreBlobProvider> implem
         init((T) blobStoreBlobProvider);
     }
 
-    protected boolean addTo(List<String> list, String key) {
-        return addTo(list, key, null);
-    }
-
     /**
-     * Adds the blob key to the list if it is valid (e.g. looks like a digest if the provider has digest strategy). The
-     * key added to the list will be prefixed with the provider id if it has to be.
+     * Adds the blob key to the list if it is valid (e.g. looks like a digest if the provider has digest strategy).
+     * <p>
+     * The key added to the list will be prefixed with the provider id if it has to be.
+     * <p>
+     * The key added to the list will be suffixed with the size of the associated blob with the
+     * {@link org.nuxeo.ecm.core.blob.scroll.AbstractBlobScroll#SIZE_DELIMITER} separator.
      *
      * @param list the list to be
      * @param key the blob key
@@ -101,11 +106,12 @@ public abstract class AbstractBlobScroll<T extends BlobStoreBlobProvider> implem
         if (isKeyPrefixed) {
             key = providerId + ":" + key;
         }
-        list.add(key);
         totalBlobCount++;
-        if (getSize != null) {
-            totalBlobSizeCount += getSize.get();
-        }
+        Long size = 0L;
+        size = Objects.requireNonNull(getSize, "Size supplier must not be null").get();
+        totalBlobSizeCount += size;
+        key = key + SIZE_DELIMITER + size;
+        list.add(key);
         return true;
     }
 
@@ -115,5 +121,22 @@ public abstract class AbstractBlobScroll<T extends BlobStoreBlobProvider> implem
     }
 
     protected abstract void init(T provider);
+
+    public static String getBlobKey(String id) {
+        int sizeSeparator = id.lastIndexOf(SIZE_DELIMITER);
+        if (sizeSeparator < 0) {
+            return id;
+        }
+        return id.substring(0, sizeSeparator);
+    }
+
+    public static Long getBlobSize(String id) {
+        int sizeSeparator = id.lastIndexOf(SIZE_DELIMITER);
+        if (sizeSeparator < 0 || sizeSeparator + 1 == id.length()) {
+            // if no size delimiter or is at last position
+            return null;
+        }
+        return Long.parseLong(id.substring(sizeSeparator + 1, id.length()));
+    }
 
 }
