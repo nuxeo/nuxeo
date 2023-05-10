@@ -6,6 +6,7 @@
   "username": "myUser",
   "total": 127,
   "processed": 127,
+  "skipCount": 0,
   "error": false,
   "errorCount": 0,
   "submitted": "2018-06-21T12:37:08.172Z",

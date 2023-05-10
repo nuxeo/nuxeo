@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.validation.constraints.NotNull;
 
@@ -36,6 +37,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.AsyncStatus;
 
 /**
@@ -46,6 +49,13 @@ import org.nuxeo.ecm.core.api.AsyncStatus;
 public class BulkStatus implements AsyncStatus<String> {
 
     private static final long serialVersionUID = 20181021L;
+
+    private static final Logger log = LogManager.getLogger(BulkStatus.class);
+
+    /**
+     * @since 2023
+     */
+    protected final static String MERGE_RESULT_FLAG = "merge";
 
     /**
      * Possible states of a bulk command:
@@ -91,6 +101,9 @@ public class BulkStatus implements AsyncStatus<String> {
 
     @Nullable
     protected Long processed;
+
+    @Nullable
+    protected Long skipCount;
 
     @Nullable
     protected State state;
@@ -175,6 +188,9 @@ public class BulkStatus implements AsyncStatus<String> {
         if (update.processed != null) {
             setProcessed(getProcessed() + update.getProcessed());
         }
+        if (update.skipCount != null) {
+            setSkipCount(getSkipCount() + update.getSkipCount());
+        }
         if (update.scrollStartTime != null) {
             scrollStartTime = update.scrollStartTime;
         }
@@ -207,8 +223,8 @@ public class BulkStatus implements AsyncStatus<String> {
         if (update.getAction() != null && getAction() == null) {
             setAction(update.action);
         }
-        if (update.getResult() != null) {
-            setResult(update.getResult());
+        if (update.result != null) {
+            setResult(update.result);
         }
         if (update.getUsername() != null && getUsername() == null) {
             setUsername(getUsername());
@@ -363,6 +379,28 @@ public class BulkStatus implements AsyncStatus<String> {
     }
 
     /**
+     * For a full status returns the number of documents where the action has been skipped so far.
+     *
+     * @since 2023
+     */
+    public long getSkipCount() {
+        if (skipCount == null) {
+            return 0;
+        }
+        return skipCount;
+    }
+
+    /**
+     * Sets number of skipped documents. For a delta this is a relative value that is aggregated during
+     * {@link #merge(BulkStatus)} operation.
+     *
+     * @since 2023
+     */
+    public void setSkipCount(long skipCount) {
+        this.skipCount = skipCount;
+    }
+
+    /**
      * Gets the total number of documents in the document set. Returns 0 when the scroll is not yet completed.
      */
     public long getTotal() {
@@ -380,7 +418,7 @@ public class BulkStatus implements AsyncStatus<String> {
     }
 
     /**
-     * Gets action result.
+     * Gets unmodifiable action result.
      *
      * @return the action result
      * @since 10.3
@@ -396,7 +434,50 @@ public class BulkStatus implements AsyncStatus<String> {
      * @since 10.3
      */
     public void setResult(Map<String, Serializable> result) {
-        this.result = result;
+        if (!Boolean.TRUE.equals(result.get(MERGE_RESULT_FLAG))) {
+            this.result = result;
+            return;
+        }
+        // We may have unmodifiable map when result is deserialized from avro codec
+        Map<String, Serializable> map = new HashMap<>(this.result);
+        for (Entry<String, Serializable> e : result.entrySet()) {
+            var v1 = map.get(e.getKey());
+            var v2 = e.getValue();
+            if (v2 == null) {
+                continue;
+            }
+            if (v1 instanceof Number) {
+                if (v1 instanceof Long l1 && v2 instanceof Long l2) {
+                    map.put(e.getKey(), l1 + l2);
+                } else if (v1 instanceof Double d1 && v2 instanceof Double d2) {
+                    map.put(e.getKey(), d1 + d2);
+                } else if (v1 instanceof Integer i1 && v2 instanceof Integer i2) {
+                    map.put(e.getKey(), i1 + i2);
+                } else if (v1 instanceof Float f1 && v2 instanceof Float f2) {
+                    map.put(e.getKey(), f1 + f2);
+                } else if (v1 instanceof Short s1 && v2 instanceof Short s2) {
+                    map.put(e.getKey(), s1 + s2);
+                } else {
+                    log.warn(
+                            "Cannot merge values for result Key: {},  value 1: {} of type: {}, value 2: {} of type: {}",
+                            e::getKey, () -> v1, v1::getClass, () -> v2, v2::getClass);
+                }
+            } else {
+                map.put(e.getKey(), v2);
+            }
+        }
+        this.result = map;
+    }
+
+    /**
+     * Merge the given result map by doing a sum between old and new value extending {@link Number} for each common key.
+     *
+     * @since 2023
+     */
+    public void mergeResult(Map<String, Serializable> result) {
+        Map<String, Serializable> map = new HashMap<>(result);
+        map.put(MERGE_RESULT_FLAG, true);
+        setResult(map);
     }
 
     /**
@@ -466,6 +547,14 @@ public class BulkStatus implements AsyncStatus<String> {
 
     public void setErrorCount(long errorCount) {
         this.errorCount = errorCount;
+    }
+
+    public void incrementSkipCount() {
+        if (this.skipCount == null) {
+            this.skipCount = 1L;
+        } else {
+            this.skipCount++;
+        }
     }
 
     /**

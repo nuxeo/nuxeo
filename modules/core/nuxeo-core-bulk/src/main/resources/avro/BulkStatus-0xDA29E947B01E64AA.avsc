@@ -63,6 +63,10 @@
     "type" : [ "null", "long" ],
     "default" : null
   }, {
+    "name" : "skipCount",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
     "name" : "state",
     "type" : [ "null", {
       "type" : "enum",

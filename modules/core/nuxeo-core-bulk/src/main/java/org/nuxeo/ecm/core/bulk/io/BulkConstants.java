@@ -53,6 +53,11 @@ public class BulkConstants {
 
     public static final String STATUS_PROCESSED = "processed";
 
+    /**
+     * @since 2023
+     */
+    public static final String STATUS_SKIP_COUNT = "skipCount";
+
     public static final String STATUS_RESULT = "result";
 
     public static final String STATUS_USERNAME = "username";

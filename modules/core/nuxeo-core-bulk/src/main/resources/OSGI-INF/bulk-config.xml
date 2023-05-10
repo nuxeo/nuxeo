@@ -8,7 +8,7 @@
   <extension point="schema" target="org.nuxeo.runtime.avro">
     <schema name="Record-2023.0" file="avro/Record-0x5D82F1387F01C58B.avsc" />
     <schema name="BulkCommand-2023.0" file="avro/BulkCommand-0xF032C4AB0AF8B906.avsc" />
-    <schema name="BulkStatus-2023.0" file="avro/BulkStatus-0x98004F207097EB0D.avsc" />
+    <schema name="BulkStatus-2023.0" file="avro/BulkStatus-0xDA29E947B01E64AA.avsc" />
     <schema name="DataBucket-2023.0" file="avro/DataBucket-0xEB04211B6C6C3B5F.avsc" />
     <schema name="BulkBucket-2023.0" file="avro/BulkBucket-0xCC59A5FF2725F7AF.avsc" />
     <!-- Register 2021 schemas for smooth upgrade -->

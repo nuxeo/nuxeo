@@ -33,6 +33,7 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_START_T
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START_TIME;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SKIP_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
@@ -81,6 +82,10 @@ public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
         Long processed = getLongField(jn, STATUS_PROCESSED);
         if (processed != null) {
             status.setProcessed(processed);
+        }
+        Long skipCount = getLongField(jn, STATUS_SKIP_COUNT);
+        if (skipCount != null) {
+            status.setSkipCount(skipCount);
         }
         Long count = getLongField(jn, STATUS_TOTAL);
         if (count != null) {
