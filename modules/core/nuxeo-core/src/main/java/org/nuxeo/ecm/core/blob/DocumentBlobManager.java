@@ -37,6 +37,18 @@ import org.nuxeo.ecm.core.model.Document;
 public interface DocumentBlobManager {
 
     /**
+     * Checks that blobs can be safely deleted for the given repository. If the call returns without throwing an
+     * Exception, blobs can be safely deleted calling {@link #deleteBlob(String, String, boolean)}.
+     *
+     * @throws UnsupportedOperationException if the repository does not have the
+     *             {@link org.nuxeo.ecm.core.model.Repository#CAPABILITY_QUERY_BLOB_KEYS} capability or there is a
+     *             shared storage detected (by bad blob provider configurations)
+     * @param repositoryName the repositoryName
+     * @since 2023
+     */
+    void checkCanDeleteBlob(String repositoryName);
+
+    /**
      * Deletes the blob associated to the given key. The method checks that the blob key is not referenced by any
      * document of the given repository.
      * <p>
