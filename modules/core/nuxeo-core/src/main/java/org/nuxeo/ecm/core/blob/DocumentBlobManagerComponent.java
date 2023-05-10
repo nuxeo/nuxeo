@@ -492,7 +492,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     }
 
     @Override
-    public boolean deleteBlob(String repositoryName, String key, boolean dryRun) throws IOException {
+    public void checkCanDeleteBlob(String repositoryName) {
         if (StringUtils.isBlank(repositoryName)) {
             // Even with a full GC we should be able to provide the repository name.
             // Else it probably means there must are shared storages.
@@ -513,6 +513,11 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (!isUseRepositoryName() && rs.getRepositoryNames().size() > 1) {
             throw new UnsupportedOperationException("Cannot perform delete on cross-repository shared storage.");
         }
+    }
+
+    @Override
+    public boolean deleteBlob(String repositoryName, String key, boolean dryRun) throws IOException {
+        checkCanDeleteBlob(repositoryName);
         int colon = key.indexOf(':');
         String providerId;
         if (colon < 0) {
