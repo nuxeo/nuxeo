@@ -5050,14 +5050,9 @@ public class TestSQLRepositoryAPI {
 
         // check that the document cannot be deleted through a parent
         assertTrue(session.getPrincipal().isAdministrator());
-        try {
-            session.removeDocument(folder.getRef());
-            fail("remove should fail");
-        } catch (DocumentExistsException e) {
-            assertEquals(
-                    "Cannot remove " + folder.getId() + ", subdocument " + doc.getId() + " is under retention / hold",
-                    e.getMessage());
-        }
+        assertThrows("remove should fail", DocumentExistsException.class,
+                () -> session.removeDocument(folder.getRef()));
+
     }
 
     @SuppressWarnings("deprecation")

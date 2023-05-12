@@ -91,6 +91,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.filter.CharacterFilteringService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Session;
@@ -155,6 +156,24 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     // @since 2021.17
     public static final String RESTRICT_PROXY_CREATION_PROPERTY = "org.nuxeo.proxy.creation.restricted";
+
+    /**
+     * @since 2023
+     */
+    public static final String BLOCKED_PERMISSION_QUERY = "SELECT " + NXQL.ECM_UUID
+            + " FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:acl/*1/grant = 0";
+
+    /**
+     * @since 2023
+     */
+    public static final String RETENTION_QUERY = "SELECT " + NXQL.ECM_UUID
+            + " FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:retainUntil >= TIMESTAMP '%s'";
+
+    /**
+     * @since 2023
+     */
+    public static final String LEGAL_HOLD_QUERY = "SELECT " + NXQL.ECM_UUID
+            + " FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:hasLegalHold = 1";
 
     private Boolean limitedResults;
 
@@ -1450,45 +1469,95 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public boolean canRemoveDocument(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
-        return canRemoveDocument(doc) == null;
+        try {
+            checkCanRemoveDocument(doc);
+        } catch (NuxeoException e) {
+            return false;
+        }
+        return true;
     }
 
     /**
      * Checks if a document can be removed, and returns a failure reason if not.
+     *
+     * @deprecated since 2023, better use {@link AbstractSession#checkCanRemoveDocument(Document)}
      */
+    @Deprecated
     protected String canRemoveDocument(Document doc) {
+        try {
+            checkCanRemoveDocument(doc);
+        } catch (NuxeoException e) {
+            return e.getMessage();
+        }
+        return null;
+    }
+
+    protected void checkCanRemoveDocument(Document doc) {
         // TODO must also check for proxies on live docs (NXP-22312)
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
             @SuppressWarnings("unchecked")
             Collection<Document> proxies = getSession().getProxies(doc, null);
             if (!proxies.isEmpty()) {
-                return "Proxy " + proxies.iterator().next().getUUID() + " targets version " + doc.getUUID();
+                throw new DocumentSecurityException(
+                        proxies.iterator().next().getUUID() + " targets version " + doc.getUUID());
             }
             // find a working document to check security
             Document working = doc.getSourceDocument();
             if (working != null) {
                 Document baseVersion = working.getBaseVersion();
                 if (baseVersion != null && !baseVersion.isCheckedOut() && baseVersion.getUUID().equals(doc.getUUID())) {
-                    return "Working copy " + working.getUUID() + " is checked in with base version " + doc.getUUID();
+                    throw new DocumentSecurityException(
+                            "Permission denied: cannot remove document " + doc.getUUID() + ", " + "Working copy "
+                                    + working.getUUID() + " is checked in with base version " + doc.getUUID());
                 }
-                return hasPermission(working, WRITE_VERSION) ? null
-                        : "Missing permission '" + WRITE_VERSION + "' on working copy " + working.getUUID();
-            } else {
-                // no working document, only admins can remove
-                return isAdministrator() ? null : "No working copy and not an Administrator";
+                if (!hasPermission(working, WRITE_VERSION)) {
+                    throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID()
+                            + ", " + "Missing permission '" + WRITE_VERSION + "' on working copy " + working.getUUID());
+                }
+            } else if (!isAdministrator()) {
+                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID() + ", "
+                        + "No working copy and not an Administrator");
             }
         } else {
             if (!hasPermission(doc, REMOVE)) {
-                return "Missing permission '" + REMOVE + "' on document " + doc.getUUID();
+                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID() + ", "
+                        + "Missing permission '" + REMOVE + "' on document " + doc.getUUID());
             }
             Document parent = doc.getParent();
-            if (parent == null) {
-                return null; // ok
+            if (parent != null && !hasPermission(parent, REMOVE_CHILDREN)) {
+                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID() + ", "
+                        + "Missing permission '" + REMOVE_CHILDREN + "' on parent document " + parent.getUUID());
             }
-            return hasPermission(parent, REMOVE_CHILDREN) ? null
-                    : "Missing permission '" + REMOVE_CHILDREN + "' on parent document " + parent.getUUID();
+            if (doc.isFolder()) {
+                checkRetainedDescendants(doc);
+            }
         }
+    }
+
+    /**
+     * @throws DocumentExistsException if a descendant is retained
+     * @since 2023
+     */
+    protected void checkRetainedDescendants(Document doc) {
+        if (BaseSession.canDeleteUndeletable(this.getPrincipal())) {
+            return;
+        }
+        CoreInstance.doPrivileged(this, privileged -> {
+            String legalHoldQuery = String.format(LEGAL_HOLD_QUERY, doc.getUUID());
+            privileged.queryProjection(legalHoldQuery, 1, 0).stream().findFirst().ifPresent(retainedDescendant -> {
+                throw new DocumentExistsException("Cannot remove " + doc.getUUID() + ", subdocument "
+                        + retainedDescendant.get(NXQL.ECM_UUID) + " is under legal hold");
+            });
+            String retentionQuery = String.format(RETENTION_QUERY, doc.getUUID(), Calendar.getInstance().toInstant());
+            privileged.queryProjection(retentionQuery, 1, 0, false)
+                      .stream()
+                      .findFirst()
+                      .ifPresent(retainedDescendant -> {
+                          throw new DocumentExistsException("Cannot remove " + doc.getUUID() + ", subdocument "
+                                  + retainedDescendant.get(NXQL.ECM_UUID) + " is under retention");
+                      });
+        });
     }
 
     @Override
@@ -1499,11 +1568,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected void removeDocument(Document doc) {
         try {
-            String reason = canRemoveDocument(doc);
-            if (reason != null) {
-                throw new DocumentSecurityException(
-                        "Permission denied: cannot remove document " + doc.getUUID() + ", " + reason);
-            }
+            checkCanRemoveDocument(doc);
             removeNotifyOneDoc(doc);
 
         } catch (ConcurrentUpdateException e) {
@@ -1539,7 +1604,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (workingCopyModel != null) {
                 if (doc.isVersion()) {
                     options.put("comment", versionLabel); // to be used by audit service
-                    notifyEvent(DocumentEventTypes.VERSION_REMOVED, workingCopyModel, options, null, null, false, false);
+                    notifyEvent(DocumentEventTypes.VERSION_REMOVED, workingCopyModel, options, null, null, false,
+                            false);
                     options.remove("comment");
                 } else if (doc.isProxy()) {
                     notifyEvent(DocumentEventTypes.PROXY_REMOVED, workingCopyModel, options, null, null, false, false);

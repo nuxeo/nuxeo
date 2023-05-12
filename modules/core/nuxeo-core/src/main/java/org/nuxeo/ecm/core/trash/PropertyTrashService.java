@@ -77,7 +77,6 @@ public class PropertyTrashService extends AbstractTrashService {
                 // handle placeless document
                 session.removeDocument(doc.getRef());
             } else {
-                checkCanTrash(doc);
                 DocumentModel docForEvent = doc;
                 if (!Boolean.parseBoolean(String.valueOf(doc.getContextData(DISABLE_TRASH_RENAMING)))) {
                     String newName = mangleName(doc);

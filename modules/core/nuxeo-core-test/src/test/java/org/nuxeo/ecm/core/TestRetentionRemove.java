@@ -122,7 +122,7 @@ public class TestRetentionRemove {
             }
         } catch (DocumentExistsException e) {
             if (expectedToFail) {
-                String patternStr = String.format("Cannot remove %s, subdocument \\S+ is under retention / hold",
+                String patternStr = String.format("Cannot remove %s, subdocument \\S+ is under (retention|legal hold)",
                         folder.getRef());
                 Pattern pattern = Pattern.compile(patternStr);
                 Matcher matcher = pattern.matcher(e.getMessage());
