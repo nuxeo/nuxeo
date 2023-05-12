@@ -1761,7 +1761,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testRemoveDocumentsTree() {
+    public void testCannotRemoveDocumentsTree() {
         DocumentModel rootFolder = session.createDocumentModel("/", "folder", "Folder");
         rootFolder = session.createDocument(rootFolder);
         String firstUser = "mickey";
@@ -1793,16 +1793,7 @@ public class TestSQLRepositoryAPI {
 
         CoreSession firstUserSession = CoreInstance.getCoreSession(session.getRepositoryName(), firstUser);
         // remove tree
-        firstUserSession.removeDocument(docs[0].getRef());
-
-        // wait for asynchronous stuff to finish
-        coreFeature.waitForAsyncCompletion();
-
-        // Make sure the deepest document was removed despite permission was blocked
-        assertTrue(session
-                          .query(String.format("Select * From Document Where ecm:uuid = '%s'",
-                                  docs[nbLevels - 1].getRef()))
-                          .isEmpty());
+        assertThrows(DocumentSecurityException.class, () -> firstUserSession.removeDocument(docs[0].getRef()));
     }
 
     /*

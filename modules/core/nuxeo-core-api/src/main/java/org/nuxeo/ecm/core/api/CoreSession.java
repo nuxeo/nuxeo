@@ -567,6 +567,9 @@ public interface CoreSession {
      * document, and the REMOVE permission must be available on the working document (or the user must be an
      * administrator if no working document exists).
      * <p>
+     * If the {@link SecurityConstants#REMOVE} permissions is blocked on a descendant of the document for the current
+     * principal, then the document cannot be removed.
+     * <p>
      * If a descendant of the document is retained or under legal hold, then the document cannot be removed.
      *
      * @param docRef the document

@@ -1494,8 +1494,35 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
             if (doc.isFolder()) {
                 checkRetainedDescendants(doc);
+                checkBlockedDescendants(doc);
             }
         }
+    }
+
+    /**
+     * @throws DocumentSecurityException if a descendant has blocked permission for current user
+     * @since 2023
+     */
+    protected void checkBlockedDescendants(Document doc) {
+        CoreInstance.doPrivileged(this, privileged -> {
+            // Privileged required to detect doc for which we are missing permission to remove them
+            return privileged.queryProjection(String.format(BLOCKED_PERMISSION_QUERY, doc.getUUID()), 0, 0)
+                             .stream()
+                             .filter(entry -> {
+                                 try {
+                                     Document blocked = this.resolveReference(
+                                             new IdRef((String) entry.get(NXQL.ECM_UUID)));
+                                     return !this.hasPermission(blocked, REMOVE);
+                                 } catch (DocumentNotFoundException e) {
+                                     // We can't READ it, even less REMOVE it
+                                     return true;
+                                 }
+                             })
+                             .findFirst();
+        }).ifPresent(blockedDescendant -> {
+            throw new DocumentSecurityException("Cannot remove descendant " + blockedDescendant.get(NXQL.ECM_UUID)
+                    + ", permissions are blocked for " + getPrincipal());
+        });
     }
 
     /**
