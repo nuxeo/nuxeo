@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 import static com.mongodb.ErrorCategory.DUPLICATE_KEY;
 import static com.mongodb.ErrorCategory.fromErrorCode;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
@@ -30,6 +31,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_HAS_LEGAL_HOLD;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_TRASHED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
@@ -280,6 +282,7 @@ public class MongoDBConnection extends DBSConnectionBase {
         indexes.add(new IndexModel(Indexes.ascending(KEY_LIFECYCLE_STATE)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_IS_TRASHED)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_RETAIN_UNTIL)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_HAS_LEGAL_HOLD)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_BLOB_KEYS)));
         if (!repository.isFulltextDisabled()) {
             indexes.add(new IndexModel(Indexes.ascending(KEY_FULLTEXT_JOBID)));
@@ -294,6 +297,7 @@ public class MongoDBConnection extends DBSConnectionBase {
         }
         indexes.add(new IndexModel(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_GRANT)));
 
         var schemaManager = Framework.getService(SchemaManager.class);
         var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, coll);
