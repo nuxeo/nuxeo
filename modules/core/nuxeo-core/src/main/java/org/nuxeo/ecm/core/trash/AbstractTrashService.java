@@ -35,6 +35,8 @@ import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.AbstractSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,9 +68,17 @@ public abstract class AbstractTrashService implements TrashService {
 
     public static final String TRASHED_QUERY = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 1 AND ecm:parentId = '%s'";
 
-    public static final String RETENTION_QUERY = "SELECT * FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:retainUntil >= TIMESTAMP '%s'";
+    /**
+     * @deprecated since 2023
+     */
+    @Deprecated
+    public static final String RETENTION_QUERY = AbstractSession.RETENTION_QUERY;
 
-    public static final String LEGAL_HOLD_QUERY = "SELECT * FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:hasLegalHold = 1";
+    /**
+     * @deprecated since 2023
+     */
+    @Deprecated
+    public static final String LEGAL_HOLD_QUERY = AbstractSession.LEGAL_HOLD_QUERY;
 
     /**
      * @since 11.1
@@ -304,7 +314,8 @@ public abstract class AbstractTrashService implements TrashService {
         notifyEvent(session, eventId, doc, immediate, false);
     }
 
-    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc, boolean immediate, boolean inline) {
+    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc, boolean immediate,
+            boolean inline) {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperties(new HashMap<>(doc.getContextData()));
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
@@ -352,7 +363,7 @@ public abstract class AbstractTrashService implements TrashService {
         // remove collision avoidance
         String orig = getFirstGroup(COLLISION_PATTERN, name);
         if (!docName.equals(name)) {
-            //check if orig (the supposed name without collision) is available
+            // check if orig (the supposed name without collision) is available
             String parentPath = session.getDocument(parentRef).getPathAsString();
             if (parentPath.equals(PATH_SEPARATOR)) {
                 parentPath = ""; // root
@@ -378,10 +389,14 @@ public abstract class AbstractTrashService implements TrashService {
      * Throws a {@link DocumentExistsException} if a descendant document cannot be trashed.
      *
      * @since 2021.14
+     * @deprecated since 2023, {@link AbstractSession#canRemoveDocument(DocumentRef)} does this check
      */
+    @Deprecated
     protected void checkCanTrash(DocumentModel model) {
-        CoreSession session = model.getCoreSession();
-        if (!BaseSession.canDeleteUndeletable(session.getPrincipal())) {
+        if (BaseSession.canDeleteUndeletable(model.getCoreSession().getPrincipal())) {
+            return;
+        }
+        CoreInstance.doPrivileged(model.getCoreSession(), session -> {
             PartialList<Map<String, Serializable>> projection = session.queryProjection(
                     String.format(LEGAL_HOLD_QUERY, model.getId()), 1, 0);
             if (projection.size() > 0) {
@@ -395,6 +410,6 @@ public abstract class AbstractTrashService implements TrashService {
                 throw new DocumentExistsException(
                         "Cannot remove " + projection.get(0).get(NXQL.ECM_UUID) + ", it is under retention / hold");
             }
-        }
+        });
     }
 }

@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -283,23 +282,10 @@ public abstract class AbstractTestTrashService {
         session.makeRecord(doc1.getRef());
         session.setLegalHold(doc1.getRef(), true, null);
         transactionalFeature.nextTransaction();
-        try {
-            trashService.trashDocument(doc1);
-            fail("Document under legal hold cannot be trashed.");
-        } catch (DocumentSecurityException e) {
-            // expected
-            assertEquals(
-                    "User " + session.getPrincipal().getName() + " does not have the permission to remove the document "
-                            + doc1.getId() + " (" + doc1.getPath() + ")",
-                    e.getMessage());
-        }
-        try {
-            trashService.trashDocument(fold);
-            fail("Document with a descendant under legal hold cannot be trashed.");
-        } catch (DocumentExistsException e) {
-            // expected
-            assertEquals("Cannot remove " + doc1.getId() + ", it is under retention / hold", e.getMessage());
-        }
+        assertThrows("Document under legal hold cannot be trashed.", DocumentSecurityException.class,
+                () -> trashService.trashDocument(doc1));
+        assertThrows("Document with a descendant under legal hold cannot be trashed.", DocumentSecurityException.class,
+                () -> trashService.trashDocument(fold));
     }
 
     @Test
@@ -310,18 +296,10 @@ public abstract class AbstractTestTrashService {
         retainUntil.add(Calendar.DAY_OF_MONTH, 5);
         session.setRetainUntil(doc1.getRef(), retainUntil, "any comment");
         transactionalFeature.nextTransaction();
-        try {
-            trashService.trashDocument(doc1);
-            fail("Document under retention cannot be trashed.");
-        } catch (DocumentSecurityException e) {
-            // expected
-        }
-        try {
-            trashService.trashDocument(fold);
-            fail("Document with a descendant under retention cannot be trashed.");
-        } catch (DocumentExistsException e) {
-            // expected
-        }
+        assertThrows("Document under legal hold cannot be trashed.", DocumentSecurityException.class,
+                () -> trashService.trashDocument(doc1));
+        assertThrows("Document with a descendant under legal hold cannot be trashed.", DocumentSecurityException.class,
+                () -> trashService.trashDocument(fold));
     }
 
     @Test

@@ -84,17 +84,18 @@ public class LifeCycleTrashService extends AbstractTrashService {
     }
 
     protected void trashDocument(CoreSession session, DocumentModel doc) {
-        if (doc.getParentRef() == null) {
-            // handle placeless document
-            session.removeDocument(doc.getRef());
-        } else {
-            checkCanTrash(doc);
-            if (!TRUE.equals(doc.getContextData(DISABLE_TRASH_RENAMING))) {
-                String name = mangleName(doc);
-                session.move(doc.getRef(), doc.getParentRef(), name);
+        if (session.canRemoveDocument(doc.getRef())) {
+            if (doc.getParentRef() == null) {
+                // handle placeless document
+                session.removeDocument(doc.getRef());
+            } else {
+                if (!TRUE.equals(doc.getContextData(DISABLE_TRASH_RENAMING))) {
+                    String name = mangleName(doc);
+                    session.move(doc.getRef(), doc.getParentRef(), name);
+                }
+                doc.putContextData(FROM_LIFE_CYCLE_TRASH_SERVICE, TRUE);
+                session.followTransition(doc, DELETE_TRANSITION);
             }
-            doc.putContextData(FROM_LIFE_CYCLE_TRASH_SERVICE, TRUE);
-            session.followTransition(doc, DELETE_TRANSITION);
         }
     }
 

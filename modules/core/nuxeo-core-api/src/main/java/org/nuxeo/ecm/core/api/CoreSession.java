@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
@@ -559,12 +560,14 @@ public interface CoreSession {
     void saveDocuments(DocumentModel[] docModels);
 
     /**
-     * Check if a document can be removed. This needs the REMOVE permission on the document and the REMOVE_CHILDREN
-     * permission on the parent.
+     * Check if a document can be removed. This needs the {@link SecurityConstants#REMOVE} permission on the document
+     * and the {@link SecurityConstants#REMOVE_CHILDREN} permission on the parent.
      * <p>
      * For an archived version to be removeable, it must not be referenced from any proxy or be the base of a working
      * document, and the REMOVE permission must be available on the working document (or the user must be an
      * administrator if no working document exists).
+     * <p>
+     * If a descendant of the document is retained or under legal hold, then the document cannot be removed.
      *
      * @param docRef the document
      * @return true if the document can be removed
@@ -1166,8 +1169,8 @@ public interface CoreSession {
      * Sets the retention date on the document (a record).
      * <p>
      * If no previous retention date was set, or if the previous retention date was
-     * {@linkplain #RETAIN_UNTIL_INDETERMINATE indeterminate}, or if the previous retention date was <em>before</em>
-     * the given value, then the retention date is set to the given value.
+     * {@linkplain #RETAIN_UNTIL_INDETERMINATE indeterminate}, or if the previous retention date was <em>before</em> the
+     * given value, then the retention date is set to the given value.
      * <p>
      * If the previous retention date was <em>after</em> the given value (that is, if trying to reduce the retention
      * time), an exception is thrown.
