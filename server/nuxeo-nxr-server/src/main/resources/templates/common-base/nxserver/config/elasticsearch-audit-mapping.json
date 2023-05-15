@@ -39,8 +39,8 @@
       "type": "long"
     },
     "extended.params": {
-      "type": "keyword",
-      "index": false
+      "type": "object",
+      "enabled": false
     }
   }
 }
