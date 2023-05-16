@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2023 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,38 @@
  * Contributors:
  *     Stephane Lacoin
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.core.persistence;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
+import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceUnitTransactionType;
-import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import org.hibernate.HibernateException;
-import org.hibernate.cfg.Environment;
-import org.hibernate.ejb.Ejb3Configuration;
-import org.hibernate.ejb.HibernatePersistence;
-import org.hibernate.ejb.transaction.JoinableCMTTransactionFactory;
-import org.hibernate.transaction.JDBCTransactionFactory;
-import org.hibernate.transaction.TransactionManagerLookup;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
+import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.jtajca.NamingContextFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-/**
- */
 @XObject("hibernateConfiguration")
 public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
@@ -72,107 +66,57 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         if (expandedValue.startsWith("$")) {
             throw new PersistenceError("Cannot expand " + name + " for datasource");
         }
-        hibernateProperties.put("hibernate.connection.datasource", DataSourceHelper.getDataSourceJNDIName(name));
+        hibernateProperties.put(AvailableSettings.DATASOURCE, DataSourceHelper.getDataSourceJNDIName(name));
     }
 
-    @XNodeMap(value = "properties/property", key = "@name", type = Properties.class, componentType = String.class)
-    public final Properties hibernateProperties = new Properties();
-
-    @XNodeList(value = "classes/class", type = ArrayList.class, componentType = Class.class)
-    public final List<Class<?>> annotedClasses = new ArrayList<>();
-
-    public void addAnnotedClass(Class<?> annotedClass) {
-        annotedClasses.add(annotedClass);
-    }
-
-    public void removeAnnotedClass(Class<?> annotedClass) {
-        annotedClasses.remove(annotedClass);
-    }
-
-    protected Ejb3Configuration cfg;
-
-    public Ejb3Configuration setupConfiguration() {
-        return setupConfiguration(null);
-    }
-
-    public Ejb3Configuration setupConfiguration(Map<String, String> properties) {
-        cfg = new Ejb3Configuration();
-
-        if (properties != null) {
-            cfg.configure(name, properties);
-        } else {
-            cfg.configure(name, Collections.emptyMap());
-        }
-
-        // Load hibernate properties
-        cfg.addProperties(hibernateProperties);
-
-        // Add annnoted classes if any
-        for (Class<?> annotedClass : annotedClasses) {
-            cfg.addAnnotatedClass(annotedClass);
-        }
-
-        return cfg;
-    }
+    @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class)
+    public final Map<String, String> hibernateProperties = new HashMap<>();
 
     @Override
     public EntityManagerFactory getFactory(String txType) {
         Map<String, String> properties = new HashMap<>();
+        properties.putAll(hibernateProperties);
+
         if (txType == null) {
             txType = getTxType();
         }
-        properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
+        properties.put(AvailableSettings.JPA_TRANSACTION_TYPE, txType);
+        // no need to set "hibernate.transaction.coordinator_class" (AvailableSettings.TRANSACTION_COORDINATOR_STRATEGY)
+        // as in Hibernate 3, it is now done by EntityManagerFactoryBuilderImpl#normalizeTransactionCoordinator
         if (txType.equals(JTA)) {
-            properties.put(Environment.TRANSACTION_STRATEGY, JoinableCMTTransactionFactory.class.getName());
-            properties.put(Environment.TRANSACTION_MANAGER_STRATEGY, NuxeoTransactionManagerLookup.class.getName());
-        } else if (txType.equals(RESOURCE_LOCAL)) {
-            properties.put(Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName());
+            properties.put(AvailableSettings.JTA_PLATFORM, NuxeoJtaPlatform.class.getName());
         }
-        if (cfg == null) {
-            setupConfiguration(properties);
-        }
-        Properties props = cfg.getProperties();
-        if (props.get(Environment.URL) == null) {
+
+        if (properties.get(AvailableSettings.URL) == null) {
             // don't set up our connection provider for unit tests
             // that use an explicit driver + connection URL and so use
             // a DriverManagerConnectionProvider
-            props.put(Environment.CONNECTION_PROVIDER, NuxeoConnectionProvider.class.getName());
+            properties.put(AvailableSettings.CONNECTION_PROVIDER, NuxeoConnectionProvider.class.getName());
         }
         if (txType.equals(RESOURCE_LOCAL)) {
-            props.remove(Environment.DATASOURCE);
+            properties.remove(AvailableSettings.DATASOURCE);
         } else {
-            String dsname = props.getProperty(Environment.DATASOURCE);
+            String dsname = properties.get(AvailableSettings.DATASOURCE);
             dsname = DataSourceHelper.getDataSourceJNDIName(dsname);
-            props.put(Environment.DATASOURCE, dsname);
-            props.put(Environment.JNDI_CLASS, NamingContextFactory.class.getName());
-            props.put(Environment.JNDI_PREFIX.concat(".").concat(javax.naming.Context.URL_PKG_PREFIXES),
+            properties.put(AvailableSettings.DATASOURCE, dsname);
+            properties.put(AvailableSettings.JNDI_CLASS, NamingContextFactory.class.getName());
+            properties.put(AvailableSettings.JNDI_PREFIX.concat(".").concat(Context.URL_PKG_PREFIXES),
                     NuxeoContainer.class.getPackage().getName());
         }
-        return createEntityManagerFactory(properties);
-    }
-
-    // this must be executed always outside a transaction
-    // because SchemaUpdate tries to setAutoCommit(true)
-    // so we use a new thread
-    protected EntityManagerFactory createEntityManagerFactory(final Map<String, String> properties) {
-        return TransactionHelper.runWithoutTransaction(() -> cfg.createEntityManagerFactory(properties));
+        return Persistence.createEntityManagerFactory(name, properties);
     }
 
     /**
-     * Hibernate Transaction Manager Lookup that uses our framework.
+     * Hibernate {@link JtaPlatform} that uses our framework.
+     *
+     * @since 2023
      */
-    public static class NuxeoTransactionManagerLookup implements TransactionManagerLookup {
-        public NuxeoTransactionManagerLookup() {
-            // look up UserTransaction once to know its JNDI name
-            try {
-                TransactionHelper.lookupUserTransaction();
-            } catch (NamingException e) {
-                // ignore
-            }
-        }
+    public static class NuxeoJtaPlatform extends AbstractJtaPlatform {
+
+        private static final long serialVersionUID = 1L;
 
         @Override
-        public TransactionManager getTransactionManager(Properties props) {
+        protected TransactionManager locateTransactionManager() {
             try {
                 return TransactionHelper.lookupTransactionManager();
             } catch (NamingException e) {
@@ -181,13 +125,12 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         }
 
         @Override
-        public String getUserTransactionName() {
-            return TransactionHelper.getUserTransactionJNDIName();
-        }
-
-        @Override
-        public Object getTransactionIdentifier(Transaction transaction) {
-            return transaction;
+        protected UserTransaction locateUserTransaction() {
+            try {
+                return TransactionHelper.lookupUserTransaction();
+            } catch (NamingException e) {
+                throw new HibernateException(e.getMessage(), e);
+            }
         }
     }
 
@@ -225,8 +168,9 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     }
 
     public void merge(HibernateConfiguration other) {
-        assert name.equals(other.name) : " cannot merge configuration that do not have the same persistence unit";
-        annotedClasses.addAll(other.annotedClasses);
+        if (!name.equals(other.name)) {
+            throw new NuxeoException("Cannot merge configurations that do not have the same persistence unit");
+        }
         hibernateProperties.clear();
         hibernateProperties.putAll(other.hibernateProperties);
     }

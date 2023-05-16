@@ -20,15 +20,8 @@ package org.nuxeo.ecm.core.persistence;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.hibernate.dialect.Oracle10gDialect;
-import org.hibernate.dialect.resolver.BasicDialectResolver;
-import org.hibernate.dialect.resolver.DialectFactory;
-import org.hibernate.dialect.resolver.DialectResolverSet;
+import org.hibernate.cfg.AvailableSettings;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -41,32 +34,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PersistenceComponent extends DefaultComponent
         implements HibernateConfigurator, PersistenceProviderFactory {
 
-    private static final Logger log = LogManager.getLogger(PersistenceComponent.class);
-
     protected final Map<String, HibernateConfiguration> registry = new HashMap<>();
-
-    static {
-        // do this statically once, as we're patching a static variable
-        registerOracle12DialectResolver();
-    }
-
-    /**
-     * Registers with Hibernate a dialect resolver to recognize Oracle 12.
-     *
-     * @since 7.2
-     */
-    // We can't easily use DialectFactory's Environment.DIALECT_RESOLVERS because we would have
-    // to set it before Hibernate's classloading which we can't control.
-    protected static void registerOracle12DialectResolver() {
-        try {
-            DialectResolverSet resolvers = (DialectResolverSet) FieldUtils.readStaticField(DialectFactory.class,
-                    "DIALECT_RESOLVERS", true);
-            resolvers.addResolverAtFirst(new BasicDialectResolver("Oracle", 18, Oracle10gDialect.class));
-            resolvers.addResolverAtFirst(new BasicDialectResolver("Oracle", 12, Oracle10gDialect.class));
-        } catch (ReflectiveOperationException e) {
-            log.error("Cannot patch Hibernate to support Oracle 12", e);
-        }
-    }
 
     @Override
     public int getApplicationStartedOrder() {
@@ -109,8 +77,8 @@ public class PersistenceComponent extends DefaultComponent
         }
     }
 
-    protected void doPatchForTests(Properties hibernateProperties) {
-        String url = hibernateProperties.getProperty("hibernate.connection.url");
+    protected void doPatchForTests(Map<String, String> hibernateProperties) {
+        String url = hibernateProperties.get(AvailableSettings.URL);
         if (url != null) {
             url = Framework.expandVars(url);
             hibernateProperties.put("hibernate.connection.url", url);

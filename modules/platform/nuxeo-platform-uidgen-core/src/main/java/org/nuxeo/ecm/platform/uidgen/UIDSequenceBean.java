@@ -23,9 +23,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +34,9 @@ import org.apache.logging.log4j.Logger;
  * UID entity - keeps last indexes of all generated UIDs.
  */
 @Entity
-@NamedQueries({ @NamedQuery(name = "UIDSequence.findByKey", query = "from UIDSequenceBean seq where seq.key = :key") })
-@Table(name = "NXP_UIDSEQ")
+@NamedQuery(name = "UIDSequence.findByKey", query = "from UIDSequenceBean seq where seq.key = :key")
+@Table(name = "NXP_UIDSEQ", uniqueConstraints = @UniqueConstraint(columnNames = {
+        "SEQ_KEY" }, name = "nxp_uidseq_seq_key_key"))
 public class UIDSequenceBean {
 
     private static final Logger log = LogManager.getLogger(UIDSequenceBean.class);
@@ -45,7 +46,7 @@ public class UIDSequenceBean {
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected int id;
 
-    @Column(name = "SEQ_KEY", nullable = false, unique = true)
+    @Column(name = "SEQ_KEY", nullable = false)
     private String key;
 
     @Column(name = "SEQ_INDEX", nullable = false)

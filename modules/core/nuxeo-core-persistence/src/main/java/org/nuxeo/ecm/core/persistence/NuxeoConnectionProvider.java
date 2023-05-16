@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2023 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,53 +15,39 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.core.persistence;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
+import java.util.Map;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
 import org.hibernate.HibernateException;
-import org.hibernate.cfg.Environment;
-import org.hibernate.connection.ConnectionProvider;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
 
 /**
- * ConnectionProvider for Hibernate that looks up the datasource
- * from the nuxeo's container.
+ * ConnectionProvider for Hibernate that looks up the datasource from the Nuxeo container.
  *
  * @since 5.7
  */
-public class NuxeoConnectionProvider implements ConnectionProvider {
+public class NuxeoConnectionProvider extends DatasourceConnectionProviderImpl {
 
-    protected DataSource ds;
+    private static final long serialVersionUID = 1L;
 
     @Override
-    public void configure(Properties props) {
-        String name = props.getProperty(Environment.DATASOURCE);
+    public void configure(@SuppressWarnings("rawtypes") Map props) {
+        String name = (String) props.get(AvailableSettings.DATASOURCE);
         try {
-            ds = DataSourceHelper.getDataSource(name);
+            DataSource ds = DataSourceHelper.getDataSource(name);
+            setDataSource(ds);
+            super.configure(props);
         } catch (NamingException cause) {
             throw new HibernateException("Cannot lookup datasource by name " + name, cause);
         }
-    }
-
-    @Override
-    public Connection getConnection() throws SQLException {
-        return ds.getConnection();
-    }
-
-    @Override
-    public void closeConnection(Connection connection) throws SQLException {
-        connection.close();
-    }
-
-    @Override
-    public void close() throws HibernateException {
-        ds = null;
     }
 
     @Override

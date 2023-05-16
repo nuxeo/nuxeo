@@ -30,19 +30,17 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-datasource</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
+      <artifactId>javax.persistence-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
-    <!-- needed by org.hibernate:hibernate-entitymanager because we exclude the old javassist:javassist -->
-    <dependency>
-      <groupId>org.javassist</groupId>
-      <artifactId>javassist</artifactId>
+      <groupId>javax.transaction</groupId>
+      <artifactId>javax.transaction-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>

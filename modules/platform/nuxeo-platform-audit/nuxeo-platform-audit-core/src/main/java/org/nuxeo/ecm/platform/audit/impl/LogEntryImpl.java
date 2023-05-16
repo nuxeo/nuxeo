@@ -35,13 +35,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
-import javax.persistence.NamedQueries;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,15 +64,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * Log entry implementation.
  */
 @Entity(name = "LogEntry")
-@NamedQueries({
-        @NamedQuery(name = "LogEntry.removeByEventIdAndPath", query = "delete LogEntry log where log.eventId = :eventId and log.docPath like :pathPattern"),
-        @NamedQuery(name = "LogEntry.findByDocument", query = "from LogEntry log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.findByDocumentAndRepository", query = "from LogEntry log where log.docUUID=:docUUID and log.repositoryId=:repositoryId ORDER BY log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.findAll", query = "from LogEntry log order by log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.findByEventIdAndPath", query = "from LogEntry log where log.eventId=:eventId and log.docPath LIKE :pathPattern"),
-        @NamedQuery(name = "LogEntry.findByHavingExtendedInfo", query = "from LogEntry log where log.extendedInfos['one'] is not null order by log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.countEventsById", query = "select count(log.eventId) from LogEntry log where log.eventId=:eventId"),
-        @NamedQuery(name = "LogEntry.findEventIds", query = "select distinct log.eventId from LogEntry log") })
+@NamedQuery(name = "LogEntry.removeByEventIdAndPath", query = "delete LogEntry log where log.eventId = :eventId and log.docPath like :pathPattern")
+@NamedQuery(name = "LogEntry.findByDocument", query = "from LogEntry log where log.docUUID=:docUUID ORDER BY log.eventDate DESC")
+@NamedQuery(name = "LogEntry.findByDocumentAndRepository", query = "from LogEntry log where log.docUUID=:docUUID and log.repositoryId=:repositoryId ORDER BY log.eventDate DESC")
+@NamedQuery(name = "LogEntry.findAll", query = "from LogEntry log order by log.eventDate DESC")
+@NamedQuery(name = "LogEntry.findByEventIdAndPath", query = "from LogEntry log where log.eventId=:eventId and log.docPath LIKE :pathPattern")
+@NamedQuery(name = "LogEntry.findByHavingExtendedInfo", query = "from LogEntry log where log.extendedInfos['one'] is not null order by log.eventDate DESC")
+@NamedQuery(name = "LogEntry.countEventsById", query = "select count(log.eventId) from LogEntry log where log.eventId=:eventId")
+@NamedQuery(name = "LogEntry.findEventIds", query = "select distinct log.eventId from LogEntry log")
 @Table(name = "NXP_LOGS")
 public class LogEntryImpl implements LogEntry {
 
@@ -344,8 +344,9 @@ public class LogEntryImpl implements LogEntry {
     @JsonSerialize(keyAs = String.class, contentUsing = ExtendedInfoSerializer.class)
     @OneToMany(cascade = CascadeType.ALL, targetEntity = ExtendedInfoImpl.class)
     @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = {
-            @JoinColumn(name = "INFO_FK") })
-    @org.hibernate.annotations.MapKey(columns = { @Column(name = "mapkey", nullable = false) })
+            @JoinColumn(name = "INFO_FK") }, uniqueConstraints = @UniqueConstraint(columnNames = {
+                    "INFO_FK" }, name = "nxp_logs_mapextinfos_info_fk_key"))
+    @MapKeyColumn(name = "mapkey", nullable = false)
     public Map<String, ExtendedInfo> getExtendedInfos() {
         return extendedInfos;
         // return (Map)getExtendedInfosImpl();

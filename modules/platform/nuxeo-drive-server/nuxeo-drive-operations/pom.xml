@@ -85,7 +85,7 @@
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
+      <artifactId>javax.persistence-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
