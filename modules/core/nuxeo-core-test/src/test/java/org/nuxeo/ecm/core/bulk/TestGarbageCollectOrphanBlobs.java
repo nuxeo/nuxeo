@@ -172,6 +172,12 @@ public class TestGarbageCollectOrphanBlobs {
     }
 
     @Test
+    public void testUnsupportedDeleteBlobOnUnsupportedProvider() {
+        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
+        assertdoGCNotImplemented();
+    }
+
+    @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-shared-storage-delete.xml")
     public void testUnsupportedDeleteBlobOnSharedStorage() {
         assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());

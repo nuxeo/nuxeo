@@ -74,7 +74,7 @@ public class RepositoryBlobScroll implements Scroll {
         for (String providerId : documentBlobManager.getProviderIds(repositoryName)) {
             BlobProvider provider = blobManager.getBlobProvider(providerId);
             if (!(provider instanceof BlobStoreBlobProvider)) {
-                log.info("Provider: {} must extend BlobStoreBlobProvider but was {}", () -> providerId,
+                log.warn("Provider: {} must extend BlobStoreBlobProvider but was {}", () -> providerId,
                         () -> provider.getClass().getCanonicalName());
                 continue;
             }
