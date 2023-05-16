@@ -22,6 +22,9 @@ import static org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction.DRY_RUN_
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.bulk.AbstractBulkActionValidation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -40,7 +43,17 @@ public class GarbageCollectOrphanBlobsValidation extends AbstractBulkActionValid
     @Override
     protected void validateCommand(BulkCommand command) throws IllegalArgumentException {
         validateBoolean(DRY_RUN_PARAM, command);
-        Framework.getService(DocumentBlobManager.class).checkCanDeleteBlob(command.getRepository());
+        String repositoryName = command.getRepository();
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager documentBlobManager = Framework.getService(DocumentBlobManager.class);
+        documentBlobManager.checkCanDeleteBlob(command.getRepository());
+        for (String providerId : documentBlobManager.getProviderIds(repositoryName)) {
+            BlobProvider provider = blobManager.getBlobProvider(providerId);
+            if (!(provider instanceof BlobStoreBlobProvider)) {
+                throw new UnsupportedOperationException("Provider " + providerId + " of class "
+                        + provider.getClass().getCanonicalName() + " does not extend BlobStoreBlobProvider");
+            }
+        }
     }
 
 }
