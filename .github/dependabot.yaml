@@ -11,8 +11,6 @@ updates:
       # Major security updates
       - dependency-name: "org.jboss.remoting:jboss-remoting"
         versions: ["[3.0,)"]
-      - dependency-name: "com.h2database:h2"
-        versions: ["[2.0,)"]
 
       # Minor security update for Elasticsearch
       - dependency-name: "org.elasticsearch*:*"
