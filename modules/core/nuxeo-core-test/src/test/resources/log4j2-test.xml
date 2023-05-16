@@ -9,11 +9,18 @@
       <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
       <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n" />
     </File>
+    <File name="FULL_GC" fileName="${sys:custom.environment.log.dir:-target}/blob-gc.log" append="false">
+      <ThresholdFilter level="trace" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{DEFAULT} Full GC %m%n" />
+    </File>
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
     <!-- Needed by TestTrashBackwardMechanism -->
     <logger name="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener" level="debug" />
+    <Logger name="org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction" level="trace" >
+      <AppenderRef ref="FULL_GC" />
+    </Logger>
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />

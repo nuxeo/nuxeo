@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -86,6 +87,7 @@ public class GarbageCollectOrphanBlobsAction implements StreamProcessorTopology 
         @Override
         protected void compute(CoreSession session, List<String> blobKeys, Map<String, Serializable> properties) {
             DocumentBlobManager documentBlobManager = Framework.getService(DocumentBlobManager.class);
+            String repository = session.getRepositoryName();
             long deletedSize = 0L;
             long totalSize = 0L;
             for (String k : blobKeys) {
@@ -93,17 +95,19 @@ public class GarbageCollectOrphanBlobsAction implements StreamProcessorTopology 
                 Long size = AbstractBlobScroll.getBlobSize(k);
                 totalSize += size;
                 try {
-                    boolean deleted = documentBlobManager.deleteBlob(session.getRepositoryName(), key, dryRun);
+                    boolean deleted = documentBlobManager.deleteBlob(repository, key, dryRun);
                     if (deleted) {
                         deletedSize += size;
                     } else {
                         delta.incrementSkipCount();
                     }
+                    log.trace("CommandId: {} Blob: {} of size: {} from repository: {} deleted: {} dryRun: {}",
+                            () -> getCurrentCommand().getId(), () -> key, () -> FileUtils.byteCountToDisplaySize(size),
+                            () -> repository, () -> deleted, () -> dryRun);
                 } catch (IllegalArgumentException e) {
                     delta.inError(String.format("Cannot delete blob: %s, repository: %s, with error: %s", key,
-                            session.getRepositoryName(), e.getMessage()));
-                    log.warn("Cannot delete blob: {}, repository: {}, with error: {}", key, session.getRepositoryName(),
-                            e);
+                            repository, e.getMessage()));
+                    log.warn("Cannot delete blob: {}, repository: {}, with error: {}", key, repository, e);
                 } catch (IOException e) {
                     // Worth trying again on IOException, could be network or service disruption.
                     throw new NuxeoException(e);
