@@ -368,10 +368,13 @@ public class StandardVersioningService implements ExtendableVersioningService {
     @Override
     public void doCheckOut(Document doc) {
         Document base = doc.getBaseVersion();
+        if (base == null) {
+           log.warn("Checkout a corrupted doc: {} where the base version has been deleted.", doc::getUUID);
+        }
         doc.checkOut();
         // set version number to that of the latest version
         // nothing to do if base is latest version, already at proper version
-        if (!base.isLatestVersion()) {
+        if (base != null && !base.isLatestVersion()) {
             // this doc was restored from a non-latest version, find the latest one
             Document last = doc.getLastVersion();
             if (last != null) {
