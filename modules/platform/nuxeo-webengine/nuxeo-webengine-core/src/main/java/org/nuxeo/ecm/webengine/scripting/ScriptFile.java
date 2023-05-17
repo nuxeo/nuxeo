@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.webengine.scripting;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,6 +48,7 @@ public final class ScriptFile {
     // TODO should remove the typed file name
     public ScriptFile(File file) throws IOException {
         String name = file.getName();
+        checkPathTraversal(name);
         int p = name.lastIndexOf('.');
         if (p > -1) {
             ext = name.substring(p + 1);

@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -65,6 +67,7 @@ public class DirectoryStack {
      * @return the file in the canonical form
      */
     public File getFile(String name) throws IOException {
+        checkPathTraversal(name);
         for (File entry : dirs) {
             File file = new File(entry, name);
             if (file.exists()) {

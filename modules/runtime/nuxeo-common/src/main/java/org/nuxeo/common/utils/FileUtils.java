@@ -333,4 +333,15 @@ public final class FileUtils {
         return filename.replaceAll("(\\\\)|(\\/)|(\\:)|(\\*)|(\\.\\.)", "_");
     }
 
+    /**
+     * Checks if a path contains unwanted characters leading to a path traversal.
+     *
+     * @since 2021.40
+     */
+    public static void checkPathTraversal(String path) {
+        if (path != null && path.contains("..")) {
+            throw new IllegalArgumentException("Illegal path: " + path);
+        }
+    }
+
 }

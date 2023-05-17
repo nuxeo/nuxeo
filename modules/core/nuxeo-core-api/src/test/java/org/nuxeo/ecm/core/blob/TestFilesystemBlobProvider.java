@@ -22,9 +22,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -180,8 +182,7 @@ public class TestFilesystemBlobProvider {
     }
 
     @Test
-    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
-    public void testIllegalPath() throws Exception {
+    public void testIllegalPath() throws IOException {
         String illegalPath = "../foo";
 
         String PROVIDER_ID2 = "testfs2";
@@ -198,14 +199,7 @@ public class TestFilesystemBlobProvider {
             ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
-            byte[] bytes;
-            try (InputStream in = blob.getStream()) {
-                bytes = IOUtils.toByteArray(in);
-            }
-            assertEquals(0, bytes.length);
-            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
-            assertEquals(1, caughtEvents.size());
-            assertEquals("Failed to access file: testfs2:../foo", caughtEvents.get(0));
+            assertThrows("Illegal path: ../foo", IllegalArgumentException.class, blob::getStream);
         } finally {
             ((BlobManagerComponent) blobManager).unregisterBlobProvider(descr);
         }

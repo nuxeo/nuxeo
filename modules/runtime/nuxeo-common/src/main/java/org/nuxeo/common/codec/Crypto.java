@@ -19,6 +19,8 @@
  */
 package org.nuxeo.common.codec;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -349,6 +351,7 @@ public class Crypto {
      */
     public static Map<String, SecretKey> getKeysFromKeyStore(String keystorePath, char[] keystorePass, String keyAlias,
             char[] keyPass) throws GeneralSecurityException, IOException {
+        checkPathTraversal(keystorePath);
         KeyStore keystore = KeyStore.getInstance("JCEKS");
         try (InputStream keystoreStream = new FileInputStream(keystorePath)) {
             keystore.load(keystoreStream, keystorePass);

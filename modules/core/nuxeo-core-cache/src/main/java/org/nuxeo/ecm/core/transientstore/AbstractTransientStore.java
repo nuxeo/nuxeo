@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.core.transientstore;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -184,6 +186,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
 
     public File getCachingDirectory(String key) {
         String cachingDirName = getCachingDirName(key);
+        checkPathTraversal(cachingDirName);
         try {
             File cachingDir = new File(cacheDir.getCanonicalFile(), cachingDirName);
             if (!cachingDir.getCanonicalPath().startsWith(cacheDir.getCanonicalPath() + File.separator)) {

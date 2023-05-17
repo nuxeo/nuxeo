@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -96,9 +98,7 @@ public class FilesystemBlobProvider extends AbstractBlobProvider {
     public InputStream getStream(ManagedBlob blob) throws IOException {
         String key = stripBlobKeyPrefix(blob.getKey());
         // final sanity checks
-        if (key.contains("..")) {
-            throw new FileNotFoundException("Illegal path: " + key);
-        }
+        checkPathTraversal(key);
         return Files.newInputStream(Paths.get(root + key));
     }
 
@@ -106,9 +106,7 @@ public class FilesystemBlobProvider extends AbstractBlobProvider {
     public File getFile(ManagedBlob blob) {
         String key = stripBlobKeyPrefix(blob.getKey());
         // final sanity checks
-        if (key.contains("..")) {
-            throw new IllegalArgumentException("Illegal path: " + key);
-        }
+        checkPathTraversal(key);
         Path path = Paths.get(root + key);
         return Files.exists(path) ? path.toFile() : null;
     }
@@ -138,9 +136,7 @@ public class FilesystemBlobProvider extends AbstractBlobProvider {
      */
     public ManagedBlob createBlob(BlobInfo blobInfo) throws IOException {
         String filePath = blobInfo.key;
-        if (filePath.contains("..")) {
-            throw new FileNotFoundException("Illegal path: " + filePath);
-        }
+        checkPathTraversal(filePath);
         if (!filePath.startsWith(root)) {
             throw new FileNotFoundException("Path is not under configured root: " + filePath);
         }

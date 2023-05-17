@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +53,7 @@ public class ResourceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        checkPathTraversal(pathInfo);
         if (pathInfo == null || pathInfo.equals("/") || pathInfo.length() == 0) {
             pathInfo = index;
         } else if (pathInfo.endsWith("/")) {
