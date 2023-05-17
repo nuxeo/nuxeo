@@ -36,24 +36,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.GeneralSecurityException;
-import java.security.Key;
-import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.crypto.KeyGenerator;
-
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.ecm.core.blob.AESBlobStore.DecryptingInputStream;
 import org.nuxeo.ecm.core.blob.AESBlobStore.EncryptingOutputStream;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.TemporaryKeyStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blob-provider-aes-digest.xml")
@@ -77,7 +71,9 @@ public class TestAESBlobStore extends TestLocalBlobStoreAbstract {
     // password for PBKDF2
     protected static final String PASSWORD = "secretpassword";
 
-    protected Path keyStoreFile;
+    @Rule
+    public TemporaryKeyStore temporaryKeyStore = new TemporaryKeyStore.Builder(KEY_STORE_TYPE,
+            KEY_STORE_PASSWORD).generateKey(KEY_ALIAS, KEY_PASSWORD, "AES", 256).build();
 
     @Override
     public boolean checkSizeOfGCedFiles() {
@@ -92,42 +88,22 @@ public class TestAESBlobStore extends TestLocalBlobStoreAbstract {
     }
 
     @Override
-    protected void testCopyOrMove(boolean atomicMove) throws IOException {
+    protected void testCopyOrMove(boolean atomicMove) {
         // we don't test the unimplemented copyBlob API, as it's only called from commit or during caching
         assumeFalse("low-level copy/move not tested in aes blob store", true);
     }
 
     @Before
-    public void initKeyStore() throws IOException, GeneralSecurityException {
-        keyStoreFile = Framework.createTempFilePath("nuxeoKeyStore_", "");
-        Files.delete(keyStoreFile);
-        createKeyStore(keyStoreFile);
+    public void initKeyStore() {
         Properties properties = Framework.getProperties();
-        properties.put(PATH_PROP, keyStoreFile.toString());
-    }
-
-    @After
-    public void clearKeyStore() throws IOException {
-        Files.delete(keyStoreFile);
-    }
-
-    protected void createKeyStore(Path file) throws IOException, GeneralSecurityException {
-        KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        kgen.init(256);
-        Key skey = kgen.generateKey();
-        KeyStore keyStore = KeyStore.getInstance(KEY_STORE_TYPE);
-        keyStore.load(null, null);
-        keyStore.setKeyEntry(KEY_ALIAS, skey, KEY_PASSWORD.toCharArray(), null);
-        try (OutputStream out = Files.newOutputStream(file)) {
-            keyStore.store(out, KEY_STORE_PASSWORD.toCharArray());
-        }
+        properties.put(PATH_PROP, temporaryKeyStore.getPath().toString());
     }
 
     @Test
     public void testEncryptDecryptWithKeystore() throws IOException {
         Map<String, String> properties = new HashMap<>();
         properties.put(PROP_KEY_STORE_TYPE, KEY_STORE_TYPE);
-        properties.put(PROP_KEY_STORE_FILE, keyStoreFile.toString());
+        properties.put(PROP_KEY_STORE_FILE, temporaryKeyStore.getPath().toString());
         properties.put(PROP_KEY_STORE_PASSWORD, KEY_STORE_PASSWORD);
         properties.put(PROP_KEY_ALIAS, KEY_ALIAS);
         properties.put(PROP_KEY_PASSWORD, KEY_PASSWORD);

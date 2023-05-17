@@ -32,23 +32,15 @@ import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_PASSWORD;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.GeneralSecurityException;
-import java.security.Key;
-import java.security.KeyStore;
 import java.util.Collections;
 
-import javax.crypto.KeyGenerator;
-
 import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.TemporaryKeyStore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -70,6 +62,10 @@ public class TestAESBinaryManager {
     private static final String CONTENT_MD5 = "d25ea4f4642073b7f218024d397dbaef";
 
     private static final String UTF8 = "UTF-8";
+
+    @Rule
+    public TemporaryKeyStore temporaryKeyStore = new TemporaryKeyStore.Builder(KEY_STORE_TYPE,
+            KEY_STORE_PASSWORD).generateKey(KEY_ALIAS, KEY_PASSWORD, "AES", 256).build();
 
     @Test
     public void testEncryptDecryptWithPassword() throws Exception {
@@ -110,12 +106,8 @@ public class TestAESBinaryManager {
 
     @Test
     public void testEncryptDecryptWithKeyStore() throws Exception {
-        File keyStoreFile = Framework.createTempFile("nuxeoKeyStore_", "");
-        keyStoreFile.delete();
-        createKeyStore(keyStoreFile);
-
         String options = String.format("%s=%s,%s=%s,%s=%s,%s=%s,%s=%s", PARAM_KEY_STORE_TYPE, KEY_STORE_TYPE, //
-                PARAM_KEY_STORE_FILE, keyStoreFile.getPath(), //
+                PARAM_KEY_STORE_FILE, temporaryKeyStore.getPath().toString(), //
                 PARAM_KEY_STORE_PASSWORD, KEY_STORE_PASSWORD, //
                 PARAM_KEY_ALIAS, KEY_ALIAS, //
                 PARAM_KEY_PASSWORD, KEY_PASSWORD);
@@ -137,19 +129,6 @@ public class TestAESBinaryManager {
         assertEquals(CONTENT, new String(out.toByteArray(), UTF8));
 
         binaryManager.close();
-    }
-
-    protected void createKeyStore(File file) throws GeneralSecurityException, IOException {
-        KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        kgen.init(256);
-        Key skey = kgen.generateKey();
-        KeyStore keyStore = KeyStore.getInstance(KEY_STORE_TYPE);
-        // keyStore.load(null, KEY_STORE_PASSWORD.toCharArray());
-        keyStore.load(null, null);
-        keyStore.setKeyEntry(KEY_ALIAS, skey, KEY_PASSWORD.toCharArray(), null);
-        OutputStream out = new FileOutputStream(file);
-        keyStore.store(out, KEY_STORE_PASSWORD.toCharArray());
-        out.close();
     }
 
     @Test
