@@ -206,7 +206,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
     }
 
     protected long getSizeOfBlobs(List<Blob> blobs) {
-        int size = 0;
+        long size = 0;
         if (blobs != null) {
             for (Blob blob : blobs) {
                 long blobLength = blob.getLength();
