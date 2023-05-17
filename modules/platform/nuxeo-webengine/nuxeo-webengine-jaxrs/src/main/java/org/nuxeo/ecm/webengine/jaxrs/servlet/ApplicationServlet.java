@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,6 +169,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        checkPathTraversal(pathInfo);
         InputStream in = getServletContext().getResourceAsStream(pathInfo.substring(resourcesPrefix.length()));
         if (in != null) {
             String ctype = getServletContext().getMimeType(pathInfo);

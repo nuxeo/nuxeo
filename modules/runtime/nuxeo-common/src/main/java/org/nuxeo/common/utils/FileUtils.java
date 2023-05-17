@@ -30,9 +30,9 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang3.StringUtils;
 
 public final class FileUtils {
 
@@ -331,6 +331,17 @@ public final class FileUtils {
      */
     public static String getSafeFilename(String filename) {
         return filename.replaceAll("(\\\\)|(\\/)|(\\:)|(\\*)|(\\.\\.)", "_");
+    }
+
+    /**
+     * Checks if a path contains unwanted characters leading to a path traversal.
+     *
+     * @since 2021.40
+     */
+    public static void checkPathTraversal(String path) {
+        if (path != null && path.contains("..")) {
+            throw new IllegalArgumentException("Illegal path: " + path);
+        }
     }
 
 }

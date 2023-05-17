@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webengine.loader.store;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,6 +49,7 @@ public class FileResourceStore implements ResourceStore {
     }
 
     public final File getFile(String name) {
+        checkPathTraversal(name);
         return new File(root, name);
     }
 

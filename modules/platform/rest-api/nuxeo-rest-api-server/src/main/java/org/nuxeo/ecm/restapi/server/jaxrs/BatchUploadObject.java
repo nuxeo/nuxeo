@@ -23,6 +23,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
 
 import java.io.File;
 import java.io.IOException;
@@ -239,6 +240,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                     SC_BAD_REQUEST);
         } else if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
                 && StringUtils.isNotEmpty(requestBodyFile)) {
+            checkPathTraversal(requestBodyFile);
             if (StringUtils.isNotEmpty(fileName)) {
                 fileName = URLDecoder.decode(fileName, "UTF-8");
             }
