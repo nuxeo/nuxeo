@@ -26,7 +26,7 @@ public class SimpleDelay implements Retry.Policy {
 
     protected final long delay;
 
-    protected int elapsed;
+    protected long elapsed;
 
     public SimpleDelay(int base, int delay) {
         this.base = base;

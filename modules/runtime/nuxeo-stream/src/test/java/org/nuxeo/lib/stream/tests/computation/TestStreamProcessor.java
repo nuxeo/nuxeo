@@ -345,7 +345,7 @@ public abstract class TestStreamProcessor {
             log.info(String.format("generated: %s in %.2fs, throughput: %.2f records/s", total, elapsed,
                     total / elapsed));
         }
-        int result = 0;
+        long result = 0;
         // 2. resume and kill loop
         for (int i = 0; i < 10; i++) {
             try (LogManager manager = getSameLogManager()) {
