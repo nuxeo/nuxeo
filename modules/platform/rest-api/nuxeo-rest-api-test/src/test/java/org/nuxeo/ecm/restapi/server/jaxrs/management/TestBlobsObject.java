@@ -26,6 +26,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction.DRY_RUN_PARAM;
+import static org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction.RESULT_DELETED_SIZE_KEY;
+import static org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction.RESULT_TOTAL_SIZE_KEY;
 import static org.nuxeo.ecm.core.api.Blobs.createBlob;
 import static org.nuxeo.ecm.core.api.impl.blob.AbstractBlob.TEXT_PLAIN;
 import static org.nuxeo.ecm.core.api.impl.blob.AbstractBlob.UTF_8;
@@ -47,7 +49,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -170,15 +171,13 @@ public class TestBlobsObject extends ManagementBaseTest {
         try (CloseableClientResponse response = httpClientRule.get("/management/bulk/" + commandId)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(SC_OK, response.getStatus());
-
             assertBulkStatusCompleted(node);
             assertEquals(!success, node.get(STATUS_HAS_ERROR).asBoolean());
             assertEquals(skipped, node.get(STATUS_SKIP_COUNT).asInt());
-            assertEquals(deletedSize,
-                    node.get(STATUS_RESULT).get(GarbageCollectOrphanBlobsAction.RESULT_DELETED_SIZE_KEY).asLong());
+            assertEquals(deletedSize, node.get(STATUS_RESULT).get(RESULT_DELETED_SIZE_KEY).asLong());
             assertEquals(processed, node.get(STATUS_PROCESSED).asInt());
-            assertEquals(totalSize,
-                    node.get(STATUS_RESULT).get(GarbageCollectOrphanBlobsAction.RESULT_TOTAL_SIZE_KEY).asLong());
+            assertEquals(totalSize, node.get(STATUS_RESULT).get(RESULT_TOTAL_SIZE_KEY).asLong());
+            assertEquals(dryRun, node.get(STATUS_RESULT).get(DRY_RUN_PARAM).asBoolean());
             assertEquals(errorCount, node.get(STATUS_ERROR_COUNT).asInt());
             assertEquals(total, node.get(STATUS_TOTAL).asInt());
         }

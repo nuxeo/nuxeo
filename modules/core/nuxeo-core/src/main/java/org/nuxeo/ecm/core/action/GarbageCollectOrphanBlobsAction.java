@@ -113,7 +113,8 @@ public class GarbageCollectOrphanBlobsAction implements StreamProcessorTopology 
                     throw new NuxeoException(e);
                 }
             }
-            delta.mergeResult(Map.of(RESULT_DELETED_SIZE_KEY, deletedSize, RESULT_TOTAL_SIZE_KEY, totalSize));
+            delta.mergeResult(Map.of(RESULT_DELETED_SIZE_KEY, deletedSize, RESULT_TOTAL_SIZE_KEY, totalSize,
+                    DRY_RUN_PARAM, dryRun));
         }
 
     }
