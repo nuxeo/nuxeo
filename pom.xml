@@ -3882,7 +3882,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-naming</artifactId>
-        <version>4.22</version>
+        <version>4.23</version>
       </dependency>
 
       <dependency>
