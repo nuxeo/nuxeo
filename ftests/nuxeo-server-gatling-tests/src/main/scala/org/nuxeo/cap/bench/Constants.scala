@@ -26,7 +26,7 @@ object Constants {
   val AUTOMATION_PATH = "/site/automation"
   val ROOT_WORKSPACE_PATH = "/default-domain/workspaces"
   val NX_PATH = "/nxpath/default"
-
+  val API_MANAGEMENT = "/api/v1/management"
 
   val GAT_WS_NAME = "Bench_Gatling"
   val GAT_WS_PATH = ROOT_WORKSPACE_PATH + "/Bench_Gatling"

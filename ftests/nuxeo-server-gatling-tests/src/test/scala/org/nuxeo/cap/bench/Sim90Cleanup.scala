@@ -27,7 +27,8 @@ import scala.io.Source
 class Sim90Cleanup extends Simulation {
   def run = (userCount: Integer) => {
     feed(Feeders.admins)
-      .exec(NuxeoRest.deleteFileDocumentAsAdmin(Constants.GAT_WS_PATH))
+      .exec(NuxeoRest.permanentlyDelete(Constants.GAT_WS_PATH))
+      .exec(NuxeoRest.waitForAsyncJobs())
       .repeat(userCount.intValue(), "count") {
       feed(Feeders.users)
         .exec(NuxeoRest.deleteUser())

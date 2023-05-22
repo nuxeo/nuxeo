@@ -48,27 +48,29 @@ object NuxeoBulk {
       .queryParam("query", query)
   }
 
-  def waitForAction(commandId: String) = {
-    http("Wait for action to be completed")
+  def waitForAction(commandId: String, comment: String = "Wait for action to be completed") = {
+    http(comment)
       .post(Constants.AUTOMATION_PATH + "/Bulk.WaitForAction")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
       .header("Accept", "application/json")
       .header("content-type", "application/json")
+      .check(status.in(200))
       .body(StringBody( """{"params":{"timeoutSecond": "3600", "commandId": "${commandId}"},"context":{}}"""))
   }
 
   def reindexAll = () => {
     exitBlockOnFail {
       exec(
-        http("Reindex All repository")
+        http("Submit Reindex")
           .post(Constants.AUTOMATION_PATH + "/Elasticsearch.BulkIndex")
           .basicAuth("${adminId}", "${adminPassword}")
           .headers(Headers.base)
           .header("content-type", "application/json")
           .body(StringBody( """{"params":{},"context":{}}"""))
+          .check(status.in(200))
           .check(jsonPath("$.commandId").saveAs("commandId")))
-      .exec(waitForAction("${commandId}"))
+      .exec(waitForAction("${commandId}", "Reindex"))
       .exec(
         http("Get Reindex Status")
           .get(Constants.API_BULK + "/${commandId}")
@@ -78,4 +80,47 @@ object NuxeoBulk {
           .check(jsonPath("$.total").saveAs("reindexTotal")))
     }
   }
+
+  def versionFullGC = () => {
+     exitBlockOnFail {
+          exec(
+            http("Submit Version Full GC")
+              .delete(Constants.API_MANAGEMENT + "/versions/orphaned")
+              .basicAuth("${adminId}", "${adminPassword}")
+              .headers(Headers.base)
+              .check(status.in(200))
+              .check(jsonPath("$.commandId").saveAs("commandId")))
+         .exec(waitForAction("${commandId}", "Version Full GC"))
+         .exec(
+            http("Get Version Full GC Status")
+              .get(Constants.API_BULK + "/${commandId}")
+              .basicAuth("${adminId}", "${adminPassword}")
+              .headers(Headers.base)
+              .check(jsonPath("$.state").ofType[String].is("COMPLETED"))
+              .check(jsonPath("$.total").saveAs("versionsTotal"))
+              .check(jsonPath("$.skipCount").saveAs("versionsRetained")))
+        }
+    }
+
+   def binaryFullGC = () => {
+     exitBlockOnFail {
+          exec(
+            http("Submit Binary Full GC")
+              .delete(Constants.API_MANAGEMENT + "/blobs/orphaned")
+              .basicAuth("${adminId}", "${adminPassword}")
+              .headers(Headers.base)
+              .check(status.in(200))
+              .check(jsonPath("$.commandId").saveAs("commandId")))
+         .exec(waitForAction("${commandId}", "Binary Full GC"))
+         .exec(
+            http("Get Binary Full GC Status")
+              .get(Constants.API_BULK + "/${commandId}")
+              .basicAuth("${adminId}", "${adminPassword}")
+              .headers(Headers.base)
+              .check(jsonPath("$.state").ofType[String].is("COMPLETED"))
+              .check(jsonPath("$.total").saveAs("binariesTotal"))
+              .check(jsonPath("$.skipCount").saveAs("binariesRetained")))
+        }
+    }
+
 }
