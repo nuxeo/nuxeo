@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.core.io.impl.plugins;
 
+import static org.nuxeo.common.utils.FileUtils.getZipEntryAsFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -89,12 +91,8 @@ public class ZipReader extends AbstractDocumentReader {
     }
 
     private static void extract(ZipInputStream in, ZipEntry entry, File root) throws IOException {
-        if (entry.getName().contains("..")) {
-            return;
-        }
-
-        if (!entry.isDirectory()) { // create the directtory
-            File file = new File(root, entry.getName());
+        if (!entry.isDirectory()) { // create the directory
+            File file = getZipEntryAsFile(root, entry.getName());
             if (!file.getParentFile().mkdirs()) { // make sure all parent
                                                   // directory exists
                 throw new IOException("Failed to create directory: " + file.getParent());

@@ -20,6 +20,8 @@
  */
 package org.nuxeo.ecm.core.io.impl.plugins;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -182,6 +184,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
             return read(); // empty dir -> try next directory
         }
         String name = entry.getName();
+        checkPathTraversal(name);
         ExportedDocument xdoc = new ExportedDocumentImpl();
         xdoc.setPath(new Path(name).removeTrailingSeparator());
         for (String childEntryName : childEntries) {
@@ -224,6 +227,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
             return read(); // empty dir -> try next directory
         }
         String name = entry.getName();
+        checkPathTraversal(name);
         ExportedDocument xdoc = new ExportedDocumentImpl();
         xdoc.setPath(new Path(name).removeTrailingSeparator());
         if (count == null) {

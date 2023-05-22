@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
+import static org.nuxeo.common.utils.FileUtils.getZipEntryAsFile;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.SUPPORTED_EXTENSIONS;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.BLENDER_PATH_PREFIX;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
@@ -114,7 +115,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         try {
             zipInputStream = new ZipInputStream(new FileInputStream(file));
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                final File destFile = new File(directory, zipEntry.getName());
+                File destFile = getZipEntryAsFile(directory, zipEntry.getName());
                 if (!zipEntry.isDirectory()) {
                     try (FileOutputStream destOutputStream = new FileOutputStream(destFile)) {
                         IOUtils.copy(zipInputStream, destOutputStream);

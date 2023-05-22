@@ -284,7 +284,7 @@ public class FrameworkBootstrap implements LoaderConstants {
                 String path = entry.getName();
                 if (entry.getName().endsWith(".jar")) {
                     String name = path.replace('/', '_');
-                    File dest = new File(tmpDir, fileName + '-' + name);
+                    File dest = getZipEntryAsFile(tmpDir, fileName + '-' + name);
                     extractNestedJar(jarFile, entry, dest);
                     loader.addURL(dest.toURI().toURL());
                 }
@@ -370,6 +370,18 @@ public class FrameworkBootstrap implements LoaderConstants {
             for (File file : files) {
                 copyTree(file, dst);
             }
+        }
+    }
+
+    protected static File getZipEntryAsFile(File parent, String childPath) {
+        var child = new File(parent, childPath);
+        checkZipSlip(parent, child);
+        return child;
+    }
+
+    protected static void checkZipSlip(File parent, File child) {
+        if (!child.toPath().normalize().startsWith(parent.toPath().normalize())) {
+            throw new IllegalArgumentException("Illegal path: " + child);
         }
     }
 
