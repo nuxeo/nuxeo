@@ -43,3 +43,7 @@ nuxeo.bulk.action.setProperties.defaultPartitions=8
 # Scale audit writing
 nuxeo.stream.audit.batch.size=1000
 nuxeo.stream.audit.batch.threshold.ms=1000
+
+# No incremental blob GC
+nuxeo.bulk.action.blobGC.enabled=false
+
