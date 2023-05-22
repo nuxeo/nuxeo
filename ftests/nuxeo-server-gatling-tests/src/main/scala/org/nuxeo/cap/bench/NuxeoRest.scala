@@ -294,6 +294,16 @@ object NuxeoRest {
       .check(status.in(204))
   }
 
+  def permanentlyDelete = (path: String) => {
+    http("Permanently delete folder")
+      .post(Constants.API_PATH + path + "/@op/Document.Delete")
+      .basicAuth("${adminId}", "${adminPassword}")
+      .headers(Headers.base)
+      .header("content-type", "application/json+nxrequest")
+      .body(StringBody( """{"params":{},"context":{}}"""))
+      .check(status.in(200, 404))
+  }
+
   // When status is 200 it already exists, 201 otherwhise
   def createUserIfNotExists = (groupName: String) => {
     exec(
@@ -324,7 +334,7 @@ object NuxeoRest {
       .headers(Headers.base)
       .header("Content-Type", "application/json")
       .basicAuth("${adminId}", "${adminPassword}")
-      .check(status.in(204))
+      .check(status.in(204, 404))
   }
 
   // When status is 200 it already exists, 201 otherwhise
@@ -349,12 +359,12 @@ object NuxeoRest {
   }
 
   def deleteGroup = (groupName: String) => {
-    http("Delete user")
+    http("Delete group")
       .delete("/api/v1/group/" + groupName)
       .headers(Headers.base)
       .header("Content-Type", "application/json")
       .basicAuth("${adminId}", "${adminPassword}")
-      .check(status.in(204))
+      .check(status.in(204, 404))
   }
 
 

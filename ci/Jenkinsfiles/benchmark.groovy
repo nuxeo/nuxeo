@@ -167,6 +167,8 @@ pipeline {
                   gatling("org.nuxeo.cap.bench.Sim50CRUD -Dusers=32 -Dduration=120")
                   gatling("org.nuxeo.cap.bench.Sim55WaitForAsync")
                   gatling("org.nuxeo.cap.bench.Sim80ReindexAll")
+                  gatling("org.nuxeo.cap.bench.Sim90Cleanup")
+                  gatling("org.nuxeo.cap.bench.Sim90FullGC")
                 }
               } finally {
                 // archiveArtifacts doesn't support absolute path so do not use GATLING_TESTS_PATH
@@ -222,7 +224,7 @@ pipeline {
               sh 'mv target/gatling/* ${REPORT_PATH}'
               // build stats
               sh 'java ${JAVA_MODULES_ARGLINE} -jar ${GAT_REPORT_ARTIFACT_DIR}/${GAT_REPORT_ARTIFACT} -f -o ${REPORT_PATH} -n data.yml -t ${MUSTACHE_TEMPLATE} ' +
-                  '-m import,bulk,mbulk,exportcsv,create,createasync,nav,search,update,updateasync,bench,crud,crudasync,reindex ' +
+                  '-m import,bulk,mbulk,exportcsv,create,createasync,nav,search,update,updateasync,bench,crud,crudasync,reindex,cleanup,fullgc ' +
                   '${REPORT_PATH}/sim10massstreamimport/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim15bulkupdatedocuments/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim25bulkupdatefolders/detail/simulation.log.gz ' +
@@ -236,7 +238,9 @@ pipeline {
                   '${REPORT_PATH}/sim50bench/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim50crud/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim55waitforasync/detail/simulation.log.gz ' +
-                  '${REPORT_PATH}/sim80reindexall/detail/simulation.log.gz'
+                  '${REPORT_PATH}/sim80reindexall/detail/simulation.log.gz ' +
+                  '${REPORT_PATH}/sim90cleanup/detail/simulation.log.gz ' +
+                  '${REPORT_PATH}/sim90fullgc/detail/simulation.log.gz'
 
               sh "echo >> ${REPORT_PATH}/data.yml"
               sh "echo 'build_number: ${BENCHMARK_BUILD_NUMBER}' >> ${REPORT_PATH}/data.yml"
@@ -253,11 +257,11 @@ pipeline {
               sh "echo 'default_category: \"${BENCHMARK_CATEGORY}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'kafka: true' >> ${REPORT_PATH}/data.yml"
               sh "echo 'import_docs: ${BENCHMARK_NB_DOCS}' >> ${REPORT_PATH}/data.yml"
-              // Calculate benchmark duration between import and reindex
+              // Calculate benchmark duration between import and fullgc
               sh """
                 d1=\$(grep import_date ${REPORT_PATH}/data.yml| sed -e 's,^[a-z\\_]*\\:\\s,,g');
-                d2=\$(grep reindex_date ${REPORT_PATH}/data.yml | sed -e 's,^[a-z\\_]*\\:\\s,,g');
-                dd=\$(grep reindex_duration ${REPORT_PATH}/data.yml | sed -e 's,^[a-z\\_]*\\:\\s,,g');
+                d2=\$(grep fullgc_date ${REPORT_PATH}/data.yml | sed -e 's,^[a-z\\_]*\\:\\s,,g');
+                dd=\$(grep fullgc_duration ${REPORT_PATH}/data.yml | sed -e 's,^[a-z\\_]*\\:\\s,,g');
                 t1=\$(date -d \"\$d1\" +%s);
                 t2=\$(date -d \"\$d2\" +%s);
                 benchmark_duration=\$(echo \$(( \$t2 - \$t1 + \${dd%.*} )) );
@@ -267,6 +271,25 @@ pipeline {
               sh """
                 total=\$(echo -e 'get reindexTotal\nquit\n' | nc localhost 6379 | grep -o '^[[:digit:]]*');
                 echo \"reindex_docs: \$total\" >> ${REPORT_PATH}/data.yml
+              """
+              // Get versions GC info from redis
+              sh """
+                versions_total=\$(echo -e 'get versionsTotal\nquit\n' | nc localhost 6379 | grep -o '^[[:digit:]]*');
+                echo \"versions_total: \$versions_total\" >> ${REPORT_PATH}/data.yml
+              """
+              sh """
+                versions_retained=\$(echo -e 'get versionsRetained\nquit\n' | nc localhost 6379 | grep -o '^[[:digit:]]*');
+                echo \"versions_retained: \$versions_retained\" >> ${REPORT_PATH}/data.yml
+              """
+              sh "echo >> ${REPORT_PATH}/data.yml"
+              // Get binary GC info from redis
+              sh """
+                binaries_total=\$(echo -e 'get binariesTotal\nquit\n' | nc localhost 6379 | grep -o '^[[:digit:]]*');
+                echo \"binaries_total: \$binaries_total\" >> ${REPORT_PATH}/data.yml
+              """
+              sh """
+                binaries_retained=\$(echo -e 'get binariesRetained\nquit\n' | nc localhost 6379 | grep -o '^[[:digit:]]*');
+                echo \"binaries_retained: \$binaries_retained\" >> ${REPORT_PATH}/data.yml
               """
               sh "echo >> ${REPORT_PATH}/data.yml"
             }
