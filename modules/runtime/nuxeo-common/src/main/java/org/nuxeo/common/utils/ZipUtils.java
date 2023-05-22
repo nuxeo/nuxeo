@@ -19,6 +19,7 @@
 package org.nuxeo.common.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.common.utils.FileUtils.getZipEntryAsFile;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -227,8 +228,8 @@ public final class ZipUtils {
         dir.mkdirs();
         ZipEntry entry;
         while ((entry = in.getNextEntry()) != null) {
-            if (!entry.getName().contains("..") && filter.test(entry)) {
-                File file = new File(dir, nameFormatter.apply(entry.getName()));
+            if (filter.test(entry)) {
+                File file = getZipEntryAsFile(dir, nameFormatter.apply(entry.getName()));
                 if (entry.isDirectory()) {
                     file.mkdirs();
                 } else {

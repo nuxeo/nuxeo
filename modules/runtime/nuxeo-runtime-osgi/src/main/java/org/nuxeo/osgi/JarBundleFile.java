@@ -18,6 +18,8 @@
  */
 package org.nuxeo.osgi;
 
+import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -222,6 +224,7 @@ public class JarBundleFile implements BundleFile {
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String path = entry.getName();
+            checkPathTraversal(path);
             if (entry.getName().endsWith(".jar")) {
                 String location = base + path;
                 String name = path.replace('/', '_');

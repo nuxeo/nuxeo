@@ -344,4 +344,26 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * Returns the File targeted by a path given a specific parent File.
+     *
+     * @since 2021.40
+     */
+    public static File getZipEntryAsFile(File parent, String childPath) {
+        var child = new File(parent, childPath);
+        checkZipSlip(parent, child);
+        return child;
+    }
+
+    /**
+     * Checks if a path is contained in another. Throws an IllegalArgumentException otherwise.
+     *
+     * @since 2021.40
+     */
+    public static void checkZipSlip(File parent, File child) {
+        if (!child.toPath().normalize().startsWith(parent.toPath().normalize())) {
+            throw new IllegalArgumentException("Illegal path: " + child);
+        }
+    }
+
 }
