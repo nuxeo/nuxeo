@@ -146,7 +146,7 @@ pipeline {
           ----------------------------------------
           """
           nxWithHelmfileDeployment(namespace: "${BENCHMARK_NAMESPACE}", environment: 'benchmark',
-              secrets: [[name: 'platform-cluster-tls', namespace: 'platform'], [name: 'instance-clid', namespace: 'platform']],
+              secrets: [[name: 'platform-tls', namespace: 'platform'], [name: 'instance-clid', namespace: 'platform']],
               envVars: ["BUCKET_PREFIX=benchmark-tests-${BRANCH_NAME}-BUILD-${BUILD_NUMBER}/"]) {
             script {
               try {
