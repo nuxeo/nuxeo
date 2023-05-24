@@ -33,13 +33,11 @@ kafka:
 ingress:
   enabled: true
   annotations:
-    kubernetes.io/ingress.class: nginx
-    kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
   hostname: {{ $publicDomain }}
   tls:
   - hosts:
     - {{ $publicDomain }}
-    secretName: platform-cluster-tls
+    secretName: platform-tls
 {{ readFile "values-tolerations-nodeselector.yaml" }}

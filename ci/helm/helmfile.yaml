@@ -27,7 +27,7 @@ releases:
     - values/{{ $valuesDir }}/values-extra-deploy.yaml.gotmpl
 - name: nuxeo
   chart: nuxeo/nuxeo
-  version: 3.0.1
+  version: 3.0.13
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: nuxeo.enabled
   {{ if eq .Environment.Name "benchmark" }}
