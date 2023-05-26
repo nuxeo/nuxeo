@@ -385,7 +385,7 @@ object NuxeoRest {
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
       .header("content-type", "application/json")
-      .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true", "waitForAudit": "true"},"context":{}}"""))
+      .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true", "waitForAudit": "true", "waitForBulkService": "true"},"context":{}}"""))
   }
 
   def reindexAll = () => {

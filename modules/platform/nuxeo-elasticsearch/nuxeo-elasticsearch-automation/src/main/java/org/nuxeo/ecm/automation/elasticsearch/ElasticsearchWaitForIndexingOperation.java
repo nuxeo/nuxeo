@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.elasticsearch;
 
 import static java.lang.Long.max;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
@@ -69,6 +71,9 @@ public class ElasticsearchWaitForIndexingOperation {
     @Param(name = "waitForAudit", required = false)
     protected Boolean waitForAudit = false;
 
+    @Param(name = "waitForBulkService", required = false)
+    protected Boolean waitForBulkService = false;
+
     @OperationMethod
     public Boolean run() {
         long start = System.currentTimeMillis();
@@ -83,6 +88,12 @@ public class ElasticsearchWaitForIndexingOperation {
                 throw new TimeoutException();
             }
             esa.prepareWaitForIndexing().get(computeRemainingTime(start), TimeUnit.SECONDS);
+            if (waitForBulkService) {
+                BulkService bulkService = Framework.getService(BulkService.class);
+                if (!bulkService.await(Duration.ofSeconds(computeRemainingTime(start)))) {
+                    throw new TimeoutException();
+                }
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return Boolean.FALSE;
