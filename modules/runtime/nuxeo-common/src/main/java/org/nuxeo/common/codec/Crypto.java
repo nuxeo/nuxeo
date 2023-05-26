@@ -65,7 +65,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Crypto {
 
-    protected static final Pattern CRYPTO_PATTERN = Pattern.compile("\\{\\$(?<algo>.*)\\$(?<value>.+)\\}");
+    protected static final Pattern CRYPTO_PATTERN = Pattern.compile("\\{\\$(?<algo>[^\\$]*)\\$(?<value>[^\\$]+)\\}");
 
     private static final Log log = LogFactory.getLog(Crypto.class);
 
