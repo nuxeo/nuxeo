@@ -116,7 +116,6 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean validate(Object object) throws TypeException {
         throw new UnsupportedOperationException("Unimplemented, use DocumentValidationService");
