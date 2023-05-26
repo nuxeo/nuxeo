@@ -1416,8 +1416,71 @@ public class DialectPostgreSQL extends Dialect {
         return super.getBinaryFulltextSql(columns);
     }
 
-    // parenthesizes parameter part, with optional nested parentheses
-    private static final Pattern SIG_MATCH = Pattern.compile("[^(]*\\((([^()]*|\\([^()]*\\))*)\\).*", Pattern.DOTALL);
+    /**
+     * Captures method signatures by applying the following steps:
+     * <ul>
+     * <li>Find the first non nesting pair of parentheses
+     * <li>Find if it is led by an opening parenthesis otherwise, return it
+     * <li>Find if it is followed by an optional sequence that contains maximum 1 level parenthesis pairs and a closing
+     * parenthesis and return it all from the leading parenthesis to the closing parenthesis
+     * <li>Otherwise just return the first parenthesis pair with its optional content
+     * </ul>
+     *
+     * @return a method signature
+     */
+    private static String getMethodSignature(String input) {
+        var m = findFirstNonNesting(input);
+        String lead = input.substring(0, m.start());
+        int opener = findOpener(lead);
+        if (opener == -1) {
+            return m.group(1);
+        }
+        char[] tail = input.substring(m.end()).toCharArray();
+        int closer = findCloser(tail);
+        if (closer == -1) {
+            return m.group(1);
+        }
+        closer += m.end();
+        return input.substring(opener + 1, closer - 1); // get rid of external parentheses
+    }
+
+    private static Matcher findFirstNonNesting(String input) {
+        var p = Pattern.compile("\\(([^()]*)\\)", Pattern.DOTALL);
+        var m = p.matcher(input);
+        if (!m.find()) {
+            throw new NuxeoException("Cannot parse arguments: " + input);
+        }
+        return m;
+    }
+
+    private static int findOpener(String input) {
+        int lastOpener = input.lastIndexOf('(');
+        int lastCloser = input.lastIndexOf(')');
+        if (lastCloser < lastOpener) {
+            return lastOpener;
+        }
+        return -1;
+    }
+
+    private static int findCloser(char[] input) {
+        int openers = 0;
+        int i = 0;
+        for (char c : input) {
+            i++;
+            if (c == '(') {
+                openers++;
+                if (openers > 1) {
+                    break;
+                }
+            } else if (c == ')') {
+                openers--;
+                if (openers < 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
     @Override
     public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
@@ -1428,11 +1491,7 @@ public class DialectPostgreSQL extends Dialect {
             return Collections.singletonList(procCreate);
         }
         // extract signature from create statement
-        Matcher m = SIG_MATCH.matcher(procCreate);
-        if (!m.matches()) {
-            throw new NuxeoException("Cannot parse arguments: " + procCreate);
-        }
-        String procArgs = normalizeArgs(m.group(1));
+        String procArgs = normalizeArgs(getMethodSignature(procCreate));
         try (Statement st = connection.createStatement()) {
             // check if the stored procedure exists and its content
             String getBody = "SELECT prosrc, pg_get_function_identity_arguments(oid) FROM pg_proc WHERE proname = '"
