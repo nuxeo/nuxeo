@@ -187,7 +187,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         if (xpath.indexOf('[') == -1) {
             return xpath;
         } else {
-            return xpath.replaceAll("[^/\\[\\]]+\\[(\\d+|\\*)\\]", "$1");
+            return xpath.replaceAll("(?<=\\/|^)[^/\\[\\]]+\\[(\\d+|\\*)\\]", "$1");
         }
     }
 

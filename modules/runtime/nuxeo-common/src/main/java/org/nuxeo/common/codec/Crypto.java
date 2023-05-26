@@ -67,7 +67,7 @@ public class Crypto {
 
     private static final Logger log = LogManager.getLogger(Crypto.class);
 
-    protected static final Pattern CRYPTO_PATTERN = Pattern.compile("\\{\\$(?<algo>.*)\\$(?<value>.+)\\}");
+    protected static final Pattern CRYPTO_PATTERN = Pattern.compile("\\{\\$(?<algo>[^\\$]*)\\$(?<value>[^\\$]+)\\}");
 
     public static final String AES = "AES";
 
