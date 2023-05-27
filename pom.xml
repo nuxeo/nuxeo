@@ -72,7 +72,7 @@
     <tomcat.version>9.0.75</tomcat.version>
     <opensearch.version>1.3.10</opensearch.version>
     <netty.version>4.1.93.Final</netty.version>
-    <netty.boringssl.version>2.0.59.Final</netty.boringssl.version>
+    <netty.boringssl.version>2.0.61.Final</netty.boringssl.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <guice.version>3.0</guice.version>
