@@ -331,14 +331,6 @@ public class LogEntryImpl implements LogEntry {
         this.repositoryId = repositoryId;
     }
 
-    // public Map<String, ExtendedInfoImpl> getExtendedInfosImpl() {
-    // return extendedInfos;
-    // }
-    //
-    // public void setExtendedInfosImpl(Map<String, ExtendedInfoImpl> infos) {
-    // extendedInfos = infos;
-    // }
-
     @Override
     @JsonProperty("extended")
     @JsonSerialize(keyAs = String.class, contentUsing = ExtendedInfoSerializer.class)
@@ -349,14 +341,12 @@ public class LogEntryImpl implements LogEntry {
     @MapKeyColumn(name = "mapkey", nullable = false)
     public Map<String, ExtendedInfo> getExtendedInfos() {
         return extendedInfos;
-        // return (Map)getExtendedInfosImpl();
     }
 
     @Override
     @JsonDeserialize(keyAs = String.class, contentUsing = ExtendedInfoDeserializer.class)
     public void setExtendedInfos(Map<String, ExtendedInfo> infos) {
         extendedInfos = infos;
-        // setExtendedInfosImpl((Map)infos);
     }
 
     @Override
@@ -383,6 +373,7 @@ public class LogEntryImpl implements LogEntry {
     static class DateSerializer extends JsonSerializer<Date> {
 
         public DateSerializer() {
+            // default constructor
         }
 
         @Override
