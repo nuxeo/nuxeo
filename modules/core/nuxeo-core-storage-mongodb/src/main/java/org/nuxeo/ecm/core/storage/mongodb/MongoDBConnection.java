@@ -38,6 +38,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
@@ -279,6 +280,7 @@ public class MongoDBConnection extends DBSConnectionBase {
         indexes.add(new IndexModel(Indexes.ascending(KEY_PARENT_ID, KEY_NAME), parentNameIndexOptions));
         // often used in user-generated queries
         indexes.add(new IndexModel(Indexes.ascending(KEY_PRIMARY_TYPE)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_MIXIN_TYPES)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_LIFECYCLE_STATE)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_IS_TRASHED)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_RETAIN_UNTIL)));
