@@ -179,11 +179,15 @@
     <Logger name="org.apache.kafka" level="warn" />
 
     <Logger name="org.hibernate" level="warn" />
-    <Logger name="org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog" level="error" />
-    <Logger name="org.hibernate.impl.SessionFactoryObjectFactory" level="error" />
-    <Logger name="org.hibernate.cache.EhCacheProvider" level="error" />
-    <Logger name="org.hibernate.hql.ast.tree.FromElementType" level="error" />
-    <Logger name="org.hibernate.ejb.Ejb3Configuration" level="error" />
+    <Logger name="net.sf.ehcache.hibernate.EhCacheProvider" level="error" />
+    <Logger name="org.hibernate.hql.internal.ast.tree.FromElementType" level="error" />
+    <!-- Hide Hibernate warnings about nonexistent SQL constraint at drop-create time -->
+    <Logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="warn">
+      <!-- WARN  [SqlExceptionHelper] SQL Warning Code: 0, SQLState: 00000 -->
+      <RegexFilter regex="SQL Warning Code: 0, SQLState: 00000" onMatch="DENY" onMismatch="NEUTRAL" />
+      <!-- WARN  [SqlExceptionHelper] constraint "nxp_uidseq_seq_key_key" of relation "nxp_uidseq" does not exist, skipping -->
+      <RegexFilter regex="constraint &quot;.*&quot; of relation &quot;.*&quot; does not exist, skipping" onMatch="DENY" onMismatch="NEUTRAL" />
+    </Logger>
 
     <Logger name="org.jbpm" level="info" />
     <Logger name="org.jbpm.jpdl.xml.JpdlXmlReader" level="error" />
