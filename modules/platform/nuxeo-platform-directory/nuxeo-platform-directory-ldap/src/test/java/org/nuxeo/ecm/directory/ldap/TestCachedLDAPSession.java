@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
  */
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directory-cache-config.xml")
-@Deploy("org.nuxeo.ecm.directory.ldap.tests:ldap-directory-redis-cache-config.xml")
 public class TestCachedLDAPSession extends TestLDAPSession {
 
     protected final static String ENTRY_CACHE_NAME = "ldap-entry-cache";
@@ -42,7 +41,7 @@ public class TestCachedLDAPSession extends TestLDAPSession {
     protected final static String ENTRY_CACHE_WITHOUT_REFERENCES_NAME = "ldap-entry-cache-without-references";
 
     @Before
-    public void setUpCache() throws Exception {
+    public void setUpCache() {
         Framework.getService(WorkManager.class).init();
         for (LDAPDirectory dir : Arrays.asList(userDir, groupDir)) {
             DirectoryCache cache = dir.getCache();

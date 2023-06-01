@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Maxime Hilaire
- *
  */
 package org.nuxeo.ecm.platform.usermanager;
 
@@ -43,17 +42,6 @@ public abstract class UserManagerTestCase {
 
     @Inject
     protected UserManager userManager;
-
-    public void TODO() {
-//        if (!RedisFeature.setup(this)) {
-//            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-//                    "test-usermanagerimpl/usermanager-redis-cache-config.xml");
-//        } else {
-//            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-//                    "test-usermanagerimpl/usermanager-inmemory-cache-config.xml");
-//        }
-//        fireFrameworkStarted();
-    }
 
     @After
     public void cleanup() {

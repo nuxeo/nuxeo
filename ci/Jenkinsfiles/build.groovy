@@ -98,8 +98,6 @@ def buildUnitTestStage(env) {
   def testNamespace = "${TEST_NAMESPACE_PREFIX}-${env}"
   // Helmfile environment
   def environment = "${env}UnitTests"
-  def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
-  def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
   def containerName = isDev ? 'maven' : "maven-${env}"
   return {
     stage("Run ${env} unit tests") {
@@ -109,77 +107,74 @@ def buildUnitTestStage(env) {
           ----------------------------------------
           Run ${env} unit tests
           ----------------------------------------"""
-          echo "${env} unit tests: install external services"
-          nxWithHelmfileDeployment(namespace: testNamespace, environment: environment) {
-            script {
-              try {
-                echo "${env} unit tests: run Maven"
-                if (isDev) {
-                  // empty file required by the read-project-properties goal of the properties-maven-plugin with the
-                  // customEnvironment profile
-                  sh "touch ${HOME}/nuxeo-test-${env}.properties"
-                } else {
-                  // prepare test framework system properties
-                  // prefix sample: nuxeo-lts-pr-48-3-mongodb
-                  def bucketPrefix = "$GITHUB_REPO-$BRANCH_NAME-$BUILD_NUMBER-${env}".toLowerCase()
-                  def testBlobProviderPrefix = "$bucketPrefix-test"
-                  def otherBlobProviderPrefix = "$bucketPrefix-other"
+          // prepare mvn command
+          // run unit tests:
+          // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
+          // - for the given environment (see the customEnvironment profile in pom.xml):
+          //   - in an alternative build directory
+          //   - loading some test framework system properties
+          def mvnCommand = "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent test"
+          mvnCommand += " -Dcustom.environment=${env} -Dcustom.environment.log.dir=target-${env}"
+          mvnCommand += " -Dnuxeo.test.core=${env == 'mongodb' ? 'mongodb' : 'vcs'}"
 
-                  sh """
-                    cat ci/mvn/nuxeo-test-${env}.properties \
-                      ci/mvn/nuxeo-test-opensearch.properties \
-                      ci/mvn/nuxeo-test-s3.properties \
-                      > ci/mvn/nuxeo-test-${env}.properties~gen
-                    BUCKET_PREFIX=${bucketPrefix} \
-                      TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
-                      OTHER_BLOB_PROVIDER_PREFIX=${otherBlobProviderPrefix} \
-                      NAMESPACE=${testNamespace} \
-                      DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
-                      envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
-                  """
-                }
-                // run unit tests:
-                // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
-                // - for the given environment (see the customEnvironment profile in pom.xml):
-                //   - in an alternative build directory
-                //   - loading some test framework system properties
-                def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
-                def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
-                def mvnCommand = """                 
-                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
-                    -Dcustom.environment=${env} \
-                    -Dcustom.environment.log.dir=target-${env} \
-                    -Dnuxeo.test.core=${testCore} \
-                    -Dnuxeo.test.redis.host=${redisHost} \
-                    ${kafkaOptions} \
-                    test
-                """
-                retry(2) {
-                  if (isDev) {
-                    sh "${mvnCommand}"
-                  } else {
-                    // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
-                    // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
-                    def awsAccessKeyId = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'access_key_id')
-                    def awsSecretAccessKey = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'secret_access_key')
-                    withEnv([
-                      "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-                      "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-                      "AWS_REGION=${AWS_REGION}",
-                      "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
-                    ]) {
-                      sh "${mvnCommand}"
-                    }
-                  }
-                }
-              } finally {
-                junit allowEmptyResults: true, testResults: "**/target-${env}/surefire-reports/*.xml"
+          if (isDev) {
+            // empty file required by the read-project-properties goal of the properties-maven-plugin with the
+            // customEnvironment profile
+            sh "touch ${HOME}/nuxeo-test-${env}.properties"
+
+            executeUnitTestsMvnCommandWithRetry(mvnCommand, env)
+          } else {
+            // prepare test framework system properties
+            // prefix sample: nuxeo-lts-pr-48-3-mongodb
+            def bucketPrefix = "$GITHUB_REPO-$BRANCH_NAME-$BUILD_NUMBER-${env}".toLowerCase()
+            def testBlobProviderPrefix = "$bucketPrefix-test"
+            def otherBlobProviderPrefix = "$bucketPrefix-other"
+            sh """
+              cat ci/mvn/nuxeo-test-${env}.properties \
+                ci/mvn/nuxeo-test-opensearch.properties \
+                ci/mvn/nuxeo-test-s3.properties \
+                > ci/mvn/nuxeo-test-${env}.properties~gen
+              BUCKET_PREFIX=${bucketPrefix} \
+                TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
+                OTHER_BLOB_PROVIDER_PREFIX=${otherBlobProviderPrefix} \
+                NAMESPACE=${testNamespace} \
+                DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
+            """
+
+            def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
+            mvnCommand += " -Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+
+            echo "${env} unit tests: install external services"
+            nxWithHelmfileDeployment(namespace: testNamespace, environment: environment) {
+              // always read AWS credentials from secret in the platform namespace, even when running in platform-staging:
+              // credentials rotation is disabled in platform-staging to prevent double rotation on the same keys
+              def awsAccessKeyId = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'access_key_id')
+              def awsSecretAccessKey = nxK8s.getSecretData(namespace: 'platform', name: "${AWS_CREDENTIALS_SECRET}", key: 'secret_access_key')
+              withEnv([
+                  "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+                  "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+                  "AWS_REGION=${AWS_REGION}",
+                  "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
+              ]) {
+                executeUnitTestsMvnCommandWithRetry(mvnCommand, env)
               }
             }
           }
         }
       }
     }
+  }
+}
+
+def executeUnitTestsMvnCommandWithRetry(mvnCommand, env) {
+  try {
+    echo "${env} unit tests: run Maven"
+    retry(2) {
+      sh "${mvnCommand}"
+    }
+  } finally {
+    junit allowEmptyResults: true, testResults: "**/target-${env}/surefire-reports/*.xml"
   }
 }
 
@@ -199,7 +194,6 @@ pipeline {
     CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     TEST_NAMESPACE_PREFIX = "$CURRENT_NAMESPACE-nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
-    TEST_REDIS_K8S_OBJECT = 'redis-master'
     TEST_KAFKA_K8S_OBJECT = 'kafka'
     TEST_KAFKA_PORT = '9092'
     BASE_IMAGE_NAME = 'nuxeo-base'
@@ -456,7 +450,6 @@ pipeline {
           nxWithGitHubStatus(context: 'utests/runtime', message: 'Unit tests - runtime') {
             script {
               def testNamespace = "${TEST_NAMESPACE_PREFIX}-runtime"
-              def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
               def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
               echo """
                 ----------------------------------------
@@ -470,7 +463,6 @@ pipeline {
                     retry(2) {
                       sh """
                         mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
-                          -Dnuxeo.test.redis.host=${redisHost} \
                           -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
                           test
                       """

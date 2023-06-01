@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.metrics.MetricsService;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -547,44 +546,6 @@ public abstract class AbstractWorkManagerTest {
     }
 
     @Test
-    public void testNoConcurrentJobsWithSameId() throws InterruptedException {
-        // create an init work to warm up the service, this is needed only for the embedded redis mode
-        // sometime embedded mode takes around 1s to init, this prevent to put reliable assertion on time execution
-        SleepWork initWork = new SleepWork(1);
-        service.schedule(initWork);
-        assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
-
-        tracker.assertDiff(0, 0, 1, 0);
-
-        // Schedule a first work
-        int duration = getDurationMillis() * 3;
-        SleepWork work = new SleepWork(duration);
-        String workId = work.getId();
-        service.schedule(work);
-
-        // wait a bit to make sure it is running
-        Thread.sleep(duration / 3);
-        tracker.assertDiff(0, 1, 1, 0);
-
-        // schedule another work with the same workId
-        // don't try to put a different duration, same work id means same work serializatoin
-        SleepWork workbis = new SleepWork(duration, workId);
-        service.schedule(workbis);
-
-        // wait a bit, the first work is still running, the scheduled work should wait
-        // because we don't want concurrent execution of work with the same workId
-        Thread.sleep(duration / 3);
-        tracker.assertDiff(1, 1, 1, 0);
-
-        // wait enough so the first work is done and the second should be running
-        Thread.sleep(duration);
-        tracker.assertDiff(0, 1, 2, 0);
-
-        assertTrue(service.awaitCompletion(duration * 2L, TimeUnit.MILLISECONDS));
-        tracker.assertDiff(0, 0, 3, 0);
-    }
-
-    @Test
     public void testRunningWorkIsCanceled() throws InterruptedException {
         service.schedule(new SleepWork(10000, "1"));
         // ensure job is running
@@ -688,8 +649,7 @@ public abstract class AbstractWorkManagerTest {
 
     @Test
     public void testWorkFailOnInterruptedIO() throws InterruptedException {
-        SleepAndThrowWork work = new SleepAndThrowWork(100,
-                new InterruptedIOException("Interrupted for test purpose"));
+        SleepAndThrowWork work = new SleepAndThrowWork(100, new InterruptedIOException("Interrupted for test purpose"));
         service.schedule(work);
         assertTrue(service.awaitCompletion(2000, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);

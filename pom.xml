@@ -218,18 +218,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-redis</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-redis</artifactId>
-        <type>test-jar</type>
-        <scope>test</scope>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-mongodb</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -556,18 +544,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-mongodb</artifactId>
-        <type>test-jar</type>
-        <scope>test</scope>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-redis</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-redis</artifactId>
         <type>test-jar</type>
         <scope>test</scope>
         <version>${nuxeo.platform.version}</version>
@@ -3906,12 +3882,6 @@
         <groupId>com.sun.jdmk</groupId>
         <artifactId>core</artifactId>
         <version>1.0-b02</version>
-      </dependency>
-
-      <dependency>
-        <groupId>redis.clients</groupId>
-        <artifactId>jedis</artifactId>
-        <version>2.10.2</version>
       </dependency>
 
       <dependency>

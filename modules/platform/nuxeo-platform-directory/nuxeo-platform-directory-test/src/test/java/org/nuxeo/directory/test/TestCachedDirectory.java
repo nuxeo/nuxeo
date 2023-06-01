@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,23 @@
  *     Funsho David
  *
  */
-
 package org.nuxeo.directory.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import javax.inject.Inject;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.redis.RedisFeature;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCache;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.MetricRegistry;
@@ -50,7 +43,7 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ DirectoryFeature.class, RedisFeature.class })
+@Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.directory.tests:directory-cache-config.xml")
 public class TestCachedDirectory extends AbstractDirectoryTest {
@@ -59,19 +52,8 @@ public class TestCachedDirectory extends AbstractDirectoryTest {
 
     protected final static String ENTRY_CACHE_WITHOUT_REFERENCES_NAME = "entry-cache-without-references";
 
-    @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
-    protected RedisFeature redisFeature;
-
     @Before
     public void setUp() throws Exception {
-
-        if (redisFeature.isRedisConfigured()) {
-            harness.deployContrib("org.nuxeo.ecm.directory.tests", "directory-redis-cache-config.xml");
-            Framework.getService(WorkManager.class).init();
-        }
 
         Directory dir = getDirectory();
         DirectoryCache cache = dir.getCache();

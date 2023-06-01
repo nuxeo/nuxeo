@@ -23,7 +23,7 @@ This module provides the ability to execute actions asynchronously on a -possibl
 To work properly the Bulk Service need a true KeyValue storage to store the command its status,
 there are 2 possibles choices:
 
-- Use `RedisKeyValueStore` this is the case if you have `nuxeo.redis.enabled=true` in your nuxeo.conf.
+- Use `SQLKeyValueStore` this is the case if you are using a SQL database.
 - Use `MongoDBKeyValueStore` this is the case if you are using the `mongodb` template.
 
 You should not rely on the default `MemKeyValueStore` implementation that flushes the data on restart.

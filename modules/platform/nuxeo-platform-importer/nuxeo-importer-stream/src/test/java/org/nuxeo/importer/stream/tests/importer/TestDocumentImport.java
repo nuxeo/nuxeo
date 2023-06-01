@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.redis.RedisExecutor;
-import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.importer.stream.StreamImporters;
@@ -45,7 +43,6 @@ import org.nuxeo.importer.stream.consumer.BlobInfoWriter;
 import org.nuxeo.importer.stream.consumer.BlobMessageConsumerFactory;
 import org.nuxeo.importer.stream.consumer.DocumentMessageConsumerFactory;
 import org.nuxeo.importer.stream.consumer.LogBlobInfoWriter;
-import org.nuxeo.importer.stream.consumer.RedisDocumentMessageConsumerFactory;
 import org.nuxeo.importer.stream.message.BlobInfoMessage;
 import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.importer.stream.message.DocumentMessage;
@@ -70,7 +67,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, RedisFeature.class })
+@Features(CoreFeature.class)
 @Deploy("org.nuxeo.importer.stream")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.importer.stream:test-core-type-contrib.xml")
@@ -280,84 +277,6 @@ public class TestDocumentImport {
         List<ProducerStatus> ret = producers.start().get();
         assertEquals(NB_PRODUCERS, ret.size());
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
-    }
-
-    @Test
-    public void testRedisImport() throws Exception {
-        // import document message into redis so they can be used in Gatling benchmark
-        final int NB_QUEUE = 5;
-        final short NB_PRODUCERS = 5;
-        final int NB_DOCUMENTS = 2 * 100;
-        final String REDIS_PREFIX = "test.imp";
-        final Name LOG_DOC = Name.ofUrn("import/redis-doc");
-        Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
-        // 1. generate documents with blobs
-        getLogManager().createIfNotExists(LOG_DOC, NB_QUEUE);
-        ProducerPool<DocumentMessage> producers = new ProducerPool<>(LOG_DOC.getUrn(), getLogManager(), docCodec,
-                new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2, false), NB_PRODUCERS);
-        List<ProducerStatus> ret = producers.start().get();
-        assertEquals(NB_PRODUCERS, ret.size());
-
-        // 2. import documents into Redis
-        ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(LOG_DOC.getUrn(), getLogManager(), docCodec,
-                new RedisDocumentMessageConsumerFactory(REDIS_PREFIX), ConsumerPolicy.BOUNDED);
-        List<ConsumerStatus> ret2 = consumers.start().get();
-        assertEquals(NB_QUEUE, ret2.size());
-        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
-        assertEquals(NB_PRODUCERS * NB_DOCUMENTS,
-                redisExecutor.<Long> execute(jedis -> jedis.scard(REDIS_PREFIX + ":doc")).intValue());
-    }
-
-    @Test
-    public void testRedisImportWithFile() throws Exception {
-        final int NB_QUEUE = 2;
-        final short NB_PRODUCERS = 2;
-        final long NB_DOCUMENTS = 100;
-        final long NB_BLOBS = 20;
-        final Name LOG_BLOB = Name.ofUrn("import/redisFile-blob");
-        final Name LOG_BLOB_INFO = Name.ofUrn("import/redisFile-blobInfo");
-        final Name LOG_DOC = Name.ofUrn("import/redisFile-doc");
-        Codec<BlobMessage> blobCodec = StreamImporters.getBlobCodec();
-        Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
-        Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
-        getLogManager().createIfNotExists(LOG_BLOB, NB_QUEUE);
-        // 1. generates blobs from files
-        ProducerPool<BlobMessage> blobProducers = new ProducerPool<>(LOG_BLOB.getUrn(), getLogManager(), blobCodec,
-                new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"), NB_BLOBS),
-                NB_PRODUCERS);
-        List<ProducerStatus> blobProducersStatus = blobProducers.start().get();
-        assertEquals(NB_PRODUCERS, blobProducersStatus.size());
-
-        // 2. import blobs
-        getLogManager().createIfNotExists(LOG_BLOB_INFO, 1);
-        BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                getLogManager().getAppender(LOG_BLOB_INFO, blobInfoCodec));
-        // null blob provider don't import blobs into binarystore
-        ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(null, blobInfoWriter, "foobar",
-                folder.newFolder().getAbsolutePath());
-        ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>(LOG_BLOB.getUrn(), getLogManager(), blobCodec,
-                blobFactory, ConsumerPolicy.BOUNDED);
-        List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
-        assertEquals(NB_QUEUE, blobConsumersStatus.size());
-        // assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
-
-        getLogManager().createIfNotExists(LOG_DOC, NB_QUEUE);
-        // 3. generate documents using blob reference
-        ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS,
-                "en_US", getLogManager(), LOG_BLOB_INFO.getUrn());
-        ProducerPool<DocumentMessage> docProducers = new ProducerPool<>(LOG_DOC.getUrn(), getLogManager(), docCodec,
-                randomDocFactory, NB_PRODUCERS);
-        List<ProducerStatus> docProducersStatus = docProducers.start().get();
-        assertEquals(NB_PRODUCERS, docProducersStatus.size());
-        assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
-
-        // 4. import documents without creating blobs
-        session.getRootDocument();
-        ConsumerFactory<DocumentMessage> docFactory = new RedisDocumentMessageConsumerFactory();
-        ConsumerPool<DocumentMessage> docConsumers = new ConsumerPool<>(LOG_DOC.getUrn(), getLogManager(), docCodec,
-                docFactory, ConsumerPolicy.BOUNDED);
-        List<ConsumerStatus> docConsumersStatus = docConsumers.start().get();
-        assertEquals(NB_QUEUE, docConsumersStatus.size());
     }
 
     protected File getFileList(String filename) {

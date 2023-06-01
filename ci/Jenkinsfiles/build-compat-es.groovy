@@ -41,7 +41,6 @@ pipeline {
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -P-nexus,nexus-private'
     TEST_NAMESPACE = "$CURRENT_NAMESPACE-nuxeo-unit-tests-$BUILD_NUMBER-mongodb-es".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
-    TEST_REDIS_K8S_OBJECT = 'redis-master'
     TEST_KAFKA_K8S_OBJECT = 'kafka'
     TEST_KAFKA_PORT = '9092'
     ELASTICSEARCH_IMAGE_TAG = "${params.ELASTICSEARCH_IMAGE_TAG}"
@@ -86,7 +85,6 @@ pipeline {
     stage('Run mongodb unit tests') {
       steps {
         script {
-          def redisHost = "${TEST_REDIS_K8S_OBJECT}.${TEST_NAMESPACE}.${TEST_SERVICE_DOMAIN_SUFFIX}"
           def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${TEST_NAMESPACE}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
 
           def commitSha = env.SCM_REF
@@ -125,7 +123,6 @@ pipeline {
                       -Dcustom.environment=${REPOSITORY_BACKEND} \
                       -Dcustom.environment.log.dir=target-${REPOSITORY_BACKEND} \
                       -Dnuxeo.test.core=${REPOSITORY_BACKEND} \
-                      -Dnuxeo.test.redis.host=${redisHost} \
                       -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
                       test
                   """

@@ -368,7 +368,7 @@ public class TransientStorageComplianceFixture {
         // check still here
         assertTrue(ts.exists("foobar"));
 
-        // empty the L2 cache for the in-memory implementation or remove entry for the Redis one
+        // empty the L2 cache for the in-memory implementation or remove entry for the other ones
         if (ts instanceof SimpleTransientStore) {
             ((SimpleTransientStore) ts).getL2Cache().invalidate("foobar");
         } else {

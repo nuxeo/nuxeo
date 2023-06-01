@@ -14,5 +14,3 @@ elasticsearch8:
   enabled: true
 kafka:
   enabled: true
-redis:
-  enabled: true

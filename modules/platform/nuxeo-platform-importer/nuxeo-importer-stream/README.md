@@ -158,7 +158,7 @@ The additional parameters are:
 | --- | ---: | --- |
 | `watermark` | | Ask to add a watermark to the file before importing it, use the provided string if possible. |
 | `persistBlobPath` | | Use a path if you want to keep the generated files on disk |
-| `blobProviderName` | `default` | If blank there is no Nuxeo blob import, this can be useful for import with Gatling/Redis |
+| `blobProviderName` | `default` | If blank there is no Nuxeo blob import |
 
 
 Continue with other steps described above to generate and create documents.
@@ -167,46 +167,6 @@ Note that only few mime type are supported for watermark so far:
 - `text/plain`: Insert a uniq tag at the beginning of text.
 - `image/jpeg`: Set the exif software tag to a uniq tag.
 - `video/mp4`:  Set the title with the uniq tag.
-
-
-### Import document using REST API via Gatling/Redis
-
-Instead of doing mass import creating document by batch with the efficient internal API,
-you can save them into Redis in a way it can be used by Gatling simulation, this way we can stress the REST API.
-
-To do this instead of the document creationg step 4 we do:
-
-4. Run Redis consumers of document messages
-  ```
-curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRedisDocumentConsumers' -u Administrator:Administrator -H 'content-type: application/json' \
-  -d '{"params":{"rootFolder": "/default-domain/workspaces"}}'
-```
-
-Note that the Nuxeo must be configured with Redis (`nuxeo.redis.enabled=true`).
-
-After this you need to use simulations in `nuxeo-distribution/nuxeo-jsf-ui-gatling-tests/`:
-
-```
-# init the infra, creating a group of test users and a workspace
-mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench -DredisDb=0 -Durl=http://localhost:8080/nuxeo
-
-# import the folder structure
-mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim10CreateFolders -Pbench -DredisDb=0 -Durl=http://localhost:8080/nuxeo
-
-# import the documents using 8 concurrent users
-mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim20CreateDocuments -Pbench -DredisDb=0 -Dusers=8 -Durl=http://localhost:8080/nuxeo
-
-```
-
-The node running the Gatling simulation must have access to the files to import.
-
-Here is an overview of possible usage to generate mass import and load tests with the stream importer:
-
-![import diagram](import-diag.png)
-
-Visit [nuxe-jsf-ui-gatling](https://github.com/nuxeo/nuxeo/tree/master/ftests/nuxeo-server-gatling-tests) for more information.
-
-
 
 ## Building
 

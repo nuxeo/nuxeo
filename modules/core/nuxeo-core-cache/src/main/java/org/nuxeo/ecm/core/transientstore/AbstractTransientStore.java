@@ -164,7 +164,6 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
             }
             Path cachedFileRelativePath = Paths.get(cachingDir.getName(), uuid);
             blobInfo.put("file", cachedFileRelativePath.toString());
-            // Redis doesn't support null values
             if (blob.getFilename() != null) {
                 blobInfo.put("filename", blob.getFilename());
             }

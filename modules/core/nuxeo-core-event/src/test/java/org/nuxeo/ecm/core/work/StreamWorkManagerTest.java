@@ -152,16 +152,6 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         tracker.assertDiff(0, 0, 6, 0);
     }
 
-    @Override
-    @Ignore
-    @Test
-    public void testNoConcurrentJobsWithSameId() throws InterruptedException {
-        // default workmanager guaranty that works with the same id can not be scheduled while another is running
-        // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or
-        // completed)
-        super.testNoConcurrentJobsWithSameId();
-    }
-
     @Test
     public void onlyLastCoalescingWorkShouldBeExecuted() throws InterruptedException {
         log.debug("StreamWorkManagerTest.onlyLastCoalescingWorkShouldBeExecuted() beginning");

@@ -296,7 +296,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (!queuing.supportsProcessingDisabling()) {
                 log.error("Attempting to disable works processing on a WorkQueuing instance that does not support it. "
                         + "Works will still be processed. "
-                        + "Disabling works processing to manage distribution finely can be done using Redis or Stream implementations.");
+                        + "Disabling works processing to manage distribution finely can be done using Stream implementation.");
             }
             deactivateQueue(config);
         } else {

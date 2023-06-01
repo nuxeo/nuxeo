@@ -19,9 +19,6 @@ nuxeo.vcs.fulltext.search.disabled=true
 nuxeo.vcs.optimizations.acl.enabled=false
 nuxeo.vcs.optimizations.path.enabled=false
 
-# Do not use Redis for directory cache
-nuxeo.cache.type=memory
-
 # Tune Elasticsearch indexing
 elasticsearch.indexing.maxThreads=6
 elasticsearch.reindex.bucketReadSize=1000

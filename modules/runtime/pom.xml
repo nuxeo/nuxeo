@@ -30,7 +30,6 @@
     <module>nuxeo-runtime-mongodb</module>
     <module>nuxeo-runtime-osgi</module>
     <module>nuxeo-runtime-pubsub</module>
-    <module>nuxeo-runtime-redis</module>
     <module>nuxeo-runtime-reload</module>
     <module>nuxeo-runtime-server</module>
     <module>nuxeo-runtime-stream</module>

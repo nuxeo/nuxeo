@@ -47,9 +47,12 @@
     <documentation>
       Defines the implementation of the queuing mechanism:
       <code>
-        <queuing class="org.nuxeo.ecm.core.redis.contribs.RedisWorkQueuing"/>
+        <queuing class="org.nuxeo.ecm.core.work.MemoryWorkQueuing"/>
       </code>
       The class must be a subclass of org.nuxeo.ecm.core.work.WorkQueuing.
+
+      Not used since 2023 since Redis support has been removed, only the in memory implementation remains which is used
+      for testing. Otherwise, StreamWorkManager is the WorkManager implementation to use and it doesn't use queuing.
     </documentation>
 
     <object class="org.nuxeo.ecm.core.work.api.WorkQueuingDescriptor" />

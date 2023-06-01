@@ -4,9 +4,6 @@ repositories:
   # use a specific version of index.yaml from the git repository as Bitnami removes all charts older than 6 months from
   # the head index.yaml descriptor, see https://github.com/bitnami/charts/issues/10539
   url: https://raw.githubusercontent.com/bitnami/charts/d2a3b454f8bb808a493d417199d3e2e09b5c650c/bitnami
-- name: bitnami-redis
-  # use a specific version of index.yaml for redis as it's old
-  url: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
 - name: elastic
   url: https://helm.elastic.co/
 - name: opensearch
@@ -104,22 +101,11 @@ releases:
   values:
   - values/values-kafka.yaml.gotmpl
   - values/{{ $valuesDir }}/values-kafka.yaml.gotmpl
-- name: redis
-  chart: bitnami-redis/redis
-  version: 11.2.1
-  namespace: {{ requiredEnv "NAMESPACE" }}
-  condition: redis.enabled
-  values:
-  - values/values-redis.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-redis.yaml
 
 environments:
   runtimeUnitTests:
     values:
     - environments/unit-tests-runtime.yaml
-  devUnitTests:
-    values:
-    - environments/unit-tests-dev.yaml
   mongodbUnitTests:
     values:
     - environments/unit-tests-mongodb.yaml
