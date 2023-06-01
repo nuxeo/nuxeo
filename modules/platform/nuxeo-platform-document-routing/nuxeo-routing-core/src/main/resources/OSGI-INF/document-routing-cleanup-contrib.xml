@@ -31,7 +31,7 @@
     <streamProcessor name="garbageCollectWokflows"
       class="org.nuxeo.ecm.platform.routing.core.bulk.GarbageCollectRoutesAction"
       defaultConcurrency="${nuxeo.bulk.action.garbageCollectWokflows.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.garbageCollectWokflows.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.garbageCollectWokflows.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
   </extension>

@@ -9,7 +9,7 @@
     <!-- Migration processor -->
     <streamProcessor name="migration" class="org.nuxeo.ecm.core.migrator.AbstractBulkMigrator$MigrationAction"
                      defaultConcurrency="${nuxeo.bulk.action.migration.defaultConcurrency:=2}"
-                     defaultPartitions="${nuxeo.bulk.action.migration.defaultPartitions:=2}" start="false">
+                     defaultPartitions="${nuxeo.bulk.action.migration.defaultPartitions:=4}" start="false">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false"/>
     </streamProcessor>
   </extension>

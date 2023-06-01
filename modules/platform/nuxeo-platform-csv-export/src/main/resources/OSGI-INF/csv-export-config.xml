@@ -14,7 +14,7 @@
     <!-- CSV exporter processor -->
     <streamProcessor name="csvExport" class="org.nuxeo.ecm.platform.csv.export.action.CSVExportAction"
       defaultConcurrency="${nuxeo.bulk.action.csvExport.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.csvExport.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.csvExport.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
       <stream name="bulk/makeBlob">
         <filter name="overflow" class="org.nuxeo.ecm.core.transientstore.computation.TransientStoreOverflowRecordFilter">
