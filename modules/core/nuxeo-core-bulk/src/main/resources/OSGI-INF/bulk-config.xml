@@ -82,21 +82,21 @@
     <!-- SetProperty processor -->
     <streamProcessor name="setProperties" class="org.nuxeo.ecm.core.bulk.action.SetPropertiesAction"
       defaultConcurrency="${nuxeo.bulk.action.setProperties.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.setProperties.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.setProperties.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 
     <!-- SetSystemProperty processor -->
     <streamProcessor name="setSystemProperties" class="org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction"
       defaultConcurrency="${nuxeo.bulk.action.setSystemProperties.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.setSystemProperties.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.setSystemProperties.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 
     <!-- RemoveProxy processor -->
     <streamProcessor name="removeProxy" class="org.nuxeo.ecm.core.bulk.action.RemoveProxyAction"
       defaultConcurrency="${nuxeo.bulk.action.removeProxy.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.removeProxy.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.removeProxy.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 

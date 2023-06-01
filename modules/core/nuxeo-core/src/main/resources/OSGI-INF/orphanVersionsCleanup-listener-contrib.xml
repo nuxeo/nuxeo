@@ -38,7 +38,7 @@
     <streamProcessor name="garbageCollectOrphanVersions"
       class="org.nuxeo.ecm.core.action.GarbageCollectOrphanVersionsAction"
       defaultConcurrency="${nuxeo.bulk.action.garbageCollectOrphanVersions.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.garbageCollectOrphanVersions.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.garbageCollectOrphanVersions.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
   </extension>

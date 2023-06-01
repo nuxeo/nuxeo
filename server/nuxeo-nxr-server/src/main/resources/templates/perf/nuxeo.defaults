@@ -39,6 +39,11 @@ nuxeo.bulk.action.csvExport.defaultConcurrency=4
 nuxeo.bulk.action.csvExport.defaultPartitions=8
 nuxeo.bulk.action.setProperties.defaultConcurrency=4
 nuxeo.bulk.action.setProperties.defaultPartitions=8
+nuxeo.bulk.action.garbageCollectOrphanBlobs.defaultConcurrency=4
+nuxeo.bulk.action.garbageCollectOrphanBlobs.defaultPartitions=8
+nuxeo.bulk.action.garbageCollectOrphanVersions.defaultConcurrency=4
+nuxeo.bulk.action.garbageCollectOrphanVersions.defaultPartitions=8
+
 
 # Scale audit writing
 nuxeo.stream.audit.batch.size=1000

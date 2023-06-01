@@ -14,14 +14,14 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="deletion" class="org.nuxeo.ecm.core.action.DeletionAction"
       defaultConcurrency="${nuxeo.bulk.action.deletion.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.deletion.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.deletion.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true"/>
     </streamProcessor>
     <!-- GarbageCollectOrphanBlobs processor -->
     <streamProcessor name="garbageCollectOrphanBlobs"
       class="org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction"
       defaultConcurrency="${nuxeo.bulk.action.garbageCollectOrphanBlobs.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.garbageCollectOrphanBlobs.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.garbageCollectOrphanBlobs.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
   </extension>

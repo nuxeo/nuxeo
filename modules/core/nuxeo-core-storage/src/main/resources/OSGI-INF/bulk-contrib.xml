@@ -11,7 +11,7 @@
     <streamProcessor name="extractBinaryFulltext"
       class="org.nuxeo.ecm.core.storage.action.ExtractBinaryFulltextAction"
       defaultConcurrency="${nuxeo.bulk.action.extractBinaryFulltext.defaultConcurrency:=2}"
-      defaultPartitions="${nuxeo.bulk.action.extractBinaryFulltext.defaultPartitions:=2}">
+      defaultPartitions="${nuxeo.bulk.action.extractBinaryFulltext.defaultPartitions:=4}">
       <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
     </streamProcessor>
   </extension>
