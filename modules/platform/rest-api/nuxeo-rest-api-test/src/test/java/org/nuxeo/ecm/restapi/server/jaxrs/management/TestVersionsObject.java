@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ERROR_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_HAS_ERROR;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SKIP_COUNT;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
 
 import java.io.IOException;
@@ -55,7 +56,8 @@ public class TestVersionsObject extends ManagementBaseTest {
     @Inject
     protected CoreSession session;
 
-    @Inject CoreFeature coreFeature;
+    @Inject
+    CoreFeature coreFeature;
 
     protected int nbVersions = 10;
 
@@ -108,7 +110,7 @@ public class TestVersionsObject extends ManagementBaseTest {
 
         // all versions found
         assertEquals(nbTotalVersions, vs.size());
-        doGCVersions(true, vs.size(), 0, vs.size());
+        doGCVersions(true, vs.size(), nbTotalVersions, 0, vs.size());
 
         // delete folder containing the doc
         session.removeDocument(folder.getRef());
@@ -118,14 +120,15 @@ public class TestVersionsObject extends ManagementBaseTest {
 
         // all versions found
         assertEquals(nbTotalVersions, vs.size());
-        doGCVersions(true, vs.size(), 0, vs.size());
+        doGCVersions(true, vs.size(), 2 + 2, 0, vs.size());
         vs = getVersion();
 
         // some versions (N+1) have been cleaned up
         assertEquals(2 + 2, vs.size());
     }
 
-    protected void doGCVersions(boolean success, int processed, int errorCount, int total) throws IOException {
+    protected void doGCVersions(boolean success, int processed, int skipped, int errorCount, int total)
+            throws IOException {
         String commandId;
         try (CloseableClientResponse response = httpClientRule.delete("/management/versions/orphaned")) {
             assertEquals(SC_OK, response.getStatus());
@@ -145,6 +148,7 @@ public class TestVersionsObject extends ManagementBaseTest {
             assertBulkStatusCompleted(node);
             assertEquals(!success, node.get(STATUS_HAS_ERROR).asBoolean());
             assertEquals(processed, node.get(STATUS_PROCESSED).asInt());
+            assertEquals(skipped, node.get(STATUS_SKIP_COUNT).asInt());
             assertEquals(errorCount, node.get(STATUS_ERROR_COUNT).asInt());
             assertEquals(total, node.get(STATUS_TOTAL).asInt());
         }
