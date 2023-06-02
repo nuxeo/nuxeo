@@ -179,7 +179,8 @@ pipeline {
                   DEBUG mode sleeping 1h for manual intervention ....
                   ----------------------------------------
                   """
-                  sleep time: 1, unit: "HOURS"
+                  // Can be resumed by killing manually the sleep process on maven container
+                  sh 'sleep 3600 || exit 0'
                 }
               }
             }
