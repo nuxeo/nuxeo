@@ -2612,6 +2612,13 @@
         <groupId>org.apache.directory.server</groupId>
         <artifactId>apacheds-core</artifactId>
         <version>${apacheds.version}</version>
+        <exclusions>
+          <!-- exclude unused dependency to ApacheDS Kerberos -->
+          <exclusion>
+            <groupId>org.apache.directory.server</groupId>
+            <artifactId>apacheds-kerberos-shared</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
