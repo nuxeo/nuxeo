@@ -36,7 +36,7 @@ object NuxeoStreamImporter {
   def importDocuments(nbThreads: Integer) = {
     http("Mass import with " + nbThreads.toString() + " threads")
       .post(Constants.AUTOMATION_PATH + "/StreamImporter.runDocumentConsumers")
-      .body(StringBody(s"""{"params":{"rootFolder":"${Constants.GAT_WS_PATH}","batchSize":"50","waitMessageTimeoutSeconds":"20","blockAsyncListeners":true}}"""))
+      .body(StringBody(s"""{"params":{"rootFolder":"${Constants.GAT_FOLDER_IMPORT_PATH}","batchSize":"50","waitMessageTimeoutSeconds":"20","blockAsyncListeners":true}}"""))
       .headers(Headers.base)
       .header("Content-Type", "application/json")
       .header("Accept", "application/json")
