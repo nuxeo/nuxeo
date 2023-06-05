@@ -304,6 +304,20 @@ object NuxeoRest {
       .check(status.in(200, 404))
   }
 
+  def move = (source: String, dest: String) => {
+    exitBlockOnFail {
+      exec(
+        http("Move " + source + " to " + dest)
+        .post(Constants.API_PATH + source + "/@op/Document.Move")
+        .basicAuth("${adminId}", "${adminPassword}")
+        .headers(Headers.base)
+        .header("content-type", "application/json+nxrequest")
+        .body(StringBody("""{"params":{"target":"""" + dest + """"},"context":{}}""".stripMargin))
+        .check(status.in(200)))
+      .exec(waitForAsyncJobs())
+    }
+  }
+
   // When status is 200 it already exists, 201 otherwhise
   def createUserIfNotExists = (groupName: String) => {
     exec(
@@ -399,7 +413,6 @@ object NuxeoRest {
           .body(StringBody( """{"params":{},"context":{}}"""))
       ).exec(waitForAsyncJobs())
     }
-
   }
 
 }

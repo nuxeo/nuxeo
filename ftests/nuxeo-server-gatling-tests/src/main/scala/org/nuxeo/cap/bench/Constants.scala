@@ -30,6 +30,8 @@ object Constants {
 
   val GAT_WS_NAME = "Bench_Gatling"
   val GAT_WS_PATH = ROOT_WORKSPACE_PATH + "/Bench_Gatling"
+  val GAT_FOLDER_IMPORT_NAME = "import"
+  val GAT_FOLDER_IMPORT_PATH = GAT_WS_PATH + "/" + GAT_FOLDER_IMPORT_NAME
   val GAT_FOLDER_NAME = "Common"
   val GAT_USER_FOLDER_NAME = "Folder_${user}"
   val GAT_GROUP_NAME = "gatling"
