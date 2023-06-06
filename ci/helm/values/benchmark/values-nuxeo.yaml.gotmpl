@@ -41,6 +41,7 @@ customEnvs:
 customProperties:
   benchmark: |
     nuxeo.append.templates.benchmark=docker-json,perf
+    nuxeo.docker-json.log4j.layout.attributes=compact="true" eventEol="true" properties="true" stacktraceAsString="true"
     nuxeo.core.binarymanager=org.nuxeo.ecm.blob.s3.S3BlobProvider
     nuxeo.db.transactiontimeout=3600
     JAVA_OPTS=$JAVA_OPTS -XX:SoftRefLRUPolicyMSPerMB=0
