@@ -17,7 +17,7 @@
 library identifier: "platform-ci-shared-library@v0.0.17"
 
 boolean isNuxeoTag() {
-  return NUXEO_BRANCH =~ /v.*/
+  return NUXEO_BRANCH =~ /^v.*$/
 }
 
 pipeline {
