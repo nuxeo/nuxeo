@@ -24,11 +24,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.common.Environment.DISTRIBUTION_HOTFIX;
 import static org.nuxeo.common.Environment.DISTRIBUTION_NAME;
 import static org.nuxeo.common.Environment.DISTRIBUTION_SERVER;
 import static org.nuxeo.common.Environment.DISTRIBUTION_VERSION;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
+import static org.nuxeo.ecm.core.model.Repository.CAPABILITY_QUERY_BLOB_KEYS;
+import static org.nuxeo.ecm.core.model.Repository.CAPABILITY_REPOSITORY;
 import static org.nuxeo.runtime.capabilities.CapabilitiesServiceImpl.CAPABILITY_SERVER;
 import static org.nuxeo.runtime.cluster.ClusterServiceImpl.CAPABILITY_CLUSTER;
 
@@ -41,6 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.restapi.jaxrs.io.capabilities.CapabilitiesJsonWriter;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -61,6 +65,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Features(RestServerFeature.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-cluster.xml")
 public class TestCapabilitiesObject {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected ServletContainerFeature servletContainerFeature;
@@ -133,6 +140,40 @@ public class TestCapabilitiesObject {
             assertNotNull(clusterNode);
             assertTrue(clusterNode.get("enabled").asBoolean());
             assertEquals("123", clusterNode.get("nodeId").asText());
+        }
+    }
+
+    @Test
+    public void testHasBlobKeysCapabilityDBS() throws IOException {
+        assumeTrue("DBS capability check", coreFeature.getStorageConfiguration().isDBS());
+        assertBlobKeysCapability(true);
+    }
+
+    @Test
+    @WithFrameworkProperty(name = "nuxeo.test.repository.disable.blobKeys", value = "true")
+    public void testDoNotHaveBlobKeysCapabilityDBS() throws IOException {
+        assumeTrue("DBS capability check", coreFeature.getStorageConfiguration().isDBS());
+        assertBlobKeysCapability(false);
+    }
+
+    @Test
+    public void testDoNotHaveBlobKeysCapabilityVCS() throws IOException {
+        assumeTrue("VCS capability check", coreFeature.getStorageConfiguration().isVCS());
+        assertBlobKeysCapability(false);
+    }
+
+    protected void assertBlobKeysCapability(boolean expected) throws IOException {
+        try (CloseableClientResponse response = httpClientRule.get("/capabilities")) {
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+
+            assertEquals(CapabilitiesJsonWriter.ENTITY_TYPE, node.get(ENTITY_FIELD_NAME).asText());
+
+            JsonNode repositoryCapabilityNode = node.get(CAPABILITY_REPOSITORY);
+            assertNotNull(repositoryCapabilityNode);
+            JsonNode repositoryNode = repositoryCapabilityNode.get("test");
+            assertNotNull(repositoryNode);
+            assertEquals(expected, repositoryNode.get(CAPABILITY_QUERY_BLOB_KEYS).asBoolean());
         }
     }
 }
