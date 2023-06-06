@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.dbs.migrator" version="1.0">
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+
+    <migration id="blob-keys-migration">
+      <description label="migration.dbs.blob.keys">Populate ecm:blobKeys property</description>
+      <class>org.nuxeo.ecm.core.storage.dbs.BlobKeysBulkMigrator</class>
+      <defaultState>unsupported</defaultState>
+      <state id="unsupported">
+      </state>
+      <state id="empty">
+        <description label="migration.dbs.blob.keys.empty">ecm:blobKeys is not populated</description>
+      </state>
+      <state id="populated">
+        <description label="migration.dbs.blob.keys.populated">ecm:blobKeys is populated</description>
+      </state>
+
+      <step id="empty-to-populated" fromState="empty" toState="populated">
+        <description label="migration.dbs.blob.keys.empty-to-populated">Populate ecm:blobKeys property</description>
+      </step>
+    </migration>
+
+  </extension>
+
+</component>

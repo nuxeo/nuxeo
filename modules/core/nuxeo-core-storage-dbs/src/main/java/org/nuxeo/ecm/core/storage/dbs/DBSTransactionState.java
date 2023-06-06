@@ -51,6 +51,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIE
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.DISABLE_ECM_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.action.UpdateReadAclsAction.UPDATE_READ_ACLS_ACTION;
 
 import java.io.Serializable;
@@ -159,6 +160,13 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
      * @since 9.2
      */
     protected final Set<Serializable> userChangeIds = new HashSet<>();
+
+    /**
+     * For test purpose only.
+     *
+     * @since 2023.0
+     */
+    protected Boolean disabledForTestingPurpose;
 
     /**
      * Undo log.
@@ -1171,7 +1179,24 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
         }
     }
 
+    /**
+     * For test purpose only.
+     *
+     * @since 2023.0
+     */
+    protected boolean isBlobKeysDisabledForTestingPurpose() {
+        if (disabledForTestingPurpose == null || disabledForTestingPurpose) {
+            disabledForTestingPurpose = Framework.isTestModeSet()
+                    && Framework.isBooleanPropertyTrue(DISABLE_ECM_BLOB_KEYS);
+        }
+        return disabledForTestingPurpose;
+    }
+
     protected void computeBlobKeys(DBSDocumentState docState, BlobKeysFinder blobKeysFinder) {
+        if (isBlobKeysDisabledForTestingPurpose()) {
+            // for unit tests
+            return;
+        }
         Set<String> blobKeys = blobKeysFinder.findBlobKeys(docState.getState());
         Object[] blobKeysArray;
         if (blobKeys.isEmpty()) {

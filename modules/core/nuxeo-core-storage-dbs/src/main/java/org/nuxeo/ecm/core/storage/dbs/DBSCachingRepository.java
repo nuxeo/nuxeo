@@ -287,4 +287,9 @@ public class DBSCachingRepository implements DBSRepository {
         return repository.getBlobKeysPaths();
     }
 
+    @Override
+    public void updateCapabilities() {
+        repository.updateCapabilities();
+    }
+
 }

@@ -63,6 +63,14 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     private static final Logger log = LogManager.getLogger(DBSRepositoryBase.class);
 
+    /**
+     * Property to disable {@code ecm:blobKeys} computation FOR TEST PURPOSE ONLY. Keep it private, we really don't want
+     * it to be used externally.
+     *
+     * @since 2023
+     */
+    protected static final String DISABLE_ECM_BLOB_KEYS = "nuxeo.test.repository.disable.blobKeys";
+
     public static final String TYPE_ROOT = "Root";
 
     // change to have deterministic pseudo-UUID generation for debugging

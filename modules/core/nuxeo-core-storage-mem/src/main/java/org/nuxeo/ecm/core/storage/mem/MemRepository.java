@@ -22,8 +22,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +38,6 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * In-memory implementation of a {@link DBSRepository}.
@@ -177,6 +174,11 @@ public class MemRepository extends DBSRepositoryBase {
                 }
             }
         }
+    }
+
+    @Override
+    public void updateCapabilities() {
+        throw new UnsupportedOperationException();
     }
 
 }

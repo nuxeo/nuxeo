@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.exists;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_KEYS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 
@@ -34,9 +36,11 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.storage.dbs.BlobKeysBulkMigrator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -45,7 +49,6 @@ import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
@@ -240,15 +243,38 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected void initSettings() {
-        supportsDenormalizedBlobKeys = true;
-        Bson filter = Filters.eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS);
+        supportsDenormalizedBlobKeys = !(Framework.isTestModeSet()
+                && Framework.isBooleanPropertyTrue(DISABLE_ECM_BLOB_KEYS)); // For test purpose only
+        Bson filter = eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS);
         Bson update = Updates.set(SETTING_VALUE, supportsDenormalizedBlobKeys);
         settingsColl.updateOne(filter, update, new UpdateOptions().upsert(true));
         initCapabilities();
     }
 
+    @Override
+    public void updateCapabilities() {
+        // Let's make sure this is called when the BlobKeysBulkMigrator is in completed state
+        var migrationState = Framework.getService(MigrationService.class)
+                                      .getStatus(BlobKeysBulkMigrator.MIGRATION_ID)
+                                      .getState();
+        if (BlobKeysBulkMigrator.MIGRATION_AFTER_STATE.equals(migrationState)) {
+            supportsDenormalizedBlobKeys = true;
+            Bson filter = eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS);
+            Bson update = Updates.set(SETTING_VALUE, supportsDenormalizedBlobKeys);
+            settingsColl.updateOne(filter, update, new UpdateOptions().upsert(true));
+            initCapabilities();
+        }
+    }
+
     protected void readSettings() {
-        Document doc = settingsColl.find(Filters.eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS)).first();
+        if (Framework.isTestModeSet() && Framework.isBooleanPropertyTrue(DISABLE_ECM_BLOB_KEYS)) {
+            // For test purpose only
+            // As soon as we have the DISABLE_ECM_BLOB_KEYS true, ecm:blobKeys computation is skipped
+            // Better persist in mongodb settings the capability is lost for safety
+            initSettings();
+            return;
+        }
+        Document doc = settingsColl.find(eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS)).first();
         if (doc == null) {
             supportsDenormalizedBlobKeys = false;
         } else {
@@ -315,7 +341,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected void initBlobsPaths() {
         super.initBlobsPaths();
         // compute projections for when ecm:blobKeys is not available
-        List<Bson>projections = new ArrayList<>(blobKeysPaths.size() + 1);
+        List<Bson> projections = new ArrayList<>(blobKeysPaths.size() + 1);
         projections.add(Projections.excludeId());
         blobKeysPaths.forEach(path -> projections.add(Projections.include(String.join(".", path))));
         binaryKeys = Projections.fields(projections);
@@ -327,7 +353,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         Bson projection;
         Consumer<Document> markReferencedBlobs;
         if (supportsDenormalizedBlobKeys) {
-            filter = Filters.exists(KEY_BLOB_KEYS, true);
+            filter = exists(KEY_BLOB_KEYS, true);
             projection = Projections.fields(Projections.excludeId(), Projections.include(KEY_BLOB_KEYS));
             markReferencedBlobs = doc -> markReferencedBlobsDenormalized(doc, markerCallback);
         } else {
