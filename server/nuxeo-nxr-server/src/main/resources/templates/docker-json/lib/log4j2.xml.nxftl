@@ -6,7 +6,7 @@
     <!-- Append messages to the console -->
     <!-- ============================== -->
     <Console name="ConsoleJSONAppender-ORIGINAL" target="SYSTEM_OUT">
-      <JsonLayout eventEol="true" compact="true"/>
+      <JsonLayout ${nuxeo['docker-json'].log4j.layout.attributes}/>
     </Console>
 
     <Rewrite name="ConsoleJSONAppender">
