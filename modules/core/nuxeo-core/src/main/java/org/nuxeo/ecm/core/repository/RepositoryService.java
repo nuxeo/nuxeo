@@ -21,12 +21,14 @@ package org.nuxeo.ecm.core.repository;
 
 import static javax.transaction.Status.STATUS_COMMITTED;
 import static javax.transaction.Status.STATUS_ROLLEDBACK;
+import static org.nuxeo.ecm.core.model.Repository.CAPABILITY_QUERY_BLOB_KEYS;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.transaction.Synchronization;
 
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.capabilities.CapabilitiesService;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -181,6 +184,13 @@ public class RepositoryService extends DefaultComponent {
             }
             createRepository(repositoryName, factory);
         }
+        Framework.getService(CapabilitiesService.class)
+                 .registerCapabilities(Repository.CAPABILITY_REPOSITORY,
+                         () -> repositories.values()
+                                           .stream()
+                                           .collect(Collectors.toMap(Repository::getName,
+                                                   repo -> Map.of(CAPABILITY_QUERY_BLOB_KEYS,
+                                                           repo.hasCapability(CAPABILITY_QUERY_BLOB_KEYS)))));
     }
 
     protected void createRepository(String repositoryName, RepositoryFactory factory) {

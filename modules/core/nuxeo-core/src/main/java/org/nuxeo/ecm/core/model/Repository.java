@@ -32,6 +32,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public interface Repository {
 
+    /**
+     * @since 2023
+     */
+    String CAPABILITY_REPOSITORY = "repository";
+
     String getName();
 
     Session getSession();
