@@ -90,8 +90,13 @@ pipeline {
           def redisHost = "${TEST_REDIS_K8S_OBJECT}.${TEST_NAMESPACE}.${TEST_SERVICE_DOMAIN_SUFFIX}"
           def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${TEST_NAMESPACE}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
 
+          def commitSha = env.SCM_REF
+          if (isNuxeoTag()) {
+            // retrieve the promoted build sha
+            commitSha = nxDocker.getLabel(image: "${PRIVATE_DOCKER_REGISTRY}/nuxeo/nuxeo:${NUXEO_BRANCH}", label: 'org.nuxeo.scm-ref')
+          }
           container("maven-${REPOSITORY_BACKEND}") {
-            nxWithGitHubStatus(context: "utests/es-${ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION}", message: "Unit tests - ES ${ELASTICSEARCH_IMAGE_TAG} environment", commitSha: env.SCM_REF) {
+            nxWithGitHubStatus(context: "utests/es-${ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION}", message: "Unit tests - ES ${ELASTICSEARCH_IMAGE_TAG} environment", commitSha: commitSha) {
               echo """
               ----------------------------------------
               Run ${REPOSITORY_BACKEND} unit tests against Elasticsearch ${ELASTICSEARCH_IMAGE_TAG}
