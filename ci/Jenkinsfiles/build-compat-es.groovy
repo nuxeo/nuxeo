@@ -20,6 +20,12 @@ boolean isNuxeoTag() {
   return NUXEO_BRANCH =~ /^v.*$/
 }
 
+def checkParameters() {
+  if (!ELASTICSEARCH_IMAGE_TAG =~ /^v\d+\.\d+\.\d+/) {
+    error('ELASTICSEARCH_IMAGE_TAG parameter must be a semver version such as 7.17.9')
+  }
+}
+
 pipeline {
   agent {
     label 'jenkins-nuxeo-platform-lts-2021'
@@ -58,6 +64,7 @@ pipeline {
     stage('Initialization') {
       steps {
         script {
+          checkParameters()
           currentBuild.description = "${NUXEO_BRANCH}/${ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION}"
         }
       }
