@@ -52,7 +52,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VER
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RECORD;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_RETAINED_PROPS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RETENTION_ACTIVE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_TRASHED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
@@ -72,6 +71,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_RETAINED_PROPS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_RETAIN_UNTIL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_CREATED;
@@ -390,7 +390,6 @@ public class DBSSession extends BaseSession {
 
     protected boolean hasChildren(String parentId) {
         return transaction.hasChildren(parentId);
-
     }
 
     @Override

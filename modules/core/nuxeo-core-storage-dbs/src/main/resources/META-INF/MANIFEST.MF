@@ -2,4 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.dbs
 Nuxeo-Component: OSGI-INF/dbs-repository-service.xml,
+ OSGI-INF/dbs-blob-keys-migration.xml,
  OSGI-INF/dbs-bulk-config.xml

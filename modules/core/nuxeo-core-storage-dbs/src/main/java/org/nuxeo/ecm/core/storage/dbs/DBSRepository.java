@@ -106,4 +106,11 @@ public interface DBSRepository extends Repository, LockManager {
      */
     List<List<String>> getBlobKeysPaths();
 
+    /**
+     * Update repository capabilities after a migration. Internal use only.
+     *
+     * @since 2023.0
+     */
+    void updateCapabilities();
+
 }
