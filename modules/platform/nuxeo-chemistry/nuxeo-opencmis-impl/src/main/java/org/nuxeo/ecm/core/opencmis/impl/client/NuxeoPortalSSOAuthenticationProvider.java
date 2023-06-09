@@ -59,6 +59,7 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
         byte[] hashedToken;
 
         try {
+            // this is a default configuration that may already be used. Also this is provided as an example.
             hashedToken = MessageDigest.getInstance("MD5").digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
             throw new Error("Cannot compute token", e);

@@ -36,6 +36,7 @@ public class DigestConfiguration extends PropertyBasedConfiguration {
     /** @since 11.5 */
     public static final String DIGEST_ASYNC_PROPERTY = "digestAsync";
 
+    // this is already used in production. Changing it would cause data loss.
     public static final String DEFAULT_DIGEST_ALGORITHM = "MD5";
 
     public final String digestAlgorithm;

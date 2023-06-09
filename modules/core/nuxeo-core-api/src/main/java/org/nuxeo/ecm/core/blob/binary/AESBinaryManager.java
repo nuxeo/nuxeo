@@ -101,10 +101,12 @@ public class AESBinaryManager extends LocalBinaryManager {
     protected static final String AES = "AES";
 
     // insecure, see https://find-sec-bugs.github.io/bugs.htm#PADDING_ORACLE
+    // disabled by default but here for people to use at their own discretion
     protected static final String AES_CBC_PKCS5_PADDING = "AES/CBC/PKCS5Padding";
 
     protected static final String AES_GCM_NOPADDING = "AES/GCM/NoPadding";
 
+    // this is already used in production. Changing it would cause data loss.
     protected static final String PBKDF2_WITH_HMAC_SHA1 = "PBKDF2WithHmacSHA1";
 
     protected static final int PBKDF2_ITERATIONS = 10000;

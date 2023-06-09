@@ -40,6 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoInstanceIdentifierHelper {
 
+    // highly improbable to cause collisions
     private static final String HASH_METHOD = "MD5";
 
     protected static String serverInstanceName;

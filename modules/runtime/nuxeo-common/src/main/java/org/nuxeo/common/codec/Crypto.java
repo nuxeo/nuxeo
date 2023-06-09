@@ -73,12 +73,14 @@ public class Crypto {
 
     public static final String AES_ECB_PKCS5PADDING = "AES/ECB/PKCS5Padding";
 
+    // this is already used in production. Changing it would cause data loss.
     public static final String DES = "DES";
 
     public static final String DES_ECB_PKCS5PADDING = "DES/ECB/PKCS5Padding";
 
     public static final String[] IMPLEMENTED_ALGOS = { AES, DES, AES_ECB_PKCS5PADDING, DES_ECB_PKCS5PADDING };
 
+    // this is already used in production. Changing it would cause data loss.
     public static final String DEFAULT_ALGO = AES_ECB_PKCS5PADDING;
 
     private static final String SHA1 = "SHA-1";

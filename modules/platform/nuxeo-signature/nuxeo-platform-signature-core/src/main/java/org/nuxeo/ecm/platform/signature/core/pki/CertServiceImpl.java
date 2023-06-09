@@ -88,6 +88,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
 
     private static final String KEY_ALGORITHM = "RSA";
 
+    // this is already used in production. Changing it would cause data loss.
     private static final int KEY_SIZE = 1024;
 
     private static final String KEYSTORE_TYPE = "JKS";

@@ -131,6 +131,7 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
     protected String getDigest(String key) {
         MessageDigest digest;
         try {
+            // MD5 is tolerated here. Renditions can be regenerated automatically and wont lead to data leak.
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             return key;
