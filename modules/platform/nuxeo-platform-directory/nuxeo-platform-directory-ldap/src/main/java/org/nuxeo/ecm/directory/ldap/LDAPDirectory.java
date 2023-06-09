@@ -377,6 +377,8 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * SSLSocketFactory implementation that verifies all certificates.
+     * <p>
+     * Disabled by default but here for people to use at their own discretion.
      */
     public static class TrustingSSLSocketFactory extends SSLSocketFactory {
 

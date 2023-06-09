@@ -472,6 +472,7 @@ public abstract class Dialect {
         if (name.length() > maxNameSize) {
             MessageDigest digest;
             try {
+                // this is already used in production. Changing it would cause data loss.
                 digest = MessageDigest.getInstance("MD5");
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e.toString(), e);
@@ -495,6 +496,7 @@ public abstract class Dialect {
         if (name.length() > maxNameSize) {
             MessageDigest digest;
             try {
+                // this is already used in production. Changing it would cause data loss.
                 digest = MessageDigest.getInstance("MD5");
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e.toString(), e);

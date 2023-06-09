@@ -50,6 +50,7 @@ public class PasswordHelper {
 
     private static final String SHA512 = "SHA-512";
 
+    // this is already used in production. Changing it would cause data loss.
     private static final String MD5 = "MD5";
 
     private static final int SALT_LEN = 8;

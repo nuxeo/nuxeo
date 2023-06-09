@@ -566,6 +566,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
             if (origName.length() > 30) {
                 StringBuilder sb = new StringBuilder(origName.length());
                 try {
+                    // this is already used in production. Changing it would cause data loss.
                     MessageDigest digest = MessageDigest.getInstance("MD5");
                     sb.append(origName.substring(0, 15));
                     sb.append('_');

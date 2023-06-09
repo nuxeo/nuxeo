@@ -80,6 +80,7 @@ public class IOUtils {
 
     protected static MessageDigest getMD5Digest() throws IOException {
         try {
+            // this is already used in production. Changing it would cause data loss.
             return MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             throw new IOException(e);
