@@ -154,7 +154,7 @@
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
     <okhttp.version>4.11.0</okhttp.version>
-    <protobuf.java.version>3.21.12</protobuf.java.version>
+    <protobuf.java.version>3.23.2</protobuf.java.version>
   </properties>
 
   <dependencyManagement>
@@ -3818,6 +3818,17 @@
         <groupId>com.google.cloud</groupId>
         <artifactId>google-cloud-storage</artifactId>
         <version>${gcp.version}</version>
+      </dependency>
+      <!-- fix protobuf-java-* version for Google Storage package -->
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf.java.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java-util</artifactId>
+        <version>${protobuf.java.version}</version>
       </dependency>
       <dependency>
         <groupId>com.microsoft.azure</groupId>
