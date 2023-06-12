@@ -132,7 +132,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
 
     /** Keys used when computing Read ACLs. */
     protected static final Set<String> READ_ACL_RECURSION_KEYS = new HashSet<>(
-            Arrays.asList(KEY_READ_ACL, KEY_ACP, KEY_IS_VERSION, KEY_VERSION_SERIES_ID, KEY_PARENT_ID));
+            Arrays.asList(KEY_READ_ACL, KEY_ACP, KEY_IS_VERSION, KEY_VERSION_SERIES_ID, KEY_PARENT_ID, KEY_ANCESTOR_IDS));
 
     public static final String READ_ACL_ASYNC_ENABLED_PROPERTY = "nuxeo.core.readacl.async.enabled";
 
@@ -596,6 +596,7 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             BulkCommand command = new BulkCommand.Builder(UPDATE_READ_ACLS_ACTION, nxql, SYSTEM_USERNAME).repository(
                     session.getRepositoryName()).build();
             service.submitTransactional(command);
+            log.debug("Submit update read ACLs command: {}", command);
         }
     }
 
@@ -688,7 +689,9 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
      */
     protected void updateDocumentReadAcls(String id) {
         DBSDocumentState docState = getStateForUpdate(id);
-        docState.put(KEY_READ_ACL, getReadACL(docState.getState()));
+        State state = materializedKeys(docState.getState());
+        docState.put(KEY_READ_ACL, state.get(KEY_READ_ACL));
+        docState.put(KEY_ANCESTOR_IDS, state.get(KEY_ANCESTOR_IDS));
     }
 
     /**
@@ -704,11 +707,11 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
         if (state == null) {
             return;
         }
-        State oldState = new State(1);
+        State oldState = new State(2);
         oldState.put(KEY_READ_ACL, state.get(KEY_READ_ACL));
+        oldState.put(KEY_ANCESTOR_IDS, state.get(KEY_ANCESTOR_IDS));
         // compute new value
-        State newState = new State(1);
-        newState.put(KEY_READ_ACL, getReadACL(state));
+        State newState = materializedKeys(state);
         StateDiff diff = StateHelper.diff(oldState, newState);
         if (!diff.isEmpty()) {
             // no transient for state write, we write directly and just invalidate caches
@@ -718,67 +721,94 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
 
     /**
      * Gets the Read ACL (flat list of users having browse permission, including inheritance) on a document.
+     * @deprecated since 2021.39 use {@link #materializedKeys(State)} instead
      */
+    @Deprecated
     protected String[] getReadACL(State state) {
+        State raclState = materializedKeys(state);
+        return (String[]) raclState.get(KEY_READ_ACL);
+    }
+
+    /**
+     * Returns materialized keys for a state:
+     * - Read ACL (flat list of users having browse permission, including inheritance) on a document
+     * - Ancestor ids
+     */
+    protected State materializedKeys(State state) {
+        State ret = new State(2);
         Set<String> racls = new HashSet<>();
+        List<String> ancestors = new ArrayList<>();
         boolean replaceReadVersionPermission = false;
         if (TRUE.equals(state.get(KEY_IS_VERSION))) {
+            ret.put(KEY_ANCESTOR_IDS, new String[0]);
             replaceReadVersionPermission = !disableReadVersionPermission;
             if (versionAclMode == VersionAclMode.DISABLED) {
                 String versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
                 if (versionSeriesId == null || (state = getStateForRead(versionSeriesId)) == null) {
                     // version with no live doc
-                    return new String[0];
+                    ret.put(KEY_READ_ACL, new String[0]);
+                    ret.put(KEY_ANCESTOR_IDS, new String[0]);
+                    return ret;
                 }
             }
         }
-        LOOP: do {
-            @SuppressWarnings("unchecked")
-            List<Serializable> aclList = (List<Serializable>) state.get(KEY_ACP);
-            if (aclList != null) {
-                for (Serializable aclSer : aclList) {
-                    State aclMap = (State) aclSer;
-                    @SuppressWarnings("unchecked")
-                    List<Serializable> aceList = (List<Serializable>) aclMap.get(KEY_ACL);
-                    for (Serializable aceSer : aceList) {
-                        State aceMap = (State) aceSer;
-                        String username = (String) aceMap.get(KEY_ACE_USER);
-                        String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
-                        Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
-                        Long status = (Long) aceMap.get(KEY_ACE_STATUS);
-                        if (replaceReadVersionPermission && READ_VERSION.equals(permission)) {
-                            permission = READ;
-                        }
-                        if (TRUE.equals(granted) && browsePermissions.contains(permission)
-                                && (status == null || status == 1)) {
-                            racls.add(username);
-                        }
-                        if (FALSE.equals(granted)) {
-                            if (!EVERYONE.equals(username)) {
-                                // TODO log
-                                racls.add(UNSUPPORTED_ACL);
+        boolean blockAcl = false;
+        do {
+            LOOP: if (!blockAcl) {
+                @SuppressWarnings("unchecked")
+                List<Serializable> aclList = (List<Serializable>) state.get(KEY_ACP);
+                if (aclList != null) {
+                    for (Serializable aclSer : aclList) {
+                        State aclMap = (State) aclSer;
+                        @SuppressWarnings("unchecked") List<Serializable> aceList = (List<Serializable>) aclMap.get(
+                                KEY_ACL);
+                        for (Serializable aceSer : aceList) {
+                            State aceMap = (State) aceSer;
+                            String username = (String) aceMap.get(KEY_ACE_USER);
+                            String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
+                            Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
+                            Long status = (Long) aceMap.get(KEY_ACE_STATUS);
+                            if (replaceReadVersionPermission && READ_VERSION.equals(permission)) {
+                                permission = READ;
                             }
-                            break LOOP;
+                            if (TRUE.equals(granted) && browsePermissions.contains(permission) && (status == null || status == 1)) {
+                                racls.add(username);
+                            }
+                            if (FALSE.equals(granted)) {
+                                if (!EVERYONE.equals(username)) {
+                                    // TODO log
+                                    racls.add(UNSUPPORTED_ACL);
+                                }
+                                blockAcl = true;
+                                break LOOP;
+                            }
                         }
                     }
                 }
             }
-            // get the parent; for a version the parent is the live document
-            String parentKey;
+            String parentId;
             if (TRUE.equals(state.get(KEY_IS_VERSION))) {
+                // for a version the parent is the live document
                 replaceReadVersionPermission = !disableReadVersionPermission;
-                parentKey = KEY_VERSION_SERIES_ID;
+                parentId = (String) state.get(KEY_VERSION_SERIES_ID);
             } else {
-                parentKey = KEY_PARENT_ID;
+                parentId = (String) state.get(KEY_PARENT_ID);
+                if (parentId != null) {
+                    ancestors.add(parentId);
+                }
             }
-            String parentId = (String) state.get(parentKey);
             state = parentId == null ? null : getStateForRead(parentId);
         } while (state != null);
 
         // sort to have canonical order
         List<String> racl = new ArrayList<>(racls);
         Collections.sort(racl);
-        return racl.toArray(new String[racl.size()]);
+        ret.put(KEY_READ_ACL, racl.toArray(new String[racl.size()]));
+        if (!ret.containsKey(KEY_ANCESTOR_IDS)) {
+            // versions are placeless
+            ret.put(KEY_ANCESTOR_IDS, ancestors.toArray(new String[ancestors.size()]));
+        }
+        return ret;
     }
 
     protected Stream<State> getDescendants(String id, Set<String> keys, int limit) {

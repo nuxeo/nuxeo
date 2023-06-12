@@ -811,6 +811,8 @@ public class TestSQLRepositorySecurity {
     protected void doTestReadAclOnLargeTree() {
         DocumentModel rootFolder = session.createDocumentModel("/", "folder", "Folder");
         rootFolder = session.createDocument(rootFolder);
+        DocumentModel destination = session.createDocumentModel("/", "folder2", "Folder");
+        destination = session.createDocument(destination);
         String firstUser = "mickey";
         String secondUser = "minnie";
 
@@ -850,6 +852,17 @@ public class TestSQLRepositorySecurity {
         // check that both users now have access to everything
         assertEquals(nbDocs, numberOfReadableDocuments(firstUser));
         assertEquals(nbDocs, numberOfReadableDocuments(secondUser));
+
+        String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", rootFolder.getId());
+
+        assertEquals(nbDocs, session.query(nxql).totalSize() + 1);
+
+        session.move(rootFolder.getRef(), destination.getRef(), null);
+        session.save();
+
+        coreFeature.waitForAsyncCompletion();
+        nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", destination.getId());
+        assertEquals(nbDocs, session.query(nxql).totalSize());
     }
 
     protected int numberOfReadableDocuments(String username) {

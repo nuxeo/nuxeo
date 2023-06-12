@@ -883,12 +883,7 @@ public class DBSSession extends BaseSession {
         sourceState.put(KEY_NAME, name);
         sourceState.put(KEY_PARENT_ID, parentId);
 
-        // update ancestors on all sub-children
-        Object[] oldAncestorIds = (Object[]) sourceState.get(KEY_ANCESTOR_IDS);
-        int ndel = oldAncestorIds == null ? 0 : oldAncestorIds.length;
-        transaction.updateAncestors(sourceId, ndel, ancestorIds);
-
-        // update read acls
+        // materialize ancestors and read ACL, async if needed.
         transaction.updateTreeReadAcls(sourceId);
 
         return source;
