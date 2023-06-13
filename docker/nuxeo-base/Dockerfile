@@ -4,7 +4,7 @@
 #
 # It uses a multi-stage build to download RPMs from our YUM registy.
 
-ARG ROCKY_LINUX_VERSION=9.1
+ARG ROCKY_LINUX_VERSION=9.2
 # ------------------------------------------------------------------------
 # RPM download stage
 FROM rockylinux:$ROCKY_LINUX_VERSION as rpm-download
@@ -25,7 +25,7 @@ ARG BUILD_TAG
 ARG SCM_REF
 ARG VERSION
 
-ARG ROCKY_LINUX_VERSION=9.1
+ARG ROCKY_LINUX_VERSION=9.2
 ARG LIBREOFFICE_VERSION=7.4.2
 ARG GHOSTSCRIPT_MAJOR_VERSION=9
 ARG GHOSTSCRIPT_MINOR_VERSION=25
