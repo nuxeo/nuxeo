@@ -111,6 +111,8 @@ public interface DBSRepository extends Repository, LockManager {
      *
      * @since 2023.0
      */
-    void updateCapabilities();
+    default void updateCapabilities() {
+        throw new UnsupportedOperationException();
+    }
 
 }
