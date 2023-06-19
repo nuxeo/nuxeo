@@ -20,8 +20,6 @@
 package org.nuxeo.log4j;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -115,26 +113,17 @@ public class TestMaskSensitiveDataRewritePolicy {
     }
 
     @Test
-    public void testIsValidCardWithAmericanExpress() {
-        assertTrue(policy.isValidCreditCard("371449635398431"));
-        assertFalse(policy.isValidCreditCard("371449635398432"));
-    }
+    public void testMaskSensitiveAuthUrl() {
+        String testStr = "Should replace this http://username:password@nuxeo.com";
+        assertEquals("Should replace this http://***:***@nuxeo.com", policy.maskSensitive(testStr));
 
-    @Test
-    public void testIsValidCardWithMaestro() {
-        assertTrue(policy.isValidCreditCard("4246188764124524"));
-        assertFalse(policy.isValidCreditCard("4246188764124525"));
-    }
+        testStr = "Should replace this mongodb://username:passw0rd@mongodb0.example.com:27017/?authSource=admin";
+        assertEquals("Should replace this mongodb://***:***@mongodb0.example.com:27017/?authSource=admin",
+                policy.maskSensitive(testStr));
 
-    @Test
-    public void testIsValidCardWithUnionPay() {
-        assertTrue(policy.isValidCreditCard("8171999900000000021"));
-        assertFalse(policy.isValidCreditCard("8171999900000000022"));
-    }
-
-    @Test
-    public void testIsValidCardWithVisa() {
-        assertTrue(policy.isValidCreditCard("4246188764124524"));
-        assertFalse(policy.isValidCreditCard("4246188764124525"));
+        // Here password masking also matches
+        testStr = "Should replace this mongodb://username:password@mongodb0.example.com:27017/?authSource=admin";
+        assertEquals("Should replace this mongodb://***:***@mongodb0.example.com:27017/?authSource=***",
+                policy.maskSensitive(testStr));
     }
 }
