@@ -31,6 +31,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
@@ -145,7 +146,17 @@ public class ESRestClient implements ESClient {
 
     @Override
     public void refresh(String indexName) {
-        performRequestWithTracing(new Request("POST", "/" + indexName + "/_refresh"));
+        try {
+            performRequestWithTracing(new Request("POST", "/" + indexName + "/_refresh"));
+        } catch (NuxeoException e) {
+            Throwable cause = ExceptionUtils.getRootCause(e);
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                // We don't want to throw failure on refresh timeout because previous indexing commands are processed
+                log.warn("Ignoring refresh timeouts: {}", e::getMessage);
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
