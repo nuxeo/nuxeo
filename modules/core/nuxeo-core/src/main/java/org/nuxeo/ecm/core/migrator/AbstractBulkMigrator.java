@@ -54,6 +54,7 @@ import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
 import org.nuxeo.runtime.migration.MigrationService.Migrator;
 import org.nuxeo.runtime.migration.MigrationServiceImpl;
+import org.nuxeo.runtime.migration.MigrationServiceImpl.InvalidatorMigrator;
 import org.nuxeo.runtime.pubsub.ClusterActionService;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -230,6 +231,9 @@ public abstract class AbstractBulkMigrator implements Migrator {
                 log.debug("Command id has changed, retrieve the migrator for migration: {}", migrationId);
                 var serviceMigrator = ((MigrationServiceImpl) Framework.getService(MigrationService.class)).getMigrator(
                         migrationId);
+                if (serviceMigrator instanceof InvalidatorMigrator) {
+                    serviceMigrator = ((InvalidatorMigrator) serviceMigrator).getMigrator();
+                }
                 if (!(serviceMigrator instanceof AbstractBulkMigrator)) {
                     throw new IllegalArgumentException(
                             "The migrator is not a Bulk Migrator, migration: " + migrationId);

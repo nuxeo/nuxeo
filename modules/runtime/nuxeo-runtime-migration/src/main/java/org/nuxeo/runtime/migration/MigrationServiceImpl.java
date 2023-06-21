@@ -170,6 +170,13 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             this.invalidator = invalidator;
         }
 
+        /**
+         * @since 2023.0
+         */
+        public Migrator getMigrator() {
+            return migrator;
+        }
+
         @Override
         public String probeState() {
             return migrator.probeState();
