@@ -59,6 +59,20 @@ public interface StreamService {
     void stopProcessors();
 
     /**
+     * Starts a registered Processor. Returns true if the processor has been started.
+     *
+     * @since 2021.40
+     */
+    boolean startProcessor(String processorName);
+
+    /**
+     * Stop a running processor. Returns true if the processor has been stopped.
+     *
+     * @since 2021.40
+     */
+    boolean stopProcessor(String processorName);
+
+    /**
      * Stop computation thread pool immediately.
      *
      * @since 2021.25

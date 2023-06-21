@@ -20,15 +20,12 @@ package org.nuxeo.runtime.pubsub;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
@@ -84,19 +81,10 @@ public class ClusterActionServiceImpl extends DefaultComponent implements Cluste
             clusterActionPubSub.initialize(ClusterActionPubSub.CLUSTER_ACTION_PUB_SUB_TOPIC, nodeId);
         }
         // basic cluster action registration
-        registerAction(STREAM_START_PROCESSOR_ACTION, message -> {
-            var streamManager = Framework.getService(StreamService.class).getStreamManager();
-            var processor = Objects.requireNonNullElseGet(streamManager.getProcessor(message.param),
-                    () -> streamManager.createStreamProcessor((message.param)));
-            processor.start();
-        });
-        registerAction(STREAM_STOP_PROCESSOR_ACTION, message -> {
-            var streamManager = Framework.getService(StreamService.class).getStreamManager();
-            var processor = streamManager.getProcessor(message.param);
-            if (processor != null) {
-                processor.stop(Duration.ofSeconds(1));
-            }
-        });
+        registerAction(STREAM_START_PROCESSOR_ACTION,
+                message -> Framework.getService(StreamService.class).startProcessor(message.param));
+        registerAction(STREAM_STOP_PROCESSOR_ACTION,
+                message -> Framework.getService(StreamService.class).stopProcessor(message.param));
         registerAction(STREAM_START_CONSUMER_ACTION,
                 message -> Framework.getService(StreamService.class).restartComputation(Name.ofUrn(message.param)));
         registerAction(STREAM_STOP_CONSUMER_ACTION,
