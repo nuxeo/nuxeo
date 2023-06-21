@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.stream.tests;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -67,6 +68,9 @@ public class TestStreamServiceDisabledProcessing {
                 fail("A computation thread has been found: " + threads);
             }
         }
+        // stream processing is disabled we cannot start a processor
+        assertFalse(service.startProcessor("registerProcessor"));
+        assertFalse(service.stopProcessor("registerProcessor"));
     }
 
 }

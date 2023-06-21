@@ -229,6 +229,28 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     @Override
+    public boolean startProcessor(String processorName) {
+        if (isProcessingDisabled()) {
+            return false;
+        }
+        StreamProcessor processor = streamManager.getProcessor(processorName);
+        if (processor == null) {
+            processor = streamManager.createStreamProcessor(processorName);
+        }
+        processor.start();
+        return true;
+    }
+
+    @Override
+    public boolean stopProcessor(String processorName) {
+        StreamProcessor processor = streamManager.getProcessor(processorName);
+        if (processor == null) {
+            return false;
+        }
+        return processor.stop(Duration.ofSeconds(1));
+    }
+
+    @Override
     public boolean stopComputation(Name computation) {
         log.debug("Stop computation: {}", computation);
         return streamManager.getProcessorNames()

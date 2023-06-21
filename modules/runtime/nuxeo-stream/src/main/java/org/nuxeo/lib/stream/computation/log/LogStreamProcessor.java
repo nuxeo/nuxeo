@@ -103,6 +103,10 @@ public class LogStreamProcessor implements StreamProcessor {
 
     @Override
     public void start() {
+        if (pools != null) {
+            log.debug("Already running ...");
+            return;
+        }
         log.debug("Starting ...");
         this.pools = initPools();
         Objects.requireNonNull(pools);
@@ -122,6 +126,9 @@ public class LogStreamProcessor implements StreamProcessor {
 
     @Override
     public boolean isTerminated() {
+        if (pools == null) {
+            return true;
+        }
         return pools.stream().allMatch(ComputationPool::isTerminated);
     }
 
@@ -247,6 +254,7 @@ public class LogStreamProcessor implements StreamProcessor {
         }
         long failures = pools.parallelStream().filter(comp -> !comp.stop(timeout)).count();
         log.debug("Stopped, {} failures", failures);
+        pools = null;
         return failures == 0;
     }
 
@@ -269,6 +277,7 @@ public class LogStreamProcessor implements StreamProcessor {
             return;
         }
         pools.parallelStream().forEach(ComputationPool::shutdown);
+        pools = null;
         log.debug("Shutdown done");
     }
 

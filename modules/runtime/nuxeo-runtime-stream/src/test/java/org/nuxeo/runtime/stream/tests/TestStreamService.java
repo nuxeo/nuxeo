@@ -192,6 +192,10 @@ public class TestStreamService {
         processor.waitForAssignments(Duration.ofSeconds(10));
         processor.drainAndStop(Duration.ofSeconds(5));
         assertEquals("key", tailer.read(Duration.ofSeconds(1)).message().getKey());
+
+        // We can also start and stop the processor from the service
+        assertTrue(service.startProcessor("registerProcessor"));
+        assertTrue(service.stopProcessor("registerProcessor"));
     }
 
     @Test
