@@ -111,6 +111,15 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         loadDiscovery();
     }
 
+    @Override
+    public void stop(ComponentContext context) {
+        discoveryURL = null;
+        proofKey = null;
+        oldProofKey = null;
+
+        unregisterInvalidator();
+    }
+
     protected boolean hasDiscoveryURL() {
         return StringUtils.isNotBlank(discoveryURL);
     }
@@ -126,6 +135,13 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         } else {
             log.info("Not registering a WOPI discovery invalidator because clustering is not enabled");
         }
+    }
+
+    protected void unregisterInvalidator() {
+        if (invalidator != null) {
+            invalidator.close();
+        }
+        invalidator = null;
     }
 
     protected void loadDiscovery() {
