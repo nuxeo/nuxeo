@@ -19,6 +19,9 @@
 
 package org.nuxeo.wopi;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -68,6 +71,13 @@ public interface WOPIService {
      */
     default boolean checkDownloadBlob(DocumentModel doc, String xpath, Blob blob) {
         return false;
+    }
+
+    /**
+     * @since 2021.40
+     */
+    default Map<String, Serializable> updateCheckFileInfoProperties(Map<String, Serializable> checkFileInfoProperties) {
+        return checkFileInfoProperties;
     }
 
 }

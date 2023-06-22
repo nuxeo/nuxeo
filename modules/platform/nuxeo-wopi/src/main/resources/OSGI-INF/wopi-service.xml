@@ -7,4 +7,8 @@
     <provide interface="org.nuxeo.wopi.WOPIService" />
   </service>
 
+  <extension-point name="checkFileInfoUpdater">
+    <object class="org.nuxeo.wopi.CheckFileInfoUpdaterDescriptor" />
+  </extension-point>
+
 </component>

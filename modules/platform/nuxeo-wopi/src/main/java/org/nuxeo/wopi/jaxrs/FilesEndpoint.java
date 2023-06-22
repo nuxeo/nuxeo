@@ -697,7 +697,7 @@ public class FilesEndpoint extends DefaultObject {
         addUserPermissionsProperties(map);
         addFileURLProperties(map);
         addBreadcrumbProperties(map);
-        return map;
+        return Framework.getService(WOPIService.class).updateCheckFileInfoProperties(map);
     }
 
     protected void addRequiredProperties(Map<String, Serializable> map) {
