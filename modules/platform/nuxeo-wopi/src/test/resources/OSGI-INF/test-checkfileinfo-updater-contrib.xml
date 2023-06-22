@@ -1,0 +1,7 @@
+<component name="org.nuxeo.wopi.checkfileinfo.updater.test">
+
+  <extension target="org.nuxeo.wopi.WOPIService" point="checkFileInfoUpdater">
+    <checkFileInfoUpdater class="org.nuxeo.wopi.DummyCheckFileInfoUpdater" />
+  </extension>
+
+</component>

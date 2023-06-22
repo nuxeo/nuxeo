@@ -19,6 +19,7 @@
 
 package org.nuxeo.wopi;
 
+import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 import static org.nuxeo.wopi.Constants.WOPI_DISCOVERY_KEY;
 import static org.nuxeo.wopi.Constants.WOPI_DISCOVERY_REFRESH_EVENT;
 import static org.nuxeo.wopi.Constants.WOPI_DISCOVERY_URL_PROPERTY;
@@ -71,6 +72,9 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     private static final Logger log = LogManager.getLogger(WOPIServiceImpl.class);
 
+    // @since 2021.40
+    public static final String XP_CHECK_FILE_INFO_UPDATER = "checkFileInfoUpdater";
+
     public static final String PLACEHOLDER_IS_LICENSED_USER = "IsLicensedUser";
 
     public static final String PLACEHOLDER_IS_LICENSED_USER_VALUE = "1";
@@ -98,8 +102,15 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     protected WOPIDiscoveryInvalidator invalidator;
 
+    protected CheckFileInfoUpdater checkFileInfoUpdater;
+
     @Override
     public void start(ComponentContext context) {
+        CheckFileInfoUpdaterDescriptor desc = getDescriptor(XP_CHECK_FILE_INFO_UPDATER, UNIQUE_DESCRIPTOR_ID);
+        if (desc != null) {
+            checkFileInfoUpdater = desc.newInstance();
+        }
+
         discoveryURL = Framework.getProperty(WOPI_DISCOVERY_URL_PROPERTY);
         if (!hasDiscoveryURL()) {
             log.warn("No WOPI discovery URL configured, WOPI disabled. Please configure the '{}' property.",
@@ -113,6 +124,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     @Override
     public void stop(ComponentContext context) {
+        checkFileInfoUpdater = null;
         discoveryURL = null;
         proofKey = null;
         oldProofKey = null;
@@ -140,8 +152,8 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     protected void unregisterInvalidator() {
         if (invalidator != null) {
             invalidator.close();
+            invalidator = null;
         }
-        invalidator = null;
     }
 
     protected void loadDiscovery() {
@@ -318,6 +330,14 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     @Override
     public boolean checkDownloadBlob(DocumentModel doc, String xpath, Blob blob) {
         return Framework.getService(DownloadService.class).checkPermission(doc, xpath, blob, DOWNLOAD_REASON, Map.of());
+    }
+
+    @Override
+    public Map<String, Serializable> updateCheckFileInfoProperties(Map<String, Serializable> checkFileInfoProperties) {
+        if (checkFileInfoUpdater != null) {
+            return checkFileInfoUpdater.update(checkFileInfoProperties);
+        }
+        return checkFileInfoProperties;
     }
 
     public static class WOPIDiscoveryInvalidation implements SerializableMessage {
