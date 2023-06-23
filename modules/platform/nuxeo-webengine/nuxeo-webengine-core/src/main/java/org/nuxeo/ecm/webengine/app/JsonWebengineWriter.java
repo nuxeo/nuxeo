@@ -41,6 +41,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 public class JsonWebengineWriter {
 
+    public static final String SHOW_EXCEPTION_MESSAGE = "org.nuxeo.rest.exception.message.enabled";
+
     static JsonFactoryManager jsonFactoryManager;
 
     private static JsonFactory getFactory() {
@@ -90,6 +92,9 @@ public class JsonWebengineWriter {
      */
     protected static String getExceptionMessage(String exceptionMessage, int statusCode) {
         if (statusCode < SC_INTERNAL_SERVER_ERROR || jsonFactoryManager.isStackDisplay() || Framework.isDevModeSet()) {
+            if (Framework.isBooleanPropertyFalse(SHOW_EXCEPTION_MESSAGE)) {
+                return "An error occured";
+            }
             return exceptionMessage;
         } else {
             return "Internal Server Error";

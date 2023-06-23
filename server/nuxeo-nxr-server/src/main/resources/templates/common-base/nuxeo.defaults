@@ -82,6 +82,8 @@ nuxeo.core.binarymanager=org.nuxeo.ecm.core.blob.LocalBlobProvider
 nuxeo.core.binarymanager_key=
 nuxeo.quartz.enable=false
 
+org.nuxeo.rest.exception.message.enabled=true
+
 ###
 # WorkManager
 # A common queue is used instead of the default queue for all Nuxeo Works
