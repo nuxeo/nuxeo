@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.webengine.app.JsonWebengineWriter.SHOW_EXCEPTION_MESSAGE;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.function.ThrowableRunnable;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
@@ -108,6 +108,22 @@ public class ExceptionRestTest extends BaseTest {
             assertEquals(404, node.get("status").numberValue());
             assertEquals("com.sun.jersey.api.NotFoundException: null for uri: " + getRestApiUrl() + "foo/notfound",
                     node.get("message").textValue());
+
+            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+            assertEquals(0, caughtEvents.size());
+        }
+    }
+
+    // NXP-31672
+    @Test
+    @WithFrameworkProperty(name = SHOW_EXCEPTION_MESSAGE, value = "false")
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = WebEngineExceptionMapper.class)
+    public void testNotFoundEndpointHideExceptionMessage() throws IOException {
+        try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/notfound")) {
+            assertEquals(404, r.getStatus());
+            JsonNode node = mapper.readTree(r.getEntityInputStream());
+            assertEquals(404, node.get("status").numberValue());
+            assertEquals("An error occured", node.get("message").textValue());
 
             List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
             assertEquals(0, caughtEvents.size());
