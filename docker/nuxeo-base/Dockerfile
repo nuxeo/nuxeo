@@ -61,9 +61,12 @@ RUN yum -y update \
   && yum -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
   && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/soffice \
   && rm -rf /tmp/LibreOffice_${LIBREOFFICE_VERSION}* \
+  # latest ImageMagick6 update for CentOS 7 is provided by Remi's RPM repository
+  && yum -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+  && yum -y --enablerepo=remi install ImageMagick6 \
+  # install other tools
   && yum -y --setopt=skip_missing_names_on_install=False install \
     ghostscript \
-    ImageMagick-6.9.10.68-6.el7_9 \
     less \
     libwpd-tools \
     # required by exiftool to extract binary metadata from open office document
