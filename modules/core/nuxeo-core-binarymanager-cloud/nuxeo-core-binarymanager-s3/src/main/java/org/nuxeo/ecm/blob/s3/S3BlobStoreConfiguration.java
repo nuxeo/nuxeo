@@ -25,7 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.common.concurrent.ThreadFactories.newThreadFactory;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.RECORD;
-import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_COMPLIANCE_MODE_ENABLED;
+import static org.nuxeo.ecm.core.model.BaseSession.isRetentionStricMode;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -353,7 +353,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
                        .map(ObjectLockRule::getDefaultRetention)
                        .map(DefaultRetention::getMode)
                        .map(ObjectLockRetentionMode::valueOf)
-                       .orElse(Framework.isBooleanPropertyTrue(PROP_RETENTION_COMPLIANCE_MODE_ENABLED) ? COMPLIANCE
+                       .orElse(isRetentionStricMode() ? COMPLIANCE
                                : GOVERNANCE);
     }
 
