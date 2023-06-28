@@ -29,7 +29,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.RECORDS_CLEANER_
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
-import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_COMPLIANCE_MODE_ENABLED;
+import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_STRICT_MODE_ENABLED;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -153,7 +153,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotRemoveFolderWithRetainedChildrenInCompliance() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -169,7 +169,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotRemoveRetainedDocInCompliance() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -179,7 +179,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotRemoveRetainedDocInComplianceAsRecordCleaner() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -200,7 +200,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotResetAttachementsInCompliance() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -210,7 +210,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotResetAttachementsInComplianceAsRecordCleaner() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -231,7 +231,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotResetMainContentInCompliance() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -241,7 +241,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotResetMainContentInComplianceAsRecordCleaner() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -262,7 +262,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotResetOneAttachementInCompliance() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -272,7 +272,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iCannotResetOneAttachementInComplianceAsRecordCleaner() throws LoginException {
         try (NuxeoLoginContext ignored = Framework.loginUser(JOHN)) {
             CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName());
@@ -352,7 +352,7 @@ public class TestRetentionRemove {
     }
 
     @Test
-    @WithFrameworkProperty(name = PROP_RETENTION_COMPLIANCE_MODE_ENABLED, value = "true")
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
     public void iDoNotHaveRemovePermissionInCompliance() throws LoginException {
         assertFalse(session.hasPermission(documentModelUnderLegalHold.getRef(), REMOVE));
         assertFalse(session.hasPermission(documentModelUnderRetention.getRef(), REMOVE));

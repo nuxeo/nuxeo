@@ -18,15 +18,15 @@
  */
 package org.nuxeo.ecm.core.model;
 
+import static org.nuxeo.runtime.api.Framework.isBooleanPropertyFalse;
+import static org.nuxeo.runtime.api.Framework.isBooleanPropertyTrue;
+
 import java.util.HashMap;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -170,9 +170,20 @@ public abstract class BaseSession implements Session<QueryFilter> {
             return true;
         }
         Objects.requireNonNull(principal);
-        boolean governanceMode = !Framework.isBooleanPropertyTrue(PROP_RETENTION_COMPLIANCE_MODE_ENABLED);
+        boolean governanceMode = !isRetentionStricMode();
         boolean recordCleaner = principal.isMemberOf(SecurityConstants.RECORDS_CLEANER_GROUP);
         return governanceMode && recordCleaner;
+    }
+
+    public static boolean isRetentionStricMode() {
+        if (isBooleanPropertyFalse(PROP_RETENTION_STRICT_MODE_ENABLED)) {
+            return false;
+        } else if (isBooleanPropertyTrue(PROP_RETENTION_STRICT_MODE_ENABLED)) {
+            return true;
+        } else {
+            // backward compat
+            return isBooleanPropertyTrue(PROP_RETENTION_COMPLIANCE_MODE_ENABLED);
+        }
     }
 
     /**

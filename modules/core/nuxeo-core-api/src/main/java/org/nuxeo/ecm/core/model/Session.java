@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.lock.LockManager;
+import org.nuxeo.ecm.core.api.query.QueryFilter;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.query.QueryFilter;
 
 /**
  * Internal Session accessing the low-level storage.
@@ -297,8 +297,24 @@ public interface Session<T extends QueryFilter> {
      * Documentation</a> for further details.
      *
      * @since 11.5
+     * @deprecated since 2023.0, use {@link #PROP_RETENTION_STRICT_MODE_ENABLED} instead.
      */
+    @Deprecated
     String PROP_RETENTION_COMPLIANCE_MODE_ENABLED = "nuxeo.retention.compliance.enabled";
+
+    /**
+     * Property to enable retention strict mode. By default, retention does not run in strict mode.
+     * <p>
+     * In strict mode, nobody can delete documents under retention or legal hold.
+     * <p>
+     * Without strict mode users member of the {@link SecurityConstants#RECORDS_CLEANER_GROUP} group can delete records.
+     * <p>
+     * See <a href="https://doc.nuxeo.com/nxdoc/nuxeo-retention-installation/#nuxeo-server.">Nuxeo Retention
+     * Documentation</a> for further details.
+     *
+     * @since 2023.0
+     */
+    String PROP_RETENTION_STRICT_MODE_ENABLED = "nuxeo.retention.strictmode.enabled";
 
     /*
      * ----- Transaction management -----
