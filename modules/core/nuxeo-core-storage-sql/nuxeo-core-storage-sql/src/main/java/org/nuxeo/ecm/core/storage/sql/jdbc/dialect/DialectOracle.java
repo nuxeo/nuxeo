@@ -26,6 +26,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Array;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -415,7 +416,9 @@ public class DialectOracle extends Dialect {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
-            setToPreparedStatementString(ps, index, value, column);
+            Clob clob = ps.getConnection().createClob();
+            clob.setString(1, (String) value);
+            ps.setClob(index, clob);
             return;
         case Types.BIT:
             ps.setBoolean(index, ((Boolean) value).booleanValue());
