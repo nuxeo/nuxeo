@@ -8,4 +8,11 @@
     </queue>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+    <store name="RenditionCache">
+      <firstLevelTTL>${nuxeo.transientstore.rendition.cache.ttl:=240}</firstLevelTTL>
+      <secondLevelTTL>${nuxeo.transientstore.rendition.cache.ttl2:=10}</secondLevelTTL>
+    </store>
+  </extension>
+
 </component>

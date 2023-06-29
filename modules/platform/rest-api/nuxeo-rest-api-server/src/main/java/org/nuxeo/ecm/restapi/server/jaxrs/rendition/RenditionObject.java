@@ -22,7 +22,9 @@ package org.nuxeo.ecm.restapi.server.jaxrs.rendition;
 
 import static org.nuxeo.ecm.core.io.download.DownloadService.EXTENDED_INFO_RENDITION;
 
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -31,10 +33,13 @@ import javax.ws.rs.core.Request;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.blobholder.DownloadContextBlobHolder;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
+import org.nuxeo.ecm.platform.rendition.work.RenditionWork;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -44,6 +49,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "rendition")
 public class RenditionObject extends DefaultObject {
+
+    public static final String LEGACY_RENDERING_PROP = "nuxeo.rendition.legacy.enabled";
 
     @Context
     protected HttpServletRequest servletRequest;
@@ -67,7 +74,7 @@ public class RenditionObject extends DefaultObject {
         return super.getAdapter(adapter);
     }
 
-    protected Blob getRenditionBlob() {
+    protected Blob getLegacyRenditionBlob() {
         RenditionService renditionService = Framework.getService(RenditionService.class);
         Rendition rendition = renditionService.getRendition(doc, renditionName);
         if (rendition == null) {
@@ -76,9 +83,25 @@ public class RenditionObject extends DefaultObject {
         return rendition.getBlob();
     }
 
+    protected Blob getRenditionBlob() {
+        try {
+            RenditionWork work = new RenditionWork(doc, renditionName);
+            return work.getRendition(Duration.ofMinutes(1));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalParameterException(e.getMessage());
+        } catch (TimeoutException | DocumentNotFoundException e) {
+            throw new WebResourceNotFoundException(e.getMessage());
+        }
+    }
+
     @GET
     public Object doGet(@Context Request request) {
-        Blob blob = getRenditionBlob();
+        Blob blob;
+        if (Framework.isBooleanPropertyTrue(LEGACY_RENDERING_PROP)) {
+            blob = getLegacyRenditionBlob();
+        } else {
+            blob = getRenditionBlob();
+        }
         if (blob == null) {
             throw new WebResourceNotFoundException(
                     String.format("No Blob was found for rendition '%s'", renditionName));
