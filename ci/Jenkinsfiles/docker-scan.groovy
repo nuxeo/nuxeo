@@ -54,7 +54,7 @@ pipeline {
                 imageName: "${IMAGE_NAME}",
               ],
               sha: "${GIT_COMMIT}",
-              exitStatus: true
+              exitStatus: false
             )
           }
         }
