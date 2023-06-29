@@ -222,6 +222,12 @@ kafka.keystore.type=JKS
 kafka.keystore.path=
 kafka.keystore.password=
 
+# Legacy rendition are performed on front nodes
+nuxeo.rendition.legacy.enabled=true
+# new rendition cache in minutes (not used by legacy implementation)
+nuxeo.transientstore.rendition.cache.ttl=240
+nuxeo.transientstore.rendition.cache.ttl2=10
+
 # deprecated we don't use anymore zookeeper
 kafka.zkServers=localhost:2181
 # Confluent Avro Schema Registry
