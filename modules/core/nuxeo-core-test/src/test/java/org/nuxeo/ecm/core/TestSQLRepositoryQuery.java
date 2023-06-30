@@ -3885,6 +3885,63 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testIsFlexibleRecord() {
+        String queryAllRecords = "SELECT * FROM MyDocType WHERE ecm:isRecord = 1";
+        String queryEnforcedRecords = "SELECT * FROM MyDocType WHERE ecm:isRecord = 1 AND ecm:isFlexibleRecord = 0";
+        String queryFlexibleRecords = "SELECT * FROM MyDocType WHERE ecm:isRecord = 1 AND ecm:isFlexibleRecord = 1";
+        String queryNotRecord = "SELECT * FROM MyDocType WHERE ecm:isRecord = 0";
+        DocumentModelList dml;
+
+        // no record present initially
+        dml = session.query(queryAllRecords);
+        assertEquals(0, dml.size());
+        dml = session.query(queryEnforcedRecords);
+        assertEquals(0, dml.size());
+        dml = session.query(queryNotRecord);
+        assertEquals(0, dml.size());
+        // no flexible record present initially
+        dml = session.query(queryFlexibleRecords);
+        assertEquals(0, dml.size());
+
+        // create 2 documents
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "MyDocType");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "MyDocType");
+        doc2 = session.createDocument(doc2);
+        session.save();
+
+        // still no record
+        dml = session.query(queryAllRecords);
+        assertEquals(0, dml.size());
+        dml = session.query(queryEnforcedRecords);
+        assertEquals(0, dml.size());
+        dml = session.query(queryNotRecord);
+        assertEquals(2, dml.size()); // 1 doc that isn't a record
+        // still no flexible record
+        dml = session.query(queryFlexibleRecords);
+        assertEquals(0, dml.size());
+
+        // make an enforced record
+        session.makeRecord(doc1.getRef());
+        // make an flexible record
+        session.makeFlexibleRecord(doc2.getRef());
+        session.save();
+
+        // check that we can find 1 enforced + 1 flexible record
+        dml = session.query(queryAllRecords);
+        assertEquals(2, dml.size());
+        dml = session.query(queryNotRecord);
+        assertEquals(0, dml.size());
+        dml = session.query(queryFlexibleRecords);
+        assertEquals(1, dml.size());
+        assertEquals(doc2.getId(), dml.get(0).getId());
+        // check that we can find the enforced record
+        dml = session.query(queryEnforcedRecords);
+        assertEquals(1, dml.size());
+        assertEquals(doc1.getId(), dml.get(0).getId());
+    }
+
+    @Test
     public void testRetainUntil() {
         Calendar fiveSeconds = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         fiveSeconds.add(Calendar.SECOND, 5);

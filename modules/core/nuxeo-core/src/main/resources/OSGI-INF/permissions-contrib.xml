@@ -93,6 +93,8 @@
     <permission name="MakeRecord" />
     <permission name="SetRetention" />
     <permission name="ManageLegalHold" />
+    <!-- Only for flexible records -->
+    <permission name="UnsetRetention" />
 
     <permission name="WriteColdStorage" />
 

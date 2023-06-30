@@ -1124,7 +1124,7 @@ public interface CoreSession {
     List<String> getAvailableSecurityPermissions();
 
     /**
-     * Turns the document into a record.
+     * Turns the document into an enforced record.
      * <p>
      * A record is a document with specific capabilities related to mandatory retention until a given date, and legal
      * holds. In addition, its main blob receives special treatment from the document blob manager to make sure it's
@@ -1141,6 +1141,29 @@ public interface CoreSession {
     void makeRecord(DocumentRef docRef);
 
     /**
+     * Turns the document into a flexible record.
+     * <p>
+     * A record is a document with specific capabilities related to mandatory retention until a given date. Unlike the
+     * enforced record, the flexible record blob has no special treatment.
+     * <p>
+     * Setting a legal hold ({@link #setLegalHold(DocumentRef, boolean, String)} on a flexible record will turn it into
+     * an enforced record.
+     * <p>
+     * If the document is already a flexible record, this method has no effect. It is not allowed to turn an enforced
+     * record into a flexible record and an IllegalStateException will be raised.
+     * <p>
+     * The permission {@value org.nuxeo.ecm.core.api.security.SecurityConstants#MAKE_RECORD} is required.
+     *
+     * @param docRef the document
+     * @see #isFlexibleRecord
+     * @throws IllegalStateException if the document is already an enforced record
+     * @since 2023.1
+     */
+    default void makeFlexibleRecord(DocumentRef docRef) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Checks if the document is a record.
      *
      * @param docRef the document
@@ -1149,6 +1172,30 @@ public interface CoreSession {
      * @since 11.1
      */
     boolean isRecord(DocumentRef docRef);
+
+    /**
+     * Checks if the document is an enforced record.
+     *
+     * @param docRef the document
+     * @return {@code true} if the document is an enforced record, {@code false} otherwise
+     * @see #makeRecord
+     * @since 2023.1
+     */
+    default boolean isEnforcedRecord(DocumentRef docRef) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Checks if the document is a flexible record.
+     *
+     * @param docRef the document
+     * @return {@code true} if the document is a flexible record, {@code false} otherwise
+     * @see #makeFlexibleRecord
+     * @since 2023.1
+     */
+    default boolean isFlexibleRecord(DocumentRef docRef) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * The special date that corresponds to a retention date in the indeterminate future.
@@ -1194,6 +1241,19 @@ public interface CoreSession {
     void setRetainUntil(DocumentRef docRef, Calendar retainUntil, String comment) throws PropertyException;
 
     /**
+     * Removes the retainUntil date, this operation is allowed only for a flexible record.
+     *
+     * @param docRef the document (a flexible record)
+     * @throws PropertyException if the document is not a flexible record
+     * @throws DocumentSecurityException if the current user does not have the {@link SecurityConstants#UNSET_RETENTION}
+     *             permission
+     * @since 2023.1
+     */
+    default void unsetRetainUntil(DocumentRef docRef) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Gets the retention date for the document.
      *
      * @param docRef the document
@@ -1207,6 +1267,9 @@ public interface CoreSession {
 
     /**
      * Sets or removes the legal hold on the document (a record).
+     * <p>
+     * Setting a legal hold on a flexible record will turn it into an enforced record. It will remain enforced even
+     * after unsetting the legal hold.
      * <p>
      * The permission {@value org.nuxeo.ecm.core.api.security.SecurityConstants#MANAGE_LEGAL_HOLD} is required.
      *

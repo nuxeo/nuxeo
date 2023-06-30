@@ -1337,6 +1337,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_LOCK_OWNER.equals(name) || //
                     NXQL.ECM_LOCK_CREATED.equals(name) || //
                     NXQL.ECM_ISRECORD.equals(name) || //
+                    NXQL.ECM_ISFLEXIBLERECORD.equals(name) || //
                     NXQL.ECM_RETAINUNTIL.equals(name) || //
                     NXQL.ECM_HASLEGALHOLD.equals(name) || //
                     NXQL.ECM_PROXY_TARGETID.equals(name) || //
@@ -1611,6 +1612,9 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (NXQL.ECM_ISRECORD.equals(name)) {
                 table = hierTable;
                 fragmentKey = Model.MAIN_IS_RECORD_KEY;
+            } else if (NXQL.ECM_ISFLEXIBLERECORD.equals(name)) {
+                table = hierTable;
+                fragmentKey = Model.MAIN_IS_FLEXIBLE_RECORD_KEY;
             } else if (NXQL.ECM_RETAINUNTIL.equals(name)) {
                 table = hierTable;
                 fragmentKey = Model.MAIN_RETAIN_UNTIL_KEY;

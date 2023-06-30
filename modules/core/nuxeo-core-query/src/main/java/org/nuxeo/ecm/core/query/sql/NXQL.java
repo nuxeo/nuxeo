@@ -222,6 +222,9 @@ public class NXQL {
     /** @since 11.1 */
     public static final String ECM_ISRECORD = "ecm:isRecord";
 
+    /** @since 2023.1 */
+    public static final String ECM_ISFLEXIBLERECORD = "ecm:isFlexibleRecord";
+
     /** @since 11.1 */
     public static final String ECM_RETAINUNTIL = "ecm:retainUntil";
 

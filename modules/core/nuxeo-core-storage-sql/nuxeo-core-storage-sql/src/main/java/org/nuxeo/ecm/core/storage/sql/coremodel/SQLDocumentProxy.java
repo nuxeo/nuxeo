@@ -198,7 +198,8 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext, boolean create) throws PropertyException {
+    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext, boolean create)
+            throws PropertyException {
         if (isSchemaForProxy(dp.getName())) {
             return proxy.writeDocumentPart(dp, writeContext, create);
         } else {
@@ -307,8 +308,18 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
+    public void makeFlexibleRecord() {
+        target.makeFlexibleRecord();
+    }
+
+    @Override
     public boolean isRecord() {
         return target.isRecord();
+    }
+
+    @Override
+    public boolean isFlexibleRecord() {
+        return target.isFlexibleRecord();
     }
 
     @Override

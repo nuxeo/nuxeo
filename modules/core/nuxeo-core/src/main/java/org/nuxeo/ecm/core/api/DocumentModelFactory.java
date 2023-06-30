@@ -278,6 +278,7 @@ public class DocumentModelFactory {
             refresh.checkinComment = doc.getCheckinComment();
             refresh.checkinDate = doc.getVersionCreationDate();
             refresh.isRecord = doc.isRecord();
+            refresh.isFlexibleRecord = doc.isFlexibleRecord();
             refresh.retainedProperties = List.of(doc.getRetainedProperties());
             refresh.retainUntil = doc.getRetainUntil();
             refresh.hasLegalHold = doc.hasLegalHold();

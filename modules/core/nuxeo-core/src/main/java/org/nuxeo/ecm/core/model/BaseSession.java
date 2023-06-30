@@ -175,6 +175,16 @@ public abstract class BaseSession implements Session<QueryFilter> {
         return governanceMode && recordCleaner;
     }
 
+    /**
+     * Is the retention in strict mode? False by default.
+     * <p>
+     * In strict mode, nobody can delete documents under retention or legal hold.
+     * <p>
+     * Otherwise users member of the {@link SecurityConstants#RECORDS_CLEANER_GROUP} group can delete records.
+     *
+     * @return true if the retention is in strict mode, false otherwise
+     * @since 2023.1
+     */
     public static boolean isRetentionStricMode() {
         if (isBooleanPropertyFalse(PROP_RETENTION_STRICT_MODE_ENABLED)) {
             return false;

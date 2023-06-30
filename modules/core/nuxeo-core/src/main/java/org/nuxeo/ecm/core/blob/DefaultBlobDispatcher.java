@@ -128,6 +128,13 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
      */
     protected static final String IS_RECORD = "ecm:isRecord";
 
+    /**
+     * Pseudo-property for the flexible record state.
+     *
+     * @since 2023.1
+     */
+    protected static final String IS_FLEXIBLE_RECORD = "ecm:isFlexibleRecord";
+
     protected static final String BLOB_PREFIX = "blob:";
 
     protected static final String BLOB_NAME = "name";
@@ -195,8 +202,10 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             providerIds.add(providerId);
             if (clausesString.equals(NAME_RECORDS)) {
                 Clause recordClause = new Clause(IS_RECORD, Op.EQ, "true");
-                rules.add(new Rule(List.of(recordClause), providerId));
+                Clause notFlexibleRecordClause = new Clause(IS_FLEXIBLE_RECORD, Op.NEQ, "true");
+                rules.add(new Rule(List.of(recordClause, notFlexibleRecordClause), providerId));
                 rulesXPaths.add(recordClause.xpath);
+                rulesXPaths.add(notFlexibleRecordClause.xpath);
             } else if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
@@ -313,6 +322,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         }
         if (xpath.equals(IS_RECORD)) {
             return doc.isRecord() && (blobXPath != null && doc.isRetainable(blobXPath));
+        }
+        if (xpath.equals(IS_FLEXIBLE_RECORD)) {
+            return doc.isFlexibleRecord() && (blobXPath != null && doc.isRetainable(blobXPath));
         }
         if (xpath.startsWith(BLOB_PREFIX)) {
             switch (xpath.substring(BLOB_PREFIX.length())) {

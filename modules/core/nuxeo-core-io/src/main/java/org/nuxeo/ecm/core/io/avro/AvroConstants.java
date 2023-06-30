@@ -66,6 +66,9 @@ public class AvroConstants {
     /** @since 11.1 */
     public static final String IS_RECORD = "isRecord";
 
+    /** @since 2023.1 */
+    public static final String IS_FLEXIBLE_RECORD = "isFlexibleRecord";
+
     /** @since 11.1 */
     public static final String RETAIN_UNTIL = "retainUntil";
 

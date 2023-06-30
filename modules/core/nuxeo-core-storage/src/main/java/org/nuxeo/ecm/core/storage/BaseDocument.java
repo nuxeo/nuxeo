@@ -139,6 +139,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     /** @since 11.1 */
     public static final String IS_RECORD_PROP = "ecm:isRecord";
 
+    /** @since 2023.1 */
+    public static final String IS_FLEXIBLE_RECORD_PROP = "ecm:isFlexibleRecord";
+
     /** @since 11.1 */
     public static final String RETAIN_UNTIL_PROP = "ecm:retainUntil";
 
@@ -157,6 +160,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             LOCK_CREATED_PROP, //
             DC_ISSUED, //
             IS_RECORD_PROP, //
+            IS_FLEXIBLE_RECORD_PROP, //
             RETAIN_UNTIL_PROP, //
             RETAINED_PROPERTIES_PROP, //
             HAS_LEGAL_HOLD_PROP, //
@@ -1293,8 +1297,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             return true;
         }
         if (retainUntil == null) {
-            // setting back to null is allowed if retention has already expired
-            return Calendar.getInstance().after(current);
+            // setting back to null is allowed for flexible record or if retention has already expired
+            return isFlexibleRecord() || Calendar.getInstance().after(current);
         }
         // can only extend retention
         return retainUntil.after(current);

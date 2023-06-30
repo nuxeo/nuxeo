@@ -289,9 +289,22 @@ public abstract class AbstractTestTrashService {
     }
 
     @Test
-    public void testCannotTrashDocumentUnderRetention() {
+    public void testCannotTrashDocumentUnderEnforcedRetention() {
+        testCannotTrashDocumentUnderRetention(false);
+    }
+
+    @Test
+    public void testCannotTrashDocumentUnderFlexibleRetention() {
+        testCannotTrashDocumentUnderRetention(true);
+    }
+
+    protected void testCannotTrashDocumentUnderRetention(boolean flexible) {
         createDocuments();
-        session.makeRecord(doc1.getRef());
+        if (flexible) {
+            session.makeFlexibleRecord(doc1.getRef());
+        } else {
+            session.makeRecord(doc1.getRef());
+        }
         Calendar retainUntil = Calendar.getInstance();
         retainUntil.add(Calendar.DAY_OF_MONTH, 5);
         session.setRetainUntil(doc1.getRef(), retainUntil, "any comment");

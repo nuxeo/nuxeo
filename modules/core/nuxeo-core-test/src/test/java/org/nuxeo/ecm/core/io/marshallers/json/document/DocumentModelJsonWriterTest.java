@@ -205,10 +205,30 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         JsonAssert json = jsonAssert(record);
         json.isObject();
         json.has("isRecord").isTrue();
+        json.has("isFlexibleRecord").isFalse();
         String expectedRetainUntil = DateUtils.formatISODateTime(retainUntil);
         json.has("retainUntil").isEquals(expectedRetainUntil);
         json.has("retainedProperties").isArray().length(1).contains("file:content");
         json.has("hasLegalHold").isTrue();
+        json.has("isUnderRetentionOrLegalHold").isTrue();
+    }
+
+    @Test
+    public void testFlexibleRetention() throws Exception {
+        DocumentModel record = session.createDocumentModel("/", "myRecord", "File");
+        record = session.createDocument(record);
+        session.makeFlexibleRecord(record.getRef());
+        Calendar retainUntil = Calendar.getInstance();
+        retainUntil.add(Calendar.HOUR, 1); // for one hour
+        session.setRetainUntil(record.getRef(), retainUntil, null);
+        record.refresh();
+        JsonAssert json = jsonAssert(record);
+        json.isObject();
+        json.has("isRecord").isTrue();
+        json.has("isFlexibleRecord").isTrue();
+        String expectedRetainUntil = DateUtils.formatISODateTime(retainUntil);
+        json.has("retainUntil").isEquals(expectedRetainUntil);
+        json.has("retainedProperties").isArray().length(1).contains("file:content");
         json.has("isUnderRetentionOrLegalHold").isTrue();
     }
 

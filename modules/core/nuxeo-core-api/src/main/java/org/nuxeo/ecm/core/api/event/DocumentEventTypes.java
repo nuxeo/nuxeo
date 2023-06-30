@@ -202,6 +202,13 @@ public final class DocumentEventTypes {
     public static final String BEFORE_SET_RETENTION = "beforeSetRetention";
 
     /**
+     * Event triggered when a retention is about to be unset on a document.
+     *
+     * @since 2023.1
+     */
+    public static final String BEFORE_UNSET_RETENTION = "beforeUnsetRetention";
+
+    /**
      * Event triggered when a retention is about to be extended on a document.
      * <p>
      * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link java.util.Calendar} object).
@@ -218,6 +225,13 @@ public final class DocumentEventTypes {
      * @since 11.1
      */
     public static final String AFTER_SET_RETENTION = "afterSetRetention";
+
+    /**
+     * Event triggered after a retention has been unset on a document.
+     *
+     * @since 2023.1
+     */
+    public static final String AFTER_UNSET_RETENTION = "afterUnsetRetention";
 
     /**
      * Event triggered after a retention has been extended on a document.
