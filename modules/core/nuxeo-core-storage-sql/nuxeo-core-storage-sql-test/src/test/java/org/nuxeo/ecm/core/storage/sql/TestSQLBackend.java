@@ -4000,4 +4000,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-h2-reserved-keywords-contrib.xml")
+    public void testH2TableNameCollisionAvoidance() {
+        assumeTrue("This only tests name collisions with reserved keywords against an H2 database.",
+                DatabaseHelper.DATABASE instanceof DatabaseH2);
+        // nothing to do, deployment is enough
+    }
+
 }
