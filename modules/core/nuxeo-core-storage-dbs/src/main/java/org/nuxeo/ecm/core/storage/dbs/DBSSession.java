@@ -48,6 +48,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_HAS_LEGAL_HOLD;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_CHECKED_IN;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_FLEXIBLE_RECORD;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
@@ -791,6 +792,7 @@ public class DBSSession extends BaseSession {
         if (TRUE.equals(copy.get(KEY_IS_RECORD))) {
             // unset record on the copy
             copy.put(KEY_IS_RECORD, null);
+            copy.put(KEY_IS_FLEXIBLE_RECORD, null);
             copy.put(KEY_RETAINED_PROPS, null);
             copy.put(KEY_RETAIN_UNTIL, null);
             copy.put(KEY_HAS_LEGAL_HOLD, null);
@@ -1956,6 +1958,8 @@ public class DBSSession extends BaseSession {
             return KEY_VERSION_SERIES_ID;
         case NXQL.ECM_ISRECORD:
             return KEY_IS_RECORD;
+        case NXQL.ECM_ISFLEXIBLERECORD:
+            return KEY_IS_FLEXIBLE_RECORD;
         case NXQL.ECM_RETAINUNTIL:
             return KEY_RETAIN_UNTIL;
         case NXQL.ECM_HASLEGALHOLD:
@@ -2061,6 +2065,8 @@ public class DBSSession extends BaseSession {
             return NXQL.ECM_VERSION_VERSIONABLEID;
         case KEY_IS_RECORD:
             return NXQL.ECM_ISRECORD;
+        case KEY_IS_FLEXIBLE_RECORD:
+            return NXQL.ECM_ISFLEXIBLERECORD;
         case KEY_RETAIN_UNTIL:
             return NXQL.ECM_RETAINUNTIL;
         case KEY_HAS_LEGAL_HOLD:
@@ -2103,6 +2109,7 @@ public class DBSSession extends BaseSession {
         case KEY_ACE_GRANT:
         case KEY_IS_TRASHED:
         case KEY_IS_RECORD:
+        case KEY_IS_FLEXIBLE_RECORD:
         case KEY_HAS_LEGAL_HOLD:
             return BooleanType.INSTANCE;
         case KEY_VERSION_CREATED:

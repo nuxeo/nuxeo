@@ -205,6 +205,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public boolean isRecord;
 
+    public boolean isFlexibleRecord;
+
     public Calendar retainUntil;
 
     public boolean hasLegalHold;
@@ -762,9 +764,28 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return isRecord;
     }
 
+    @Override
+    public boolean isEnforcedRecord() {
+        return isRecord() && !isFlexibleRecord();
+    }
+
+    @Override
+    public boolean isFlexibleRecord() {
+        if (!isStateLoaded && isAttached()) {
+            refresh(REFRESH_STATE, null);
+        }
+        return isFlexibleRecord;
+    }
+
     // for I/O
     public void makeRecord() {
         isRecord = true;
+    }
+
+    // for I/O
+    public void makeFlexibleRecord() {
+        makeRecord();
+        isFlexibleRecord = true;
     }
 
     @Override
@@ -1476,6 +1497,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             checkinDate = refresh.checkinDate;
             isTrashed = refresh.isTrashed;
             isRecord = refresh.isRecord;
+            isFlexibleRecord = refresh.isFlexibleRecord;
             retainUntil = refresh.retainUntil;
             retainedProperties = refresh.retainedProperties;
             hasLegalHold = refresh.hasLegalHold;

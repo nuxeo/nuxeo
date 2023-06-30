@@ -38,6 +38,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SET_RETENTION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSET_RETENTION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
@@ -2249,21 +2250,42 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void makeRecord(DocumentRef docRef) {
+        makeRecord(docRef, false);
+    }
+
+    @Override
+    public void makeFlexibleRecord(DocumentRef docRef) {
+        makeRecord(docRef, true);
+    }
+
+    protected void makeRecord(DocumentRef docRef, boolean flexible) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
         if (doc.isRecord()) {
-            // already a record, don't do anything
-            return;
+            if (doc.isFlexibleRecord() == flexible) {
+                // already such record, don't do anything
+                return;
+            } else if (!doc.isFlexibleRecord() && flexible) {
+                throw new IllegalStateException(String.format(
+                        "Document: %s is already an enforced record, cannot turn it into flexible record.", docRef));
+            }
+            // else we want to turn a flexible record into an enforced one
         }
         if (doc.isVersion()) {
             throw new PropertyException("Version cannot be made record: " + doc.getUUID());
         }
         checkPermission(doc, MAKE_RECORD);
         DocumentModel docModel = readModel(doc);
-        notifyEvent(DocumentEventTypes.BEFORE_MAKE_RECORD, docModel, null, null, null, true, false);
-        doc.makeRecord();
+        Map<String, Serializable> options = new HashMap<>();
+        options.put("flexibleRecord", flexible);
+        notifyEvent(DocumentEventTypes.BEFORE_MAKE_RECORD, docModel, options, null, null, true, false);
+        if (flexible) {
+            doc.makeFlexibleRecord();
+        } else {
+            doc.makeRecord();
+        }
         docModel = readModel(doc);
-        notifyEvent(DocumentEventTypes.AFTER_MAKE_RECORD, docModel, null, null, null, true, false);
+        notifyEvent(DocumentEventTypes.AFTER_MAKE_RECORD, docModel, options, null, null, true, false);
     }
 
     @Override
@@ -2271,6 +2293,20 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
         return doc.isRecord();
+    }
+
+    @Override
+    public boolean isEnforcedRecord(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.isEnforcedRecord();
+    }
+
+    @Override
+    public boolean isFlexibleRecord(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.isFlexibleRecord();
     }
 
     @Override
@@ -2311,6 +2347,24 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public void unsetRetainUntil(DocumentRef docRef) throws PropertyException {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        if (!doc.isRecord()) {
+            throw new PropertyException("Document is not a record");
+        }
+        if (!doc.isFlexibleRecord()) {
+            throw new PropertyException("Document is not a flexible record");
+        }
+        checkPermission(doc, UNSET_RETENTION);
+        DocumentModel docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.BEFORE_UNSET_RETENTION, docModel, null, null, null, true, false);
+        doc.setRetainUntil(null);
+        docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.AFTER_UNSET_RETENTION, docModel, null, null, null, true, false);
+    }
+
+    @Override
     public Calendar getRetainUntil(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
@@ -2322,6 +2376,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         if (!isRecord(docRef)) {
             throw new PropertyException("Document is not a record");
+        }
+        if (isFlexibleRecord(docRef)) {
+            // let's turn it into enforced
+            makeRecord(docRef);
         }
         if (hasLegalHold(docRef) == hold) {
             // unchanged, don't do anything

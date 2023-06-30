@@ -76,6 +76,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   "parentRef": "PARENT_DOCUMENT_UID",
  *   "isCheckedOut": true|false,
  *   "isRecord": true|false,
+ *   "isFlexibleRecord": true|false,
  *   "retainUntil": "RETAIN_UNTIL_DATE", &lt;-- or null
  *   "retainedProperties": [ "file:content", "files:files\/*\/file"],
  *   "hasLegalHold": true|false,
@@ -152,6 +153,7 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         Calendar retainUntil = doc.getRetainUntil();
         jg.writeStringField("retainUntil", retainUntil == null ? null : formatISODateTime(retainUntil));
         if (isRecord) {
+            jg.writeBooleanField("isFlexibleRecord", doc.isFlexibleRecord());
             jg.writeArrayFieldStart("retainedProperties");
             for (String prop : doc.getRetainedProperties()) {
                 jg.writeString(schemaManager.getXPathSchemaName(prop, Set.of(doc.getSchemas())) + ":" + prop);

@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.FulltextConfigurationFactory;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
-import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -106,8 +105,14 @@ public class Model {
     /** @since 11.1 */
     public static final String MAIN_IS_RECORD_PROP = "ecm:isRecord";
 
+    /** @since 2023.1 */
+    public static final String MAIN_IS_FLEXIBLE_RECORD_PROP = "ecm:isFlexibleRecord";
+
     /** @since 11.1 */
     public static final String MAIN_IS_RECORD_KEY = "isrecord";
+
+    /** @since 2023.1 */
+    public static final String MAIN_IS_FLEXIBLE_RECORD_KEY = "isflexiblerecord";
 
     /** @since 2021.32 */
     public static final String MAIN_RETAINED_PROPS_PROP = "ecm:retainedProperties";
@@ -1304,8 +1309,10 @@ public class Model {
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(MAIN_IS_RECORD_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_RECORD_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
-        addPropertyInfo(MAIN_RETAINED_PROPS_PROP, PropertyType.STRING, HIER_TABLE_NAME, MAIN_RETAINED_PROPS_KEY, false, null,
-                ColumnType.SYSNAMEARRAY);
+        addPropertyInfo(MAIN_IS_FLEXIBLE_RECORD_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME,
+                MAIN_IS_FLEXIBLE_RECORD_KEY, false, BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(MAIN_RETAINED_PROPS_PROP, PropertyType.STRING, HIER_TABLE_NAME, MAIN_RETAINED_PROPS_KEY, false,
+                null, ColumnType.SYSNAMEARRAY);
         addPropertyInfo(MAIN_RETAIN_UNTIL_PROP, PropertyType.DATETIME, HIER_TABLE_NAME, MAIN_RETAIN_UNTIL_KEY, false,
                 DateType.INSTANCE, ColumnType.TIMESTAMP);
         addPropertyInfo(MAIN_HAS_LEGAL_HOLD_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_HAS_LEGAL_HOLD_KEY, false,
@@ -1313,7 +1320,7 @@ public class Model {
         addPropertyInfo(MAIN_IS_RETENTION_ACTIVE_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME,
                 MAIN_IS_RETENTION_ACTIVE_KEY, false, BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(MAIN_IS_TRASHED_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_TRASHED_KEY, false,
-                        BooleanType.INSTANCE, ColumnType.BOOLEAN);
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
         if (changeTokenEnabled) {
             addPropertyInfo(MAIN_SYS_CHANGE_TOKEN_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_SYS_CHANGE_TOKEN_KEY,
                     false, LongType.INSTANCE, ColumnType.LONG);

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
-
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IN_MIGRATION;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
@@ -26,7 +25,6 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS
 import java.io.Serializable;
 import java.sql.Types;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,7 +43,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FullTextUtils;
-import org.nuxeo.common.utils.PeriodAndDuration;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.trash.TrashService;
@@ -895,7 +892,7 @@ public class NXQLQueryMaker implements QueryMaker {
     // non-canonical index syntax, for replaceAll
     protected final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(\\d+|\\*|\\*\\d+)\\]" // index in brackets
-            );
+    );
 
     /**
      * Canonicalizes a Nuxeo-xpath.
@@ -1346,6 +1343,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_LOCK_OWNER.equals(name) || //
                     NXQL.ECM_LOCK_CREATED.equals(name) || //
                     NXQL.ECM_ISRECORD.equals(name) || //
+                    NXQL.ECM_ISFLEXIBLERECORD.equals(name) || //
                     NXQL.ECM_RETAINUNTIL.equals(name) || //
                     NXQL.ECM_HASLEGALHOLD.equals(name) || //
                     NXQL.ECM_PROXY_TARGETID.equals(name) || //
@@ -1461,7 +1459,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 } else {
                     throw new QueryParseException("Function not supported in WHERE clause: " + node);
                 }
-             }
+            }
         }
 
         @Override
@@ -1620,6 +1618,9 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (NXQL.ECM_ISRECORD.equals(name)) {
                 table = hierTable;
                 fragmentKey = Model.MAIN_IS_RECORD_KEY;
+            } else if (NXQL.ECM_ISFLEXIBLERECORD.equals(name)) {
+                table = hierTable;
+                fragmentKey = Model.MAIN_IS_FLEXIBLE_RECORD_KEY;
             } else if (NXQL.ECM_RETAINUNTIL.equals(name)) {
                 table = hierTable;
                 fragmentKey = Model.MAIN_RETAIN_UNTIL_KEY;

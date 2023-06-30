@@ -152,6 +152,11 @@ public class Node implements StateAccessor {
         return Boolean.TRUE.equals(getSimpleProperty(model.MAIN_IS_RECORD_PROP).getValue());
     }
 
+    /** @since 2023.1 */
+    public boolean isFlexibleRecord() {
+        return Boolean.TRUE.equals(getSimpleProperty(model.MAIN_IS_FLEXIBLE_RECORD_PROP).getValue());
+    }
+
     private static final String[] EMPTY_ARRAY = {};
 
     /**
@@ -184,6 +189,7 @@ public class Node implements StateAccessor {
     public void setRetainedProperties(String[] retainedProps) {
         hierFragment.put(Model.MAIN_RETAINED_PROPS_KEY, retainedProps);
     }
+
     /**
      * Gets the mixins. Includes mixins from the type. Returns a fresh set.
      */

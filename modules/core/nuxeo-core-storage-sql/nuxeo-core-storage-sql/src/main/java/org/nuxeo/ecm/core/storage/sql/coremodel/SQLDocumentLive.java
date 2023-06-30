@@ -402,8 +402,23 @@ public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
     }
 
     @Override
+    public void makeFlexibleRecord() {
+        makeRecord(true);
+    }
+
+    @Override
     public void makeRecord() {
+        makeRecord(false);
+    }
+
+    protected void makeRecord(boolean flexible) {
+        if (isEnforcedRecord() && flexible) {
+            // an enforced record cannot be turned into flexible
+            throw new IllegalStateException(String.format(
+                    "Document: %s is already an enforced record, cannot turn it into flexible record.", getUUID()));
+        }
         setPropertyValue(Model.MAIN_IS_RECORD_PROP, Boolean.TRUE);
+        setPropertyValue(Model.MAIN_IS_FLEXIBLE_RECORD_PROP, flexible);
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         List<String> retainedProps = new ArrayList<>();
         for (String prop : schemaManager.getRetainableProperties()) {
@@ -436,6 +451,11 @@ public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
     @Override
     public boolean isRecord() {
         return Boolean.TRUE.equals(getPropertyValue(Model.MAIN_IS_RECORD_PROP));
+    }
+
+    @Override
+    public boolean isFlexibleRecord() {
+        return isRecord() && Boolean.TRUE.equals(getPropertyValue(Model.MAIN_IS_FLEXIBLE_RECORD_PROP));
     }
 
     @Override

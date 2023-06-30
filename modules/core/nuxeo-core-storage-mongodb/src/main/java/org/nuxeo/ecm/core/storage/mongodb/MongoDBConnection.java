@@ -33,6 +33,8 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_HAS_LEGAL_HOLD;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_FLEXIBLE_RECORD;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RECORD;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_TRASHED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
@@ -283,6 +285,8 @@ public class MongoDBConnection extends DBSConnectionBase {
         indexes.add(new IndexModel(Indexes.ascending(KEY_MIXIN_TYPES)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_LIFECYCLE_STATE)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_IS_TRASHED)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_IS_RECORD), new IndexOptions().sparse(true)));
+        indexes.add(new IndexModel(Indexes.ascending(KEY_IS_FLEXIBLE_RECORD), new IndexOptions().sparse(true)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_RETAIN_UNTIL)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_HAS_LEGAL_HOLD)));
         indexes.add(new IndexModel(Indexes.ascending(KEY_BLOB_KEYS)));

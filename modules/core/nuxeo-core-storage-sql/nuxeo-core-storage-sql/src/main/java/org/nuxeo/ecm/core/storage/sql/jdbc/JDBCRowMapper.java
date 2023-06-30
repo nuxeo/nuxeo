@@ -48,9 +48,6 @@ import org.nuxeo.common.utils.BatchUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
-import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
-import org.nuxeo.ecm.core.storage.sql.VCSInvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -58,6 +55,9 @@ import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper;
 import org.nuxeo.ecm.core.storage.sql.SelectionType;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
+import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -1119,6 +1119,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     // present if APP_UUID generation
                     v = newId;
                 } else if (key.equals(Model.MAIN_IS_RECORD_KEY)) {
+                    // records are reset on copy
+                    v = null;
+                } else if (key.equals(Model.MAIN_IS_FLEXIBLE_RECORD_KEY)) {
                     // records are reset on copy
                     v = null;
                 } else if (key.equals(Model.MAIN_RETAINED_PROPS_KEY)) {

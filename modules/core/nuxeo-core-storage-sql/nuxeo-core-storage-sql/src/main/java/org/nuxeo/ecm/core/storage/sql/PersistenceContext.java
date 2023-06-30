@@ -487,7 +487,7 @@ public class PersistenceContext {
                 }
                 // this is a deleted fragment of a complex property
                 // from a document that has not been completely deleted
-                //$FALL-THROUGH$
+                // $FALL-THROUGH$
             case CREATED:
                 PropertyType t = model.getFulltextInfoForFragment(tableName);
                 if (t == null) {
@@ -1637,8 +1637,9 @@ public class PersistenceContext {
                     || key.equals(Model.HIER_CHILD_POS_KEY) || key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)
                     || key.equals(Model.MAIN_PRIMARY_TYPE_KEY) || key.equals(Model.MAIN_CHECKED_IN_KEY)
                     || key.equals(Model.MAIN_BASE_VERSION_KEY) || key.equals(Model.MAIN_IS_VERSION_KEY)
-                    || key.equals(Model.MAIN_IS_RECORD_KEY) || key.equals(Model.MAIN_RETAINED_PROPS_KEY)
-                    || key.equals(Model.MAIN_RETAIN_UNTIL_KEY) || key.equals(Model.MAIN_HAS_LEGAL_HOLD_KEY)) {
+                    || key.equals(Model.MAIN_IS_RECORD_KEY) || key.equals(Model.MAIN_IS_FLEXIBLE_RECORD_KEY)
+                    || key.equals(Model.MAIN_RETAINED_PROPS_KEY) || key.equals(Model.MAIN_RETAIN_UNTIL_KEY)
+                    || key.equals(Model.MAIN_HAS_LEGAL_HOLD_KEY)) {
                 continue;
             }
             overwriteRow.putNew(key, versionHier.get(key));
@@ -1647,6 +1648,7 @@ public class PersistenceContext {
         overwriteRow.putNew(Model.MAIN_BASE_VERSION_KEY, versionId);
         overwriteRow.putNew(Model.MAIN_IS_VERSION_KEY, null);
         overwriteRow.putNew(Model.MAIN_IS_RECORD_KEY, null);
+        overwriteRow.putNew(Model.MAIN_IS_FLEXIBLE_RECORD_KEY, null);
         overwriteRow.putNew(Model.MAIN_RETAINED_PROPS_KEY, null);
         overwriteRow.putNew(Model.MAIN_RETAIN_UNTIL_KEY, null);
         overwriteRow.putNew(Model.MAIN_HAS_LEGAL_HOLD_KEY, null);

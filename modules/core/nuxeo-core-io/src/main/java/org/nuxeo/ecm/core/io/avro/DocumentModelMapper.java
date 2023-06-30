@@ -19,8 +19,6 @@
 package org.nuxeo.ecm.core.io.avro;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +103,12 @@ public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord
         doc.prefetchCurrentLifecycleState((String) input.get(AvroConstants.CURRENT_LIFE_CYCLE_STATE));
         Boolean isRecord = (Boolean) input.get(AvroConstants.IS_RECORD);
         if (isRecord) {
-            doc.makeRecord();
+            Boolean isFlexibleRecord = (Boolean) input.get(AvroConstants.IS_FLEXIBLE_RECORD);
+            if (isFlexibleRecord) {
+                doc.makeFlexibleRecord();
+            } else {
+                doc.makeRecord();
+            }
             Long retainUntilMillis = (Long) input.get(AvroConstants.RETAIN_UNTIL);
             if (retainUntilMillis != null) {
                 Calendar retainUntil = Calendar.getInstance();
@@ -153,7 +156,8 @@ public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord
         // facets
         record.put(AvroConstants.MIXIN_TYPES, doc.getFacets());
         // document type with schemas
-        record.put(AvroConstants.DOCUMENT_TYPE, service.toAvro(schema.getField(AvroConstants.DOCUMENT_TYPE).schema(), doc));
+        record.put(AvroConstants.DOCUMENT_TYPE,
+                service.toAvro(schema.getField(AvroConstants.DOCUMENT_TYPE).schema(), doc));
         // INFO \\ tags and acls are ignored for now
     }
 

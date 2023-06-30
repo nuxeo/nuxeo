@@ -109,6 +109,47 @@ public class TestBlobDispatcherRecord {
     }
 
     @Test
+    public void testDoNotDispatchFlexibleRecord() throws Exception {
+        String foo = "foo";
+        String foo_test_key = "test:acbd18db4cc2f85cedef654fccc4a4d8";
+
+        // create a regular binary in the first blob provider
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        Blob blob = Blobs.createBlob(foo, "text/plain");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // check binary key
+        blob = (Blob) doc.getPropertyValue("file:content");
+        String key = ((ManagedBlob) blob).getKey();
+        assertEquals(foo_test_key, key);
+
+        // turn the blob into a flexible record
+        session.makeFlexibleRecord(doc.getRef());
+
+        // check that it was NOT dispatched to the record blob provider
+        doc.refresh();
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(foo_test_key, ((ManagedBlob) blob).getKey());
+
+        // set under legal hold -> turns into an enforced record and dispatch to record blob provider
+        session.setLegalHold(doc.getRef(), true, null);
+        doc.refresh();
+        assertFalse(doc.isFlexibleRecord());
+        assertTrue(doc.isEnforcedRecord());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals("records1:" + doc.getId(), ((ManagedBlob) blob).getKey());
+
+        // the blob cannot be changed if there is a legal hold
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("bar"));
+        assertSaveFail(doc);
+
+        // the blob cannot be deleted if there is a legal hold
+        doc.setPropertyValue("file:content", null);
+        assertSaveFail(doc);
+    }
+
+    @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:test-retain-files-property.xml")
     public void testDispatchRecordAttachements() throws Exception {
         String bar = "bar";

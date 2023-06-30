@@ -30,35 +30,36 @@ public interface SecurityConstants {
     String SYSTEM_USERNAME = LoginComponent.SYSTEM_USERNAME;
 
     /**
-     * @deprecated since 5.3.1 administrator user names are configurable on user manager
-     * Too many references to this constant, no clean for LTS 2017
+     * @deprecated since 5.3.1 administrator user names are configurable on user manager Too many references to this
+     *             constant, no clean for LTS 2017
      */
     @Deprecated
     String ADMINISTRATOR = "Administrator";
 
     /**
-     * @deprecated since 5.3.1 anonymous user name is configurable on user manager
-     * Too many references to this constant, no clean for LTS 2017
+     * @deprecated since 5.3.1 anonymous user name is configurable on user manager Too many references to this constant,
+     *             no clean for LTS 2017
      */
     @Deprecated
     String ANONYMOUS = "anonymous";
 
     /**
-     * @deprecated since 5.3.1 administrators groups are configurable on user manager
-     * Too many references to this constant, no clean for LTS 2017
+     * @deprecated since 5.3.1 administrators groups are configurable on user manager Too many references to this
+     *             constant, no clean for LTS 2017
      */
     @Deprecated
     String ADMINISTRATORS = "administrators";
 
     /**
-     * @deprecated since 5.3.1 default group is configurable on user manager
-     * Too many references to this constant, no clean for LTS 2017
+     * @deprecated since 5.3.1 default group is configurable on user manager Too many references to this constant, no
+     *             clean for LTS 2017
      */
     @Deprecated
     String MEMBERS = "members";
 
     /**
      * Name of the user group allowed to remove records if retention mode is not in compliance mode.
+     *
      * @since 11.5
      */
     String RECORDS_CLEANER_GROUP = "NuxeoRecordCleaners";
@@ -129,6 +130,14 @@ public interface SecurityConstants {
      * @since 11.1
      */
     String SET_RETENTION = "SetRetention";
+
+    /**
+     * Permission needed to unset the retention date of a record.
+     *
+     * @see CoreSession#setRetainUntil
+     * @since 2023.1
+     */
+    String UNSET_RETENTION = "UnsetRetention";
 
     /**
      * Permission needed to manage the legal hold of a record.

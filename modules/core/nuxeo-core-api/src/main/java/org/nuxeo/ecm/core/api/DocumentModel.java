@@ -462,6 +462,26 @@ public interface DocumentModel extends Serializable {
     }
 
     /**
+     * Checks if the document is an enforced record.
+     *
+     * @return {@code true} if the document is an enforced record, {@code false} otherwise
+     * @since 2023.1
+     */
+    default boolean isEnforcedRecord() {
+        return false;
+    }
+
+    /**
+     * Checks if the document is a flexible record.
+     *
+     * @return {@code true} if the document is a flexible record, {@code false} otherwise
+     * @since 2023.1
+     */
+    default boolean isFlexibleRecord() {
+        return false;
+    }
+
+    /**
      * Gets the retained properties of this document at the time it became a record.
      *
      * @return the retained properties
@@ -957,6 +977,8 @@ public interface DocumentModel extends Serializable {
         public boolean isTrashed;
 
         public boolean isRecord;
+
+        public boolean isFlexibleRecord;
 
         public List<String> retainedProperties;
 

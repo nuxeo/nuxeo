@@ -140,6 +140,9 @@ public class DBSDocument extends BaseDocument<State> {
     /** @since 11.1 */
     public static final String KEY_IS_RECORD = "ecm:isRecord";
 
+    /** @since 2023.1 */
+    public static final String KEY_IS_FLEXIBLE_RECORD = "ecm:isFlexibleRecord";
+
     /** @since 11.1 */
     public static final String KEY_RETAIN_UNTIL = "ecm:retainUntil";
 
@@ -549,9 +552,24 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
+    public void makeFlexibleRecord() {
+        makeRecord(true);
+    }
+
+    @Override
     public void makeRecord() {
+        makeRecord(false);
+    }
+
+    protected void makeRecord(boolean flexible) {
+        if (isEnforcedRecord() && flexible) {
+            // an enforced record cannot be turned into flexible
+            throw new IllegalStateException(String.format(
+                    "Document: %s is already an enforced record, cannot turn it into flexible record.", getUUID()));
+        }
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_IS_RECORD, TRUE);
+        docState.put(KEY_IS_FLEXIBLE_RECORD, flexible);
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         List<String> retainedProps = new ArrayList<>();
         for (String prop : schemaManager.getRetainableProperties()) {
@@ -573,6 +591,12 @@ public class DBSDocument extends BaseDocument<State> {
     public boolean isRecord() {
         DBSDocumentState docState = getStateOrTarget();
         return TRUE.equals(docState.get(KEY_IS_RECORD));
+    }
+
+    @Override
+    public boolean isFlexibleRecord() {
+        DBSDocumentState docState = getStateOrTarget();
+        return isRecord() && TRUE.equals(docState.get(KEY_IS_FLEXIBLE_RECORD));
     }
 
     @Override

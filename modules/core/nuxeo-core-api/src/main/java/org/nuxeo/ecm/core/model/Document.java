@@ -221,7 +221,7 @@ public interface Document {
     }
 
     /**
-     * Turns the document into a record.
+     * Turns the document into an enforced record.
      * <p>
      * A record is a document with specific capabilities related to mandatory retention until a given date, and legal
      * holds. In addition, its main blob receives special treatment from the document blob manager to make sure it's
@@ -235,6 +235,41 @@ public interface Document {
      * @since 11.1
      */
     void makeRecord();
+
+    /**
+     * Turns the document into a flexible record.
+     * <p>
+     * A record is a document with specific capabilities related to mandatory retention until a given date, and legal
+     * holds.
+     * <p>
+     * If the document is already a flexible record, this method has no effect. An enforced record cannot be turned into
+     * a flexible record.
+     * <p>
+     * The permission {@value org.nuxeo.ecm.core.api.security.SecurityConstants#MAKE_RECORD} is required.
+     *
+     * @throws IllegalStateException if the document is an enforced record
+     * @see #isFlexibleRecord
+     * @since 2023.1
+     */
+    default void makeFlexibleRecord() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return {@code true} if the document is a enforced record, {@code false} otherwise
+     * @since 2023.1
+     */
+    default boolean isEnforcedRecord() {
+        return isRecord() && !isFlexibleRecord();
+    }
+
+    /**
+     * @return {@code true} if the document is a flexible record, {@code false} otherwise
+     * @since 2023.1
+     */
+    default boolean isFlexibleRecord() {
+        return false;
+    }
 
     /**
      * Checks if the document is a record.

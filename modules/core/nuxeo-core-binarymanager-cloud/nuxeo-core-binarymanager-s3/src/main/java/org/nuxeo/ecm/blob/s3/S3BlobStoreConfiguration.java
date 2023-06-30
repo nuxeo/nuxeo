@@ -353,8 +353,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
                        .map(ObjectLockRule::getDefaultRetention)
                        .map(DefaultRetention::getMode)
                        .map(ObjectLockRetentionMode::valueOf)
-                       .orElse(isRetentionStricMode() ? COMPLIANCE
-                               : GOVERNANCE);
+                       .orElse(isRetentionStricMode() ? COMPLIANCE : GOVERNANCE);
     }
 
     /**
