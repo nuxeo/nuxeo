@@ -100,7 +100,7 @@
     <jackson.version>2.12.7</jackson.version>
     <jackson.bom.version>2.12.7.20221012</jackson.bom.version>
     <bouncycastle.version>1.69</bouncycastle.version>
-    <avro.version>1.11.1</avro.version>
+    <avro.version>1.11.2</avro.version>
     <restlet.version>2.4.3</restlet.version>
     <jmock.version>2.12.0</jmock.version>
     <wro4j.version>1.10.1</wro4j.version>
