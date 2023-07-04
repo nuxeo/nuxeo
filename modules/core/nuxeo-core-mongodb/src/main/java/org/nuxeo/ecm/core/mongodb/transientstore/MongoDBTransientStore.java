@@ -515,7 +515,7 @@ public class MongoDBTransientStore implements TransientStoreProvider {
         Bson filter = eq(ID_KEY, key);
         Document update = new Document();
         update.put(COMPLETED_KEY, completed);
-        setTTL(update, completed ? firstLevelTTL : secondLevelTTL);
+        setTTL(update, firstLevelTTL);
         Document entry = new Document();
         entry.put("$set", update);
         FindOneAndUpdateOptions opts = new FindOneAndUpdateOptions();
