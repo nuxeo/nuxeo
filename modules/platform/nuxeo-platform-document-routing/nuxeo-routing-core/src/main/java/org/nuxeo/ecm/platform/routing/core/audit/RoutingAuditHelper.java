@@ -65,7 +65,8 @@ public final class RoutingAuditHelper {
                     new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, elementId))
                                            .and(Predicates.eq(LOG_CATEGORY, DocumentRoutingConstants.ROUTING_CATEGORY))
                                            .and(Predicates.eq(LOG_EVENT_ID, event.name()))
-                                           .defaultOrder());
+                                           .defaultOrder()
+                                           .limit(1));
             if (logEntries.size() > 0) {
                 LogEntry logEntry = logEntries.get(0);
                 Date start = logEntry.getEventDate();
