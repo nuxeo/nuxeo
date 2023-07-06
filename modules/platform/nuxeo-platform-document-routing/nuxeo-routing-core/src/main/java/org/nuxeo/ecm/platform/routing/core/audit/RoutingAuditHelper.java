@@ -20,14 +20,16 @@
 
 package org.nuxeo.ecm.platform.routing.core.audit;
 
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -51,30 +53,20 @@ public final class RoutingAuditHelper {
     public static final String WORKFLOW_VARIABLES = "workflowVariables";
 
     /**
-     * Query the audit for an entry of the Routing category matching the given event and returns the time elapsed  since it is recorded.
+     * Query the audit for an entry of the Routing category matching the given event and returns the time elapsed since
+     * it is recorded.
      *
      * @since 7.4
      */
     public static long computeElapsedTime(DocumentRoutingConstants.Events event, String elementId) {
         Logs logs = Framework.getService(Logs.class);
         if (logs != null && StringUtils.isNotBlank(elementId)) {
-            Map<String, FilterMapEntry> filterMap = new HashMap<>();
-
-            FilterMapEntry categoryFilterMapEntry = new FilterMapEntry();
-            categoryFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_CATEGORY);
-            categoryFilterMapEntry.setOperator("=");
-            categoryFilterMapEntry.setQueryParameterName(BuiltinLogEntryData.LOG_CATEGORY);
-            categoryFilterMapEntry.setObject(DocumentRoutingConstants.ROUTING_CATEGORY);
-            filterMap.put(BuiltinLogEntryData.LOG_CATEGORY, categoryFilterMapEntry);
-
-            FilterMapEntry eventIdFilterMapEntry = new FilterMapEntry();
-            eventIdFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
-            eventIdFilterMapEntry.setOperator("=");
-            eventIdFilterMapEntry.setQueryParameterName(BuiltinLogEntryData.LOG_EVENT_ID);
-            eventIdFilterMapEntry.setObject(event.name());
-            filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID, eventIdFilterMapEntry);
-
-            List<LogEntry> logEntries = logs.getLogEntriesFor(elementId, filterMap, true);
+            List<LogEntry> logEntries = logs.queryLogs(
+                    new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, elementId))
+                                           .and(Predicates.eq(LOG_CATEGORY, DocumentRoutingConstants.ROUTING_CATEGORY))
+                                           .and(Predicates.eq(LOG_EVENT_ID, event.name()))
+                                           .defaultOrder()
+                                           .limit(1));
             if (logEntries.size() > 0) {
                 LogEntry logEntry = logEntries.get(0);
                 Date start = logEntry.getEventDate();
@@ -92,7 +84,8 @@ public final class RoutingAuditHelper {
      * @since 7.4
      */
     public static long computeDurationSinceWfStarted(String workflowInstanceId) {
-        return RoutingAuditHelper.computeElapsedTime(DocumentRoutingConstants.Events.afterWorkflowStarted, workflowInstanceId);
+        return RoutingAuditHelper.computeElapsedTime(DocumentRoutingConstants.Events.afterWorkflowStarted,
+                workflowInstanceId);
     }
 
     /**
