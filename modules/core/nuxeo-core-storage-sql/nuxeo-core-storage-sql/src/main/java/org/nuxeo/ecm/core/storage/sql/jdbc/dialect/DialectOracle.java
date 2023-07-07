@@ -412,6 +412,8 @@ public class DialectOracle extends Dialect {
             throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
+            setToPreparedStatementString(ps, index, value, column);
+            return;
         case Types.CLOB:
             Clob clob = ps.getConnection().createClob();
             clob.setString(1, (String) value);
