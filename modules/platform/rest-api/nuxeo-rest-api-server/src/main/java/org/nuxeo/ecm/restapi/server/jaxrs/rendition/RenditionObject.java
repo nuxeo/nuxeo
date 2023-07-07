@@ -69,6 +69,9 @@ public class RenditionObject extends DefaultObject {
     @Override
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter.isAssignableFrom(Blob.class)) {
+            if (Framework.isBooleanPropertyTrue(LEGACY_RENDERING_PROP)) {
+                return adapter.cast(getLegacyRenditionBlob());
+            }
             return adapter.cast(getRenditionBlob());
         }
         return super.getAdapter(adapter);
