@@ -35,6 +35,9 @@ public interface Executor {
     /**
      * No exception is thrown but the returned {@link ExecResult} contains everything about the command execution,
      * including an optional exception.
+     * <p>
+     * The execution duration is time boxed by the lower value of the command description timeout or the transaction
+     * TTL, the TTL must be greater than 5s to avoid transaction timeout.
      *
      * @param cmdDesc Command to run. Cannot be null.
      * @param params Parameters passed to the command. Cannot be null.
