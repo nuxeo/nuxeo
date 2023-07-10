@@ -79,6 +79,12 @@ public class DialectOracle extends Dialect {
 
     private static final Logger log = LogManager.getLogger(DialectOracle.class);
 
+    // @since 2021.40
+    public static final String USE_CLOB_PROPERTY = "nuxeo.oracle.use.clob";
+
+    // @since 2021.40
+    public static final int CLOB_LENGTH_MIN_VALUE = 8192;
+
     private Constructor<?> arrayDescriptorConstructor;
 
     private Constructor<?> arrayConstructor;
@@ -415,9 +421,14 @@ public class DialectOracle extends Dialect {
             setToPreparedStatementString(ps, index, value, column);
             return;
         case Types.CLOB:
-            Clob clob = ps.getConnection().createClob();
-            clob.setString(1, (String) value);
-            ps.setClob(index, clob);
+            String val = (String) value;
+            if (Framework.isBooleanPropertyTrue(USE_CLOB_PROPERTY) && val.length() >= CLOB_LENGTH_MIN_VALUE) {
+                Clob clob = ps.getConnection().createClob();
+                clob.setString(1, val);
+                ps.setClob(index, clob);
+            } else {
+                setToPreparedStatementString(ps, index, value, column);
+            }
             return;
         case Types.BIT:
             ps.setBoolean(index, ((Boolean) value).booleanValue());
