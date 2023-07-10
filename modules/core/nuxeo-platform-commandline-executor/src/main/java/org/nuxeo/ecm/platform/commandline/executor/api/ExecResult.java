@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.platform.commandline.executor.api;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +40,9 @@ import org.apache.commons.lang3.StringUtils;
 public class ExecResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    // When a command is killed by timeout using SIGKILL the return code is 137 = 128 + SIGKILL(9)
+    public static final int TIMEOUT_RETURN_CODE = 137;
 
     protected final String commandLine;
 
@@ -76,6 +80,15 @@ public class ExecResult implements Serializable {
         this.error = new CommandException(String.format("Error while running %s", commandLine), error);
     }
 
+    /**
+     * Creates a timeout error result.
+     *
+     * @since 2021.41
+     */
+    public ExecResult(String timeoutError) {
+        this(null, Collections.singletonList(timeoutError), 0, TIMEOUT_RETURN_CODE);
+    }
+
     public List<String> getOutput() {
         return output;
     }
@@ -111,8 +124,7 @@ public class ExecResult implements Serializable {
     }
 
     public boolean isCommandInTimeout() {
-        // When a command is killed by timeout using SIGKILL the return code is 137 = 128 + SIGKILL(9)
-        return returnCode == 137;
+        return TIMEOUT_RETURN_CODE == returnCode;
     }
 
 }

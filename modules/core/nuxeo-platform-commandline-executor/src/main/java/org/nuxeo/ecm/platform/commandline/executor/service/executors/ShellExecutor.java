@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,18 +114,21 @@ public class ShellExecutor implements Executor {
         return scope;
     }
 
-
     protected ExecResult exec1(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env)
             throws IOException {
         // split the configured parameters while keeping quoted parts intact
         List<String> list = new ArrayList<>();
         if (useTimeout) {
-            // prefix the command using timeout in order to limit time execution with a SIGKILL
-            list.add("timeout");
-            list.add("-s");
-            list.add("9");
-            list.add(getTimeout(cmdDesc) + "s");
-            log.debug("Prefixing command: {}, with {}", cmdDesc.getName(), list);
+            try {
+                // prefix the command using timeout in order to limit time execution with a SIGKILL
+                list.add("timeout");
+                list.add("-s");
+                list.add("9");
+                list.add(getTimeout(cmdDesc) + "s");
+                log.debug("Prefixing command: {}, with {}", cmdDesc.getName(), list);
+            } catch (TimeoutException e) {
+                return new ExecResult(e.getMessage());
+            }
         }
         list.add(cmdDesc.getCommand());
         Matcher m = COMMAND_SPLIT.matcher(cmdDesc.getParametersString());
@@ -181,15 +185,16 @@ public class ShellExecutor implements Executor {
         return new ExecResult(null, output, 0, returnCode);
     }
 
-    protected int getTimeout(CommandLineDescriptor cmdDesc) {
-        int timeout = cmdDesc.getTimeout() != null ? Math.toIntExact(cmdDesc.getTimeout().getSeconds()) : DEFAULT_TIMEOUT_S;
+    protected int getTimeout(CommandLineDescriptor cmdDesc) throws TimeoutException {
+        int timeout = cmdDesc.getTimeout() != null ? Math.toIntExact(cmdDesc.getTimeout().getSeconds())
+                : DEFAULT_TIMEOUT_S;
         int ttl = TransactionHelper.getTransactionTimeToLive();
         if (ttl < 0) {
             // out of transaction
             return timeout;
+        } else if (ttl < 5) {
+            throw new TimeoutException("Transaction life is too short to run shell command: " + ttl + "s");
         }
-        // try to keep 5s margin to avoid transaction timeout, minimum to 1s because 0 means no timeout
-        ttl = ttl <= 5 ? 1 : ttl - 5;
         // take the minimum between transaction and explicit timeout
         return Math.min(ttl, timeout);
     }
