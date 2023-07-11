@@ -82,7 +82,7 @@
       Property that enables returning blob URLs with redirections already taken into account.
       Only applies to code calling the DownloadService.getFullDownloadUrl API.
     </documentation>
-    <property name="org.nuxeo.download.url.follow.redirect">false</property>
+    <property name="org.nuxeo.download.url.follow.redirect">${org.nuxeo.download.url.follow.redirect:=false}</property>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
