@@ -59,3 +59,5 @@ nuxeo.hotreload.compat.mechanism=false
 
 nuxeo.transientstore.ttl=4320
 nuxeo.transientstore.ttl2=10
+
+org.nuxeo.download.url.follow.redirect=false
