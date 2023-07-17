@@ -135,7 +135,7 @@ public class StreamIntrospectionComputation extends AbstractComputation {
             node = modelNode.get("metrics");
             if (node.isArray()) {
                 for (JsonNode item : node) {
-                    metrics.put(item.get("ip").asText(), item);
+                    metrics.put(item.get("nodeId").asText(), item);
                 }
             }
             model = modelJson;
@@ -152,8 +152,8 @@ public class StreamIntrospectionComputation extends AbstractComputation {
             if (INPUT_1.equals(inputStreamName)) {
                 updateStreamsAndProcessors(json);
             } else if (INPUT_2.equals(inputStreamName)) {
-                if (json.has("ip")) {
-                    metrics.put(json.get("ip").asText(), json);
+                if (json.has("nodeId")) {
+                    metrics.put(json.get("nodeId").asText(), json);
                 }
             }
         }
@@ -179,7 +179,7 @@ public class StreamIntrospectionComputation extends AbstractComputation {
     }
 
     protected String getProcessorKey(JsonNode json) {
-        return json.at("/metadata/ip").asText() + ":" + json.at("/metadata/processorName").asText();
+        return json.at("/metadata/nodeId").asText() + ":" + json.at("/metadata/processorName").asText();
     }
 
     protected void updateModel() {
@@ -226,19 +226,19 @@ public class StreamIntrospectionComputation extends AbstractComputation {
         List<String> toRemove = metrics.values()
                                        .stream()
                                        .filter(json -> (now - json.get("timestamp").asLong()) > TTL_SECONDS)
-                                       .map(json -> json.get("ip").asText())
+                                       .map(json -> json.get("nodeId").asText())
                                        .collect(Collectors.toList());
         log.debug("Removing nodes with old metrics: {}", toRemove);
         toRemove.forEach(metrics::remove);
-        Set<String> toKeep = metrics.values().stream().map(json -> json.get("ip").asText()).collect(Collectors.toSet());
+        Set<String> toKeep = metrics.values().stream().map(json -> json.get("nodeId").asText()).collect(Collectors.toSet());
         log.debug("List of active nodes: {}", toKeep);
         // Remove processors with inactive nodes and older than TTL
         Iterator<Map.Entry<String, JsonNode>> entries = processors.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry<String, JsonNode> entry = entries.next();
             JsonNode node = entry.getValue();
-            String ip = node.at("/metadata/ip").asText();
-            if (!toKeep.contains(ip)) {
+            String nodeId = node.at("/metadata/nodeId").asText();
+            if (!toKeep.contains(nodeId)) {
                 JsonNode created = node.at("/metadata/created");
                 if (created == null || ((now - created.asLong()) > TTL_SECONDS)) {
                     entries.remove();

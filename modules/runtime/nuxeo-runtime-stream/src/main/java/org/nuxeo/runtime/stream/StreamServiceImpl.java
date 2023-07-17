@@ -46,6 +46,7 @@ import org.nuxeo.lib.stream.log.kafka.KafkaLogConfig;
 import org.nuxeo.lib.stream.log.mem.MemLogConfig;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
 import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
@@ -109,12 +110,20 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         super.start(context);
         List<LogConfig> configs = getLogConfigs();
         logManager = new UnifiedLogManager(configs);
-        streamManager = new LogStreamManager(logManager);
+        streamManager = new LogStreamManager(getNodeId(), logManager);
         List<LogConfigDescriptor> logDescs = getDescriptors(XP_LOG_CONFIG);
         logDescs.forEach(this::createLogIfNotExists);
         List<StreamProcessorDescriptor> streamDescs = getDescriptors(XP_STREAM_PROCESSOR);
         streamDescs.forEach(this::initProcessor);
         new ComponentsLifeCycleListener().install();
+    }
+
+    protected String getNodeId() {
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        if (clusterService != null && clusterService.isEnabled()) {
+            return clusterService.getNodeId();
+        }
+        return null;
     }
 
     protected List<LogConfig> getLogConfigs() {

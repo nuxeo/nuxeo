@@ -6,16 +6,6 @@
   },
   "nodes": [
     {
-      "hostname": "nuxeo",
-      "cpuCores": "16",
-      "created": "2023-03-10T08:55:46Z",
-      "ip": "172.27.0.7",
-      "jvmHeapSize": "2147483648",
-      "nodeId": "nuxeo1",
-      "alive": "2023-03-10T09:04:46Z",
-      "type": "front"
-    },
-    {
       "hostname": "nuxeo2",
       "cpuCores": "16",
       "created": "2023-03-10T08:55:56Z",
@@ -24,6 +14,16 @@
       "nodeId": "nuxeo2",
       "alive": "2023-03-10T09:04:58Z",
       "type": "worker"
+    },
+    {
+      "hostname": "nuxeo",
+      "cpuCores": "16",
+      "created": "2023-03-10T08:55:46Z",
+      "ip": "172.27.0.7",
+      "jvmHeapSize": "2147483648",
+      "nodeId": "nuxeo1",
+      "alive": "2023-03-10T09:04:46Z",
+      "type": "front"
     }
   ],
   "computations": [
@@ -40,7 +40,7 @@
       },
       "nodes": [
         {
-          "ip": "172.27.0.8",
+          "nodeId": "nuxeo2",
           "threads": 2,
           "timestamp": 1678439098,
           "count": 176,
@@ -81,7 +81,7 @@
       },
       "nodes": [
         {
-          "ip": "172.27.0.8",
+          "nodeId": "nuxeo2",
           "threads": 2,
           "timestamp": 1678439098,
           "count": 176,
