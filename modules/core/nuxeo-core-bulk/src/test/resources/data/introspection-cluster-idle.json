@@ -238,6 +238,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "updateReadAcls",
         "jvmHeapSize": "2147483648"
       },
@@ -269,6 +270,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "recomputeViews",
         "jvmHeapSize": "2147483648"
       },
@@ -300,6 +302,7 @@
         "cpuCores": "16",
         "created": "1678438558",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "bulkServiceProcessor",
         "jvmHeapSize": "2147483648"
       },
@@ -416,6 +419,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "deletion",
         "jvmHeapSize": "2147483648"
       },
@@ -447,6 +451,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "setProperties",
         "jvmHeapSize": "2147483648"
       },
@@ -478,6 +483,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "csvExport",
         "jvmHeapSize": "2147483648"
       },
@@ -593,6 +599,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "extractBinaryFulltext",
         "jvmHeapSize": "2147483648"
       },
@@ -624,6 +631,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "indexAction",
         "jvmHeapSize": "2147483648"
       },
@@ -689,6 +697,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "retentionExpired",
         "jvmHeapSize": "2147483648"
       },
@@ -720,6 +729,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "DocumentRoutingEscalationAction",
         "jvmHeapSize": "2147483648"
       },
@@ -751,6 +761,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "trash",
         "jvmHeapSize": "2147483648"
       },
@@ -782,6 +793,7 @@
         "cpuCores": "16",
         "created": "1678438546",
         "ip": "172.27.0.7",
+        "nodeId": "nuxeo1",
         "processorName": "bulkServiceProcessor",
         "jvmHeapSize": "2147483648"
       },
@@ -898,6 +910,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "recomputeThumbnails",
         "jvmHeapSize": "2147483648"
       },
@@ -929,6 +942,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "blobGC",
         "jvmHeapSize": "2147483648"
       },
@@ -956,6 +970,7 @@
         "cpuCores": "16",
         "created": "1678438559",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "StreamWorkManager",
         "jvmHeapSize": "2147483648"
       },
@@ -1165,6 +1180,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "recomputeVideoConversions",
         "jvmHeapSize": "2147483648"
       },
@@ -1213,6 +1229,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "setSystemProperties",
         "jvmHeapSize": "2147483648"
       },
@@ -1244,6 +1261,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "automationUi",
         "jvmHeapSize": "2147483648"
       },
@@ -1275,6 +1293,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "automation",
         "jvmHeapSize": "2147483648"
       },
@@ -1306,6 +1325,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "garbageCollectOrphanVersions",
         "jvmHeapSize": "2147483648"
       },
@@ -1337,6 +1357,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "removeProxy",
         "jvmHeapSize": "2147483648"
       },
@@ -1368,6 +1389,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "metrics",
         "jvmHeapSize": "2147483648"
       },
@@ -1395,6 +1417,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "streamIntrospection",
         "jvmHeapSize": "2147483648"
       },
@@ -1426,6 +1449,7 @@
         "cpuCores": "16",
         "created": "1678438556",
         "ip": "172.27.0.8",
+        "nodeId": "nuxeo2",
         "processorName": "auditWriter",
         "jvmHeapSize": "2147483648"
       },

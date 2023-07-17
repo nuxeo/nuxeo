@@ -99,7 +99,7 @@ public class StreamIntrospectionConverter {
         node = root.get("processors");
         if (node.isArray()) {
             for (JsonNode item : node) {
-                String host = item.at("/metadata/ip").asText();
+                String host = item.at("/metadata/nodeId").asText();
                 String created = Instant.ofEpochSecond(item.at("/metadata/created").asLong()).toString();
                 // ret.append("rectangle node." + host + " {\n");
                 JsonNode computations = item.get("computations");
@@ -145,7 +145,7 @@ public class StreamIntrospectionConverter {
         long timestamp = 0;
         if (node.isArray()) {
             for (JsonNode host : node) {
-                String hostIp = host.get("ip").asText();
+                String nodeId = host.get("nodeId").asText();
                 long metricTimestamp = host.get("timestamp").asLong();
                 if (metricTimestamp > timestamp) {
                     timestamp = metricTimestamp;
@@ -175,18 +175,18 @@ public class StreamIntrospectionConverter {
                                 continue;
                             }
                             String computationName = Name.urnOfId(metric.get("computation").asText());
-                            streamMetrics.put(computationName + ":" + hostIp + ":count", metric.get("count").asText());
-                            streamMetrics.put(computationName + ":" + hostIp + ":sum",
+                            streamMetrics.put(computationName + ":" + nodeId + ":count", metric.get("count").asText());
+                            streamMetrics.put(computationName + ":" + nodeId + ":sum",
                                     getNiceDouble3(metric.get("sum").asDouble() / 1000000000));
-                            streamMetrics.put(computationName + ":" + hostIp + ":p50",
+                            streamMetrics.put(computationName + ":" + nodeId + ":p50",
                                     getNiceDouble3(metric.get("p50").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":mean",
+                            streamMetrics.put(computationName + ":" + nodeId + ":mean",
                                     getNiceDouble3(metric.get("mean").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":p99",
+                            streamMetrics.put(computationName + ":" + nodeId + ":p99",
                                     getNiceDouble3(metric.get("p99").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":rate1m",
+                            streamMetrics.put(computationName + ":" + nodeId + ":rate1m",
                                     getNiceDouble(metric.get("rate1m").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":rate5m",
+                            streamMetrics.put(computationName + ":" + nodeId + ":rate5m",
                                     getNiceDouble(metric.get("rate5m").asDouble()));
                         } else if (metric.get("k").asText().endsWith("processTimer")) {
                             int count = metric.get("count").asInt();
@@ -194,37 +194,37 @@ public class StreamIntrospectionConverter {
                                 continue;
                             }
                             String computationName = Name.urnOfId(metric.get("computation").asText());
-                            streamMetrics.put(computationName + ":" + hostIp + ":timer:count",
+                            streamMetrics.put(computationName + ":" + nodeId + ":timer:count",
                                     metric.get("count").asText());
-                            streamMetrics.put(computationName + ":" + hostIp + ":timer:sum",
+                            streamMetrics.put(computationName + ":" + nodeId + ":timer:sum",
                                     getNiceDouble3(metric.get("sum").asDouble() / 1000000000));
-                            streamMetrics.put(computationName + ":" + hostIp + ":timer:p50",
+                            streamMetrics.put(computationName + ":" + nodeId + ":timer:p50",
                                     getNiceDouble3(metric.get("p50").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":timer:mean",
+                            streamMetrics.put(computationName + ":" + nodeId + ":timer:mean",
                                     getNiceDouble3(metric.get("mean").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":timer:p99",
+                            streamMetrics.put(computationName + ":" + nodeId + ":timer:p99",
                                     getNiceDouble3(metric.get("p99").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":timer:rate1m",
+                            streamMetrics.put(computationName + ":" + nodeId + ":timer:rate1m",
                                     getNiceDouble(metric.get("rate1m").asDouble()));
-                            streamMetrics.put(computationName + ":" + hostIp + ":timer:rate5m",
+                            streamMetrics.put(computationName + ":" + nodeId + ":timer:rate5m",
                                     getNiceDouble(metric.get("rate5m").asDouble()));
                         } else if (metric.get("k").asText().endsWith("computation.failure")) {
                             int failure = metric.get("v").asInt();
                             if (failure > 0) {
                                 String computationName = Name.urnOfId(metric.get("computation").asText()) + ":"
-                                        + hostIp;
+                                        + nodeId;
                                 streamMetrics.put(computationName + ":failure", metric.get("v").asText());
                             }
                         } else if (metric.get("k").asText().endsWith("stream.failure")) {
                             int value = metric.get("v").asInt();
                             if (value > 0) {
-                                streamMetrics.put(hostIp + ":failure", metric.get("v").asText());
+                                streamMetrics.put(nodeId + ":failure", metric.get("v").asText());
                             }
                         } else if (metric.get("k").asText().endsWith("computation.skippedRecord")) {
                             int value = metric.get("v").asInt();
                             if (value > 0) {
                                 String computationName = Name.urnOfId(metric.get("computation").asText()) + ":"
-                                        + hostIp;
+                                        + nodeId;
                                 streamMetrics.put(computationName + ":skipped", metric.get("v").asText());
                             }
                         }
@@ -450,7 +450,7 @@ public class StreamIntrospectionConverter {
         }
         // then metrics per node
         for (JsonNode node : metrics) {
-            JsonNode ip = node.get("ip");
+            JsonNode nodeId = node.get("nodeId");
             JsonNode ts = node.get("timestamp");
             for (JsonNode metric : node.at("/metrics")) {
                 if ("nuxeo.streams.computation.processRecord".equals(metric.get("k").asText())
@@ -458,7 +458,7 @@ public class StreamIntrospectionConverter {
                     ObjectNode comp = computations.get(metric.get("computation"));
                     if (comp != null) {
                         ObjectNode compInstance = mapper.getNodeFactory().objectNode();
-                        compInstance.set("ip", ip);
+                        compInstance.set("nodeId", nodeId);
                         compInstance.put("threads", threads.get(metric.get("computation").asText()));
                         compInstance.set("timestamp", ts);
                         compInstance.set("count", metric.get("count"));
@@ -528,17 +528,17 @@ public class StreamIntrospectionConverter {
         JsonNode processors = root.get("processors");
         if (processors.isArray()) {
             for (JsonNode item : processors) {
-                nodes.put(item.at("/metadata/ip"), item.at("/metadata").deepCopy());
+
+                nodes.put(item.at("/metadata/nodeId"), item.at("/metadata").deepCopy());
             }
         }
         JsonNode metrics = root.get("metrics");
         if (processors.isArray()) {
             for (JsonNode item : metrics) {
-                ObjectNode node = nodes.get(item.at("/ip"));
+                ObjectNode node = nodes.get(item.at("/nodeId"));
                 if (node == null) {
                     continue;
                 }
-                node.set("nodeId", item.at("/nodeId"));
                 node.put("alive", Instant.ofEpochSecond(item.at("/timestamp").asLong()).toString());
                 node.put("created", Instant.ofEpochSecond(node.at("/created").asLong()).toString());
                 node.remove("processorName");

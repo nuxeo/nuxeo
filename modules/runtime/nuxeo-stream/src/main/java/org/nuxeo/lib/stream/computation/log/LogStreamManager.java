@@ -69,8 +69,29 @@ public class LogStreamManager implements StreamManager {
 
     protected final LogManager logManager;
 
+    protected final Map<String, String> systemMetadata = new HashMap<>(5);
+
     public LogStreamManager(LogManager logManager) {
+        this(null, logManager);
+    }
+
+    public LogStreamManager(String nodeId, LogManager logManager) {
         this.logManager = logManager;
+        try {
+            InetAddress host = InetAddress.getLocalHost();
+            systemMetadata.put("ip", host.getHostAddress());
+            systemMetadata.put("hostname", host.getHostName());
+        } catch (UnknownHostException e) {
+            systemMetadata.put("ip", "127.0.0.1");
+            systemMetadata.put("hostname", "unknown");
+        }
+        systemMetadata.put("cpuCores", String.valueOf(Runtime.getRuntime().availableProcessors()));
+        systemMetadata.put("jvmHeapSize", String.valueOf(Runtime.getRuntime().maxMemory()));
+        if (nodeId != null) {
+            systemMetadata.put("nodeId", nodeId);
+        } else {
+            systemMetadata.put("nodeId", systemMetadata.get("ip"));
+        }
         initInternalStreams();
     }
 
@@ -127,24 +148,13 @@ public class LogStreamManager implements StreamManager {
         Map<String, String> meta = new HashMap<>();
         meta.put("processorName", processorName);
         meta.put("created", Long.toString(System.currentTimeMillis() / 1000));
-        meta.putAll(getSystemMetadata());
-        append(PROCESSORS_STREAM, Record.of(meta.get("ip"), processor.toJson(meta).getBytes(UTF_8)));
+        meta.putAll(systemMetadata);
+        append(PROCESSORS_STREAM, Record.of(getNodeId(), processor.toJson(meta).getBytes(UTF_8)));
         return processor;
     }
 
-    protected Map<String, String> getSystemMetadata() {
-        Map<String, String> systemMetadata = new HashMap<>();
-        try {
-            InetAddress host = InetAddress.getLocalHost();
-            systemMetadata.put("ip", host.getHostAddress());
-            systemMetadata.put("hostname", host.getHostName());
-        } catch (UnknownHostException e) {
-            systemMetadata.put("ip", "unknown");
-            systemMetadata.put("hostname", "unknown");
-        }
-        systemMetadata.put("cpuCores", String.valueOf(Runtime.getRuntime().availableProcessors()));
-        systemMetadata.put("jvmHeapSize", String.valueOf(Runtime.getRuntime().maxMemory()));
-        return systemMetadata;
+    protected String getNodeId() {
+        return systemMetadata.get("nodeId");
     }
 
     public LogManager getLogManager() {

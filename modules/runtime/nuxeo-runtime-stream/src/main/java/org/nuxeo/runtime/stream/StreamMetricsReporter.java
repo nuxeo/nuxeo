@@ -82,6 +82,8 @@ public class StreamMetricsReporter extends ScheduledReporter {
             ClusterService clusterService = Framework.getService(ClusterService.class);
             if (clusterService.isEnabled()) {
                 nodeId = clusterService.getNodeId();
+            } else {
+                nodeId = hostIp;
             }
         }
         return nodeId;
