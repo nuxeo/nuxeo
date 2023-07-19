@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -116,7 +117,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
                         "Blob for Document {} is backed by a BlobProvider preventing sync, it cannot be adapted as a FileSystemItem.",
                         doc::getId);
                 return false;
-            } else if (blobProvider == null && !doc.getType().equals("Note")) {
+            } else if (blobProvider == null
+                    && !Framework.getService(SchemaManager.class).hasSuperType(doc.getType(), "Note")) {
                 log.debug(
                         "Document {} has no BlobProvider and is not a Note, it cannot be adapted as a FileSystemItem.",
                         doc::getId);

@@ -11,6 +11,8 @@
       <schema name="file" />
     </doctype>
 
+    <doctype name="CustomNote" extends="Note" />
+
     <doctype name="FolderishFile" extends="Document">
       <schema name="dublincore" />
       <schema name="file" />
@@ -32,6 +34,7 @@
 
     <types>
       <type name="Custom">default</type>
+      <type name="CustomNote">default</type>
     </types>
 
   </extension>
