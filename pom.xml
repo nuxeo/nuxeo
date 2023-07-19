@@ -83,7 +83,7 @@
     <apache.poi.version>5.2.3</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX02</jxls.version>
-    <jxls2.version>2.12.0</jxls2.version>
+    <jxls2.version>2.13.0</jxls2.version>
     <keycloak.version>19.0.3</keycloak.version>
     <xdocreport.version>1.0.6</xdocreport.version>
     <google.http.client.version>1.43.3</google.http.client.version>
