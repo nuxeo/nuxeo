@@ -145,6 +145,8 @@ public class DefaultFileSystemItemFactoryFixture {
 
     protected DocumentModel note;
 
+    protected DocumentModel customNote;
+
     protected DocumentModel custom;
 
     protected DocumentModel folder;
@@ -178,6 +180,11 @@ public class DefaultFileSystemItemFactoryFixture {
         note = session.createDocumentModel(syncRootFolder.getPathAsString(), "aNote", "Note");
         note.setPropertyValue("note:note", "Content of Bob's note.");
         note = session.createDocument(note);
+
+        // CustomNote
+        customNote = session.createDocumentModel(syncRootFolder.getPathAsString(), "aCustomNote", "CustomNote");
+        customNote.setPropertyValue("note:note", "Content of Bob's custom note.");
+        customNote = session.createDocument(customNote);
 
         // Custom doc type with the "file" schema
         custom = session.createDocumentModel(syncRootFolder.getPathAsString(), "aCustomDoc", "Custom");
@@ -250,6 +257,21 @@ public class DefaultFileSystemItemFactoryFixture {
         fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("aNote.txt", fileItemBlob.getFilename());
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
+
+        // CustomNote
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(customNote));
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(customNote);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + customNote.getId(), fsItem.getId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
+        assertEquals("aCustomNote.txt", fsItem.getName()); // NOSONAR
+        assertFalse(fsItem.isFolder());
+        assertEquals(ADMINISTRATOR, fsItem.getCreator());
+        assertEquals(ADMINISTRATOR, fsItem.getLastContributor());
+        fileItemBlob = ((FileItem) fsItem).getBlob();
+        assertEquals("aCustomNote.txt", fileItemBlob.getFilename());
+        assertEquals("Content of Bob's custom note.", fileItemBlob.getString());
 
         // Custom doc type with the "file" schema
         assertTrue(defaultFileSystemItemFactory.isFileSystemItem(custom));
@@ -934,12 +956,12 @@ public class DefaultFileSystemItemFactoryFixture {
         // scrollDescendants
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         List<FileSystemItem> children = syncRootFolderItem.getChildren();
-        assertEquals(5, children.size());
+        assertEquals(6, children.size());
         for (FileSystemItem child : children) {
             assertNull(child.getLockInfo());
         }
         children = syncRootFolderItem.scrollDescendants(null, 10, 1000);
-        assertEquals(5, children.size());
+        assertEquals(6, children.size());
         for (FileSystemItem child : children) {
             assertNull(child.getLockInfo());
         }
@@ -987,7 +1009,7 @@ public class DefaultFileSystemItemFactoryFixture {
 
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
-        assertEquals(5, syncRootFolderItem.getChildren().size());
+        assertEquals(6, syncRootFolderItem.getChildren().size());
 
         txFeature.nextTransaction(); // should save documents before runtime reset
 
@@ -1122,7 +1144,7 @@ public class DefaultFileSystemItemFactoryFixture {
         syncRootFolder = joeSession.getDocument(syncRootFolder.getRef());
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         ScrollFileSystemItemList descendants = syncRootFolderItem.scrollDescendants(null, 10, 1000);
-        assertEquals(4, descendants.size());
+        assertEquals(5, descendants.size());
         resetPermissions(syncRootFolder, "joe");
     }
 
