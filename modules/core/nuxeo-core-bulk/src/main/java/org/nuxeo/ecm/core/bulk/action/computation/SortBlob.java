@@ -83,13 +83,11 @@ public class SortBlob extends AbstractTransientBlobComputation {
         } catch (IOException e) {
             log.error("Unable to copy header/footer", e);
         }
-        try {
-            Files.delete(tmpBlob.getFile().toPath());
-        } catch (IOException e) {
-            log.error("Unable to delete tmp file", e);
-        }
+        deleteTempFile(tmpBlob.getFile().toPath());
 
         storeBlob(new FileBlob(path.toFile()), commandId, storeName);
+
+        deleteTempFile(path);
 
         BulkCommand command = Framework.getService(BulkService.class).getCommand(commandId);
         boolean zip = command.getParam(ZIP_PARAMETER) != null ? command.getParam(ZIP_PARAMETER) : false;
@@ -98,6 +96,14 @@ public class SortBlob extends AbstractTransientBlobComputation {
         DataBucket out = new DataBucket(commandId, in.getCount(), getTransientStoreKey(commandId));
         context.produceRecord(outputStream, Record.of(commandId, codec.encode(out)));
         context.askForCheckpoint();
+    }
+
+    protected void deleteTempFile(Path path) {
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            log.error("Unable to delete tmp file", e);
+        }
     }
 
     protected Blob sort(Blob blob, String commandId) {
