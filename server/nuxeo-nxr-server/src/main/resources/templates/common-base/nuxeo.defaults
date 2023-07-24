@@ -224,9 +224,11 @@ kafka.keystore.password=
 
 # Legacy rendition are performed on front nodes
 nuxeo.rendition.legacy.enabled=true
-# thread pool per worker node for the new rendition
+# Legacy preview are performed on front nodes
+nuxeo.preview.legacy.enabled=true
+# Thread pool for the new rendition and preview Works (when not in legacy mode)
 nuxeo.work.queue.renditionBuilder.threads=2
-# new rendition cache in minutes (not used by legacy implementation)
+# cache used by rendition and preview Works in minutes (when not in legacy mode)
 nuxeo.transientstore.rendition.cache.ttl=240
 nuxeo.transientstore.rendition.cache.ttl2=10
 
