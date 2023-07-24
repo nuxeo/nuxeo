@@ -23,9 +23,11 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +42,7 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
@@ -49,9 +52,12 @@ import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
+import org.nuxeo.ecm.platform.preview.work.PreviewWork;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
@@ -63,6 +69,8 @@ import org.nuxeo.runtime.api.Framework;
 public class PreviewAdapter extends DefaultAdapter {
 
     public static final String NAME = "preview";
+
+    public static final String LEGACY_PEVIEW_PROP = "nuxeo.preview.legacy.enabled";
 
     @GET
     public Object preview(@QueryParam("blobPostProcessing") boolean postProcessing, @Context HttpServletRequest request,
@@ -161,18 +169,36 @@ public class PreviewAdapter extends DefaultAdapter {
 
         try {
             if (isBlobTarget() && !isBlobHolder(doc, xpath)) {
-                preview = PreviewHelper.getBlobPreviewAdapter(doc);
-                return preview.getFilePreviewBlobs(xpath, blobPostProcessing);
+                if (Framework.isBooleanPropertyTrue(LEGACY_PEVIEW_PROP)) {
+                    preview = PreviewHelper.getBlobPreviewAdapter(doc);
+                    return preview.getFilePreviewBlobs(xpath, blobPostProcessing);
+                } else {
+                    return previewBlobs(doc, xpath, blobPostProcessing);
+                }
             }
 
             preview = doc.getAdapter(HtmlPreviewAdapter.class);
             if (preview == null) {
                 return List.of();
             }
-
-            return preview.getFilePreviewBlobs(blobPostProcessing);
+            if (Framework.isBooleanPropertyTrue(LEGACY_PEVIEW_PROP)) {
+                return preview.getFilePreviewBlobs(blobPostProcessing);
+            } else {
+                return previewBlobs(doc, null, blobPostProcessing);
+            }
         } catch (PreviewException e) {
             return List.of();
+        }
+    }
+
+    protected List<Blob> previewBlobs(DocumentModel doc, String xpath, boolean blobPostProcessing) {
+        try {
+            PreviewWork work = new PreviewWork(doc, xpath, blobPostProcessing);
+            return work.getPreview(Duration.ofMinutes(1));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalParameterException(e.getMessage());
+        } catch (TimeoutException | DocumentNotFoundException e) {
+            throw new WebResourceNotFoundException(e.getMessage());
         }
     }
 
