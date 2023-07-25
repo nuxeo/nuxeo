@@ -39,7 +39,7 @@ public class BlobDomainEventProducer extends DomainEventProducer {
 
     protected static final Logger log = LogManager.getLogger(BlobDomainEventProducer.class);
 
-    protected static final String CODEC_NAME = "avroBinary";
+    protected static final String CODEC_NAME = "avro";
 
     protected static final String SOURCE_NAME = "BLOB"; // Blob Domain Event Producer
 
