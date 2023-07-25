@@ -2,9 +2,9 @@ persistence:
   enabled: false
 useStatefulSet: false
 labels:
-  usage: utests
+  dev.nuxeo.com/usage: utests
 podLabels:
-  usage: utests
+  dev.nuxeo.com/usage: utests
 extraDeploy:
   # use extra deploy because MongoDB doesn't have a PDB for the standalone deployment
   - |

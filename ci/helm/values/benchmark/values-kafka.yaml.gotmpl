@@ -10,16 +10,15 @@ resources:
     cpu: "3"
     memory: "8Gi"
 podLabels:
-  usage: benchmark
-  app: kafka
+  dev.nuxeo.com/usage: benchmark
 podAnnotations:
-  ad.datadoghq.com/tags: '{"source": "kafka", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
+  ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
     - labelSelector:
         matchExpressions:
-        - key: app
+        - key: dev.nuxeo.com/app
           operator: In
           values:
           - kafka
@@ -30,10 +29,10 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
     - labelSelector:
         matchExpressions:
-        - key: app
+        - key: dev.nuxeo.com/app
           operator: In
           values:
-          - kafka-zookeeper
+          - zookeeper
       topologyKey: "kubernetes.io/hostname"
 {{ readFile "values-tolerations-nodeselector.yaml" }}
 zookeeper:
@@ -46,19 +45,18 @@ zookeeper:
       cpu: "500m"
       memory: "1Gi"
   podLabels:
-    usage: benchmark
-    app: kafka-zookeeper
+    dev.nuxeo.com/usage: benchmark
   podAnnotations:
-    ad.datadoghq.com/tags: '{"source": "zookeeper", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
+    ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
           matchExpressions:
-          - key: app
+          - key: dev.nuxeo.com/app
             operator: In
             values:
-            - kafka-zookeeper
+            - zookeeper
             - opensearch
             - mongodb
         topologyKey: "kubernetes.io/hostname"

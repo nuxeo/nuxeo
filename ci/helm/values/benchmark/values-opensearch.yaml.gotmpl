@@ -18,11 +18,10 @@ podAnnotations:
         ]
       }
     }
-  ad.datadoghq.com/tags: '{"source": "opensearch", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
+  ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 labels:
-  usage: benchmark
-  app: opensearch
+  dev.nuxeo.com/usage: benchmark
 service:
   labels:
-    usage: benchmark
+    dev.nuxeo.com/usage: benchmark
 {{ readFile "values-tolerations-nodeselector.yaml" }}

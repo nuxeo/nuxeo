@@ -12,14 +12,13 @@ resources:
     cpu: "12"
     memory: "48Gi"
 podLabels:
-  usage: benchmark
-  app: nuxeo
+  dev.nuxeo.com/usage: benchmark
 podAnnotations:
-  ad.datadoghq.com/nuxeo.logs: '[{"source":"nuxeo","service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}]'
-  ad.datadoghq.com/tags: '{"source": "nuxeo", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
+  ad.datadoghq.com/nuxeo.logs: '[{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}]'
+  ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 service:
   labels:
-    usage: benchmark
+    dev.nuxeo.com/usage: benchmark
 amazonS3:
   enabled: true
   accessKeyId: {{ requiredEnv "AWS_ACCESS_KEY_ID" }}
@@ -50,7 +49,7 @@ customProperties:
     metrics.enabled=true
     metrics.datadog.enabled=true
     metrics.datadog.pollInterval=60
-    metrics.datadog.tags=source:nuxeo,service:benchmark-{{ env "BUILD_NUMBER" | default "local" }},pod_name:${env:POD_NAME}
+    metrics.datadog.tags=branch:{{ env "BRANCH_NAME" | default "local" }},pod_name:${env:POD_NAME},project:jenkins-{{ env "CURRENT_NAMESPACE" | default "local" }},repository=nuxeo-lts,source:nuxeo,service:benchmark-{{ env "BUILD_NUMBER" | default "local" }},team:platform,usage:benchmark
     metrics.datadog.udp=true
     metrics.datadog.host=${env:DD_AGENT_HOST}
     metrics.datadog.port=8125
@@ -62,7 +61,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
     - labelSelector:
         matchExpressions:
-        - key: app
+        - key: dev.nuxeo.com/app
           operator: In
           values:
           - nuxeo
@@ -73,7 +72,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
     - labelSelector:
         matchExpressions:
-        - key: app
+        - key: dev.nuxeo.com/app
           operator: In
           values:
           - kafka

@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.21"
+library identifier: "platform-ci-shared-library@v0.0.25"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -221,7 +221,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            nxK8s.setPodLabel()
+            nxK8s.setPodLabels()
           }
         }
       }

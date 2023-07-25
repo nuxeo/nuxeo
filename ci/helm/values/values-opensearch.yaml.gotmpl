@@ -17,16 +17,6 @@ config:
       security:
         disabled: true
 labels:
-  {{- if (env "BRANCH_NAME") }}
-  branch: {{ env "BRANCH_NAME" | quote }}
-  {{- end }}
-  resource: pod
-  team: platform
-service:
-  labels:
-    {{- if (env "BRANCH_NAME") }}
-    branch: {{ env "BRANCH_NAME" | quote }}
-    {{- end }}
-    resource: service
-    team: platform
+  {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 2 }}
+  dev.nuxeo.com/app: opensearch
 {{ readFile "values-tolerations-nodeselector.yaml" }}

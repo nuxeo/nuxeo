@@ -16,7 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.13"
+library identifier: "platform-ci-shared-library@v0.0.25"
 
 void getCurrentVersion() {
   return readMavenPom().getVersion()
@@ -53,7 +53,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            nxK8s.setPodLabel()
+            nxK8s.setPodLabels()
           }
         }
       }

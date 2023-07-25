@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-library identifier: "platform-ci-shared-library@v0.0.17"
+library identifier: "platform-ci-shared-library@v0.0.25"
 
 boolean isNuxeoTag() {
   return NUXEO_BRANCH =~ /^v.*$/
@@ -53,7 +53,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            nxK8s.setPodLabel(branch: NUXEO_BRANCH)
+            nxK8s.setPodLabels(branch: NUXEO_BRANCH)
           }
         }
       }
