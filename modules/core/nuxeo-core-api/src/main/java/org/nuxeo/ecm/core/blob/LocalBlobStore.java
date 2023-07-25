@@ -331,7 +331,7 @@ public class LocalBlobStore extends AbstractBlobStore {
             } else {
                 OptionalOrUnknown<Path> fileOpt = getStoredFile(key);
                 if (!fileOpt.isPresent()) {
-                    log.warn("Unknown blob for key: {}",  key);
+                    log.trace("Unknown blob for key: {}",  key);
                     return;
                 }
                 // mark the blob by touching the file
