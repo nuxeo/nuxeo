@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.13"
+library identifier: "platform-ci-shared-library@v0.0.25"
 
 boolean isTriggeredByCron() {
   return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
@@ -111,7 +111,7 @@ pipeline {
         container('maven') {
           script {
             nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', state: 'PENDING', commitSha: env.SCM_REF)
-            nxK8s.setPodLabel()
+            nxK8s.setPodLabels()
           }
         }
       }

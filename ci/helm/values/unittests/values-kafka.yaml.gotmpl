@@ -1,7 +1,7 @@
 persistence:
   enabled: false
 podLabels:
-  usage: utests
+  dev.nuxeo.com/usage: utests
 extraDeploy: |-
   # use extra deploy for Kafka PDB because PDB from Kafka chart is only deployed when replica count > 1
   - apiVersion: policy/v1
@@ -43,4 +43,4 @@ zookeeper:
   persistence:
     enabled: false
   podLabels:
-    usage: utests
+    dev.nuxeo.com/usage: utests

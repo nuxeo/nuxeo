@@ -12,16 +12,12 @@ resources:
     memory: "1024Mi"
 esJavaOpts: "-Xmx380m -Xms380m"
 labels:
-  {{- if (env "BRANCH_NAME") }}
-  branch: {{ env "BRANCH_NAME" | quote }}
-  {{- end }}
-  resource: pod
-  team: platform
+  {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 2 }}
+  dev.nuxeo.com/app: elasticsearch
+  dev.nuxeo.com/resource: pod
 service:
   labels:
-    {{- if (env "BRANCH_NAME") }}
-    branch: {{ env "BRANCH_NAME" | quote }}
-    {{- end }}
-    resource: service
-    team: platform
+    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
+    dev.nuxeo.com/app: elasticsearch
+    dev.nuxeo.com/resource: service
 {{ readFile "values-tolerations-nodeselector.yaml" }}

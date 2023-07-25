@@ -12,9 +12,9 @@ postgresqlExtendedConf:
   work_mem: "12MB"
 primary:
   labels:
-    usage: utests
+    dev.nuxeo.com/usage: utests
   podLabels:
-    usage: utests
+    dev.nuxeo.com/usage: utests
 extraDeploy:
   # use extra deploy because PostgreSQL chart doesn't have a PDB
   - |

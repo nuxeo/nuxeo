@@ -7,23 +7,22 @@ resources:
     cpu: "15"
     memory: "56Gi"
 labels:
-  usage: benchmark
+  dev.nuxeo.com/usage: benchmark
 podLabels:
-  usage: benchmark
-  app: mongodb
+  dev.nuxeo.com/usage: benchmark
 podAnnotations:
-  ad.datadoghq.com/tags: '{"source": "mongodb", "service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
+  ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
     - labelSelector:
         matchExpressions:
-        - key: app
+        - key: dev.nuxeo.com/app
           operator: In
           values:
           - kafka
-          - kafka-zookeeper
-          - elasticsearch-master
+          - zookeeper
+          - elasticsearch
           - mongodb
       topologyKey: "kubernetes.io/hostname"
 {{ readFile "values-tolerations-nodeselector.yaml" }}

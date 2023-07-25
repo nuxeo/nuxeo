@@ -18,7 +18,7 @@
  *     Thomas Roger <troger@nuxeo.com>
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.13"
+library identifier: "platform-ci-shared-library@v0.0.25"
 
 /**
  * This pipeline is intended to be executed on Pull Requests only
@@ -57,7 +57,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            nxK8s.setPodLabel()
+            nxK8s.setPodLabels()
           }
         }
       }
