@@ -88,18 +88,18 @@ public class StreamIntrospectionComputation extends AbstractComputation {
 
     @Override
     public void init(ComputationContext context) {
+        MetricName scaleMetric = MetricName.build("nuxeo", "streams", "scale", "metric");
+        MetricName workerMetric = MetricName.build("nuxeo", "cluster", "worker", "count");
+        registry.remove(scaleMetric);
+        registry.remove(workerMetric);
         if (context.isSpareComputation()) {
             log.info("Spare instance nothing to report");
-        } else {
-            log.warn("Instance elected to introspect Nuxeo Stream activity");
+            return;
         }
+        log.warn("Instance elected to introspect Nuxeo Stream activity");
         loadModel(getKvStore().getString(INTROSPECTION_KEY));
-        MetricName gaugeName = MetricName.build("nuxeo", "streams", "scale", "metric");
-        registry.remove(gaugeName);
-        registry.register(gaugeName, (Gauge<Integer>) this::getScaleMetric);
-        gaugeName = MetricName.build("nuxeo", "cluster", "worker", "count");
-        registry.remove(gaugeName);
-        registry.register(gaugeName, (Gauge<Integer>) this::getCurrentWorkerNodes);
+        registry.register(scaleMetric, (Gauge<Integer>) this::getScaleMetric);
+        registry.register(workerMetric, (Gauge<Integer>) this::getCurrentWorkerNodes);
     }
 
     protected int getCurrentWorkerNodes() {
