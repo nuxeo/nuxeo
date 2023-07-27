@@ -661,7 +661,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     public void onPartitionsRevoked(Collection<LogPartition> partitions) {
         setThreadName("rebalance revoked");
         // Flush the context in case of incomplete rebalance (NXP-29208)
-        this.context = new ComputationContextImpl(streamManager, metadata, policy, partitions.isEmpty());
+        this.context = new ComputationContextImpl(streamManager, metadata, policy, true);
         computation.init(context);
     }
 
@@ -671,7 +671,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         boolean isSpare = partitions.isEmpty();
         setThreadName("rebalance assigned");
         // reset the context
-        this.context = new ComputationContextImpl(streamManager, metadata, policy, partitions.isEmpty());
+        this.context = new ComputationContextImpl(streamManager, metadata, policy, isSpare);
         log.debug(metadata.name() + ": Init isSpare=" + isSpare);
         computation.init(context);
         lastReadTime = System.currentTimeMillis();
