@@ -233,6 +233,9 @@ public class CSVImporterWork extends TransientStoreWork {
         } catch (IOException e) {
             logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
             log.debug(e, e);
+        } catch (IllegalArgumentException e) {
+            logError(0, "Invalid CSV file: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
+            log.debug(e, e);
         }
         store.putParameter(id, "logs", importLogs);
         if (options.sendEmail()) {
