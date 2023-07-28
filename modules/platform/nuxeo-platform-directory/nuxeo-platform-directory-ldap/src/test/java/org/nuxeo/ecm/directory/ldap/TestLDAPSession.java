@@ -1082,6 +1082,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Ignore
+    @Test
     public void testDateField() {
         // To make this test working:
         // - in the file slapd.conf, uncomment the line include /etc/ldap/schema/testdateperson.schema
