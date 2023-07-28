@@ -90,6 +90,9 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
 
         Blob audioBlob = doc.getAdapter(BlobHolder.class).getBlob();
 
+        if (audioBlob == null || audioBlob.getFile() == null) {
+            return thumbnailBlob;
+        }
         try {
             // Get the cover art of the audio file if ID3v2 exist
             MP3File mp3File = new MP3File(audioBlob.getFile());
