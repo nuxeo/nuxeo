@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -101,6 +102,17 @@ public class TestThumbnailAudioFactory {
     public void testComputeThumbnailWithoutThumbnail() throws IOException, CannotWriteException, CannotReadException,
             TagException, InvalidAudioFrameException, ReadOnlyFileException {
         Blob blob = getBlob(null, null);
+        DocumentModel doc = session.createDocumentModel("/", "testAudio", "Audio");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.createDocument(doc);
+        Blob thumbnail = thumbnailService.computeThumbnail(doc, session);
+        assertNull(thumbnail);
+    }
+
+    @Test
+    public void testComputeThumbnailNoFile() {
+        // A StringBlob is not backed with a file
+        Blob blob = new StringBlob("All you need is blob", "audio/mp3", null);
         DocumentModel doc = session.createDocumentModel("/", "testAudio", "Audio");
         doc.setPropertyValue("file:content", (Serializable) blob);
         session.createDocument(doc);
