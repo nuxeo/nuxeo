@@ -1,0 +1,6 @@
+dev.nuxeo.com/base_branch: {{ env "CHANGE_TARGET" | default (env "BRANCH_NAME") | default "local" | quote }}
+dev.nuxeo.com/branch: {{ env "BRANCH_NAME" | default "local" | quote }}
+dev.nuxeo.com/initiator: {{ eq (env "DRY_RUN") "true" | ternary "jenkins-platform-staging" "jenkins-platform" }}
+dev.nuxeo.com/repository: nuxeo
+dev.nuxeo.com/team: platform
+dev.nuxeo.com/usage: utests

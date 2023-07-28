@@ -18,7 +18,7 @@
  *     Thomas Roger <troger@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.3"
+library identifier: "platform-ci-shared-library@v0.0.25"
 
 // name function differently from step to avoid 'Excessively nested closures/functions' error
 def doArchiveArtifacts(artifacts, excludes = '') {
@@ -70,15 +70,9 @@ pipeline {
     stage('Set labels') {
       steps {
         container('maven') {
-          echo """
-          ----------------------------------------
-          Set Kubernetes resource labels
-          ----------------------------------------
-          """
-          echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
-          sh """
-            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
-          """
+          script {
+            nxK8s.setPodLabels()
+          }
         }
       }
     }
@@ -131,18 +125,20 @@ pipeline {
       steps {
         container('maven') {
           nxWithGitHubStatus(context: 'distribution/build', message: 'Build distribution') {
-            echo """
-            ----------------------------------------
-            Build distribution
-            ----------------------------------------"""
-            sh """
-              mvn ${MAVEN_ARGS} \
-                -Pdistrib \
-                -pl nuxeo-distribution \
-                -amd \
-                install
-            """
-            findText regexp: ".*ERROR.*", fileSet: 'nuxeo-distribution/**/log/server.log'
+            script {
+              echo """
+              ----------------------------------------
+              Build distribution
+              ----------------------------------------"""
+              sh """
+                mvn ${MAVEN_ARGS} \
+                  -Pdistrib \
+                  -pl nuxeo-distribution \
+                  -amd \
+                  install
+              """
+              nxUtils.lookupText(regexp: ".*ERROR.*", fileSet: 'nuxeo-distribution/**/log/server.log')
+            }
           }
         }
       }
@@ -164,10 +160,6 @@ pipeline {
             **/*.log,
             **/nxserver/config/distribution.properties
           ''', 'nuxeo-distribution/nuxeo-war-tests/target/tomcat/logs/*.log')
-        }
-        unsuccessful {
-          // findText does mark the build in FAILURE but doesn't fail the stage nor stop the pipeline
-          error "Errors were found!"
         }
       }
     }
