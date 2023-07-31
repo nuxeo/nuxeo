@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.task.providers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
@@ -28,7 +29,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
-import org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider;
 
 public class UserTaskPageProviderTest {
 
@@ -60,6 +60,13 @@ public class UserTaskPageProviderTest {
     }
 
     @Test
+    public void testGetLocaleWhenLanguageAndCountryDashPattern() {
+        properties.put("locale", "en-US");
+        userTaskPageProviver.setProperties(properties);
+        assertEquals(new Locale("en", "US"), userTaskPageProviver.getLocale());
+    }
+
+    @Test
     public void testGetLocaleWhenNull() {
         Locale.setDefault(defaultLocale);
         properties.put("locale", null);
@@ -77,22 +84,9 @@ public class UserTaskPageProviderTest {
 
     @Test
     public void testGetLocaleWhenInvalidFormat() {
-        properties.put("locale", "en-US");
-        userTaskPageProviver.setProperties(properties);
-        try {
-            userTaskPageProviver.getLocale();
-            fail();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
-
         properties.put("locale", "FRE_FRA");
         userTaskPageProviver.setProperties(properties);
-        try {
-            userTaskPageProviver.getLocale();
-            fail();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
+        var e = assertThrows(IllegalArgumentException.class, userTaskPageProviver::getLocale);
+        assertEquals("Invalid locale format: FRE_FRA", e.getMessage());
     }
 }
