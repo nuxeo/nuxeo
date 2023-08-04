@@ -57,6 +57,7 @@
 
     <nuxeo.platform.version>2023.1-SNAPSHOT</nuxeo.platform.version>
     <nuxeo.distribution.name>lts</nuxeo.distribution.name>
+    <nuxeo.platform.javadoc.version>${project.version}</nuxeo.platform.javadoc.version>
 
     <nuxeo.connect.client.version>1.8.6</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
@@ -4501,7 +4502,6 @@
           <configuration>
             <doclint>all,-missing</doclint>
             <show>protected</show>
-            <linksource>true</linksource>
             <tags>
               <!-- took from https://bugs.openjdk.java.net/browse/JDK-8068562 -->
               <tag>
@@ -5212,6 +5212,17 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>3.5.3</version>
+              </dependency>
+            </dependencies>
+          </plugin>
         </plugins>
       </build>
       <reporting>
@@ -5277,6 +5288,12 @@
           </plugin>
         </plugins>
       </reporting>
+      <distributionManagement>
+        <site>
+          <id>nuxeo-platform-javadoc</id>
+          <url>dav:https://packages.nuxeo.com/repository/nuxeo-platform-javadoc/${nuxeo.platform.javadoc.version}/</url>
+        </site>
+      </distributionManagement>
     </profile>
 
     <profile>
