@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED;
 
 import java.io.Serializable;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class UpdateACEStatusWork extends AbstractWork {
         setStatus("Updating ACE status");
         openSystemSession();
 
-        String formattedDate = FORMATTER.format(ZonedDateTime.now());
+        String formattedDate = FORMATTER.format(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC));
 
         IterableQueryResult result = session.queryAndFetch(String.format(QUERY, formattedDate, formattedDate),
                 NXQL.NXQL);
