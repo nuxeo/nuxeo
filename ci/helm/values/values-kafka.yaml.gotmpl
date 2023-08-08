@@ -1,6 +1,11 @@
 image:
   tag: "3.3.1"
 replicaCount: 1
+initContainers:
+  - name: init-zookeeper
+    image: busybox
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'until nc -w1 {{"{{"}} printf "%s%s" (include "kafka.zookeeper.fullname" .) (tpl .Values.zookeeperChrootPath .) | quote {{"}}"}} {{"{{"}} .Values.zookeeper.service.ports.client {{"}}"}}; do echo "waiting for zookeeper"; sleep 2; done;']
 serviceAccount:
   create: false
 resources:
