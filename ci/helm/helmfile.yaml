@@ -66,6 +66,21 @@ releases:
   values:
   - values/values-kafka.yaml.gotmpl
   - values/{{ $valuesDir }}/values-kafka.yaml.gotmpl
+  # Make Kafka wait for Zookeeper
+  # Adding an initContainer is only possible since 12.3.0 Chart version, and we can't upgrade easily
+  strategicMergePatches:
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: kafka
+    spec:
+      template:
+        spec:
+          initContainers:
+          - name: init-zookeeper
+            image: busybox
+            imagePullPolicy: IfNotPresent
+            command: ['sh', '-c', 'until nc -w1 "kafka-zookeeper" 2181; do echo "waiting for zookeeper"; sleep 2; done;']
 - name: redis
   chart: bitnami/redis
   version: 11.2.1
