@@ -1,0 +1,23 @@
+<component name="org.nuxeo.platform.automation.scripting.test.chain-category-dashes">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+  <scriptedOperation id="Scripting.TestChainWithCategoryDashes">
+    <inputType>Document</inputType>
+    <outputType>Document</outputType>
+    <category>Scripting</category>
+    <script><![CDATA[
+        function run(input, params) {
+            var document = id_with_dashes.OpWithDash(input, {});
+            return document;
+        }
+      ]]></script>
+  </scriptedOperation>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="id-with-dashes.OpWithDash">
+      <operation id="Context.FetchDocument"/>
+    </chain>
+  </extension>
+
+</component>
