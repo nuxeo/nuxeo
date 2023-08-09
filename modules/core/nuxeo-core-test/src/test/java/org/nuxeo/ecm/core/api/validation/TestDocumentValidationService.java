@@ -497,6 +497,19 @@ public class TestDocumentValidationService {
     }
 
     @Test
+    public void testValidateSimpleArrayNonNillableElementField() {
+        DocumentValidationReport violations;
+        violations = validator.validate("vs:simpleListNonNillableElement", new String[] {});
+        assertFalse(violations.hasError());
+        violations = validator.validate("vs:simpleListNonNillableElement", new String[] { "", "123" });
+        assertFalse(violations.hasError());
+        violations = validator.validate("vs:simpleListNonNillableElement", new String[] { "", "123", null });
+        assertTrue(violations.hasError());
+        assertEquals(1, violations.numberOfErrors());
+        assertTrue(((ConstraintViolation) violations.asList().get(0)).getConstraint() instanceof NotNullConstraint);
+    }
+
+    @Test
     public void testValidateArrayPropsOnlyDirtyItem1() {
         doc.setPropertyValue("vs:simpleList", new Object[] { "123", "234", "345" });
         DocumentValidationReport violations = validator.validate(doc, true);
