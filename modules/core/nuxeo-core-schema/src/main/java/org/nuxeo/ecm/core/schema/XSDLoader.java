@@ -79,6 +79,7 @@ import com.sun.xml.xsom.ForeignAttributes;
 import com.sun.xml.xsom.XSAttributeDecl;
 import com.sun.xml.xsom.XSAttributeUse;
 import com.sun.xml.xsom.XSComplexType;
+import com.sun.xml.xsom.XSComponent;
 import com.sun.xml.xsom.XSContentType;
 import com.sun.xml.xsom.XSElementDecl;
 import com.sun.xml.xsom.XSFacet;
@@ -649,7 +650,19 @@ public class XSDLoader {
             log.error("list item type was not defined -> you should define first the item type");
             return null;
         }
-        return new ListTypeImpl(schema.getName(), name, itemType);
+        boolean computedNillable = isNillable(type);
+
+        int flags = 0;
+        if (computedNillable) {
+            flags |= Field.NILLABLE;
+        }
+
+        Set<Constraint> constraints = new HashSet<>();
+        if (!computedNillable) {
+            constraints.add(NotNullConstraint.get());
+        }
+        // construct an array ListType
+        return new ListTypeImpl(schema.getName(), name, itemType, null, null, flags, constraints, 0, -1);
     }
 
     protected Type createComplexType(Schema schema, ComplexType superType, String name, XSContentType content,
@@ -908,8 +921,12 @@ public class XSDLoader {
      * @since 7.1
      */
     protected static boolean isNillable(XSElementDecl element) {
-        String value = element.getForeignAttribute(NAMESPACE_CORE_VALIDATION, "nillable");
-        return element.isNillable() || value == null || Boolean.parseBoolean(value);
+        return element.isNillable() || isNillable((XSComponent) element);
+    }
+
+    protected static boolean isNillable(XSComponent component) {
+        String value = component.getForeignAttribute(NAMESPACE_CORE_VALIDATION, "nillable");
+        return value == null || Boolean.parseBoolean(value);
     }
 
 }

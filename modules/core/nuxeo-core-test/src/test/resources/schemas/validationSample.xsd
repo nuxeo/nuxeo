@@ -70,6 +70,18 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="simpleListNonNillableElement">
+    <xs:simpleType>
+      <xs:list nxsv:nillable="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]*"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
   <xs:element name="simpleStringList" nillable="false" nxsv:nillable="false">
     <xs:complexType>
       <xs:sequence>
