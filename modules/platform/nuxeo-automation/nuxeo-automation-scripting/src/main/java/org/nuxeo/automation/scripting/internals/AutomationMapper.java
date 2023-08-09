@@ -274,7 +274,7 @@ public class AutomationMapper implements Bindings {
             }
             for (String obName : opMap.keySet()) {
                 List<String> ops = opMap.get(obName);
-                sb.append("\nvar ").append(obName).append("={};");
+                sb.append("\nvar ").append(replaceDashByUnderscore(obName)).append("={};");
                 for (String opId : ops) {
                     generateFunction(sb, opId);
                 }

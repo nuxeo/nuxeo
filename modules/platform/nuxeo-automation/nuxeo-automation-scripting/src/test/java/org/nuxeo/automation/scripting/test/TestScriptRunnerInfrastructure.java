@@ -346,10 +346,20 @@ public class TestScriptRunnerInfrastructure {
 
     @Test
     public void canUseChainWithDashes() throws OperationException {
+        runChain("Scripting.TestChainWithDashes");
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.scripting.tests:chain-with-category-dashes-contrib.xml")
+    public void canUseChainWithCategoryDashes() throws OperationException {
+        runChain("Scripting.TestChainWithCategoryDashes");
+    }
+
+    protected void runChain(String chainId) throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {
             DocumentModel root = session.getRootDocument();
             ctx.setInput(root);
-            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestChainWithDashes");
+            DocumentModel result = (DocumentModel) automationService.run(ctx, chainId);
             assertNotNull(result);
         }
     }
