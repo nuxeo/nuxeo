@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
-
 package org.nuxeo.ecm.core.api.validation;
 
 import static java.util.Collections.singletonList;
@@ -102,11 +101,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             }
         }
         Boolean activated = validationActivations.get(context);
-        if (activated == null) {
-            return false;
-        } else {
-            return activated;
-        }
+        return activated != null && activated;
     }
 
     @Override
@@ -255,10 +250,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                 addNotNullViolation(res, schema, path);
             }
             if (validateSubProperties) {
-                List<ValidationViolation> subs = validateComplexTypeField(schema, path, field, value);
-                if (subs != null) {
-                    res.addAll(subs);
-                }
+                res.addAll(validateComplexTypeField(schema, path, field, value));
             }
             return res;
         } else if (field.getType().isListType()) {
@@ -470,11 +462,10 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
             }
             if (castedValue != null) {
                 int index = 0;
-                if (prop instanceof ArrayProperty) {
+                if (prop instanceof ArrayProperty arrayProp) {
                     if (!field.isNillable() && castedValue.isEmpty()) {
                         addNotNullViolation(violations, schema, path);
                     }
-                    ArrayProperty arrayProp = (ArrayProperty) prop;
                     // that's an ArrayProperty : there will not be child properties
                     for (Object itemValue : castedValue) {
                         if (!dirtyOnly || arrayProp.isDirty(index)) {
