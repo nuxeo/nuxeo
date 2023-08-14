@@ -52,15 +52,33 @@ releases:
   - values/{{ $valuesDir }}/values-postgresql.yaml
 - name: elasticsearch
   chart: elastic/elasticsearch
-  version: 7.9.2
+  version: 7.17.3
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: elasticsearch.enabled
   values:
   - values/values-elasticsearch.yaml.gotmpl
   - values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
+  # Suppress some environment variables that can't be removed through values files that crash application startup
+  strategicMergePatches:
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: elasticsearch-master
+    spec:
+      template:
+        spec:
+          containers:
+          - name: elasticsearch
+            env:
+            # The cluster.deprecation_indexing.enabled env var is set since ES 7.16 chart version, not working on our application version
+            - name: cluster.deprecation_indexing.enabled
+              $patch: delete
+            # The node.ml env var is set since ES 7.12 chart version, and it is not available in the oss version
+            - name: node.ml
+              $patch: delete
 - name: kafka
   chart: bitnami/kafka
-  version: 11.8.8
+  version: 14.9.3
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: kafka.enabled
   values:
@@ -83,7 +101,7 @@ releases:
             command: ['sh', '-c', 'until nc -w1 "kafka-zookeeper" 2181; do echo "waiting for zookeeper"; sleep 2; done;']
 - name: redis
   chart: bitnami/redis
-  version: 11.2.1
+  version: 15.3.3
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: redis.enabled
   values:

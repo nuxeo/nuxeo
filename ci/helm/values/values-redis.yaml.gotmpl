@@ -1,8 +1,11 @@
 image:
   tag: "6.0.8"
-cluster:
+architecture: standalone
+auth:
   enabled: false
-usePassword: false
+commonLabels:
+  {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 2 }}
+  dev.nuxeo.com/app: redis
 master:
   resources:
     requests:
@@ -12,16 +15,7 @@ master:
       cpu: "200m"
       memory: "64Mi"
   podLabels:
-    {{- if (env "BRANCH_NAME") }}
-    branch: {{ env "BRANCH_NAME" | quote }}
-    {{- end }}
-    resource: pod
-    team: platform
-  service:
-    labels:
-      {{- if (env "BRANCH_NAME") }}
-      branch: {{ env "BRANCH_NAME" | quote }}
-      {{- end }}
-      resource: service
-      team: platform
+    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
+    dev.nuxeo.com/app: redis
+    dev.nuxeo.com/resource: pod
 {{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}

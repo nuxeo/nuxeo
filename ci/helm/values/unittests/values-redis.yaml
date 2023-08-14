@@ -6,6 +6,6 @@ master:
   service:
     labels:
       usage: utests
-podDisruptionBudget:
-  enabled: true
+pdb:
+  create: true
   minAvailable: 1
