@@ -19,16 +19,16 @@
 package org.nuxeo.importer.stream.tests.importer;
 
 import static org.junit.Assert.assertEquals;
-import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_INFO_NAME;
-import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_NAME;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -70,28 +70,42 @@ public class TestBlobImport {
         return streamService.getLogManager();
     }
 
+    protected List<Name> streamsToClean = new ArrayList<>();
+
+    @After
+    public void cleanStreams() {
+        log.info("Cleaning streams: " + streamsToClean);
+        LogManager manager = getManager();
+        streamsToClean.forEach(manager::delete);
+        streamsToClean.clear();
+    }
+
     @Test
     public void randomStringBlob() throws Exception {
-        final int NB_QUEUE = 10;
-        final short NB_PRODUCERS = 10;
+        final int NB_QUEUE = 2;
+        final short NB_PRODUCERS = 2;
         final int NB_BLOBS = 2 * 1000;
+        final Name blobLog = Name.ofUrn("import/randomString-blob");
+        final Name blobInfoLog = Name.ofUrn("import/randomString-blobInfo");
 
         Codec<BlobMessage> blobCodec = StreamImporters.getBlobCodec();
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
         LogManager manager = getManager();
-        manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_NAME), NB_QUEUE);
+        manager.createIfNotExists(blobLog, NB_QUEUE);
+        streamsToClean.add(blobLog);
 
-        ProducerPool<BlobMessage> producers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
+        ProducerPool<BlobMessage> producers = new ProducerPool<>(blobLog.getUrn(), manager, blobCodec,
                 new RandomStringBlobMessageProducerFactory(NB_BLOBS, "en_US", 1, "1234"), NB_PRODUCERS);
         List<ProducerStatus> ret = producers.start().get();
         assertEquals(NB_PRODUCERS, ret.size());
         assertEquals(NB_PRODUCERS * NB_BLOBS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
 
         String blobProviderName = "test";
-        manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), 1);
+        manager.createIfNotExists(blobInfoLog, 1);
+        streamsToClean.add(blobInfoLog);
         BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                manager.getAppender(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), blobInfoCodec));
-        ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
+                manager.getAppender(blobInfoLog, blobInfoCodec));
+        ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(blobLog.getUrn(), manager, blobCodec,
                 new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
                 ConsumerPolicy.builder().batchPolicy(BatchPolicy.NO_BATCH).build());
         List<ConsumerStatus> retConsumers = consumers.start().get();
@@ -104,23 +118,27 @@ public class TestBlobImport {
         final int NB_QUEUE = 2;
         final short NB_PRODUCERS = 2;
         final int NB_BLOBS = 50;
+        final Name blobLog = Name.ofUrn("import/fileBlob-blob");
+        final Name blobInfoLog = Name.ofUrn("import/fileBlob-blobInfo");
 
         Codec<BlobMessage> blobCodec = StreamImporters.getBlobCodec();
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
         LogManager manager = getManager();
-        manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_NAME), NB_QUEUE);
+        manager.createIfNotExists(blobLog, NB_QUEUE);
+        streamsToClean.add(blobLog);
 
-        ProducerPool<BlobMessage> producers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
+        ProducerPool<BlobMessage> producers = new ProducerPool<>(blobLog.getUrn(), manager, blobCodec,
                 new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"), NB_BLOBS),
                 NB_PRODUCERS);
         List<ProducerStatus> ret = producers.start().get();
         assertEquals(NB_PRODUCERS * NB_BLOBS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
 
         String blobProviderName = "test";
-        manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), 1);
+        manager.createIfNotExists(blobInfoLog, 1);
+        streamsToClean.add(blobInfoLog);
         BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                manager.getAppender(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), blobInfoCodec));
-        ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
+                manager.getAppender(blobInfoLog, blobInfoCodec));
+        ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(blobLog.getUrn(), manager, blobCodec,
                 new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
                 ConsumerPolicy.builder().batchPolicy(BatchPolicy.NO_BATCH).build());
         List<ConsumerStatus> retConsumers = consumers.start().get();

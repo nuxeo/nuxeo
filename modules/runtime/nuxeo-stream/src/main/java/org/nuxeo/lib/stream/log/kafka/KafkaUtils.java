@@ -39,9 +39,11 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.DeleteRecordsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.RecordsToDelete;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.ConsumerPartitionAssignor;
 import org.apache.kafka.clients.consumer.RangeAssignor;
@@ -379,5 +381,48 @@ public class KafkaUtils implements AutoCloseable {
         log.info("Deleting topic: " + topic);
         DeleteTopicsResult result = adminClient.deleteTopics(Collections.singleton(topic));
         return result.values().get(topic).isDone();
+    }
+
+    /**
+     * Delete all records of a topic by moving the first offsets to end of each partition.
+     *
+     * @since 2021.43
+     */
+    public void deleteRecords(String topic) {
+        log.info("Deleting records of topic: " + topic);
+        int partitions;
+        try {
+            partitions = getNumberOfPartitions(topic);
+        } catch (StreamRuntimeException e) {
+            log.warn("Fail to get number of partition " + e.getMessage());
+            return;
+        }
+        Map<TopicPartition, RecordsToDelete> recordsToDelete = new HashMap<>(partitions);
+        RecordsToDelete all = RecordsToDelete.beforeOffset(-1);
+        for (int partition = 0; partition < partitions; partition++) {
+            recordsToDelete.put(new TopicPartition(topic, partition), all);
+        }
+        DeleteRecordsResult ret = adminClient.deleteRecords(recordsToDelete);
+        try {
+            ret.all().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Remove all existing consumers and their committed positions.
+     * For testing purpose.
+     *
+     * @since 2021.43
+     */
+    public void deleteConsumers() {
+        List<String> consumers = listAllConsumers();
+        log.info("Deleting all consumers: " + consumers);
+        try {
+            adminClient.deleteConsumerGroups(consumers).all().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

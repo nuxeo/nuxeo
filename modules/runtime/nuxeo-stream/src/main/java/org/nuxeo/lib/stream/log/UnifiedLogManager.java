@@ -201,4 +201,19 @@ public class UnifiedLogManager implements LogManager {
             cqManager.close();
         }
     }
+
+    @Override
+    public void deleteRecords(Name name) {
+        if (kafkaManager != null) {
+            kafkaManager.deleteRecords(name);
+        }
+    }
+
+    @Override
+    public void deleteConsumers() {
+        if (kafkaManager != null) {
+            kafkaManager.deleteConsumers();
+        }
+    }
+
 }

@@ -22,7 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -43,6 +45,9 @@ import org.nuxeo.importer.stream.automation.DocumentConsumers;
 import org.nuxeo.importer.stream.automation.FileBlobProducers;
 import org.nuxeo.importer.stream.automation.RandomBlobProducers;
 import org.nuxeo.importer.stream.automation.RandomDocumentProducers;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,10 +67,15 @@ public class TestAutomation {
     @Inject
     AutomationService automationService;
 
+    @Inject
+    protected StreamService streamService;
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
 
     protected OperationContext ctx;
+
+    protected List<String> streamsToClean = new ArrayList<>();
 
     @Before
     public void createOperationContext() {
@@ -73,8 +83,11 @@ public class TestAutomation {
     }
 
     @After
-    public void closeOperationContext() {
+    public void closeOperationContextAndCleanStream() {
         ctx.close();
+        LogManager manager = streamService.getLogManager();
+        streamsToClean.forEach(name -> manager.delete(Name.ofUrn(name)));
+        streamsToClean.clear();
     }
 
     @Test
@@ -85,11 +98,14 @@ public class TestAutomation {
         params.put("nbBlobs", 100);
         params.put("nbThreads", nbThreads);
         params.put("logSize", 2 * nbThreads);
+        params.put("logName", "import/randomBlobImport");
+        streamsToClean.add("import/randomBlobImport");
         automationService.run(ctx, RandomBlobProducers.ID, params);
 
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
+        params.put("logName", "import/randomBlobImport");
         automationService.run(ctx, BlobConsumers.ID, params);
     }
 
@@ -101,12 +117,15 @@ public class TestAutomation {
         params.put("nbBlobs", 10);
         params.put("nbThreads", nbThreads);
         params.put("logSize", nbThreads);
+        params.put("logName", "import/fileBlob");
+        streamsToClean.add("import/fileBlob");
         params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
         params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
         automationService.run(ctx, FileBlobProducers.ID, params);
 
         params.clear();
         params.put("blobProviderName", "test");
+        params.put("logName", "import/fileBlob");
         params.put("nbThreads", nbThreads);
         params.put("watermark", "foo");
         automationService.run(ctx, BlobConsumers.ID, params);
@@ -117,14 +136,16 @@ public class TestAutomation {
         final int nbThreads = 4;
         final long nbDocuments = 100;
 
-
         Map<String, Object> params = new HashMap<>();
         params.put("nbDocuments", nbDocuments);
         params.put("nbThreads", nbThreads);
+        params.put("logName", "import/docImport");
+        streamsToClean.add("import/docImport");
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 
         params.clear();
         params.put("rootFolder", "/");
+        params.put("logName", "import/docImport");
         automationService.run(ctx, DocumentConsumers.ID, params);
 
         // start a new transaction to prevent db isolation to hide our new documents
@@ -147,20 +168,26 @@ public class TestAutomation {
         params.put("nbBlobs", nbBlobs);
         params.put("nbThreads", nbThreads);
         params.put("marker", marker);
+        params.put("logName", "import/blobDoc-blob");
+        streamsToClean.add("import/blobDoc-blob");
         automationService.run(ctx, RandomBlobProducers.ID, params);
 
         // 2. import blobs into the binarystore, saving blob info into csv
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
-        params.put("logBlobInfo", "import/blob-info");
+        params.put("logBlobInfo", "import/blobDoc-blobInfo");
+        streamsToClean.add("import/blobDoc-blobInfo");
+        params.put("logName", "import/blobDoc-blob");
         automationService.run(ctx, BlobConsumers.ID, params);
 
         // 3. generates random document messages with blob references
         params.clear();
         params.put("nbDocuments", nbDocuments);
         params.put("nbThreads", nbThreads);
-        params.put("logBlobInfo", "import/blob-info");
+        params.put("logBlobInfo", "import/blobDoc-blobInfo");
+        params.put("logName", "import/blobDoc-doc");
+        streamsToClean.add("import/blobDoc-doc");
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 
         // 4. import document into the repository
@@ -172,6 +199,7 @@ public class TestAutomation {
         params.put("blockPostCommitListeners", true);
         params.put("blockAsyncListeners", true);
         params.put("blockIndexing", true);
+        params.put("logName", "import/blobDoc-doc");
         automationService.run(ctx, DocumentConsumers.ID, params);
 
         // WorkManager service = Framework.getService(WorkManager.class);
@@ -203,13 +231,17 @@ public class TestAutomation {
         params.put("nbThreads", nbThreads);
         params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
         params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
+        params.put("logName", "import/fileBlobDoc-blob");
+        streamsToClean.add("import/fileBlobDoc-blob");
         automationService.run(ctx, FileBlobProducers.ID, params);
 
         // 2. import blobs into the binarystore, saving blob info into a log
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
-        params.put("logBlobInfo", "import/blob-info");
+        params.put("logBlobInfo", "import/fileBlobDoc-blobInfo");
+        streamsToClean.add("import/fileBlobDoc-blobInfo");
+        params.put("logName", "import/fileBlobDoc-blob");
         automationService.run(ctx, BlobConsumers.ID, params);
 
         // 3. generates random document messages with blob references
@@ -217,12 +249,15 @@ public class TestAutomation {
         params.put("nbDocuments", nbDocuments);
         params.put("nbThreads", nbThreads);
         params.put("countFolderAsDocument", false);
-        params.put("logBlobInfo", "import/blob-info");
+        params.put("logBlobInfo", "import/fileBlobDoc-blobInfo");
+        params.put("logName", "import/fileBlobDoc-doc");
+        streamsToClean.add("import/fileBlobDoc-doc");
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 
         // 4. import document into the repository
         params.clear();
         params.put("rootFolder", "/");
+        params.put("logName", "import/fileBlobDoc-doc");
         params.put("nbThreads", nbThreads);
         params.put("useBulkMode", true);
         params.put("blockDefaultSyncListeners", true);

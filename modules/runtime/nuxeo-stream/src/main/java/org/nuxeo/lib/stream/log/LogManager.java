@@ -472,4 +472,24 @@ public interface LogManager extends AutoCloseable {
 
     @Override
     void close();
+
+    /**
+     * Delete all records of a stream by moving the first offsets to end of each partition.
+     * Exposed for testing purpose, might not be implemented on all implementation.
+     *
+     * @since 2021.43
+     */
+    default void deleteRecords(Name name) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Remove all existing consumers and their committed positions.
+     * Exposed for testing purpose, might not be implemented by all implementation.
+     *
+     * @since 2021.43
+     */
+    default void deleteConsumers() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }

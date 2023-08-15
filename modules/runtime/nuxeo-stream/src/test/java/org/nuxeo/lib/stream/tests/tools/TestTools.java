@@ -240,6 +240,7 @@ public abstract class TestTools {
     }
 
     @Test
+    @Ignore("Avoid large html output of DD because of invalid key")
     public void testDatadog() {
         run(String.format("datadog %s --verbose -l %s,%s --api-key 1234 -i 2 -c 2", getManagerOptions(),
                 LOG_NAME, LOG_NAME_2));

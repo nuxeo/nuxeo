@@ -118,11 +118,22 @@ public class RuntimeStreamFeature implements RunnerFeature {
         if (!cleanupTopics) {
             return;
         }
-        log.debug("Cleaning Streams"); // not working with Chronicle Queue under Windows: NXP-30741
+        log.debug("Cleaning Streams");
         StreamService service = Framework.getService(StreamService.class);
         service.stopProcessors();
         LogManager manager = service.getLogManager();
-        manager.listAllNames().forEach(manager::delete);
+        if (STREAM_CHRONICLE.equals(streamType)) {
+            manager.listAllNames().forEach(manager::delete);
+        } else if (STREAM_KAFKA.equals(streamType)) {
+            // deleting records is much lighter for Kafka
+            manager.listAllNames().forEach(manager::deleteRecords);
+            try {
+                manager.deleteConsumers();
+            } catch (RuntimeException e) {
+                // ignore failure if group is seen as not empty
+                log.warn("Fail to delete consumers: " + e.getMessage());
+            }
+        }
         cleanupTopics = false;
     }
 
