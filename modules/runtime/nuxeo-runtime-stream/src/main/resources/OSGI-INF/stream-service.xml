@@ -20,7 +20,7 @@
   </extension-point>
 
   <extension point="streamProcessor" target="org.nuxeo.runtime.stream.service">
-    <streamProcessor name="metrics" class="org.nuxeo.runtime.stream.StreamMetricsProcessor" enabled="${metrics.streams.enabled}">
+    <streamProcessor name="metrics" class="org.nuxeo.runtime.stream.StreamMetricsProcessor" enabled="${metrics.streams.enabled:=false}">
       <!-- To handle a MSK rolling upgrade we need 30min retries -->
       <policy name="default" maxRetries="18" delay="15s" maxDelay="120s" continueOnFailure="false" />
       <stream name="input/null" partitions="1" codec="avro" />
