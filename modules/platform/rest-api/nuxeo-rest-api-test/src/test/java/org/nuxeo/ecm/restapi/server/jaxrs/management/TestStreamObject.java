@@ -28,12 +28,14 @@ import java.io.IOException;
 import org.junit.Test;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 2021.35
  */
+@WithFrameworkProperty(name = "metrics.streams.enabled", value = "true")
 public class TestStreamObject extends ManagementBaseTest {
 
     @Test

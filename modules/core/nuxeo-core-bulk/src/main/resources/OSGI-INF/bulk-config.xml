@@ -60,7 +60,7 @@
       <computation name="bulk/status" concurrency="${nuxeo.core.bulk.status.concurrency:=1}" />
     </streamProcessor>
 
-    <streamProcessor name="streamIntrospection"
+    <streamProcessor name="streamIntrospection" enabled="${metrics.streams.enabled:=false}"
       class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionProcessor" defaultCodec="avro"
       defaultConcurrency="1" defaultPartitions="1" />
 
