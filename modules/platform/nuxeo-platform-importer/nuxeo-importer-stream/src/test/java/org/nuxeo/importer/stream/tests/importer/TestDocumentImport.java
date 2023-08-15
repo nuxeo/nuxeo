@@ -23,11 +23,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,12 +91,22 @@ public class TestDocumentImport {
         return streamService.getLogManager();
     }
 
+    protected List<Name> streamsToClean = new ArrayList<>();
+
+    @After
+    public void cleanStreams() {
+        LogManager manager = getLogManager();
+        streamsToClean.forEach(manager::delete);
+        streamsToClean.clear();
+    }
+
     @Test
     public void twoStepsImport() throws Exception {
         final int NB_QUEUE = 5;
         final short NB_PRODUCERS = 5;
         final int NB_DOCUMENTS = 2 * 100;
         final Name LOG_DOC = Name.ofUrn("import/twoSteps-doc");
+        streamsToClean.add(LOG_DOC);
 
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         // 1. generate documents with blobs
@@ -124,6 +136,9 @@ public class TestDocumentImport {
         final Name LOG_BLOB = Name.ofUrn("import/fourSteps-blob");
         final Name LOG_BLOB_INFO = Name.ofUrn("import/fourSteps-blobInfo");
         final Name LOG_DOC = Name.ofUrn("import/fourSteps-doc");
+        streamsToClean.add(LOG_BLOB);
+        streamsToClean.add(LOG_BLOB_INFO);
+        streamsToClean.add(LOG_DOC);
 
         Codec<BlobMessage> blobCodec = StreamImporters.getBlobCodec();
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
@@ -179,6 +194,9 @@ public class TestDocumentImport {
         final Name LOG_BLOB = Name.ofUrn("import/fourStepsFileBlob-blob");
         final Name LOG_BLOB_INFO = Name.ofUrn("import/fourStepsFileBlob-blobInfo");
         final Name LOG_DOC = Name.ofUrn("import/fourStepsFileBlob-doc");
+        streamsToClean.add(LOG_BLOB);
+        streamsToClean.add(LOG_BLOB_INFO);
+        streamsToClean.add(LOG_DOC);
 
         Codec<BlobMessage> blobCodec = StreamImporters.getBlobCodec();
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
@@ -269,6 +287,8 @@ public class TestDocumentImport {
         final short NB_PRODUCERS = 1;
         final int NB_DOCUMENTS = 1_000_000;
         final Name LOG_DOC = Name.ofUrn("import/docGenerationPerf");
+        streamsToClean.add(LOG_DOC);
+
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         // 1. generate documents with blobs
         getLogManager().createIfNotExists(LOG_DOC, NB_QUEUE);

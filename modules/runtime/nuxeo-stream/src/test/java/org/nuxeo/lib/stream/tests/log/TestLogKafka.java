@@ -44,6 +44,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.lib.stream.log.LogAppender;
+import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -278,5 +279,55 @@ public class TestLogKafka extends TestLog {
         assertTrue(manager.exists(logName));
         manager.delete(logName);
         assertFalse(manager.exists(logName));
+    }
+
+    @Test
+    public void testDeleteRecords() throws Exception {
+        manager.createIfNotExists(logName, 1);
+        assertTrue(manager.exists(logName));
+        Name groupA =  Name.of("test", "group-a");
+        Name groupB =  Name.of("test", "group-b");
+
+        // new group on a new topic, no lag
+        LogLag lag = manager.getLag(logName, groupA);
+        assertEquals(0, lag.lag());
+
+        // append a record and check the lag is one
+        manager.getAppender(logName).append(0, KeyValueMessage.of("message1"));
+        manager.getAppender(logName).append(0, KeyValueMessage.of("message2"));
+        manager.getAppender(logName).append(0, KeyValueMessage.of("message3"));
+
+        lag = manager.getLag(logName, groupA);
+        assertEquals(3, lag.lag());
+        long endOffset = lag.upperOffset();
+
+        // move the other consumer to message 2
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(groupB, logName)) {
+            Assert.assertEquals("message1", tailer.read(DEF_TIMEOUT).message().key());
+            Assert.assertEquals("message2", tailer.read(DEF_TIMEOUT).message().key());
+            tailer.commit();
+            assertEquals("There should be a lag of 3 uncommitted records", 1, manager.getLag(logName, groupB).lag());
+        }
+        assertTrue(manager.listConsumerGroups(logName).contains(groupB));
+        assertFalse(manager.listConsumerGroups(logName).contains(groupA));
+
+        // delete records is just moving the first offset of the partition to the end
+        manager.deleteRecords(logName);
+        lag = manager.getLag(logName, groupA);
+        assertEquals(0, lag.lag());
+        assertEquals(endOffset, lag.upperOffset());
+
+        // lag is persisted even if records are not accessible
+        lag = manager.getLag(logName, groupB);
+        assertEquals(1, lag.lag());
+        assertTrue(manager.listConsumerGroups(logName).contains(groupB));
+
+        // unless we delete the consumer group
+        manager.deleteConsumers();
+        assertFalse(manager.listConsumerGroups(logName).contains(groupB));
+        lag = manager.getLag(logName, groupB);
+        assertEquals(0, lag.lag());
+
+        manager.delete(logName);
     }
 }

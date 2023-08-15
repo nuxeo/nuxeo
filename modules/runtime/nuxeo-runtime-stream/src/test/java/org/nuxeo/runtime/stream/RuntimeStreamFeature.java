@@ -121,7 +121,18 @@ public class RuntimeStreamFeature implements RunnerFeature {
         StreamService service = Framework.getService(StreamService.class);
         service.stopProcessors();
         LogManager manager = service.getLogManager();
-        manager.listAllNames().forEach(manager::delete);
+        if (STREAM_KAFKA.equals(streamType)) {
+            // deleting records is much lighter for Kafka
+            manager.listAllNames().forEach(manager::deleteRecords);
+            try {
+                manager.deleteConsumers();
+            } catch (RuntimeException e) {
+                // ignore failure if group is seen as not empty
+                log.warn("Fail to delete consumers: {}", e::getMessage);
+            }
+        } else {
+            manager.listAllNames().forEach(manager::delete);
+        }
         cleanupTopics = false;
     }
 

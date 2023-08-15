@@ -2,7 +2,7 @@
 <component name="org.nuxeo.runtime.stream.tests.kafka.contrib">
 
   <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
-    <kafkaConfig name="default" randomPrefix="true" topicPrefix="nuxeo-test-">
+    <kafkaConfig name="default" topicPrefix="nuxeo-test-">
       <producer>
         <property name="bootstrap.servers">DEFAULT_TEST</property>
       </producer>
@@ -16,7 +16,7 @@
       </consumer>
     </kafkaConfig>
 
-    <kafkaConfig name="no-subscribe" randomPrefix="true" topicPrefix="nuxeo-test-">
+    <kafkaConfig name="no-subscribe" topicPrefix="nuxeo-test-">
       <producer>
         <property name="bootstrap.servers">DEFAULT_TEST</property>
       </producer>

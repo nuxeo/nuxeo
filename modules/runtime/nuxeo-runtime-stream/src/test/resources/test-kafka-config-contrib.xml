@@ -2,7 +2,7 @@
 <component name="org.nuxeo.runtime.stream.tests.kafka.contrib">
 
   <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
-    <kafkaConfig name="config1" randomPrefix="true" topicPrefix="nuxeo-test-">
+    <kafkaConfig name="config1" topicPrefix="nuxeo-test-">
       <producer>
         <property name="bootstrap.servers">kafka-broker-1:9092,kafka-broker-2:9092</property>
         <property name="delivery.timeout.ms">30000</property>

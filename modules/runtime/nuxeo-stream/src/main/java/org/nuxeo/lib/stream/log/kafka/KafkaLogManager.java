@@ -184,17 +184,23 @@ public class KafkaLogManager extends AbstractLogManager {
                 LogLag[] ret = new LogLag[topicPartitions.size()];
                 Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
                 Map<TopicPartition, OffsetAndMetadata> committedOffsets = consumer.committed(topicPartitions);
+                Map<TopicPartition, Long> beginningOffsets = null;
                 for (TopicPartition topicPartition : topicPartitions) {
                     OffsetAndMetadata committed = committedOffsets.get(topicPartition);
-                    long committedOffset = 0L;
+                    long position;
                     if (committed != null) {
-                        committedOffset = committed.offset();
+                        position = committed.offset();
+                    } else {
+                        if (beginningOffsets == null) {
+                             beginningOffsets = consumer.beginningOffsets(topicPartitions);
+                        }
+                        position = beginningOffsets.get(topicPartition);
                     }
                     Long endOffset = endOffsets.get(topicPartition);
                     if (endOffset == null) {
                         endOffset = 0L;
                     }
-                    ret[topicPartition.partition()] = new LogLag(committedOffset, endOffset);
+                    ret[topicPartition.partition()] = new LogLag(position, endOffset);
                 }
                 return Arrays.asList(ret);
             }
@@ -251,4 +257,16 @@ public class KafkaLogManager extends AbstractLogManager {
         KafkaLogConfig config = getConfig(name);
         return kUtils.get(config).delete(config.getResolver().getId(name));
     }
+
+    @Override
+    public void deleteRecords(Name name) {
+        KafkaLogConfig config = getConfig(name);
+        kUtils.get(config).deleteRecords(config.getResolver().getId(name));
+    }
+
+    @Override
+    public void deleteConsumers() {
+        kUtils.get(defaultConfig).deleteConsumers();
+    }
+
 }
