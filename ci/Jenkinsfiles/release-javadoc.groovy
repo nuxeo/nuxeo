@@ -36,7 +36,8 @@ pipeline {
   }
   environment {
     NUXEO_BRANCH = "${params.NUXEO_BRANCH}"
-    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -Pjavadoc'
+    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true -Pjavadoc -DadditionalJOption=-J-Xmx2g -DadditionalJOption=-J-Xms2g'
+    MAVEN_OPTS = "$MAVEN_OPTS -Xms4g -Xmx4g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     VERSION = nxUtils.getVersion()
     JAVADOC_VERSION = getJavadocVersion(env.VERSION)
   }

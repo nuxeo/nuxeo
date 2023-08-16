@@ -132,6 +132,8 @@
     <skip.surefire.tests>${skipTests}</skip.surefire.tests>
 
     <!-- for use in maven-surefire-plugin, maven-failsafe-plugin -->
+    <it.memory.argLine>-Xmx1g</it.memory.argLine>
+    <!-- for use in maven-surefire-plugin, maven-failsafe-plugin -->
     <it.failsafe.argLine></it.failsafe.argLine>
     <it.modules.argLine>
       --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
@@ -4309,7 +4311,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx1g -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow ${it.failsafe.argLine} ${it.modules.argLine}</argLine>
+          <argLine>${it.memory.argLine} -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow ${it.failsafe.argLine} ${it.modules.argLine}</argLine>
           <skipTests>${skip.surefire.tests}</skipTests>
           <systemPropertyVariables>
             <net.sourceforge.cobertura.datafile>
@@ -4575,7 +4577,7 @@
             </dependency>
           </dependencies>
           <configuration>
-            <argLine>${it.failsafe.argLine} ${it.modules.argLine}</argLine>
+            <argLine>${it.memory.argLine} ${it.failsafe.argLine} ${it.modules.argLine}</argLine>
             <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
