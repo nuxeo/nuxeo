@@ -16,6 +16,17 @@
       <param name="value" value="false" />
     </antcall>
     <copy file="${out.dir}/../../target/test-classes/scheduler-no-delay-config.xml" todir="${nuxeo.home}/nxserver/config/" />
+    <!-- set nuxeo JAVA_OPTS -->
+    <if>
+      <isset property="env.NX_JAVA_OPTS" />
+      <then>
+        <antcall target="set-conf">
+          <param name="name" value="JAVA_OPTS" />
+          <param name="value" value="${env.NX_JAVA_OPTS}" />
+        </antcall>
+        <echo level="info" message="Using JAVA_OPTS=${env.NX_JAVA_OPTS}" />
+      </then>
+    </if>
   </target>
 
   <target name="prepare-packages" depends="_init">

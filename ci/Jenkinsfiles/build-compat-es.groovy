@@ -21,14 +21,14 @@ boolean isNuxeoTag() {
 }
 
 def checkParameters() {
-  if (!ELASTICSEARCH_IMAGE_TAG =~ /^v\d+\.\d+\.\d+/) {
+  if (!(ELASTICSEARCH_IMAGE_TAG =~ /^\d+\.\d+\.\d+/)) {
     error('ELASTICSEARCH_IMAGE_TAG parameter must be a semver version such as 7.17.9')
   }
 }
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-platform-lts-2021'
+    label 'jenkins-nuxeo-package-lts-2021'
   }
   options {
     timeout(time: 8, unit: 'HOURS')
@@ -74,17 +74,32 @@ pipeline {
       when {
         expression { !isNuxeoTag() }
       }
+      environment {
+        MAVEN_OPTS = "$MAVEN_OPTS -Xms6g -Xmx6g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+      }
       steps {
         container('maven') {
           script {
             echo "${REPOSITORY_BACKEND} unit tests: install required SNAPSHOT artifacts"
-            sh "mvn ${MAVEN_ARGS} -DskipTests install"
+            sh "touch ${HOME}/nuxeo-test-${REPOSITORY_BACKEND}.properties"
+            echo "MAVEN_OPTS=$MAVEN_OPTS"
+            sh """
+              mvn ${MAVEN_ARGS} -V -T2C \
+                -DskipTests \
+                -Dcustom.environment=${REPOSITORY_BACKEND} \
+                -Dcustom.environment.log.dir=target-${REPOSITORY_BACKEND} \
+                install
+            """
           }
         }
       }
     }
 
     stage('Run mongodb unit tests') {
+      environment {
+        MAVEN_ARGS = "${MAVEN_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+      }
       steps {
         script {
           def redisHost = "${TEST_REDIS_K8S_OBJECT}.${TEST_NAMESPACE}.${TEST_SERVICE_DOMAIN_SUFFIX}"
@@ -95,7 +110,7 @@ pipeline {
             // retrieve the promoted build sha
             commitSha = nxDocker.getLabel(image: "${PRIVATE_DOCKER_REGISTRY}/nuxeo/nuxeo:${NUXEO_BRANCH}", label: 'org.nuxeo.scm-ref')
           }
-          container("maven-${REPOSITORY_BACKEND}") {
+          container("maven") {
             nxWithGitHubStatus(context: "utests/es-${ELASTICSEARCH_MAJOR_DOT_MINOR_VERSION}", message: "Unit tests - ES ${ELASTICSEARCH_IMAGE_TAG} environment", commitSha: commitSha) {
               echo """
               ----------------------------------------
@@ -130,6 +145,7 @@ pipeline {
                   """
                   retry(2) {
                     echo "${REPOSITORY_BACKEND} unit tests: run Maven tests"
+                    echo "MAVEN_OPTS=$MAVEN_OPTS"
                     sh "${mvnCommand}"
                   }
                 } finally {

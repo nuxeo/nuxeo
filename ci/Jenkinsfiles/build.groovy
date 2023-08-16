@@ -51,7 +51,8 @@ String getCurrentVersion() {
 void runFunctionalTests(String baseDir, String tier) {
   try {
     retry(2) {
-      sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -D${tier} -f ${baseDir}/pom.xml verify"
+      echo "MAVEN_OPTS=$MAVEN_OPTS"
+      sh "mvn ${MAVEN_ARGS} -D${tier} -f ${baseDir}/pom.xml verify"
       nxUtils.lookupText(regexp: ".*ERROR.*(?=(?:\\n.*)*\\[.*FrameworkLoader\\] Nuxeo Platform is Trying to Shut Down)",
         fileSet: "ftests/**/log/server.log")
     }
@@ -114,6 +115,7 @@ def buildUnitTestStage(env) {
             script {
               try {
                 echo "${env} unit tests: run Maven"
+                echo "MAVEN_OPTS=$MAVEN_OPTS"
                 if (isDev) {
                   // empty file required by the read-project-properties goal of the properties-maven-plugin with the
                   // customEnvironment profile
@@ -146,7 +148,7 @@ def buildUnitTestStage(env) {
                 def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
                 def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
                 def mvnCommand = """                 
-                  mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -rf :nuxeo-core-parent \
+                  mvn ${MAVEN_ARGS} -rf :nuxeo-core-parent \
                     -Dcustom.environment=${env} \
                     -Dcustom.environment.log.dir=target-${env} \
                     -Dnuxeo.test.core=${testCore} \
@@ -205,10 +207,9 @@ pipeline {
     BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
-    MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+    MAVEN_OPTS = "$MAVEN_OPTS -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
     MAVEN_FAIL_ARGS = getMavenFailArgs()
-    MAVEN_JAVADOC_ARGS = getMavenJavadocArgs()
     CURRENT_VERSION = getCurrentVersion()
     VERSION = nxUtils.getVersion()
     // specify VERSION because otherwise Jenkins is not able to order env var initialization inside the shared library
@@ -291,6 +292,10 @@ pipeline {
     }
 
     stage('Build') {
+      environment {
+        MAVEN_ARGS = "${MAVEN_ARGS} ${nxUtils.isPullRequest() ? '' : '-Pjavadoc -DadditionalJOption=-J-Xmx3g -DadditionalJOption=-J-Xms3g'}"
+        MAVEN_OPTS = "${MAVEN_OPTS} ${nxUtils.isPullRequest() ? '-Xms6g -Xmx6g' : '-Xms3g -Xmx3g'}"
+      }
       steps {
         container('maven') {
           nxWithGitHubStatus(context: 'maven/build', message: 'Build') {
@@ -299,8 +304,8 @@ pipeline {
             Compile
             ----------------------------------------"""
             echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -V -T4C -DskipTests install"
-            sh "mvn ${MAVEN_ARGS} ${MAVEN_JAVADOC_ARGS} -f server/pom.xml -DskipTests install"
+            sh "mvn ${MAVEN_ARGS} -V -T4C -DskipTests install"
+            sh "mvn ${MAVEN_ARGS} -f server/pom.xml -DskipTests install"
           }
         }
       }
@@ -451,6 +456,10 @@ pipeline {
     }
 
     stage('Run runtime unit tests') {
+      environment {
+        MAVEN_ARGS = "${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+      }
       steps {
         container('maven') {
           nxWithGitHubStatus(context: 'utests/runtime', message: 'Unit tests - runtime') {
@@ -466,10 +475,11 @@ pipeline {
               nxWithHelmfileDeployment(namespace: testNamespace, environment: 'runtimeUnitTests') {
                 try {
                   echo 'runtime unit tests: run Maven'
+                  echo "MAVEN_OPTS=$MAVEN_OPTS"
                   dir('modules/runtime') {
                     retry(2) {
                       sh """
-                        mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} \
+                        mvn ${MAVEN_ARGS} \
                           -Dnuxeo.test.redis.host=${redisHost} \
                           -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
                           test
@@ -487,6 +497,10 @@ pipeline {
     }
 
     stage('Run unit tests') {
+      environment {
+        MAVEN_ARGS = "${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+      }
       steps {
         script {
           def stages = [:]
@@ -499,6 +513,10 @@ pipeline {
     }
 
     stage('Run server unit tests') {
+      environment {
+        MAVEN_ARGS = "${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+      }
       steps {
         container('maven') {
           nxWithGitHubStatus(context: 'utests/server', message: 'Unit tests - server') {
@@ -508,7 +526,8 @@ pipeline {
             ----------------------------------------"""
             // run server tests
             dir('server') {
-              sh "mvn ${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} test"
+              echo "MAVEN_OPTS=$MAVEN_OPTS"
+              sh "mvn ${MAVEN_ARGS} test"
             }
           }
         }
@@ -530,6 +549,11 @@ pipeline {
     }
 
     stage('Run "dev" functional tests') {
+      environment {
+        MAVEN_ARGS = "${MAVEN_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms2g -Xmx2g\""
+        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+        NX_JAVA_OPTS = "\$JAVA_OPTS -Xms2g -Xmx2g"
+      }
       steps {
         container('maven') {
           nxWithGitHubStatus(context: 'ftests/dev', message: 'Functional tests - dev environment') {

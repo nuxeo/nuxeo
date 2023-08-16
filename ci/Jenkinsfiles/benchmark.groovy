@@ -92,6 +92,7 @@ pipeline {
     BENCHMARK_NB_DOCS = '100000'
     HELMFILE_COMMAND = "helmfile --file ci/helm/helmfile.yaml --helm-binary /usr/bin/helm3"
     MAVEN_ARGS = '-B -nsu -P-nexus,nexus-private,bench -Dnuxeo.bench.itests=false'
+    MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     NUXEO_DOCKER_IMAGE = "${NUXEO_DOCKER_IMAGE_WITH_VERSION.replaceAll(':.*', '')}"
     DATA_ARTIFACT_GROUP = "content.org.nuxeo.tools.testing"
     DATA_ARTIFACT_ID = "data-test-les-arbres-redis-1.1.gz"
