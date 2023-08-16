@@ -8,18 +8,20 @@ resources:
     cpu: "1"
     memory: "1024Mi"
   limits:
-    cpu: "1.5"
-    memory: "1536Mi"
+    cpu: "1"
+    memory: "1024Mi"
 autoCreateTopicsEnable: false
 deleteTopicEnable: true
 transactionStateLogMinIsr: 1
 extraEnvVars:
+  - name: KAFKA_HEAP_OPTS
+    value: "-Xmx512m -Xms512m"
   - name: KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS
     value: "100"
   - name: KAFKA_CFG_LOG_RETENTION_MINUTES
-    value: "20"
+    value: "240"
   - name: KAFKA_CFG_OFFSETS_RETENTION_MINUTES
-    value: "20"
+    value: "240"
   - name: KAFKA_CFG_OFFSETS_TOPIC_NUM_PARTITIONS
     value: "5"
   - name: KAFKA_CFG_STATE_LOG_REPLICATION_FACTOR
@@ -33,6 +35,14 @@ zookeeper:
   image:
     tag: "3.6.2"
   replicaCount: 1
+  heapSize: "256"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
   podLabels:
     {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
     dev.nuxeo.com/app: zookeeper
