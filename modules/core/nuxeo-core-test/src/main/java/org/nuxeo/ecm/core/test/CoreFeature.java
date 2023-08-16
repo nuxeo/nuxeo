@@ -155,10 +155,11 @@ public class CoreFeature implements RunnerFeature {
         long deadline = System.currentTimeMillis() + duration.toMillis();
         while (logManager.getLag(Name.ofUrn(StreamOrphanBlobGC.STREAM_NAME),
                 Name.ofUrn(StreamOrphanBlobGC.COMPUTATION_NAME)).lag() > 0) {
-            Thread.sleep(50);
             if (System.currentTimeMillis() > deadline) {
+                log.warn("await timeout on blob/gc");
                 return false;
             }
+            Thread.sleep(50);
         }
         return true;
     }

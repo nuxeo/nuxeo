@@ -136,7 +136,7 @@ public class WorkManagerFeature implements RunnerFeature {
         }
 
         protected void logInfos(WorkManager workManager) {
-            StringBuilder sb = new StringBuilder().append("Timed out while waiting for works").append(" ");
+            StringBuilder sb = new StringBuilder().append("await timeout on WorkManager ");
             for (String queueId : workManager.getWorkQueueIds()) {
                 sb.append(System.lineSeparator());
                 sb.append(workManager.getMetrics(queueId));

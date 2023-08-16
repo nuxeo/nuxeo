@@ -406,6 +406,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             long deadline = System.currentTimeMillis() + unit.toMillis(time);
             while (logManager.getLag(Name.ofUrn(STREAM_NAME), Name.ofUrn(COMPUTATION_NAME)).lag() > 0) {
                 if (System.currentTimeMillis() > deadline) {
+                    log.warn("await timeout on audit/writer");
                     return false;
                 }
                 Thread.sleep(50);

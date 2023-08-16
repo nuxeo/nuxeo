@@ -325,7 +325,7 @@ public class BulkServiceImpl implements BulkService, Synchronization {
             }
             Thread.sleep(100);
         } while (deadline > System.currentTimeMillis());
-        log.debug("await timeout on {} after {} ms", () -> getStatus(commandId), duration::toMillis);
+        log.debug("await timeout on: {} after: {} ms", () -> getStatus(commandId), duration::toMillis);
         return false;
     }
 
@@ -352,11 +352,11 @@ public class BulkServiceImpl implements BulkService, Synchronization {
                 if (state == COMPLETED || state == ABORTED || state == UNKNOWN) {
                     break;
                 }
-                Thread.sleep(200);
                 if (deadline < System.nanoTime()) {
-                    log.debug("await timeout, at least one uncompleted command: {}", status);
+                    log.warn("await timeout on BulkService, at least one uncompleted command: {}", status);
                     return false;
                 }
+                Thread.sleep(200);
             }
         }
         return true;

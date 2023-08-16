@@ -20,6 +20,8 @@ package org.nuxeo.drive.test;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -50,7 +52,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.drive.elasticsearch")
 @Deploy("org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml")
 public class ESAuditFeature implements RunnerFeature {
-
+    private static final Logger log = LogManager.getLogger(ESAuditFeature.class);
     @Override
     public void initialize(FeaturesRunner runner) {
         runner.getFeature(TransactionalFeature.class).addWaiter(duration -> {
@@ -64,6 +66,7 @@ public class ESAuditFeature implements RunnerFeature {
             duration = duration.minusMillis(elapsed);
 
             if (!runner.getFeature(RepositoryElasticSearchFeature.class).await(duration)) {
+                log.warn("await timeout on elastic");
                 return false;
             }
 
