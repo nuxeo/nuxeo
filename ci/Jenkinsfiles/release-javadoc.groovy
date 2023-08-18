@@ -57,7 +57,7 @@ pipeline {
             def commitSha = env.SCM_REF
             if (isNuxeoReleaseTag()) {
               // retrieve the promoted build sha
-              commitSha = nxDocker.getLabel(image: "${PRIVATE_DOCKER_REGISTRY}/nuxeo/nuxeo:${NUXEO_BRANCH}", label: 'org.nuxeo.scm-ref')
+              commitSha = nxDocker.getLabel(image: "${PRIVATE_DOCKER_REGISTRY}/nuxeo/nuxeo:${VERSION}", label: 'org.nuxeo.scm-ref')
             }
             nxWithGitHubStatus(context: 'javadoc/site-deploy', message: 'Deploy Javadoc site', commitSha: commitSha) {
               echo """
