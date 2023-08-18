@@ -5081,7 +5081,7 @@
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
-          <version>0.43.3</version>
+          <version>0.43.4</version>
           <extensions>true</extensions>
         </plugin>
       </plugins>
