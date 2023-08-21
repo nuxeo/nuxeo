@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -412,10 +413,15 @@ public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
     }
 
     protected void makeRecord(boolean flexible) {
-        if (isEnforcedRecord() && flexible) {
-            // an enforced record cannot be turned into flexible
-            throw new IllegalStateException(String.format(
-                    "Document: %s is already an enforced record, cannot turn it into flexible record.", getUUID()));
+        if (flexible) {
+            if (BaseSession.isRetentionStricMode()) {
+                throw new UnsupportedOperationException("Cannot make flexible record in strict mode");
+            }
+            if (isEnforcedRecord()) {
+                // an enforced record cannot be turned into flexible
+                throw new IllegalStateException(String.format(
+                        "Document: %s is already an enforced record, cannot turn it into flexible record.", getUUID()));
+            }
         }
         setPropertyValue(Model.MAIN_IS_RECORD_PROP, Boolean.TRUE);
         setPropertyValue(Model.MAIN_IS_FLEXIBLE_RECORD_PROP, flexible);

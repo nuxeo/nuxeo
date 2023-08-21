@@ -32,6 +32,7 @@ import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.INCREMENT_BEFORE_UPDATE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.core.model.Session.PROP_RETENTION_STRICT_MODE_ENABLED;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -138,6 +139,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -4803,6 +4805,15 @@ public class TestSQLRepositoryAPI {
         assertTrue(doc.isRecord());
         assertTrue(session.isFlexibleRecord(docRef));
         assertFalse(session.isEnforcedRecord(docRef));
+    }
+
+    @Test
+    @WithFrameworkProperty(name = PROP_RETENTION_STRICT_MODE_ENABLED, value = "true")
+    public void testCannotMakeFlexibleRecordInStrictMode() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        assertThrows(UnsupportedOperationException.class, () -> session.makeFlexibleRecord(docRef));
     }
 
     @Test
