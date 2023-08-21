@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -562,10 +563,15 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     protected void makeRecord(boolean flexible) {
-        if (isEnforcedRecord() && flexible) {
-            // an enforced record cannot be turned into flexible
-            throw new IllegalStateException(String.format(
-                    "Document: %s is already an enforced record, cannot turn it into flexible record.", getUUID()));
+        if (flexible) {
+            if (BaseSession.isRetentionStricMode()) {
+                throw new UnsupportedOperationException("Cannot make flexible record in strict mode");
+            }
+            if (isEnforcedRecord()) {
+                // an enforced record cannot be turned into flexible
+                throw new IllegalStateException(String.format(
+                        "Document: %s is already an enforced record, cannot turn it into flexible record.", getUUID()));
+            }
         }
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_IS_RECORD, TRUE);
