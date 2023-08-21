@@ -141,9 +141,39 @@ public class PooledDataSourceRegistry {
         return ds;
     }
 
+    /**
+     * Clears the {@link DataSource} contained in this registry.
+     * <p>
+     * This will close the {@link java.sql.Connection} contained in the {@link BasicManagedDataSource} pool.
+     */
+    public void clear() {
+        dataSources.forEach((key, value) -> {
+            var dataSource = (BasicManagedDataSource) value;
+            closeDataSource(key, dataSource);
+        });
+        dataSources.clear();
+        dataSourcesNoSharing.forEach((key, value) -> {
+            var dataSource = (BasicManagedDataSource) value;
+            closeDataSource(key, dataSource);
+        });
+        dataSourcesNoSharing.clear();
+    }
+
     protected void unregisterPooledDataSource(String name) {
-        dataSources.remove(name);
-        dataSourcesNoSharing.remove(name);
+        if (dataSources.remove(name) instanceof BasicManagedDataSource dataSource) {
+            closeDataSource(name, dataSource);
+        }
+        if (dataSourcesNoSharing.remove(name) instanceof BasicManagedDataSource dataSource) {
+            closeDataSource(name, dataSource);
+        }
+    }
+
+    protected void closeDataSource(String name, BasicManagedDataSource dataSource) {
+        try {
+            dataSource.close();
+        } catch (SQLException e) {
+            throw new RuntimeServiceException("Unable to close the DataSource: " + name, e);
+        }
     }
 
     public void createAlias(String name, DataSource ds) {

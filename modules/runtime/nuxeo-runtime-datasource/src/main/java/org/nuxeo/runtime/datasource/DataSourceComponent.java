@@ -63,7 +63,7 @@ public class DataSourceComponent extends DefaultComponent {
         super.deactivate(context);
         links = null;
         datasources = null;
-        // TODO should poolRegistry and sorterRegistry be removed?
+        poolRegistry.clear();
     }
 
     @Override
