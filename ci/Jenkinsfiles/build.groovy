@@ -145,6 +145,7 @@ def buildUnitTestStage(env) {
 
             def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
             mvnCommand += " -Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
+            mvnCommand += " -Dkafka.version=3.4.1"
 
             echo "${env} unit tests: install external services"
             nxWithHelmfileDeployment(namespace: testNamespace, environment: environment) {
@@ -474,6 +475,7 @@ pipeline {
                       sh """
                         mvn ${MAVEN_ARGS} \
                           -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
+                          -Dkafka.version=3.4.1 \
                           test
                       """
                     }
