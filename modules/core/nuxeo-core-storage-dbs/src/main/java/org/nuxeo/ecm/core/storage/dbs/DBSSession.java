@@ -122,6 +122,7 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -132,6 +133,9 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentDomainEventContext;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -972,14 +976,7 @@ public class DBSSession extends BaseSession {
             }
         }
 
-        // notify blob manager before removal
-        try {
-            DBSDocument doc = getDocument(rootId);
-            getDocumentBlobManager().notifyBeforeRemove(doc);
-        } catch (DocumentNotFoundException e) {
-            // unknown type in db or null proxy target
-            // ignore blob manager notification
-        }
+        notifyDocumentRemove(rootId);
 
         // remove root doc
         transaction.removeStates(Collections.singleton(rootId));
@@ -1496,18 +1493,25 @@ public class DBSSession extends BaseSession {
             }
         }
 
-        // notify blob manager before removal
-        try {
-            DBSDocument doc = getDocument(docState);
-            getDocumentBlobManager().notifyBeforeRemove(doc);
-        } catch (DocumentNotFoundException e) {
-            // unknown type in db or null proxy target
-            // ignore blob manager notification
-        }
+        notifyDocumentRemove(docState.getId());
 
         // remove doc
         transaction.removeStates(Collections.singleton(id));
 
+    }
+
+    protected void notifyDocumentRemove(String docId) {
+        try {
+            DBSDocument doc = getDocument(docId);
+            getDocumentBlobManager().notifyBeforeRemove(doc);
+            DocumentDomainEventContext ctx = new DocumentDomainEventContext(NuxeoPrincipal.getCurrent(), doc);
+            Event event = ctx.newEvent(DocumentEventTypes.INTERNAL_DOCUMENT_DELETED);
+            EventService es = Framework.getService(EventService.class);
+            es.fireEvent(event);
+        } catch (DocumentNotFoundException e) {
+            // unknown type in db or null proxy target
+            // ignore blob manager notification
+        }
     }
 
     @Override

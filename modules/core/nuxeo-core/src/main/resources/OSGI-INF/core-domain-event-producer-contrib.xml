@@ -7,6 +7,9 @@
     <domainEventProducer name="blobDomain" class="org.nuxeo.ecm.core.blob.stream.BlobDomainEventProducer">
       <stream name="source/blob" partitions="1" codec="avro" />
     </domainEventProducer>
+    <domainEventProducer name="documentDomain" class="org.nuxeo.ecm.core.model.stream.DocumentDomainEventProducer">
+      <stream name="source/document" partitions="1" codec="avro" />
+    </domainEventProducer>
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">

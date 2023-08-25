@@ -55,6 +55,10 @@ public final class DocumentEventTypes {
 
     public static final String DOCUMENT_REMOVED = "documentRemoved";
 
+    // @since 2021.44
+    // low level event, available as domain event, should not be listened directly
+    public static final String INTERNAL_DOCUMENT_DELETED = "deleted";
+
     public static final String DOCUMENT_REMOVAL_CANCELED = "documentRemovalCanceled";
 
     public static final String ABOUT_TO_REMOVE_VERSION = "aboutToRemoveVersion";
