@@ -41,9 +41,11 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -51,6 +53,9 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentDomainEventContext;
 import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Repository;
@@ -592,7 +597,16 @@ public class SQLSession extends BaseSession {
     }
 
     protected void remove(Node node) {
-        session.removeNode(node, this::notifyDocumentBlobManagerBeforeRemove);
+        session.removeNode(node, this::notifyDocumentRemove);
+    }
+
+    protected void notifyDocumentRemove(Node node) {
+        Document doc = newDocument(node);
+        getDocumentBlobManager().notifyBeforeRemove(doc);
+        DocumentDomainEventContext ctx = new DocumentDomainEventContext(NuxeoPrincipal.getCurrent(), doc);
+        Event event = ctx.newEvent(DocumentEventTypes.INTERNAL_DOCUMENT_DELETED);
+        EventService es = Framework.getService(EventService.class);
+        es.fireEvent(event);
     }
 
     protected void notifyDocumentBlobManagerBeforeRemove(Node node) {
