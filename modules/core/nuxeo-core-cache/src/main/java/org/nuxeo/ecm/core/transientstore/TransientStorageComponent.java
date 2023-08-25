@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.RuntimeMessage.Level;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Descriptor;
@@ -85,10 +86,12 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     protected TransientStoreConfig getDefaultDescriptor() {
         TransientStoreConfig descriptor = getDescriptor(EP_STORE, DEFAULT_STORE_NAME);
         if (descriptor == null) {
-            // TODO make this a hard error
-            String message = "Missing configuration for default transient store, using in-memory";
-            log.warn(message);
-            addRuntimeMessage(Level.WARNING, message);
+            if (!Framework.isTestModeSet()) {
+                // TODO make this a hard error
+                String message = "Missing configuration for default transient store, using in-memory";
+                log.warn(message);
+                addRuntimeMessage(Level.WARNING, message);
+            }
             // use in-memory store
             descriptor = new TransientStoreConfig(DEFAULT_STORE_NAME);
         }
