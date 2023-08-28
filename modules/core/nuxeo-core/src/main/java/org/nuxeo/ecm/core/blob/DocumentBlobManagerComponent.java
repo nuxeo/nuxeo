@@ -228,7 +228,11 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             ManagedBlob managedBlob = (ManagedBlob) blob;
             String currentProviderId = managedBlob.getProviderId();
             // is the blob non-transient, so that reusing the key is an option?
-            if (!getBlobProvider(currentProviderId).isTransient()) {
+            BlobProvider currentProvider = getBlobProvider(currentProviderId);
+            if (currentProvider.isRecordMode() && doc.isRetained(xpath)) {
+                throw new DocumentSecurityException(
+                        "Cannot change blob from document " + doc.getUUID() + ", it is under retention / hold");
+            } else if (!currentProvider.isTransient()) {
                 // is it something we don't have to dispatch?
                 if (!blobDispatcher.getBlobProviderIds().contains(currentProviderId)) {
                     // not something we have to dispatch, reuse the key
@@ -247,10 +251,6 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         BlobProvider blobProvider = getBlobProvider(dispatch.providerId);
         if (blobProvider == null) {
             throw new NuxeoException("No registered blob provider with id: " + dispatch.providerId);
-        }
-        if (blobProvider.isRecordMode() && doc.isRetained(xpath)) {
-            throw new DocumentSecurityException(
-                    "Cannot change blob from document " + doc.getUUID() + ", it is under retention / hold");
         }
         String key = blobProvider.writeBlob(new BlobContext(blob, doc, xpath));
         if (dispatch.addPrefix) {
