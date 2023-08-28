@@ -124,8 +124,9 @@ public class TestBlobDispatcherRecord {
         String key = ((ManagedBlob) blob).getKey();
         assertEquals(foo_test_key, key);
 
-        // turn the blob into a flexible record
+        // turn the blob into a flexible record and retain until indeterminate
         session.makeFlexibleRecord(doc.getRef());
+        session.setRetainUntil(doc.getRef(), CoreSession.RETAIN_UNTIL_INDETERMINATE, null);
 
         // check that it was NOT dispatched to the record blob provider
         doc.refresh();
