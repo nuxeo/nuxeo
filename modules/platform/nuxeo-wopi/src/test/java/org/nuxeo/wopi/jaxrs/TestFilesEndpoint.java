@@ -94,7 +94,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
         toReplace.put(REPOSITORY_VAR, blobDoc.getRepositoryName());
         toReplace.put(DOC_ID_VAR, blobDoc.getId());
         toReplace.put(XPATH_VAR, FILE_CONTENT_PROPERTY);
-        toReplace.put(FILENAME_VAR, "test-file.txt");
+        toReplace.put(FILENAME_VAR, "test-file.docx");
         toReplace.put(CHANGE_TOKEN_VAR, "1-0");
         toReplace.put(ITEM_VERSION_VAR, "0");
         try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
@@ -500,7 +500,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             transactionalFeature.nextTransaction();
             Blob renamedBlob = (Blob) session.getDocument(blobDoc.getRef()).getPropertyValue(FILE_CONTENT_PROPERTY);
             assertNotNull(renamedBlob);
-            assertEquals("renamed-test-file.txt", renamedBlob.getFilename());
+            assertEquals("renamed-test-file.docx", renamedBlob.getFilename());
         }
 
         // lock document from WOPI client
@@ -526,7 +526,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             transactionalFeature.nextTransaction();
             Blob renamedBlob = (Blob) session.getDocument(blobDoc.getRef()).getPropertyValue(FILE_CONTENT_PROPERTY);
             assertNotNull(renamedBlob);
-            assertEquals("renamed-wopi-locked-test-file.txt", renamedBlob.getFilename());
+            assertEquals("renamed-wopi-locked-test-file.docx", renamedBlob.getFilename());
         }
 
         // fail - 409 - locked by another client
@@ -541,7 +541,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             assertTrue(doc.isLocked());
             Blob blob = (Blob) doc.getPropertyValue(FILE_CONTENT_PROPERTY);
             assertNotNull(blob);
-            assertEquals("renamed-wopi-locked-test-file.txt", blob.getFilename());
+            assertEquals("renamed-wopi-locked-test-file.docx", blob.getFilename());
         }
 
         // fail - 409 - locked by Nuxeo
@@ -616,7 +616,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             Blob updatedBlob = (Blob) session.getDocument(blobDoc.getRef()).getPropertyValue(FILE_CONTENT_PROPERTY);
             assertNotNull(updatedBlob);
             assertEquals("new content", updatedBlob.getString());
-            assertEquals("test-file.txt", updatedBlob.getFilename());
+            assertEquals("test-file.docx", updatedBlob.getFilename());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
             assertEquals("1", itemVersion);
         }
@@ -661,7 +661,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             var updatedBlob = (Blob) blobDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
             assertNotNull(updatedBlob);
             assertEquals("new content", updatedBlob.getString());
-            assertEquals("test-file.txt", updatedBlob.getFilename());
+            assertEquals("test-file.docx", updatedBlob.getFilename());
             var itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
             assertEquals("1", itemVersion);
         }
@@ -674,7 +674,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             var updatedBlob = (Blob) blobDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
             assertNotNull(updatedBlob);
             assertEquals("new content", updatedBlob.getString());
-            assertEquals("test-file.txt", updatedBlob.getFilename());
+            assertEquals("test-file.docx", updatedBlob.getFilename());
             var itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
             // item version has changed
             assertEquals("2", itemVersion);
@@ -688,7 +688,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             var updatedBlob = (Blob) blobDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
             assertNotNull(updatedBlob);
             assertEquals("new content", updatedBlob.getString());
-            assertEquals("test-file.txt", updatedBlob.getFilename());
+            assertEquals("test-file.docx", updatedBlob.getFilename());
             var itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
             // item version has changed
             assertEquals("3", itemVersion);
@@ -841,7 +841,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             toReplace.put(REPOSITORY_VAR, multipleBlobsDoc.getRepositoryName());
             toReplace.put(DOC_ID_VAR, multipleBlobsDoc.getId());
             toReplace.put(XPATH_VAR, FILES_FIRST_FILE_PROPERTY);
-            toReplace.put(FILENAME_VAR, "test-attachment.txt");
+            toReplace.put(FILENAME_VAR, "test-attachment.xlsx");
             toReplace.put(CHANGE_TOKEN_VAR, "1-0");
             toReplace.put(ITEM_VERSION_VAR, "0");
             checkJSONResponse(response, "json/CheckFileInfo-files-john-write.json", toReplace);
@@ -877,7 +877,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
                                              .getPropertyValue(FILES_FIRST_FILE_PROPERTY);
             assertNotNull(updatedBlob);
             assertEquals("new attachment", updatedBlob.getString());
-            assertEquals("test-attachment.txt", updatedBlob.getFilename());
+            assertEquals("test-attachment.xlsx", updatedBlob.getFilename());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
             assertEquals("1", itemVersion);
         }
@@ -1042,7 +1042,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
 
     // NXP-30585
     @Test
-    public void testItemVersionWithBlobUpdate() throws IOException {
+    public void testItemVersionUpdateWithBlobUpdate() throws IOException {
         // file:content
         try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -1050,7 +1050,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
         }
 
         DocumentModel doc = session.getDocument(blobDoc.getRef());
-        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) Blobs.createBlob("foo"));
+        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) createBlob("foo", "foo.docx"));
         session.saveDocument(doc);
         transactionalFeature.nextTransaction();
 
@@ -1066,7 +1066,7 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
         }
 
         doc = session.getDocument(multipleBlobsDoc.getRef());
-        doc.setPropertyValue(FILES_FIRST_FILE_PROPERTY, (Serializable) Blobs.createBlob("foo"));
+        doc.setPropertyValue(FILES_FIRST_FILE_PROPERTY, (Serializable) createBlob("foo", "foo.docx"));
         session.saveDocument(doc);
         transactionalFeature.nextTransaction();
 
@@ -1074,6 +1074,66 @@ public class TestFilesEndpoint extends AbstractTestFilesEndpoint {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals("1", node.get("Version").asText());
         }
+    }
+
+    // NXP-32034
+    @Test
+    public void testNoItemVersionUpdateWithNonEditableBlobUpdate() throws IOException {
+        // file:content
+        try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("0", node.get("Version").asText());
+        }
+
+        DocumentModel doc = session.getDocument(blobDoc.getRef());
+        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) createBlob("foo", "foo.docx"));
+        doc = session.saveDocument(doc);
+        transactionalFeature.nextTransaction();
+
+        try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("1", node.get("Version").asText());
+        }
+
+        // update with a non WOPI editable blob
+        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) createBlob("bar", "bar.txt"));
+        session.saveDocument(doc);
+        transactionalFeature.nextTransaction();
+
+        try (CloseableClientResponse response = get(johnToken, blobDocFileId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("1", node.get("Version").asText());
+        }
+
+        // files:files/0/file
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachmentId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("0", node.get("Version").asText());
+        }
+
+        doc = session.getDocument(multipleBlobsDoc.getRef());
+        doc.setPropertyValue(FILES_FIRST_FILE_PROPERTY, (Serializable) createBlob("foo", "foo.docx"));
+        doc = session.saveDocument(doc);
+        transactionalFeature.nextTransaction();
+
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachmentId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("1", node.get("Version").asText());
+        }
+
+        // update with a non WOPI editable blob
+        doc.setPropertyValue(FILES_FIRST_FILE_PROPERTY, (Serializable) createBlob("bar", "bar.txt"));
+        session.saveDocument(doc);
+        transactionalFeature.nextTransaction();
+
+        try (CloseableClientResponse response = get(johnToken, multipleBlobsDocAttachmentId)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("1", node.get("Version").asText());
+        }
+    }
+
+    protected Blob createBlob(String content, String filename) {
+        return Blobs.createBlob(content, null, null, filename);
     }
 
     protected void checkPostNotFound(Map<String, String> headers) {

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.wopi;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -26,6 +27,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * since 2021.9
@@ -36,6 +38,11 @@ public class DirtyBlobListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
+        WOPIService wopiService = Framework.getService(WOPIService.class);
+        if (!wopiService.isEnabled()) {
+            return;
+        }
+
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
@@ -43,7 +50,12 @@ public class DirtyBlobListener implements EventListener {
         DocumentEventContext context = (DocumentEventContext) ctx;
         DocumentModel doc = context.getSourceDocument();
 
-        if (BLOBS_EXTRACTOR.getBlobsProperties(doc).stream().anyMatch(Property::isDirty)) {
+        if (BLOBS_EXTRACTOR.getBlobsProperties(doc)
+                           .stream()
+                           .filter(Property::isDirty)
+                           .map(Property::getValue)
+                           .map(Blob.class::cast)
+                           .anyMatch(wopiService::isSupported)) {
             doc.putContextData(CoreSession.USER_CHANGE, true);
         }
     }

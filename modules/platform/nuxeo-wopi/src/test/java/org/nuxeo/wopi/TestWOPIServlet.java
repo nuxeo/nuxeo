@@ -82,13 +82,13 @@ public class TestWOPIServlet {
     @Before
     public void before() throws IOException {
         docxDoc = session.createDocumentModel("/", "docxDoc", "File");
-        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.txt"));
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.docx"));
         blob.setFilename("foo.docx");
         docxDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
         docxDoc = session.createDocument(docxDoc);
 
         binDoc = session.createDocumentModel("/", "binDoc", "File");
-        blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.txt"));
+        blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.docx"));
         blob.setFilename("foo.bin");
         binDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
         binDoc = session.createDocument(binDoc);

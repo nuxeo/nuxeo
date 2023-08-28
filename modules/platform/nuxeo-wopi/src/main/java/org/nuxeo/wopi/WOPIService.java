@@ -45,6 +45,17 @@ public interface WOPIService {
     WOPIBlobInfo getWOPIBlobInfo(Blob blob);
 
     /**
+     * Returns {@code true} if the given {@code blob} is supported by WOPI, {@code false} otherwise.
+     * <p>
+     * This method relies on checking that the blob's filename extension is supported by the WOPI discovery.
+     *
+     * @since 2021.43
+     */
+    default boolean isSupported(Blob blob) {
+        return false;
+    }
+
+    /**
      * Returns the WOPI action url given a {@code blob} and an {@code action}.
      */
     String getActionURL(Blob blob, String action);
