@@ -238,6 +238,14 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     }
 
     @Override
+    public boolean isSupported(Blob blob) {
+        String extension = getExtension(blob);
+        String appName = extensionAppNames.get(extension);
+        Map<String, String> actionURLs = extensionActionURLs.get(extension);
+        return appName != null && !actionURLs.isEmpty();
+    }
+
+    @Override
     public String getActionURL(Blob blob, String action) {
         String extension = getExtension(blob);
         return extensionActionURLs.getOrDefault(extension, Collections.emptyMap()).get(action);

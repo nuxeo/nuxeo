@@ -186,8 +186,8 @@ public abstract class AbstractTestFilesEndpoint {
         userPermissions.put("joe", READ);
         setPermissions(folder, userPermissions);
 
-        expectedFileBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.txt"));
-        expectedAttachmentBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-attachment.txt"));
+        expectedFileBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.docx"));
+        expectedAttachmentBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-attachment.xlsx"));
 
         CoreSession johnSession = coreFeature.getCoreSession("john");
         blobDoc = johnSession.createDocumentModel("/wopi", "blobDoc", "File");
