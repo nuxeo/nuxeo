@@ -39,6 +39,7 @@ import com.google.inject.Inject;
 @Features(AutomationCoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.io.core")
 @Deploy("org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml")
 public class RenditionJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 

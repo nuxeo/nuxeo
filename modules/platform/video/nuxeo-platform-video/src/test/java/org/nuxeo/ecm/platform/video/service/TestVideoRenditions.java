@@ -60,6 +60,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(VideoFeature.class)
 @Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.io.core")
 @Deploy("org.nuxeo.ecm.platform.rendition.api")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 public class TestVideoRenditions {
