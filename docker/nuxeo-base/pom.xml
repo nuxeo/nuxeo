@@ -55,12 +55,12 @@
         <configuration>
           <images>
             <image>
-              <name>nuxeo/nuxeo-base:latest-lts</name>
+              <name>nuxeo/nuxeo-base:latest-lts-2023</name>
               <build>
                 <args>
                   <BUILD_TAG>local-nuxeo-nuxeo-base</BUILD_TAG>
                   <SCM_REF>built-locally</SCM_REF>
-                  <VERSION>latest-lts</VERSION>
+                  <VERSION>latest-lts-2023</VERSION>
                 </args>
                 <contextDir>${basedir}</contextDir>
               </build>

@@ -18,7 +18,7 @@ There are several ways to build the image, depending on the context:
 
 ### With Maven
 
-To build the `nuxeo/nuxeo-benchmark` image locally, you need to have built the `nuxeo/nuxeo:latest-lts` image first, see its [README](../nuxeo/README.md), then run:
+To build the `nuxeo/nuxeo-benchmark` image locally, you need to have built the `nuxeo/nuxeo:latest-lts-2023` image first, see its [README](../nuxeo/README.md), then run:
 
 ```bash
 mvn -nsu install
@@ -43,7 +43,7 @@ This requires to:
 It also requires the following environment variables:
 
 - `DOCKER_REGISTRY`: the Docker registry to push the image to.
-- `VERSION`: the image tag, for instance `latest-lts`.
+- `VERSION`: the image tag, for instance `latest-lts-2023`.
 
 To build the `nuxeo/nuxeo-benchmark` image with Skaffold, you first need to fetch the needed Nuxeo packages and make it available for the Docker build with Maven:
 
@@ -68,5 +68,5 @@ mvn -nsu process-resources
 Then, run:
 
 ```bash
-docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG> -t nuxeo/nuxeo-benchmark:latest-lts .
+docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG> -t nuxeo/nuxeo-benchmark:latest-lts-2023 .
 ```

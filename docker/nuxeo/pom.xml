@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <docker.base.image>nuxeo/nuxeo-base:latest-lts</docker.base.image>
+    <docker.base.image>nuxeo/nuxeo-base:latest-lts-2023</docker.base.image>
   </properties>
 
   <dependencies>
@@ -59,13 +59,13 @@
         <configuration>
           <images>
             <image>
-              <name>nuxeo/nuxeo:latest-lts</name>
+              <name>nuxeo/nuxeo:latest-lts-2023</name>
               <build>
                 <args>
                   <BASE_IMAGE>${docker.base.image}</BASE_IMAGE>
                   <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
                   <SCM_REF>built-locally</SCM_REF>
-                  <VERSION>latest-lts</VERSION>
+                  <VERSION>latest-lts-2023</VERSION>
                 </args>
                 <contextDir>${basedir}</contextDir>
               </build>

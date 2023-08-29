@@ -53,7 +53,7 @@ There are several ways to build the image, depending on the context:
 
 ### With Maven
 
-To build the `nuxeo/nuxeo` image locally, you need to have built the `nuxeo/nuxeo-base:latest-lts` image first, see its [README](../nuxeo-base/README.md), then run:
+To build the `nuxeo/nuxeo` image locally, you need to have built the `nuxeo/nuxeo-base:latest-lts-2023` image first, see its [README](../nuxeo-base/README.md), then run:
 
 ```bash
 mvn -nsu install
@@ -78,7 +78,7 @@ This requires to:
 It also requires the following environment variables:
 
 - `DOCKER_REGISTRY`: the Docker registry to push the image to.
-- `VERSION`: the image tag, for instance `latest-lts`.
+- `VERSION`: the image tag, for instance `latest-lts-2023`.
 
 To build the `nuxeo/nuxeo` image with Skaffold, you first need to fetch the Nuxeo server ZIP file and make it available for the Docker build with Maven:
 
@@ -103,7 +103,7 @@ mvn -nsu process-resources
 Then, run:
 
 ```bash
-docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG> -t nuxeo/nuxeo:latest-lts .
+docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG> -t nuxeo/nuxeo:latest-lts-2023 .
 ```
 
 ## Run the Image
@@ -111,7 +111,7 @@ docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG> -t 
 To run a container from the `nuxeo/nuxeo` image built locally, run:
 
 ```bash
-docker run -it -p 8080:8080 nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 nuxeo/nuxeo:latest-lts-2023
 ```
 
 To pull the `nuxeo/nuxeo` image from our Docker registry and run a container from it, run:
@@ -125,13 +125,13 @@ docker run -it -p 8080:8080 <DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG>
 To inspect the different layers included in the image, you can run:
 
 ```bash
-docker history nuxeo/nuxeo:latest-lts
+docker history nuxeo/nuxeo:latest-lts-2023
 ```
 
 The [dive](https://github.com/wagoodman/dive) tool is also very good for exploring an image, its layer contents and discovering ways to shrink the image size:
 
 ```bash
-dive nuxeo/nuxeo:latest-lts
+dive nuxeo/nuxeo:latest-lts-2023
 ```
 
 ## Build a Custom Image From Nuxeo
@@ -176,7 +176,7 @@ nuxeo.db.port=5432
 you can run:
 
 ```bash
-docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/nuxeo:latest-lts-2023
 ```
 
 ### Environment Variables
@@ -197,7 +197,7 @@ The value of `JAVA_OPTS` is appended to the `JAVA_OPTS` property defined in `nux
 For instance, to make the Nuxeo Launcher display the JVM settings in the console, run:
 
 ```bash
-docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/nuxeo:latest-lts-2023
 ```
 
 #### NUXEO_CLID
@@ -207,7 +207,7 @@ The value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/instance.clid` at startup
 For instance, to run a container with a registered Nuxeo instance:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:latest-lts-2023
 ```
 
 #### NUXEO_CONNECT_URL
@@ -217,7 +217,7 @@ docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:latest-lts
 For instance, to run a container with another Connect URL than the default one:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/nuxeo:latest-lts-2023
 ```
 
 #### NUXEO_PACKAGES
@@ -227,7 +227,7 @@ docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/nuxeo
 For instance, to run a container with the `nuxeo-web-ui` and `nuxeo-drive` packages installed:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/nuxeo:latest-lts-2023
 ```
 
 ### Shell Scripts

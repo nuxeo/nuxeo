@@ -37,7 +37,7 @@ This requires to:
 It also requires the following environment variables:
 
 - `DOCKER_REGISTRY`: the Docker registry to push the image to.
-- `VERSION`: the image tag, for instance `latest-lts`.
+- `VERSION`: the image tag, for instance `latest-lts-2023`.
 
 To build the `nuxeo/nuxeo-base` image with Skaffold, you first need to give your credentials to packages.nuxeo.com and make it available for the Docker build with Maven:
 
@@ -62,5 +62,5 @@ mvn -nsu -DYUM_REPO_USERNAME=... -DYUM_REPO_PASSWORD=... process-resources
 Then, run:
 
 ```bash
-docker build -t nuxeo/nuxeo-base:latest-lts .
+docker build -t nuxeo/nuxeo-base:latest-lts-2023 .
 ```
