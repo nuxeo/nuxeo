@@ -28,8 +28,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  *
  * @since 10.2
  */
-@Deploy("org.nuxeo.runtime.stream:OSGI-INF/avro-service.xml") // just deploy Avro
-@Deploy("org.nuxeo.runtime.stream:OSGI-INF/avro-contrib.xml") // just deploy Avro
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.core.io")
