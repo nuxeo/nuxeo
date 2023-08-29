@@ -41,6 +41,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.types")
 // Rendition Service
 @Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.io.core")
 @Deploy("org.nuxeo.ecm.platform.rendition.api")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.automation.core")

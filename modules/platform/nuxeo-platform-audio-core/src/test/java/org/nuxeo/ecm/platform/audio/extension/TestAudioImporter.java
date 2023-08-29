@@ -53,6 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.types")
 @Deploy("org.nuxeo.ecm.platform.audio.core")
 @Deploy("org.nuxeo.ecm.platform.filemanager")
+@Deploy("org.nuxeo.ecm.platform.io.core")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.platform.tag")
 public class TestAudioImporter {

@@ -59,6 +59,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Features({ RestServerFeature.class, AuditFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.actions")
+@Deploy("org.nuxeo.ecm.platform.io.core")
 @Deploy("org.nuxeo.ecm.platform.rendition.api")
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:renditions-test-contrib.xml")
