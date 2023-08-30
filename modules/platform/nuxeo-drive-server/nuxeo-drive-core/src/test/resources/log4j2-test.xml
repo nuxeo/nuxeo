@@ -12,6 +12,8 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <Logger name="org.opensearch.gateway.DanglingIndicesState" level="error" />
+    <Logger name="org.opensearch.cluster.service.ClusterApplierService" level="error" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
