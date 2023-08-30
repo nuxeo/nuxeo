@@ -476,7 +476,7 @@ pipeline {
                         mvn ${MAVEN_ARGS} \
                           -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
                           -Dkafka.version=3.4.1 \
-                          test
+                          install
                       """
                     }
                   }
