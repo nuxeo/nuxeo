@@ -15,6 +15,7 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <Logger name="org.nuxeo.ecm.core.redis.embedded" level="trace" additivity="false">
       <AppenderRef ref="REDIS" />
     </Logger>

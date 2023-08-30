@@ -11,7 +11,8 @@
     </File>
   </Appenders>
   <Loggers>
-    <Logger name="org.nuxeo" level="info" />
+    <Logger name="org.nuxeo" level="warn" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />

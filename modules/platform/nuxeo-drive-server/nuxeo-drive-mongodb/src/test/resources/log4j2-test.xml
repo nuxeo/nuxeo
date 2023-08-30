@@ -12,6 +12,7 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <Logger name="org.nuxeo.mongodb" level="trace" />
     <Logger name="org.nuxeo.drive" level="trace" />
     <Root level="warn">

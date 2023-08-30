@@ -16,7 +16,9 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <!-- ignore expected warns -->
     <Logger name="org.nuxeo.ecm.core.blob.stream.StreamOrphanBlobGC" level="error" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <!-- Needed by TestTrashBackwardMechanism -->
     <logger name="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener" level="debug" />
     <Logger name="org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction" level="trace" >

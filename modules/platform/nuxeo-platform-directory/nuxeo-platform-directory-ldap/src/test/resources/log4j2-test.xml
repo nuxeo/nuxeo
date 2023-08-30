@@ -12,6 +12,7 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <!-- Set level to ERROR to ignore warning explaining that admin password needs to be changed,
          as it cannot be changed before startup. -->
     <Logger name="org.apache.directory.server.core.DefaultDirectoryService" level="error"/>

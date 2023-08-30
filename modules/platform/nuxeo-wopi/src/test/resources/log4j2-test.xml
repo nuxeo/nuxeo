@@ -12,7 +12,7 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
-
+    <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
     <!-- Hide warnings/errors related to the WOPI discovery URL and fetching -->
     <Logger name="org.nuxeo.wopi.WOPIServiceImpl" level="warn">
       <Filters>
