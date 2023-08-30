@@ -13,6 +13,8 @@
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
     <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
+    <Logger name="org.elasticsearch.gateway.DanglingIndicesState" level="error" />
+    <Logger name="org.elasticsearch.cluster.service.ClusterApplierService" level="error" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />

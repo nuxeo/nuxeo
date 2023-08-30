@@ -16,6 +16,8 @@
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
     <Logger name="net.openhft.chronicle.queue.impl.single.ReferenceCountedCache" level="error" />
+    <Logger name="org.elasticsearch.gateway.DanglingIndicesState" level="error" />
+    <Logger name="org.elasticsearch.cluster.service.ClusterApplierService" level="error" />
     <Logger name="org.nuxeo.ecm.core.redis.embedded" level="trace" additivity="false">
       <AppenderRef ref="REDIS" />
     </Logger>
