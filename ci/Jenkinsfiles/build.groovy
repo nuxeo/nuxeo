@@ -482,7 +482,7 @@ pipeline {
                         mvn ${MAVEN_ARGS} \
                           -Dnuxeo.test.redis.host=${redisHost} \
                           -Pkafka -Dkafka.bootstrap.servers=${kafkaHost} \
-                          test
+                          install
                       """
                     }
                   }
