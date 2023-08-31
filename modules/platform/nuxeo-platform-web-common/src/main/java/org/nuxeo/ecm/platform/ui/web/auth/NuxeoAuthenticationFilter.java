@@ -50,6 +50,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERNAME_KEY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -258,6 +259,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         // store user ident
         if (session != null) {
             session.setAttribute(USERIDENT_KEY, cachableUserIdent);
+            session.setAttribute(USERNAME_KEY, cachableUserIdent.getPrincipal().getName());
         }
 
         service.onAuthenticatedSessionCreated(httpRequest, session, cachableUserIdent);
@@ -409,6 +411,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                         HttpSession session = httpRequest.getSession(false);
                         if (session != null) {
                             session.removeAttribute(USERIDENT_KEY);
+                            session.removeAttribute(USERNAME_KEY);
                         }
                         // invalidate Session !
                         // XXX does this need an authenticated user?
