@@ -14,6 +14,7 @@ nuxeo.server.ajp.secretRequired=true
 nuxeo.server.ajp.secret=changeme
 nuxeo.server.https.port=0
 nuxeo.server.cookies.sameSite=lax
+nuxeo.server.tomcat_access_log.pattern=combined
 nuxeo.server.tomcat_admin.host=localhost
 nuxeo.server.tomcat_admin.port=8005
 nuxeo.server.tomcat_error.show_report=false

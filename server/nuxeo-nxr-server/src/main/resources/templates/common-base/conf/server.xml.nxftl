@@ -237,7 +237,7 @@
              Documentation at: /docs/config/valve.html -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="log"
                prefix="access.log" fileDateFormat=".yyyy-MM-dd" suffix=""
-               pattern="combined"
+               pattern="${nuxeo.server.tomcat_access_log.pattern}"
                rotatable="true" renameOnRotate="true" buffered="true" />
 
         <!-- Customize the ErrorReportValve -->
