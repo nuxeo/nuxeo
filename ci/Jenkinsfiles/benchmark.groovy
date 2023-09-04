@@ -130,7 +130,7 @@ pipeline {
             echo "Download data..."
             nxMvn.copy(artifact: "${DATA_ARTIFACT_FULL_NAME}", outputDirectory: '/tmp')
             echo "Loading data into Redis..."
-            sh "gunzip -c /tmp/${DATA_ARTIFACT} | nc -N localhost 6379 > /dev/null"
+            sh "gunzip -c /tmp/${DATA_ARTIFACT} | nc --send-only localhost 6379 > /dev/null"
           }
         }
       }
