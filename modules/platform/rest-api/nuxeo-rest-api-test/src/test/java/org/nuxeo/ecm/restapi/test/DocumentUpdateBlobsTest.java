@@ -477,7 +477,7 @@ public class DocumentUpdateBlobsTest extends BaseTest {
         assertBlobContent(file1Id, "foo");
         var jsonFile1 = getJSONDocumentNode(file1Id);
 
-        var fakeBlob  = mapper.readTree("{ \"data\": \"http://fakeurl.com/nuxeo/foo/bar\" }");
+        var fakeBlob = mapper.readTree("{ \"data\": \"http://fakeurl.com/nuxeo/foo/bar\" }");
         jsonFile1.setPropertyValue(FILE_CONTENT_PROP, fakeBlob);
 
         try (var response = putJSONDocument(file1Id, jsonFile1)) {
