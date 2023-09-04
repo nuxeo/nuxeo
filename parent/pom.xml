@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>2023.2-SNAPSHOT</version>
+    <version>2023.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-parent</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Parent</name>
-  <version>2023.2-SNAPSHOT</version>
+  <version>2023.3-SNAPSHOT</version>
 
 </project>
