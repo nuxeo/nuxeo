@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -51,20 +52,38 @@ public class JSONObjectBlobDecoder implements JSONBlobDecoder {
 
     public static final String DATA_FIELD_NAME = "data";
 
+    // @since 2021.43
+    public static final String BLOB_URL_FIELD_NAME = "blobUrl";
+
     @Override
     public Blob getBlobFromJSON(ObjectNode jsonObject) {
         if (!jsonObject.has(DATA_FIELD_NAME)) {
             return null;
         }
 
-        String data = jsonObject.get(DATA_FIELD_NAME).textValue();
-        if (data != null && data.startsWith("http")) {
-            return getBlobFromURL(data);
+        Blob blob = getBlobFromField(jsonObject, DATA_FIELD_NAME);
+        if (blob == null) {
+            blob = getBlobFromField(jsonObject, BLOB_URL_FIELD_NAME);
         }
-        return null;
+
+        return blob;
+    }
+
+    protected Blob getBlobFromField(ObjectNode jsonObject, String fieldName) {
+        JsonNode jsonNode = jsonObject.get(fieldName);
+        if (jsonNode == null) {
+            return null;
+        }
+
+        String blobUrl = jsonNode.textValue();
+        return blobUrl != null ? getBlobFromURL(blobUrl) : null;
     }
 
     protected Blob getBlobFromURL(String url) {
+        if (!url.startsWith("http")) {
+            return null;
+        }
+
         RequestContext activeContext = RequestContext.getActiveContext();
         if (activeContext == null) {
             return null;
@@ -85,4 +104,5 @@ public class JSONObjectBlobDecoder implements JSONBlobDecoder {
         }
         return blob;
     }
+
 }

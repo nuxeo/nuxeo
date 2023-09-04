@@ -259,6 +259,8 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
 
         String blobUrl = getBlobUrl(prop);
         jg.writeStringField("data", blobUrl);
+        String internalBlobUrl = getBlobUrl(prop, false);
+        jg.writeStringField("blobUrl", internalBlobUrl);
 
         enrichBlobProperty(jg, prop);
 
@@ -294,6 +296,13 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
      * @since 7.2
      */
     protected String getBlobUrl(Property prop) {
+        return getBlobUrl(prop, true);
+    }
+
+    /**
+     * @since 2021.43
+     */
+    protected String getBlobUrl(Property prop, boolean fullDownloadUrl) {
         DocumentModel doc = ctx.getParameter(ENTITY_TYPE);
         if (doc == null) {
             return "";
@@ -307,7 +316,8 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         }
 
         Blob blob = (Blob) prop.getValue();
-        return downloadService.getFullDownloadUrl(doc, xpath, blob, ctx.getBaseUrl());
+        return fullDownloadUrl ? downloadService.getFullDownloadUrl(doc, xpath, blob, ctx.getBaseUrl())
+                : ctx.getBaseUrl() + downloadService.getDownloadUrl(doc, xpath, blob.getFilename());
     }
 
     protected static boolean skipProperty(RenderingContext ctx, Property property) {

@@ -359,6 +359,35 @@ public class DocumentUpdateBlobsTest extends BaseTest {
         }
     }
 
+    // NXP-31972
+    @Test
+    public void shouldRelyOnBlobUrlToUpdateBlobList() throws IOException {
+        List<Map<String, Serializable>> attachments = getAttachments(file3Id);
+        assertEquals(3, attachments.size());
+        assertAttachmentContent(attachments, 2, "three");
+
+        JSONDocumentNode jsonDoc = getJSONDocumentNode(file3Id);
+        JsonNode jsonNode = jsonDoc.getPropertyAsJsonNode(FILES_FILES_PROP);
+        assertTrue(jsonNode.isArray());
+        ArrayNode arrayNode = (ArrayNode) jsonNode;
+        // replace the blob data keeping the blob blobUrl correct
+        JsonNode fileNode = arrayNode.get(2).get("file");
+        String content = String.format("{ \"data\": \"http://fakeurl.com/nuxeo/foo/bar\", \"blobUrl\": \"%s\" }",
+                fileNode.get("blobUrl").asText());
+        var blob = mapper.readTree(content);
+        replaceAttachment(jsonDoc, 2, blob);
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + file3Id, jsonDoc.asJson())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure file3 attachments have not changed
+            transactionalFeature.nextTransaction();
+            attachments = getAttachments(file3Id);
+            assertEquals(3, attachments.size());
+            assertAttachmentContent(attachments, 2, "three");
+        }
+    }
+
     @Test
     public void shouldKeepTheSameBlobWhenUpdatingSiblingInComplex() throws IOException {
         List<Map<String, Serializable>> multiBlobs = getMultiBlobs(file4Id);
