@@ -143,6 +143,9 @@ public class MongoDBSession extends BaseSession {
                 throw new DirectoryException("Missing id");
             }
             id = String.valueOf(rawId);
+            if (StringUtils.isBlank(id)) {
+                throw new DirectoryException("Missing id");
+            }
         }
 
         if (isMultiTenant()) {
