@@ -860,6 +860,9 @@ public class SQLSession extends BaseSession {
             }
 
             String id = String.valueOf(rawId);
+            if (StringUtils.isBlank(id)) {
+                throw new DirectoryException("Missing id");
+            }
             if (isMultiTenant()) {
                 String tenantId = getCurrentTenantId();
                 if (!StringUtils.isBlank(tenantId)) {

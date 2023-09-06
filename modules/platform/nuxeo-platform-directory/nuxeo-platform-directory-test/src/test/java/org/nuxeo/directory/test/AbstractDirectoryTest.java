@@ -254,6 +254,7 @@ public abstract class AbstractDirectoryTest {
     }
 
     // NXP-31734
+    // NXP-31933
     @Test
     public void testCreateEntryWithoutId() throws Exception {
         try (Session session = getSession()) {
@@ -264,6 +265,14 @@ public abstract class AbstractDirectoryTest {
             map.put("groups", Arrays.asList("members", "administrators"));
             DirectoryException e = assertThrows("Should not be possible to create an entry without id",
                     DirectoryException.class, () -> session.createEntry(map));
+            assertEquals("Missing id", e.getMessage());
+            map.put("username", "");
+            e = assertThrows("Should not be possible to create an entry without id", DirectoryException.class,
+                    () -> session.createEntry(map));
+            assertEquals("Missing id", e.getMessage());
+            map.put("username", "  ");
+            e = assertThrows("Should not be possible to create an entry without id", DirectoryException.class,
+                    () -> session.createEntry(map));
             assertEquals("Missing id", e.getMessage());
         }
     }
