@@ -27,6 +27,8 @@ import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_USER;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -38,11 +40,18 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.mail.MailMessage;
+import org.nuxeo.mail.MailSender;
+import org.nuxeo.mail.MailService;
 import org.nuxeo.mail.MailSessionBuilder;
+import org.nuxeo.runtime.api.Framework;
 
 /**
+ * @deprecated since 2023.4 Use a {@link MailSender} instead
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deprecated(since = "2023.4")
 public class Mailer {
 
     protected Properties config;
@@ -216,14 +225,8 @@ public class Mailer {
         // Here, no Authenticator argument is used (it is null).
         // Authenticators are used to prompt the user for user
         // name and password.
-        MimeMessage message = new MimeMessage(getSession());
-        // the "from" address may be set in code, or set in the
-        // config file under "mail.from" ; here, the latter style is used
-        message.setFrom(new InternetAddress(from));
-        message.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
-        message.setSubject(subject);
-        message.setText(body);
-        Transport.send(message);
+        var message = new MailMessage.Builder(to).from(from).subject(subject).content(body).build();
+        Framework.getService(MailService.class).sendMail(message);
     }
 
     public static class Message extends MimeMessage {
@@ -299,7 +302,41 @@ public class Mailer {
         }
 
         public void send() throws MessagingException {
-            Transport.send(this);
+            Framework.getService(MailService.class).sendMail(fromMimeMessage(this));
+        }
+
+        protected MailMessage fromMimeMessage(MimeMessage original) throws MessagingException {
+            try {
+                // get subject details
+                String subject = null;
+                String subjectCharset = null;
+                var subjectHeader = original.getSubject();
+                if (subjectHeader != null) {
+                    var details = subjectHeader.split(";");
+                    subject = details[0];
+                    if (details.length > 1) {
+                        subjectCharset = details[1];
+                    }
+                }
+
+                List<String> mimeTos = asStringList(original.getRecipients(MimeMessage.RecipientType.TO));
+                return new MailMessage.Builder(mimeTos).from(asStringList(original.getFrom()))
+                                                       .cc(asStringList(
+                                                               original.getRecipients(MimeMessage.RecipientType.CC)))
+                                                       .bcc(asStringList(
+                                                               original.getRecipients(MimeMessage.RecipientType.BCC)))
+                                                       .replyTo(asStringList(original.getReplyTo()))
+                                                       .date(original.getSentDate())
+                                                       .subject(subject, subjectCharset)
+                                                       .content(original.getContent(), original.getContentType())
+                                                       .build();
+            } catch (IOException e) {
+                throw new NuxeoException("Could not read mail content", e);
+            }
+        }
+
+        protected List<String> asStringList(Object[] objects) {
+            return objects == null ? List.of() : Arrays.stream(objects).map(Object::toString).toList();
         }
 
     }

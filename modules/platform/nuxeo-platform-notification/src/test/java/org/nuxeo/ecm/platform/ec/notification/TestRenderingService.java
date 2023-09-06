@@ -39,8 +39,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.notification")
+@Features({ CoreFeature.class, NotificationFeature.class })
 @Deploy("org.nuxeo.ecm.platform.notification.tests:notification-contrib.xml")
 public class TestRenderingService {
 

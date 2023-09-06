@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.mail.sender.default.config">
+
+  <extension target="org.nuxeo.mail.MailServiceComponent" point="senders">
+
+    <sender name="default" class="org.nuxeo.mail.SMTPMailSender">
+    <#if "${mail.debug}" == "true">
+      <property name="mail.debug">${mail.debug}</property>
+    </#if>
+      <property name="mail.from">${mail.from}</property>
+      <property name="mail.transport.protocol">${mail.transport.protocol}</property>
+      <property name="mail.${mail.transport.protocol}.host">${mail.transport.host}</property>
+    <#if "${mail.transport.port}" != "-1">
+      <property name="mail.${mail.transport.protocol}.port">${mail.transport.port}</property>
+    </#if>
+    <#if "${mail.transport.auth}" == "true">
+      <property name="mail.${mail.transport.protocol}.auth">${mail.transport.auth}</property>
+      <property name="mail.${mail.transport.protocol}.user">${mail.transport.user}</property>
+      <property name="mail.${mail.transport.protocol}.password">${mail.transport.password}</property>
+    </#if>
+    <#if "${mail.transport.usetls}" == "true">
+      <property name="mail.${mail.transport.protocol}.starttls.enable">${mail.transport.usetls}</property>
+    </#if>
+    <#if (mail.transport.ssl.protocol)?has_content>
+      <property name="mail.${mail.transport.protocol}.ssl.protocols">${mail.transport.ssl.protocol}</property>
+    </#if>
+    </sender>
+
+  </extension>
+
+</component>

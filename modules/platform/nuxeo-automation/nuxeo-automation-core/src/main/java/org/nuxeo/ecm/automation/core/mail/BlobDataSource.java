@@ -27,8 +27,10 @@ import javax.activation.DataSource;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
+ * @deprecated since 2023.4 Use {@link org.nuxeo.mail.BlobDataSource} instead
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deprecated(since = "2023.4")
 public class BlobDataSource implements DataSource {
 
     protected final Blob blob;

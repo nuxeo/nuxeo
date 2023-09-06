@@ -59,9 +59,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 11.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, SmtpMailServerFeature.class })
+@Features({ PlatformFeature.class, SmtpMailServerFeature.class, NotificationFeature.class })
 @Deploy("org.nuxeo.ecm.platform.url")
-@Deploy("org.nuxeo.ecm.platform.notification")
 @Deploy("org.nuxeo.ecm.platform.notification.tests:OSGI-INF/notification-event-listener-contrib.xml")
 public class TestEmailNotification {
 
@@ -133,7 +132,7 @@ public class TestEmailNotification {
         assertEquals(1, emailsResult.getMails().size());
         SmtpMailServerFeature.MailMessage mailMessage = emailsResult.getMails().get(0);
         // check the subject
-        assertEquals(String.format("[Dummy]Notification on the document '%s'", documentModel.getTitle()),
+        assertEquals(String.format("[Nuxeo]Notification on the document '%s'", documentModel.getTitle()),
                 mailMessage.getSubject());
 
         // check the text content

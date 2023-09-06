@@ -89,6 +89,15 @@ public class MailSessionBuilder {
         return new FromProperties(properties);
     }
 
+    /**
+     * Creates a {@link FromProperties builder} instantiating a new session.
+     */
+    public static FromProperties fromProperties(Map<String, String> properties) {
+        var props = new Properties();
+        props.putAll(properties);
+        return new FromProperties(props);
+    }
+
     public static class FromJndi extends AbstractFrom<FromJndi> {
 
         protected String jndiSessionName;

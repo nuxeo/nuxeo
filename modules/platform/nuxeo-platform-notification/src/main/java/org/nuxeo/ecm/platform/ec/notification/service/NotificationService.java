@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ec.notification.service;
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static org.nuxeo.mail.MailServiceImpl.DEFAULT_SENDER;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -63,6 +64,9 @@ import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.mail.MailConstants;
+import org.nuxeo.mail.MailService;
+import org.nuxeo.mail.MailServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -108,6 +112,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     protected NotificationListenerVetoRegistry notificationVetoRegistry;
 
+    protected String senderName = DEFAULT_SENDER;
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
@@ -135,6 +141,22 @@ public class NotificationService extends DefaultComponent implements Notificatio
         notificationVetoRegistry.clear();
         notificationRegistry = null;
         notificationVetoRegistry = null;
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        super.start(context);
+        if (generalSettings.getMailSenderName() == null) {
+            var jndiSessionName = generalSettings.getMailSessionJndiName();
+            if (!jndiSessionName.equals(MailConstants.DEFAULT_MAIL_JNDI_NAME)) {
+                log.warn(
+                        "Your GeneralSettingsDescriptor has been contributed with a custom mailSessionJndiName. This field is now deprecated. Please use mailSenderName and contribute a MailSenderDescriptor");
+                senderName = ((MailServiceImpl) Framework.getService(MailService.class)).registerJndiSMTPSender(
+                        jndiSessionName);
+            } // else keep default
+        } else {
+            senderName = generalSettings.getMailSenderName();
+        }
     }
 
     @Override
@@ -364,8 +386,17 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return generalSettings.getEMailSubjectPrefix();
     }
 
+    /**
+     * @deprecated since 2023.4 use {@link #getMailSenderName()} instead.
+     */
+    @Deprecated(since = "2023.4")
     public String getMailSessionJndiName() {
         return generalSettings.getMailSessionJndiName();
+    }
+
+    @Override
+    public String getMailSenderName() {
+        return senderName;
     }
 
     @Override

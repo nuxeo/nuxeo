@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.mail.tests.senders.contrib">
+  <extension target="org.nuxeo.mail.MailServiceComponent" point="senders">
+
+    <sender name="default" class="org.nuxeo.mail.SMTPMailSender">
+      <property name="mail.transport.protocol">smtp</property>
+      <property name="mail.smtp.host">127.0.0.1</property>
+      <property name="mail.smtp.port">${nuxeo.test.mail.smtp.port}</property>
+      <property name="mail.from">noreply@nuxeo.com</property>
+    </sender>
+
+  </extension>
+</component>

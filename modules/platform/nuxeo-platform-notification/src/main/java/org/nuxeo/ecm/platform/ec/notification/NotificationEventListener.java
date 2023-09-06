@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-import javax.mail.SendFailedException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,6 +56,7 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.mail.MailException;
 import org.nuxeo.runtime.api.Framework;
 
 public class NotificationEventListener implements PostCommitFilteringEventListener {
@@ -360,14 +358,10 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         mail.put(NotificationConstants.EVENT_ID_KEY, eventId);
 
         try {
-            emailHelper.sendmail(mail);
-        } catch (MessagingException e) {
-            String cause = "";
-            if ((e instanceof SendFailedException) && (e.getCause() instanceof SendFailedException)) {
-                cause = " - Cause: " + e.getCause().getMessage();
-            }
-            log.warn("Failed to send notification email to: {}: {}: {}", email, e.getClass().getName(),
-                    e.getMessage() + cause);
+            emailHelper.sendMailMessage(mail);
+        } catch (MailException e) {
+            log.warn("Failed to send notification email to: {}: {}: {}", email, e.getClass().getName(), e.getMessage());
+            log.debug(e, e);
         }
     }
 

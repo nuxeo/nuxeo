@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.mail.BlobDataSource;
 import org.nuxeo.runtime.api.Framework;
 
 import freemarker.core.Environment;
@@ -52,8 +53,11 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
+ * @deprecated since 2023.4 The {@link org.nuxeo.mail.MailService} takes {@link org.nuxeo.mail.MailMessage} which can be
+ *             easily composed via its {@link org.nuxeo.mail.MailMessage.Builder}.
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deprecated(since = "2023.4")
 public class Composer {
 
     private static final Logger log = LogManager.getLogger(Composer.class);
@@ -133,6 +137,7 @@ public class Composer {
         if (env != null) {
             File file = new File(env.getConfig(), "mail.properties");
             if (file.isFile()) {
+                log.warn("mail properties should be directly placed in nuxeo.conf or in a MailSender contribution");
                 return file;
             }
         }

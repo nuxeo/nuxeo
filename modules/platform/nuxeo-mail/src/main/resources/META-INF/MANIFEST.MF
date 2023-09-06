@@ -3,3 +3,4 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo Mail Services
 Bundle-SymbolicName: org.nuxeo.mail;singleton:=true
 Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/mail-service.xml
