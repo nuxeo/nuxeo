@@ -179,6 +179,10 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
             String versionLabel = doc.getVersionLabel();
             jg.writeStringField("versionLabel", versionLabel != null ? versionLabel : "");
         }
+        if (isVersion) {
+            jg.writeBooleanField("isLatestVersion", doc.isLatestVersion());
+            jg.writeBooleanField("isLatestMajorVersion", doc.isLatestMajorVersion());
+        }
         if (mustFetch("lock")) {
             Lock lock = doc.getLockInfo();
             if (lock != null) {
