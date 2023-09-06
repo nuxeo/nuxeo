@@ -29,18 +29,12 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -70,7 +64,8 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
-import org.nuxeo.mail.MailSessionBuilder;
+import org.nuxeo.mail.MailMessage;
+import org.nuxeo.mail.MailService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -536,20 +531,12 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     protected void generateMail(String destination, String copy, String title, String content)
             throws MessagingException {
 
-        Session session = MailSessionBuilder.fromNuxeoConf().build();
+        var message = new MailMessage.Builder(destination).cc(isBlank(copy) ? List.of() : List.of(copy))
+                                                          .subject(title)
+                                                          .content(content, "text/html; charset=utf-8")
+                                                          .build();
 
-        MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destination, false));
-        if (!isBlank(copy)) {
-            msg.addRecipient(Message.RecipientType.CC, new InternetAddress(copy, false));
-        }
-
-        msg.setSubject(title, "UTF-8");
-        msg.setSentDate(new Date());
-        msg.setContent(content, "text/html; charset=utf-8");
-
-        Transport.send(msg);
+        Framework.getService(MailService.class).sendMail(message);
     }
 
     @Override

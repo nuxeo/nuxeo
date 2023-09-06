@@ -50,7 +50,6 @@ import javax.inject.Inject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
@@ -394,18 +393,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    public void testSendMail() throws Exception {
-
-        // Set bad SMTP configuration
-        File file = new File(Environment.getDefault().getConfig(), "mail.properties");
-        file.getParentFile().mkdirs();
-        List<String> mailProperties = new ArrayList<>();
-        mailProperties.add(String.format("mail.smtp.host = %s", "badHostName"));
-        mailProperties.add(String.format("mail.smtp.port = %s", "2525"));
-        mailProperties.add(String.format("mail.smtp.connectiontimeout = %s", "1000"));
-        mailProperties.add(String.format("mail.smtp.timeout = %s", "1000"));
-        org.apache.commons.io.FileUtils.writeLines(file, mailProperties);
-
+    @Deploy("org.nuxeo.mail")
+    @Deploy("org.nuxeo.ecm.automation.test.test:bad-mail-sender-contrib.xml")
+    public void testSendMailToBadHost() throws Exception {
         HttpAutomationRequest operationRequest = session.newRequest(SendMail.ID)
                                                         .setInput("doc:/")
                                                         .set("from", "sender@nuxeo.com")

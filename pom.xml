@@ -1181,6 +1181,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-notification</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-preview-core</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>

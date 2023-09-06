@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Salem Aouana
  */
 
-package org.nuxeo.ecm.platform.comment;
+package org.nuxeo.ecm.platform.ec.notification;
 
-import org.nuxeo.ecm.platform.ec.notification.NotificationFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
- * Feature for the comment notification stack.
+ * Feature for the notification stack.
  *
- * @since 11.1
+ * @since 2023.3
  */
-@Features({ CommentFeature.class, NotificationFeature.class })
-@Deploy("org.nuxeo.ecm.platform.url")
-public class CommentNotificationFeature implements RunnerFeature {
+@Deploy("org.nuxeo.ecm.platform.notification")
+@Deploy("org.nuxeo.ecm.platform.notification.tests:default-general-settings-contrib.xml")
+public class NotificationFeature implements RunnerFeature {
 }

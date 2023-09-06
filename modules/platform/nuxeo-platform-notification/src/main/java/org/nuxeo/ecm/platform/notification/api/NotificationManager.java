@@ -47,6 +47,15 @@ public interface NotificationManager {
     List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc);
 
     /**
+     * Returns the name of the {@link org.nuxeo.mail.MailSender} that will handle notification {@link org.nuxeo.mail.MailMessage}s
+     *
+     * @since 2023.3
+     */
+    default String getMailSenderName() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
      * Called when a user subscribes to a notification.
      */
     void addSubscription(String username, String notification, DocumentModel doc, Boolean sendConfirmationEmail,
