@@ -73,7 +73,7 @@ public class NuxeoHttpSessionMonitor {
         if (session == null || session.getId() == null) {
             return null;
         }
-        SessionInfo si = new SessionInfo(session.getId());
+        SessionInfo si = new SessionInfo(session.getId(), session::invalidate);
         sessionTracker.put(session.getId(), si);
         return si;
     }
@@ -128,7 +128,21 @@ public class NuxeoHttpSessionMonitor {
     }
 
     public void removeEntry(String sid) {
+        removeEntry(sid, false);
+    }
+
+    /**
+     * Remove the associated session.
+     *
+     * @param sid the session id
+     * @param invalidate should the session be invalidated
+     * @since 2023.3
+     */
+    public void removeEntry(String sid, boolean invalidate) {
         SessionInfo si = sessionTracker.remove(sid);
+        if (invalidate && si.sInvalidator != null) {
+            si.sInvalidator.run();
+        }
         if (si != null && si.getLoginName() != null) {
             CounterHelper.decreaseCounter(SESSION_COUNTER);
         }

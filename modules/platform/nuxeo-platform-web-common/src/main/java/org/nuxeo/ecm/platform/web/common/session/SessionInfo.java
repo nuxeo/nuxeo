@@ -43,10 +43,23 @@ public class SessionInfo implements Comparable<SessionInfo> {
 
     protected String loginName;
 
-    public SessionInfo(String sid) {
+    protected Runnable sInvalidator;
+
+    /**
+     * @param sid the session id
+     * @param sInvalidator a runnable to invalidate the session
+     *
+     * @since 2023.3
+     */
+    public SessionInfo(String sid, Runnable sInvalidator) {
         creationTime = System.currentTimeMillis();
         lastAccessTime = creationTime;
         sessionId = sid;
+        this.sInvalidator = sInvalidator;
+    }
+
+    public SessionInfo(String sid) {
+        this(sid, null);
     }
 
     public long getLastAccessTime() {
