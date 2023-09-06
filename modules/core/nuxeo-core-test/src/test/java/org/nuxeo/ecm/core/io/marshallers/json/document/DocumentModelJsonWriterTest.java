@@ -156,6 +156,8 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         json.isObject();
         json.has("isVersion").isTrue();
         json.has("versionableId").isEquals(document.getId());
+        json.has("isLatestVersion").isTrue();
+        json.has("isLatestMajorVersion").isTrue();
     }
 
     /**
