@@ -108,7 +108,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testDefault() throws Exception {
+    public void testDefault() throws IOException {
         JsonAssert json = jsonAssert(document);
         json.isObject();
         json.properties(BASE_PROPERTIES);
@@ -136,7 +136,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
      * @since 11.1
      */
     @Test
-    public void testHasSchemas() throws Exception {
+    public void testHasSchemas() throws IOException {
         JsonAssert json = jsonAssert(document);
         json.isObject();
         json.has("schemas").length(3);
@@ -149,7 +149,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testIsVersion() throws Exception {
+    public void testIsVersion() throws IOException {
         DocumentRef versionDocRef = document.checkIn(VersioningOption.MAJOR, "CheckIn comment");
         DocumentModel versionDoc = session.getDocument(versionDocRef);
         JsonAssert json = jsonAssert(versionDoc);
@@ -162,7 +162,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
      * @since 10.3
      */
     @Test
-    public void testIsProxy() throws Exception {
+    public void testIsProxy() throws IOException {
         DocumentModel folder = session.createDocumentModel("/", "folder", "DummyDoc");
         folder = session.createDocument(folder);
         DocumentRef versionDocRef = document.checkIn(VersioningOption.MAJOR, "CheckIn comment");
@@ -176,7 +176,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testWithVersion() throws Exception {
+    public void testWithVersion() throws IOException {
         JsonAssert json = jsonAssert(document, CtxBuilder.fetchInDoc("versionLabel").get());
         json.isObject();
         json.properties(BASE_PROPERTIES + 1);
@@ -184,7 +184,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testWithLastModified() throws Exception {
+    public void testWithLastModified() throws IOException {
         document.setPropertyValue("dc:modified", new Date());
         JsonAssert json = jsonAssert(document);
         json.isObject();
@@ -193,7 +193,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testRetentionAndHold() throws Exception {
+    public void testRetentionAndHold() throws IOException {
         DocumentModel record = session.createDocumentModel("/", "myRecord", "File");
         record = session.createDocument(record);
         session.makeRecord(record.getRef());
@@ -214,7 +214,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testFlexibleRetention() throws Exception {
+    public void testFlexibleRetention() throws IOException {
         DocumentModel record = session.createDocumentModel("/", "myRecord", "File");
         record = session.createDocument(record);
         session.makeFlexibleRecord(record.getRef());
@@ -234,7 +234,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:test-retain-files-property.xml")
-    public void testRetentionAndHoldAttachements() throws Exception {
+    public void testRetentionAndHoldAttachements() throws IOException {
         DocumentModel record = session.createDocumentModel("/", "myRecord", "File");
         record = session.createDocument(record);
         session.makeRecord(record.getRef());
@@ -254,7 +254,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testTitleIsDcTitle() throws Exception {
+    public void testTitleIsDcTitle() throws IOException {
         String title = "My document";
         document.setPropertyValue("dc:title", title);
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").get());
@@ -262,7 +262,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testWithAllProperties() throws Exception {
+    public void testWithAllProperties() throws IOException {
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("*").get());
         json = json.has("properties");
         json.isObject();
@@ -282,7 +282,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testStringPropertyValue() throws Exception {
+    public void testStringPropertyValue() throws IOException {
         String value = "toto";
         String propName = "dr:propString";
         document.setPropertyValue(propName, value);
@@ -291,7 +291,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testIntPropertyValue() throws Exception {
+    public void testIntPropertyValue() throws IOException {
         int value = 123;
         String propName = "dr:propInt";
         document.setPropertyValue(propName, value);
@@ -300,7 +300,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testDeltaLongPropertyValue() throws Exception {
+    public void testDeltaLongPropertyValue() throws IOException {
         DeltaLong delta = DeltaLong.valueOf(Long.valueOf(123), 456);
         String propName = "dr:propInt";
         document.setPropertyValue(propName, delta);
@@ -309,7 +309,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testDoublePropertyValue() throws Exception {
+    public void testDoublePropertyValue() throws IOException {
         double value = 123.123;
         String propName = "dr:propDouble";
         document.setPropertyValue(propName, value);
@@ -318,7 +318,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testBooleanPropertyValue() throws Exception {
+    public void testBooleanPropertyValue() throws IOException {
         String propName = "dr:propBoolean";
         document.setPropertyValue(propName, true);
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("documentResolver").get());
@@ -326,7 +326,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testDatePropertyValue() throws Exception {
+    public void testDatePropertyValue() throws IOException {
         Date value = new Date();
         String propName = "dr:propDate";
         document.setPropertyValue(propName, value);
@@ -335,7 +335,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testListPropertyValue() throws Exception {
+    public void testListPropertyValue() throws IOException {
         String pathRef1 = REPO + ":/";
         String pathRef2 = REPO + ":/myDoc";
         Property list = document.getProperty(PROP_DOC_PATH_REF_LIST);
@@ -346,7 +346,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testComplexPropertyValue() throws Exception {
+    public void testComplexPropertyValue() throws IOException {
         String pathRef = REPO + ":/";
         String idRef = REPO + ":" + document.getId();
         Property list = document.getProperty(PROP_DOC_REF_TYPE);
@@ -359,7 +359,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testNoFetching() throws Exception {
+    public void testNoFetching() throws IOException {
         String pathRef = REPO + ":/";
         String xpath = PROP_DOC_REPO_AND_PATH_REF;
         document.setPropertyValue(xpath, pathRef);
@@ -368,7 +368,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testSimpleFetchingRepoAndPath() throws Exception {
+    public void testSimpleFetchingRepoAndPath() throws IOException {
         String xpath = PROP_DOC_REPO_AND_PATH_REF;
 
         // test with repo + path
@@ -391,7 +391,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testSimpleFetchingRepoAndId() throws Exception {
+    public void testSimpleFetchingRepoAndId() throws IOException {
         String xpath = PROP_DOC_REPO_AND_ID_REF;
 
         // test with repo + id
@@ -414,7 +414,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testSimpleFetchingPathOnly() throws Exception {
+    public void testSimpleFetchingPathOnly() throws IOException {
         String xpath = PROP_DOC_PATH_ONLY_REF;
 
         // test with path
@@ -435,7 +435,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testSimpleFetchingIdOnly() throws Exception {
+    public void testSimpleFetchingIdOnly() throws IOException {
         String xpath = PROP_DOC_ID_ONLY_REF;
 
         // test with id
@@ -456,7 +456,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testArrayPropertiesFetching() throws Exception {
+    public void testArrayPropertiesFetching() throws IOException {
         String pathRef = REPO + ":/";
         String xpath = PROP_DOC_PATH_REF_SIMPLE_LIST;
         document.setPropertyValue(xpath, new String[] { pathRef, pathRef, pathRef });
@@ -468,7 +468,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testInvalidValueFetching() throws Exception {
+    public void testInvalidValueFetching() throws IOException {
         String pathRef = REPO + ":/toto/is/doing/something";
         String xpath = PROP_DOC_PATH_REF_SIMPLE_LIST;
         document.setPropertyValue(xpath, new String[] { pathRef, pathRef });
@@ -479,7 +479,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testFullFetching() throws Exception {
+    public void testFullFetching() throws IOException {
         String pathRef = REPO + ":/";
         document.setPropertyValue(PROP_DOC_REPO_AND_PATH_REF, pathRef);
         document.getProperty(PROP_DOC_REF_TYPE).setValue(SUBPROP_REPO_AND_PATH, pathRef);
@@ -503,15 +503,15 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     }
 
     @Test
-    public void testDepthControl() throws Exception {
+    public void testDepthControl() throws IOException {
         DocumentModel root = session.createDocumentModel("/", "root", "RefDoc");
         root = session.createDocument(root);
         DocumentModel child = session.createDocumentModel("/root", "child", "RefDoc");
-        child = session.createDocument(child);
+        session.createDocument(child);
         DocumentModel max = session.createDocumentModel("/root/child", "max", "RefDoc");
-        max = session.createDocument(max);
+        session.createDocument(max);
         DocumentModel over = session.createDocumentModel("/root/child/max", "over", "RefDoc");
-        over = session.createDocument(over);
+        session.createDocument(over);
         // default: expect properties and enrichers loading for root but not for children
         RenderingContext ctxDefault = CtxBuilder.properties("*").enrichDoc("children").get();
         JsonAssert jsonDefault = jsonAssert(root, ctxDefault);
