@@ -529,6 +529,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
 
             if (principal != null) {
+                httpRequest.setAttribute(USERNAME_KEY, principal.getName());
                 if (targetPageURL != null && targetPageURL.length() > 0) {
                     // forward to target page
                     String baseURL = service.getBaseURL(request);
