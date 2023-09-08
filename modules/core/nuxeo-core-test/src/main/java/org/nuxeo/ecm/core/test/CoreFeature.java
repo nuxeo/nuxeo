@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.blob.stream.StreamOrphanBlobGC;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.event.CoreEventFeature;
+import org.nuxeo.ecm.core.model.stream.StreamDocumentGC;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -143,25 +144,34 @@ public class CoreFeature implements RunnerFeature {
     }
 
     /**
-     *  Wait for document's blob GC to be done.
+     *  Wait for version and blob GCs.
      */
-    protected boolean awaitBlobGC(Duration duration) throws InterruptedException {
-        if (Framework.isBooleanPropertyFalse(StreamOrphanBlobGC.ENABLED_PROPERTY_NAME)) {
+    protected boolean awaitGC(Duration duration) throws InterruptedException {
+        boolean blobGCDisabled = Framework.isBooleanPropertyFalse(StreamOrphanBlobGC.ENABLED_PROPERTY_NAME);
+        boolean docGCDisabled = Framework.isBooleanPropertyFalse(StreamDocumentGC.ENABLED_PROPERTY_NAME);
+        if (blobGCDisabled && docGCDisabled) {
             return true;
         }
         StreamService service = Framework.getService(StreamService.class);
         org.nuxeo.lib.stream.log.LogManager logManager = service.getLogManager();
-        // when there is no lag between producer and consumer we are done
         long deadline = System.currentTimeMillis() + duration.toMillis();
-        while (logManager.getLag(Name.ofUrn(StreamOrphanBlobGC.STREAM_NAME),
-                Name.ofUrn(StreamOrphanBlobGC.COMPUTATION_NAME)).lag() > 0) {
-            if (System.currentTimeMillis() > deadline) {
-                log.warn("await timeout on blob/gc");
-                return false;
+        long docGCLag = 0;
+        long blobGCLag = 0;
+        do {
+            docGCLag = docGCDisabled? 0 : logManager.getLag(Name.ofUrn(StreamDocumentGC.STREAM_NAME),
+                    Name.ofUrn(StreamDocumentGC.COMPUTATION_NAME)).lag();
+            if (docGCLag == 0) {
+                blobGCLag = blobGCDisabled ? 0
+                        : logManager.getLag(Name.ofUrn(StreamOrphanBlobGC.STREAM_NAME),
+                                Name.ofUrn(StreamOrphanBlobGC.COMPUTATION_NAME)).lag();
+                if (blobGCLag == 0) {
+                    return true;
+                }
             }
             Thread.sleep(50);
-        }
-        return true;
+        } while (System.currentTimeMillis() < deadline);
+        log.warn("await timeout on GCs, docGC lag: " + docGCLag + ", blobGC lag: " + blobGCLag);
+        return false;
     }
 
     @Override
@@ -170,7 +180,7 @@ public class CoreFeature implements RunnerFeature {
 
         storageConfiguration = new StorageConfiguration(this);
         txFeature = runner.getFeature(TransactionalFeature.class);
-        txFeature.addWaiter(this::awaitBlobGC);
+        txFeature.addWaiter(this::awaitGC);
         loginFeature = runner.getFeature(DummyLoginFeature.class);
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);

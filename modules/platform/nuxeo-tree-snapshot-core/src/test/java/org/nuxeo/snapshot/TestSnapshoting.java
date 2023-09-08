@@ -341,17 +341,19 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
         session.removeDocument(root.getRef());
         waitForAsyncCompletion();
-        assertEquals(6, getAllVersions().size());
+        // incremental GC is disabled, no versions deleted
+        assertEquals(9, getAllVersions().size());
+
         coreService.garbageCollectOrphanVersions();
         waitForAsyncCompletion();
         versions = getAllVersions();
         // GC deleted versions but how much is random depending on which order they are processed
-        assertTrue(versions.size() < 6);
+        assertTrue(versions.size() < 9);
         // Running it twice clean all versions
         coreService.garbageCollectOrphanVersions();
         waitForAsyncCompletion();
         versions = getAllVersions();
-        assertEquals(versions.size(), 0);
+        assertEquals(0, versions.size());
     }
 
     protected DocumentModelList getAllVersions() {

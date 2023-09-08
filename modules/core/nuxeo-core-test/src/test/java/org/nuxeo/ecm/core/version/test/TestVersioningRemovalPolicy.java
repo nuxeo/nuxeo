@@ -33,9 +33,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.model.stream.StreamDocumentGC;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
+@WithFrameworkProperty(name = StreamDocumentGC.ENABLED_PROPERTY_NAME, value = "true")
 public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
 
     protected DocumentModelList getVersion() {
@@ -140,11 +143,7 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
         session.save();
         waitForAsyncCompletion();
 
-        vs = getVersion();
-        assertEquals(1, vs.size());
-        cleanupOrphanVersions();
-
-        // versions should not be found
+        // versions should not be found, thanks to the incremental GC
         vs = getVersion();
         assertEquals(0, vs.size());
     }
@@ -200,11 +199,6 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
         session.removeDocument(folder.getRef());
         session.save();
         waitForAsyncCompletion();
-
-        // all versions found
-        vs = getVersion();
-        assertEquals(nbVersions, vs.size());
-        cleanupOrphanVersions();
 
         // some versions (N+1) have been cleaned up
         vs = getVersion();
@@ -265,7 +259,7 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
         waitForAsyncCompletion();
 
         vs = getVersion();
-        assertEquals(1, vs.size());
+        assertEquals(0, vs.size());
     }
 
     @Test
