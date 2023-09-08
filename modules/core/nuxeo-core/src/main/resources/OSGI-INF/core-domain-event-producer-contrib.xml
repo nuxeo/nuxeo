@@ -5,10 +5,10 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="domainEventProducer">
     <domainEventProducer name="blobDomain" class="org.nuxeo.ecm.core.blob.stream.BlobDomainEventProducer">
-      <stream name="source/blob" partitions="1" codec="avro" />
+      <stream name="source/blob" partitions="${nuxeo.bulk.action.blobGC.defaultPartitions:=1}" codec="avro" />
     </domainEventProducer>
     <domainEventProducer name="documentDomain" class="org.nuxeo.ecm.core.model.stream.DocumentDomainEventProducer">
-      <stream name="source/document" partitions="1" codec="avro" />
+      <stream name="source/document" partitions="${nuxeo.bulk.action.documentGC.defaultPartitions:=1}" codec="avro" />
     </domainEventProducer>
   </extension>
 
@@ -18,6 +18,14 @@
       defaultConcurrency="${nuxeo.bulk.action.blobGC.defaultConcurrency:=1}"
       defaultPartitions="${nuxeo.bulk.action.blobGC.defaultPartitions:=1}"
       enabled="${nuxeo.bulk.action.blobGC.enabled:=true}">
+      <policy name="default" maxRetries="3" delay="3s" maxDelay="60s"
+        continueOnFailure="true" />
+    </streamProcessor>
+    <streamProcessor name="documentGC"
+      defaultCodec="avro" class="org.nuxeo.ecm.core.model.stream.StreamDocumentGC"
+      defaultConcurrency="${nuxeo.bulk.action.documentGC.defaultConcurrency:=1}"
+      defaultPartitions="${nuxeo.bulk.action.documentGC.defaultPartitions:=1}"
+      enabled="${nuxeo.bulk.action.documentGC.enabled:=true}">
       <policy name="default" maxRetries="3" delay="3s" maxDelay="60s"
         continueOnFailure="true" />
     </streamProcessor>

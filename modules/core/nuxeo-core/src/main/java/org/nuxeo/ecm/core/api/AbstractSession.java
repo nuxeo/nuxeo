@@ -180,7 +180,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             + " FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:hasLegalHold = 1";
 
     public static final String FIND_VERSIONS_QUERY = "SELECT " + NXQL.ECM_UUID + " FROM Document WHERE "
-            + NXQL.ECM_ISVERSION + " = 1 AND " + NXQL.ECM_PROXY_VERSIONABLEID + " = '%s'";
+            + NXQL.ECM_ISVERSION + " = 1 AND " + NXQL.ECM_VERSION_VERSIONABLEID + " = '%s'";
 
     public static final String FIND_PROXIES_QUERY = "SELECT " + NXQL.ECM_UUID + " FROM Document WHERE "
             + NXQL.ECM_ISPROXY + " = 1 AND " + NXQL.ECM_PROXY_VERSIONABLEID + " = '%s'";
