@@ -40,10 +40,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.model.stream.StreamDocumentGC;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -51,6 +53,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @since 2023
  */
 @Features(AutomationFeature.class)
+@WithFrameworkProperty(name = StreamDocumentGC.ENABLED_PROPERTY_NAME, value = "false")
 public class TestVersionsObject extends ManagementBaseTest {
 
     @Inject

@@ -972,6 +972,18 @@ public interface CoreSession {
     DocumentModel getWorkingCopy(DocumentRef docRef);
 
     /**
+     * Removes orphan versions when the live document doesn't exist and there is no proxy pointing to this document.
+     * A version stays referenced, and therefore is not removed, if any proxy points to a version in the version history of
+     * any live document, or in the case of tree snapshot if there is a snapshot containing a version in the version history
+     * of any live document.
+     *
+     * @since 2021.44
+     * @param docRef of the live document
+     * @return the list of orphan version deleted.
+     */
+    List<DocumentRef> removeOrphanVersions(DocumentRef docRef);
+
+    /**
      * Creates a generic proxy to the given document inside the given folder.
      * <p>
      * The document may be a version, or a working copy (live document) in which case the proxy will be a "shortcut".
