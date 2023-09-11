@@ -139,8 +139,8 @@ public class UserSubscriptionAdapterTest {
         assertThat(us.getUserSubscriptions("Administration")).hasSize(0);
 
         session.createDocument(session.createDocumentModel("/", "workspace", "Workspace"));
-        DocumentModel doc = session.createDocument(session.createDocumentModel("/workspace", "subscribablenote",
-                "Workspace"));
+        DocumentModel doc = session.createDocument(
+                session.createDocumentModel("/workspace", "subscribablenote", "Workspace"));
 
         us = doc.getAdapter(SubscriptionAdapter.class);
         us.addSubscriptionsToAll("Administrator");

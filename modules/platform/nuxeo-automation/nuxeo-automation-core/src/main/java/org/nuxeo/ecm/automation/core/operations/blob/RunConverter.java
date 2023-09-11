@@ -31,7 +31,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.mail.Composer;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -45,7 +44,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 @Operation(id = RunConverter.ID, category = Constants.CAT_CONVERSION, label = RunConverter.ID, description = "Simply call a converter based on the 'converter' parameter. You can pass the converter properties with the 'properties' parameter.", since = "7.1")
 public class RunConverter {
 
-    private static final Logger log = LogManager.getLogger(Composer.class);
+    private static final Logger log = LogManager.getLogger(RunConverter.class);
 
     public static final String ID = "Blob.RunConverter";
 
