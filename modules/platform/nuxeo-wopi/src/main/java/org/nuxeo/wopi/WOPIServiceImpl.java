@@ -19,6 +19,7 @@
 
 package org.nuxeo.wopi;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 import static org.nuxeo.wopi.Constants.WOPI_DISCOVERY_KEY;
 import static org.nuxeo.wopi.Constants.WOPI_DISCOVERY_REFRESH_EVENT;
@@ -40,12 +41,18 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -133,7 +140,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     }
 
     protected boolean hasDiscoveryURL() {
-        return StringUtils.isNotBlank(discoveryURL);
+        return isNotBlank(discoveryURL);
     }
 
     protected void registerInvalidator() {
@@ -258,7 +265,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         }
 
         String extension = FilenameUtils.getExtension(filename);
-        return StringUtils.isNotBlank(extension) ? extension.toLowerCase() : null;
+        return isNotBlank(extension) ? extension.toLowerCase() : null;
     }
 
     @Override
@@ -276,7 +283,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         byte[] expectedProofBytes = ProofKeyHelper.getExpectedProofBytes(url, accessToken, timestamp);
         // follow flow from https://wopi.readthedocs.io/en/latest/scenarios/proofkeys.html#verifying-the-proof-keys
         boolean res = ProofKeyHelper.verifyProofKey(proofKey, proofKeyHeader, expectedProofBytes);
-        if (!res && StringUtils.isNotBlank(oldProofKeyHeader)) {
+        if (!res && isNotBlank(oldProofKeyHeader)) {
             res = ProofKeyHelper.verifyProofKey(proofKey, oldProofKeyHeader, expectedProofBytes);
             if (!res) {
                 res = ProofKeyHelper.verifyProofKey(oldProofKey, proofKeyHeader, expectedProofBytes);
@@ -310,9 +317,8 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     protected byte[] fetchDiscovery() {
         log.debug("Fetching WOPI discovery from discovery URL: {}", discoveryURL);
-        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
         HttpGet request = new HttpGet(discoveryURL);
-        try (CloseableHttpClient httpClient = httpClientBuilder.build();
+        try (CloseableHttpClient httpClient = buildHttpClient();
                 CloseableHttpResponse response = httpClient.execute(request);
                 InputStream is = response.getEntity().getContent()) {
             return IOUtils.toByteArray(is);
@@ -320,6 +326,32 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
             log.error("Error while fetching WOPI discovery: {}", e::getMessage);
             log.debug(e, e);
             return ArrayUtils.EMPTY_BYTE_ARRAY;
+        }
+    }
+
+    protected CloseableHttpClient buildHttpClient() {
+        var builder = HttpClientBuilder.create();
+        configureProxy(builder);
+        return builder.build();
+    }
+
+    protected void configureProxy(HttpClientBuilder builder) {
+        var proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
+        var proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
+        var proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
+        var proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
+
+        if (isNotBlank(proxyHost) && isNotBlank(proxyPort)) {
+            var proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort));
+            builder.setRoutePlanner(new DefaultProxyRoutePlanner(proxy));
+
+            // proxyPassword could be blank
+            if (isNotBlank(proxyLogin) && proxyPassword != null) {
+                var credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(new AuthScope(proxy),
+                        new UsernamePasswordCredentials(proxyLogin, proxyPassword));
+                builder.setDefaultCredentialsProvider(credentialsProvider);
+            }
         }
     }
 
