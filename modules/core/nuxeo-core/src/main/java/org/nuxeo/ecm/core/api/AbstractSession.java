@@ -48,6 +48,7 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS
 import static org.nuxeo.ecm.core.trash.LifeCycleTrashService.FROM_LIFE_CYCLE_TRASH_SERVICE;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -90,6 +91,7 @@ import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.filter.CharacterFilteringService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.BaseSession;
@@ -107,6 +109,7 @@ import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.LockSecurityPolicy;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -175,6 +178,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      */
     public static final String LEGAL_HOLD_QUERY = "SELECT " + NXQL.ECM_UUID
             + " FROM Document, Relation WHERE ecm:ancestorId = '%s' AND ecm:isProxy = 0 AND ecm:hasLegalHold = 1";
+
+    public static final String FIND_VERSIONS_QUERY = "SELECT " + NXQL.ECM_UUID + " FROM Document WHERE "
+            + NXQL.ECM_ISVERSION + " = 1 AND " + NXQL.ECM_PROXY_VERSIONABLEID + " = '%s'";
+
+    public static final String FIND_PROXIES_QUERY = "SELECT " + NXQL.ECM_UUID + " FROM Document WHERE "
+            + NXQL.ECM_ISPROXY + " = 1 AND " + NXQL.ECM_PROXY_VERSIONABLEID + " = '%s'";
 
     private Boolean limitedResults;
 
@@ -2073,6 +2082,60 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         checkPermission(doc, READ_PROPERTIES);
         checkPermission(doc, READ_VERSION);
         return readModel(doc);
+    }
+
+    @Override
+    public List<DocumentRef> removeOrphanVersions(DocumentRef docRef) {
+        if (docRef == null || DocumentRef.ID != docRef.type()) {
+            throw new InvalidParameterException("Expecting a doc UUID reference, got: " + docRef);
+        }
+        String docId = (String) docRef.reference();
+        if (exists(docRef)) {
+            log.debug("No orphan version for: {}, live doc exists.", docRef);
+            return Collections.emptyList();
+        }
+        // find versions
+        String versionsQuery = String.format(FIND_VERSIONS_QUERY, docId);
+        PartialList<Map<String, Serializable>> res = queryProjection(versionsQuery, 0, 0);
+        List<DocumentRef> versions = res.stream().map(m -> new IdRef((String) m.get(NXQL.ECM_UUID))).collect(Collectors.toList());
+        if (versions.isEmpty()) {
+            log.debug("No orphan version for: {}, there is no version.", docRef);
+            return Collections.emptyList();
+        }
+        // find proxies
+        String proxiesQuery = String.format(FIND_PROXIES_QUERY, docId);
+        res = queryProjection(proxiesQuery, 1, 0);
+        if (!res.isEmpty()) {
+            log.debug("No orphan version for: {}, a proxy exists pointing to this doc.", docRef);
+            return Collections.emptyList();
+        }
+        // filters
+        CoreService coreService = Framework.getService(CoreService.class);
+        Collection<OrphanVersionRemovalFilter> filters = coreService.getOrphanVersionRemovalFilters();
+        if (!filters.isEmpty()) {
+            // Hopefully, this OrphanVersionRemovalFilter extension point is rarely used
+            List<String> versionIds = versions.stream().map(ref -> (String) ref.reference()).collect(Collectors.toList());
+            for (OrphanVersionRemovalFilter filter : filters) {
+                ShallowDocumentModel deleted = new ShallowDocumentModel(docId, getRepositoryName(), "unknown", null,
+                        "Unknown", false, false, false, false, Collections.emptyMap(), null, null);
+                versionIds = filter.getRemovableVersionIds(this, deleted, versionIds);
+            }
+            versions = versionIds.stream().map(IdRef::new).collect(Collectors.toList());
+            if (versions.isEmpty()) {
+                log.debug("No orphan version for: {} because filter forbids removal", docId);
+                return Collections.emptyList();
+            }
+        }
+        // remove versions
+        for (DocumentRef version : versions) {
+            try {
+                log.debug("Removing orphan version: {} of {}.", version, docRef);
+                removeDocument(version);
+            } catch (DocumentNotFoundException e) {
+                log.debug("Cannot remove orphan version: {} of {}, already deleted", version, docRef);
+            }
+        }
+        return versions;
     }
 
     @Override

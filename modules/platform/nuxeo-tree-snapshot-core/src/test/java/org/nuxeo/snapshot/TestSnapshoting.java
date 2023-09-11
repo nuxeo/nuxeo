@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.model.stream.StreamDocumentGC;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -42,12 +43,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.snapshot")
+@WithFrameworkProperty(name = StreamDocumentGC.ENABLED_PROPERTY_NAME, value = "false")
 public class TestSnapshoting extends AbstractTestSnapshot {
 
     @Inject
@@ -341,9 +344,14 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals(6, getAllVersions().size());
         coreService.garbageCollectOrphanVersions();
         waitForAsyncCompletion();
-        // GC did not delete the versions
         versions = getAllVersions();
-        assertEquals(6, versions.size());
+        // GC deleted versions but how much is random depending on which order they are processed
+        assertTrue(versions.size() < 6);
+        // Running it twice clean all versions
+        coreService.garbageCollectOrphanVersions();
+        waitForAsyncCompletion();
+        versions = getAllVersions();
+        assertEquals(versions.size(), 0);
     }
 
     protected DocumentModelList getAllVersions() {
