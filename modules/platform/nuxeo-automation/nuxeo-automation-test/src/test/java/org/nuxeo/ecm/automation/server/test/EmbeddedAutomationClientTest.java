@@ -370,14 +370,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     @Deploy("org.nuxeo.ecm.automation.test:test-exception-handling-contrib.xml")
     public void testException() throws IOException {
-        String result = session.newRequest("Test.Exit")
-                               .set("rollback", true)
-                               .executeReturningStringEntity();
+        String result = session.newRequest("Test.Exit").set("rollback", true).executeReturningStringEntity();
         assertEquals("test exit", result);
 
-        result = session.newRequest("Test.Exit")
-                        .set("rollback", false)
-                        .executeReturningStringEntity();
+        result = session.newRequest("Test.Exit").set("rollback", false).executeReturningStringEntity();
         assertEquals("test exit", result);
 
         String error = session.newRequest("Test.Exit") //
@@ -411,11 +407,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         org.apache.commons.io.FileUtils.writeLines(file, mailProperties);
 
         HttpAutomationRequest operationRequest = session.newRequest(SendMail.ID)
-                                                   .setInput("doc:/")
-                                                   .set("from", "sender@nuxeo.com")
-                                                   .set("to", "recipient@nuxeo.com")
-                                                   .set("subject", "My test mail")
-                                                   .set("message", "The message content.");
+                                                        .setInput("doc:/")
+                                                        .set("from", "sender@nuxeo.com")
+                                                        .set("to", "recipient@nuxeo.com")
+                                                        .set("subject", "My test mail")
+                                                        .set("message", "The message content.");
 
         // Call SendMail with rollbackOnError = true (default value)
         String error = operationRequest.executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);

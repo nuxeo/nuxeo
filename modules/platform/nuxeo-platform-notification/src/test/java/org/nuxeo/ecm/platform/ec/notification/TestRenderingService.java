@@ -63,7 +63,7 @@ public class TestRenderingService {
         Collection<RenderingResult> results = rs.process(context);
 
         for (RenderingResult result : results) {
-            assertTrue(((String)result.getOutcome()).contains(MYDESCRIPTION));
+            assertTrue(((String) result.getOutcome()).contains(MYDESCRIPTION));
         }
     }
 
