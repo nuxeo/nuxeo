@@ -46,7 +46,7 @@ public class TestLogStreamProcessorKafka extends TestStreamProcessor {
     }
 
     public String getTopicPrefix() {
-        return "nuxeo-test-" + System.currentTimeMillis() + "-" + testName.getMethodName() + "-";
+        return "nuxeo-test-ut" + System.currentTimeMillis() + "-" + testName.getMethodName() + "-";
     }
 
     @Override

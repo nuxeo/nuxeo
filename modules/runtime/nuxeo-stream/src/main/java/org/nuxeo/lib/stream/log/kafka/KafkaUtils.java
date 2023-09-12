@@ -380,7 +380,15 @@ public class KafkaUtils implements AutoCloseable {
     public boolean delete(String topic) {
         log.info("Deleting topic: " + topic);
         DeleteTopicsResult result = adminClient.deleteTopics(Collections.singleton(topic));
-        return result.values().get(topic).isDone();
+        try {
+            result.all().get();
+            boolean done = result.values().get(topic).isDone();
+            log.debug("Deleted topic: " + topic + ", done: " + done);
+            return done;
+        } catch (InterruptedException|ExecutionException e) {
+            log.error("Fail to delete topic: " + topic, e);
+            return false;
+        }
     }
 
     /**
