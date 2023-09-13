@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
@@ -121,12 +120,6 @@ public class TestExportImportZipArchive {
 
     @Test
     public void testExportAsZipAndReimportStreaming() throws Exception {
-        doTestExportAsZipAndReimport(file -> new NuxeoArchiveReader(new FileInputStream(file)));
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-archive-exporter-extra-disable.xml")
-    public void testExportAsZipAndReimportStreamingWithoutExtraField() throws Exception {
         doTestExportAsZipAndReimport(file -> new NuxeoArchiveReader(new FileInputStream(file)));
     }
 

@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.impl.blob.ZipEntryBlob;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
-import org.nuxeo.ecm.core.io.impl.DWord;
 import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 
 /**
@@ -67,8 +66,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
     private boolean inMustBeClosed;
 
     /**
-     * This field represents an entry backup to read on the next {@link #readOrderedStream()} call. It is filled in the
-     * case Nuxeo reads an archive produced while {@link NuxeoArchiveWriter#ENABLE_EXTRA_FILES_COUNT_KEY} was disabled.
+     * This field represents an entry backup to read on the next {@link #readOrderedStream()} call.
      *
      * @since 2021.13
      */
@@ -196,7 +194,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
     }
 
     protected ExportedDocument readOrderedStream() throws IOException {
-        // first read the backup in case extra field is disabled - NXP-30713
+        // first read the backup
         ZipEntry entry = extraEntry;
         if (entry == null) {
             // normal case
@@ -222,30 +220,18 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
                 throw new IOException("Invalid Nuxeo archive");
             }
         }
-        Integer count = getFilesCount(entry);
-        if (count != null && count == 0) {
-            return read(); // empty dir -> try next directory
-        }
         String name = entry.getName();
         checkPathTraversal(name);
         ExportedDocument xdoc = new ExportedDocumentImpl();
         xdoc.setPath(new Path(name).removeTrailingSeparator());
-        if (count == null) {
-            // the count is not available, potentially because extra files count is disabled - NXP-30713
+        entry = in.getNextEntry();
+        while (entry != null && !entry.isDirectory() && entry.getName().startsWith(name)) {
+            fillExportedDocument(xdoc, entry);
+            // read next entry
             entry = in.getNextEntry();
-            while (entry != null && !entry.isDirectory() && entry.getName().startsWith(name)) {
-                fillExportedDocument(xdoc, entry);
-                // read next entry
-                entry = in.getNextEntry();
-            }
-            // we could have read one extra entry, backup it for the next #read call
-            extraEntry = entry;
-        } else {
-            // the count is available, read as many entries the information states it
-            for (int i = 0; i < count; i++) {
-                fillExportedDocument(xdoc, in.getNextEntry());
-            }
         }
+        // we could have read one extra entry, backup it for the next #read call
+        extraEntry = entry;
         return xdoc;
     }
 
@@ -269,17 +255,6 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
         }
         for (File file : filesToDelete) {
             file.delete();
-        }
-    }
-
-    private static Integer getFilesCount(ZipEntry entry) throws IOException {
-        byte[] bytes = entry.getExtra();
-        if (bytes == null) {
-            return null;
-        } else if (bytes.length != 4) {
-            throw new IOException("Invalid Nuxeo Archive");
-        } else {
-            return new DWord(bytes).getInt();
         }
     }
 
