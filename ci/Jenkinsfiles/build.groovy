@@ -339,7 +339,7 @@ pipeline {
               // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
               sh """
                 benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
-                mvn ${MAVEN_ARGS} -Pdistrib -T4C -pl :nuxeo-packages,\${benchmark_packages} install
+                mvn ${MAVEN_ARGS} -Pdistrib -pl :nuxeo-packages,\${benchmark_packages} install
               """
 
               dir('docker/nuxeo-benchmark') {
