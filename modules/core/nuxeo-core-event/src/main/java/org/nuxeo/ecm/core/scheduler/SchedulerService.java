@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.scheduler;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,5 +64,28 @@ public interface SchedulerService {
      * @since 5.6
      */
     boolean hasApplicationStarted();
+
+    /**
+     * Gets the list of the registered schedules.
+     *
+     * @return the schedules list
+     * @since 2023.3
+     */
+    List<Schedule> getSchedules();
+
+    /**
+     * Pause the scheduler service. The pause is cluster-wide and survives a node restart. See {@link #resume()} to
+     * resume the schedules service.
+     *
+     * @since 2023.3
+     */
+    void pause();
+
+    /**
+     * Resume the scheduler service.
+     *
+     * @since 2023.3
+     */
+    void resume();
 
 }

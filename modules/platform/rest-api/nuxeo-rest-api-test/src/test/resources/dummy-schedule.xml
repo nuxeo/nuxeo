@@ -1,0 +1,12 @@
+<component name="org.nuxeo.rest.management.test.scheduler.object" version="1.0">
+  <extension
+    target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="dummyTrigger">
+      <eventId>everySecond</eventId>
+      <eventCategory>default</eventCategory>
+      <!-- every second -->
+      <cronExpression>0/1 * * * * ?</cronExpression>
+    </schedule>
+  </extension>
+</component>
