@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -299,6 +300,31 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     @Override
     public boolean unregisterSchedule(Schedule schedule) {
         return unregisterSchedule(schedule.getId());
+    }
+
+    @Override
+    public List<Schedule> getSchedules() {
+        return List.of(registry.getSchedules().toArray(Schedule[]::new));
+    }
+
+    @Override
+    public void pause() {
+        log.warn("Pausing scheduler");
+        try {
+            scheduler.pauseAll();
+        } catch (SchedulerException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    @Override
+    public void resume() {
+        log.warn("Resuming scheduler");
+        try {
+            scheduler.resumeAll();
+        } catch (SchedulerException e) {
+            throw new NuxeoException(e);
+        }
     }
 
 }
