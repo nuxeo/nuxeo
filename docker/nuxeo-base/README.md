@@ -21,7 +21,7 @@ There are several ways to build the image, depending on the context:
 To build the `nuxeo/nuxeo-base` image locally, run:
 
 ```bash
-mvn -nsu -DYUM_REPO_USERNAME=... -DYUM_REPO_PASSWORD=... install
+mvn -nsu install
 ```
 
 ### With Skaffold
@@ -42,7 +42,7 @@ It also requires the following environment variables:
 To build the `nuxeo/nuxeo-base` image with Skaffold, you first need to give your credentials to packages.nuxeo.com and make it available for the Docker build with Maven:
 
 ```bash
-mvn -nsu -DYUM_REPO_USERNAME=... -DYUM_REPO_PASSWORD=... process-resources
+mvn -nsu process-resources
 ```
 
 Then, from the module directory, run:
@@ -56,7 +56,7 @@ skaffold build -f skaffold.yaml
 To build the `nuxeo/nuxeo-base` image with Docker, you first need to give your credentials to packages.nuxeo.com and make it available for the Docker build with Maven:
 
 ```bash
-mvn -nsu -DYUM_REPO_USERNAME=... -DYUM_REPO_PASSWORD=... process-resources
+mvn -nsu process-resources
 ```
 
 Then, run:

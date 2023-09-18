@@ -1,24 +1,8 @@
 # Nuxeo base image
 #
 # It includes some basic Open Source converters.
-#
-# It uses a multi-stage build to download RPMs from our YUM registy.
 
 ARG ROCKY_LINUX_VERSION=9.2
-# ------------------------------------------------------------------------
-# RPM download stage
-FROM rockylinux:$ROCKY_LINUX_VERSION as rpm-download
-
-ARG EXIFTOOL_VERSION=12.42-1.el9
-
-# Add Nexus Private Yum Release Repository
-COPY target/nuxeo-private.repo /etc/yum.repos.d/
-
-RUN dnf -y install --downloadonly --downloaddir=/rpms \
-  perl-Image-ExifTool-$EXIFTOOL_VERSION
-
-# ------------------------------------------------------------------------
-# Target stage
 FROM rockylinux:$ROCKY_LINUX_VERSION
 
 ARG BUILD_TAG
@@ -48,9 +32,6 @@ LABEL org.opencontainers.image.vendor="Nuxeo"
 RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
   && rpm --install https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm
 
-# Copy downloaded rpms
-COPY --from=rpm-download /rpms /tmp/rpms
-
 RUN dnf -y update \
   && dnf -y --setopt=skip_missing_names_on_install=False install \
     epel-release \
@@ -60,9 +41,6 @@ RUN dnf -y update \
     findutils \
     # install gzip first to allow using tar
     gzip \
-  # install downloaded rpms
-  && dnf -y localinstall /tmp/rpms/* \
-  && rm -rf /tmp/rpms \
   # install libreoffice
   && curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
   && dnf -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
@@ -81,6 +59,7 @@ RUN dnf -y update \
     libwpd-tools \
     # required by exiftool to extract binary metadata from open office document
     perl-Archive-Zip \
+    perl-Image-ExifTool \
     poppler-utils \
     # ps is not included in the base rockylinux image
     procps \

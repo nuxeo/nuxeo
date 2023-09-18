@@ -319,12 +319,6 @@ pipeline {
               """
 
               dir('docker/nuxeo-base') {
-                withCredentials([usernamePassword(credentialsId: 'packages.nuxeo.com-auth', usernameVariable: 'YUM_REPO_USERNAME', passwordVariable: 'YUM_REPO_PASSWORD')]) {
-                  sh """
-                    mkdir -p target
-                    envsubst < nuxeo-private.repo > target/nuxeo-private.repo
-                  """
-                }
                 echo "Build and push Base Docker image to internal Docker registry ${DOCKER_REGISTRY}"
                 nxDocker.build(skaffoldFile: 'skaffold.yaml')
               }
