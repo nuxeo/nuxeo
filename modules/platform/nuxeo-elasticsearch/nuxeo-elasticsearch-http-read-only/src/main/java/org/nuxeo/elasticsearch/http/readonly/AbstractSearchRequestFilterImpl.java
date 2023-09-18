@@ -64,7 +64,7 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
         this.indices = validator.getIndices(indices);
         this.principal = session.getPrincipal();
         this.rawQuery = rawQuery;
-        this.payload = payload;
+        this.payload = validator.getPayload(payload);
         if (payload == null && !principal.isAdministrator()) {
             // here we turn the UriSearch query_string into a body search
             extractPayloadFromQuery();

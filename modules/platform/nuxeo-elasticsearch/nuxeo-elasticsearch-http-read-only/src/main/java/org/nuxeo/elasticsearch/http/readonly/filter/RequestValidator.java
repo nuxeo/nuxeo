@@ -25,17 +25,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * Validate request inputs.
@@ -43,6 +50,11 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 public class RequestValidator {
+
+    protected static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
+                                                                  .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                                                                  .build();
+
     final private Map<String, List<String>> indexTypes;
 
     public RequestValidator() {
@@ -60,7 +72,6 @@ public class RequestValidator {
             throw new IllegalArgumentException("Invalid document id");
         }
     }
-
 
     /**
      * @deprecated since 11.4, types have been removed since Elasticsearch 7.x
@@ -93,6 +104,19 @@ public class RequestValidator {
             }
         }
         return indices;
+    }
+
+    public String getPayload(String payload) {
+        if (payload == null) {
+            return null;
+        }
+        // validate payload
+        try {
+            OBJECT_MAPPER.readValue(payload, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new NuxeoException("Unable to read the payload", HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return payload;
     }
 
     public void checkAccess(NuxeoPrincipal principal, String docAcl) {

@@ -36,6 +36,7 @@ public class AuditRequestFilter extends AbstractSearchRequestFilterImpl {
 
     @Override
     public void init(CoreSession session, String indices, String rawQuery, String payload) {
+        RequestValidator validator = new RequestValidator();
         principal = session.getPrincipal();
         if (!principal.isAdministrator()) {
             throw new IllegalArgumentException("Invalid index submitted: " + indices);
@@ -43,7 +44,7 @@ public class AuditRequestFilter extends AbstractSearchRequestFilterImpl {
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         this.indices = esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
         this.rawQuery = rawQuery;
-        this.payload = payload;
+        this.payload = validator.getPayload(payload);
         if (payload == null && !principal.isAdministrator()) {
             // here we turn the UriSearch query_string into a body search
             extractPayloadFromQuery();

@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
@@ -90,6 +91,16 @@ public class TestSearchRequestFilter {
         filter.init(getAdminCoreSession(), INDICES, "size=2&q=dc\\:title:Workspaces", null);
         Assert.assertEquals("/nxutest/_search?size=2&q=dc\\:title:Workspaces", filter.getUrl());
         Assert.assertNull(filter.getPayload());
+    }
+
+    @Test
+    public void testPayloadMalformedRejection() {
+        String payload = "{\"query\": {\"simple_query_string\": {\"query\": \"video\"}}}junk";
+        DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
+        var exception = Assert.assertThrows(NuxeoException.class,
+                () -> filter.init(getAdminCoreSession(), INDICES, "pretty", payload));
+        Assert.assertEquals(400, exception.getStatusCode());
+        Assert.assertEquals("Unable to read the payload", exception.getMessage());
     }
 
     /**
