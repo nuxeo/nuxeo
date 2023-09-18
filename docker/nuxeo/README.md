@@ -31,12 +31,14 @@ As it contains some non-free codecs, FFmpeg isn't part of the Nuxeo image. Howev
 ```Dockerfile
 FROM <DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG>
 
-# we need to be root to run yum commands
+# we need to be root to run dnf commands
 USER 0
-# install RPM Fusion free repository
-RUN yum -y localinstall --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+# install EPEL, PowerTools and RPM Fusion free repositories
+RUN dnf -y install epel-release \
+  && dnf config-manager --set-enabled crb \
+  && dnf -y install --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm
 # install ffmpeg package
-RUN yum -y install ffmpeg
+RUN dnf -y install ffmpeg
 # set back original user
 USER 900
 ```
