@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.http.readonly.filter.AuditRequestFilter;
+import org.nuxeo.elasticsearch.http.readonly.filter.RequestValidator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,13 +50,14 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
 
     @Override
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
+        RequestValidator validator = new RequestValidator();
         this.session = session;
         principal = session.getPrincipal();
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         this.indices = esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
         this.types = ElasticSearchConstants.ENTRY_TYPE;
         this.rawQuery = rawQuery;
-        this.payload = payload;
+        this.payload = validator.getPayload(payload);
         if (payload == null && !principal.isAdministrator()) {
             // here we turn the UriSearch query_string into a body search
             extractPayloadFromQuery();

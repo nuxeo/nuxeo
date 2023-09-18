@@ -32,26 +32,32 @@ import org.nuxeo.elasticsearch.http.readonly.filter.RequestValidator;
 import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
 
 /**
- * Rewrite an Elsaticsearch search request to add security filter.
- *
- * URI Search are turned into Request body search.
+ * Rewrite an Elsaticsearch search request to add security filter. URI Search are turned into Request body search.
  *
  * @since 7.3
  */
 public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFilter {
 
     protected static final String MATCH_ALL = "{\"query\": {\"match_all\": {}}}";
+
     protected static final String QUERY_STRING = "{\"query\":{\"query_string\":{\"query\":\"%s\",\"default_field\":\"%s\",\"default_operator\":\"%s\"}}}";
+
     protected static final String BACKSLASH_MARKER = "_@@_";
 
     protected String payload;
+
     protected String rawQuery;
+
     /** @deprecated since 11.4, types have been removed since Elasticsearch 7.x */
     @Deprecated(since = "11.4", forRemoval = true)
     protected String types;
+
     protected String indices;
+
     protected NuxeoPrincipal principal;
+
     protected String url;
+
     protected String filteredPayload;
 
     public AbstractSearchRequestFilterImpl() {
@@ -64,7 +70,7 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
         this.indices = validator.getIndices(indices);
         this.principal = session.getPrincipal();
         this.rawQuery = rawQuery;
-        this.payload = payload;
+        this.payload = validator.getPayload(payload);
         if (payload == null && !principal.isAdministrator()) {
             // here we turn the UriSearch query_string into a body search
             extractPayloadFromQuery();

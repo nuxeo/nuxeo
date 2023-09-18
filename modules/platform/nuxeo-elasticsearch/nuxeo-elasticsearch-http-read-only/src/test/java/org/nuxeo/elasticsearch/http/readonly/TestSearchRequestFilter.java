@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.http.readonly;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
@@ -158,6 +160,23 @@ public class TestSearchRequestFilter {
         filter.init(getAdminCoreSession(), INDICES, "size=2&q=dc\\:title:Workspaces", null);
         assertEquals("/nxutest/_search?size=2&q=dc\\:title:Workspaces", filter.getUrl());
         assertNull(filter.getPayload());
+    }
+
+    @Test
+    public void testPayloadMalformedRejection() {
+        String payload = """
+                {
+                  "query": {
+                    "simple_query_string": {
+                      "query": "video"
+                    }
+                  }
+                }junk""";
+        DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
+        var exception = assertThrows(NuxeoException.class,
+                () -> filter.init(getAdminCoreSession(), INDICES, "pretty", payload));
+        assertEquals(400, exception.getStatusCode());
+        assertEquals("Unable to read the payload", exception.getMessage());
     }
 
     /**
