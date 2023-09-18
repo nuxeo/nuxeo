@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2023 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,18 @@
  */
 package org.nuxeo.elasticsearch.http.readonly;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -43,34 +43,80 @@ public class TestSearchRequestFilter {
 
     private static final String INDICES = "nxutest";
 
+    protected static final String MATCH_ALL_PAYLOAD = minifyPayload("""
+            {
+              "query": {
+                "match_all": {}
+              }
+            }""");
+
     @Test
     public void testMatchAll() {
-        String payload = "{\"query\": {\"match_all\": {}}}";
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
-        filter.init(getNonAdminCoreSession(), INDICES, "pretty", payload);
-        Assert.assertEquals("/nxutest/_search?pretty", filter.getUrl());
-        Assert.assertEquals(
-                "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"match_all\":{}}}}}",
-                filter.getPayload());
+        filter.init(getNonAdminCoreSession(), INDICES, "pretty", MATCH_ALL_PAYLOAD);
+        assertEquals("/nxutest/_search?pretty", filter.getUrl());
+        assertEquals(minifyPayload("""
+                {
+                  "query": {
+                    "bool": {
+                      "filter": {
+                        "terms": {
+                          "ecm:acl": [
+                            "group1",
+                            "group2",
+                            "members",
+                            "jdoe",
+                            "Everyone"
+                          ]
+                        }
+                      },
+                      "must": {
+                        "match_all": {}
+                      }
+                    }
+                  }
+                }
+                """), filter.getPayload());
     }
 
     @Test
     public void testMatchAllAsAdmin() {
-        String payload = "{\"query\": {\"match_all\": {}}}";
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
-        filter.init(getAdminCoreSession(), INDICES, "pretty", payload);
-        Assert.assertEquals("/nxutest/_search?pretty", filter.getUrl());
-        Assert.assertEquals(payload, filter.getPayload());
+        filter.init(getAdminCoreSession(), INDICES, "pretty", MATCH_ALL_PAYLOAD);
+        assertEquals("/nxutest/_search?pretty", filter.getUrl());
+        assertEquals(MATCH_ALL_PAYLOAD, filter.getPayload());
     }
 
     @Test
     public void testUriSearch() {
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
         filter.init(getNonAdminCoreSession(), INDICES, "size=2&q=dc%5C%3Atitle:Workspaces", null);
-        Assert.assertEquals(filter.getUrl(), "/nxutest/_search?size=2");
-        Assert.assertEquals(
-                "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"query_string\":{\"default_operator\":\"OR\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"_all\"}}}}}",
-                filter.getPayload());
+        assertEquals(filter.getUrl(), "/nxutest/_search?size=2");
+        assertEquals(minifyPayload("""
+                {
+                  "query": {
+                    "bool": {
+                      "filter": {
+                        "terms": {
+                          "ecm:acl": [
+                            "group1",
+                            "group2",
+                            "members",
+                            "jdoe",
+                            "Everyone"
+                          ]
+                        }
+                      },
+                      "must": {
+                        "query_string": {
+                          "default_operator": "OR",
+                          "query": "dc\\:title:Workspaces",
+                          "default_field": "_all"
+                        }
+                      }
+                    }
+                  }
+                }"""), filter.getPayload());
     }
 
     @Test
@@ -78,18 +124,40 @@ public class TestSearchRequestFilter {
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
         filter.init(getNonAdminCoreSession(), INDICES,
                 "q=dc\\:title:Workspaces&pretty&df=dc:title&default_operator=AND", null);
-        Assert.assertEquals(filter.getUrl(), "/nxutest/_search?pretty");
-        Assert.assertEquals(
-                "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"query_string\":{\"default_operator\":\"AND\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"dc:title\"}}}}}",
-                filter.getPayload());
+        assertEquals(filter.getUrl(), "/nxutest/_search?pretty");
+        assertEquals(minifyPayload("""
+                {
+                  "query": {
+                    "bool": {
+                      "filter": {
+                        "terms": {
+                          "ecm:acl": [
+                            "group1",
+                            "group2",
+                            "members",
+                            "jdoe",
+                            "Everyone"
+                          ]
+                        }
+                      },
+                      "must": {
+                        "query_string": {
+                          "default_operator": "AND",
+                          "query": "dc\\:title:Workspaces",
+                          "default_field": "dc:title"
+                        }
+                      }
+                    }
+                  }
+                }"""), filter.getPayload());
     }
 
     @Test
     public void testUriSearchAsAdmin() {
         DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
         filter.init(getAdminCoreSession(), INDICES, "size=2&q=dc\\:title:Workspaces", null);
-        Assert.assertEquals("/nxutest/_search?size=2&q=dc\\:title:Workspaces", filter.getUrl());
-        Assert.assertNull(filter.getPayload());
+        assertEquals("/nxutest/_search?size=2&q=dc\\:title:Workspaces", filter.getUrl());
+        assertNull(filter.getPayload());
     }
 
     /**
@@ -111,305 +179,21 @@ public class TestSearchRequestFilter {
     }
 
     public static NuxeoPrincipal getAdminPrincipal() {
-        return new NuxeoPrincipal() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public String getFirstName() {
-                return "John";
-            }
-
-            @Override
-            public String getLastName() {
-                return "Doe";
-            }
-
-            @Override
-            public String getPassword() {
-                return null;
-            }
-
-            @Override
-            public String getCompany() {
-                return null;
-            }
-
-            @Override
-            public String getEmail() {
-                return null;
-            }
-
-            @Override
-            public List<String> getGroups() {
-                return null;
-            }
-
-            @Override
-            public List<String> getAllGroups() {
-                return Arrays.asList("group1", "group2", "members");
-            }
-
-            @Override
-            public boolean isMemberOf(String s) {
-                return false;
-            }
-
-            @Override
-            public List<String> getRoles() {
-                return null;
-            }
-
-            @Override
-            public void setName(String s) {
-
-            }
-
-            @Override
-            public void setFirstName(String s) {
-
-            }
-
-            @Override
-            public void setLastName(String s) {
-
-            }
-
-            @Override
-            public void setGroups(List<String> list) {
-
-            }
-
-            @Override
-            public void setRoles(List<String> list) {
-
-            }
-
-            @Override
-            public void setCompany(String s) {
-
-            }
-
-            @Override
-            public void setPassword(String s) {
-
-            }
-
-            @Override
-            public void setEmail(String s) {
-
-            }
-
-            @Override
-            public String getPrincipalId() {
-                return null;
-            }
-
-            @Override
-            public void setPrincipalId(String s) {
-
-            }
-
-            @Override
-            public DocumentModel getModel() {
-                return null;
-            }
-
-            @Override
-            public void setModel(DocumentModel documentModel) {
-
-            }
-
-            @Override
-            public boolean isAdministrator() {
-                return true;
-            }
-
-            @Override
-            public String getTenantId() {
-                return null;
-            }
-
-            @Override
-            public boolean isAnonymous() {
-                return false;
-            }
-
-            @Override
-            public String getOriginatingUser() {
-                return null;
-            }
-
-            @Override
-            public void setOriginatingUser(String s) {
-
-            }
-
-            @Override
-            public String getActingUser() {
-                return null;
-            }
-
-            @Override
-            public boolean isTransient() {
-                return false;
-            }
-
-            @Override
-            public String getName() {
-                return "admin";
-            }
-        };
+        var principal = new UserPrincipal("admin", List.of("group1", "group2", "members"), false, true);
+        principal.setFirstName("John");
+        principal.setLastName("Doe Admin");
+        return principal;
     }
 
     public static NuxeoPrincipal getNonAdminPrincipal() {
-        return new NuxeoPrincipal() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public String getFirstName() {
-                return "John";
-            }
-
-            @Override
-            public String getLastName() {
-                return "Doe";
-            }
-
-            @Override
-            public String getPassword() {
-                return null;
-            }
-
-            @Override
-            public String getCompany() {
-                return null;
-            }
-
-            @Override
-            public String getEmail() {
-                return null;
-            }
-
-            @Override
-            public List<String> getGroups() {
-                return null;
-            }
-
-            @Override
-            public List<String> getAllGroups() {
-                return Arrays.asList("group1", "group2", "members");
-            }
-
-            @Override
-            public boolean isMemberOf(String s) {
-                return false;
-            }
-
-            @Override
-            public List<String> getRoles() {
-                return null;
-            }
-
-            @Override
-            public void setName(String s) {
-
-            }
-
-            @Override
-            public void setFirstName(String s) {
-
-            }
-
-            @Override
-            public void setLastName(String s) {
-
-            }
-
-            @Override
-            public void setGroups(List<String> list) {
-
-            }
-
-            @Override
-            public void setRoles(List<String> list) {
-
-            }
-
-            @Override
-            public void setCompany(String s) {
-
-            }
-
-            @Override
-            public void setPassword(String s) {
-
-            }
-
-            @Override
-            public void setEmail(String s) {
-
-            }
-
-            @Override
-            public String getPrincipalId() {
-                return null;
-            }
-
-            @Override
-            public void setPrincipalId(String s) {
-
-            }
-
-            @Override
-            public DocumentModel getModel() {
-                return null;
-            }
-
-            @Override
-            public void setModel(DocumentModel documentModel) {
-
-            }
-
-            @Override
-            public boolean isAdministrator() {
-                return false;
-            }
-
-            @Override
-            public String getTenantId() {
-                return null;
-            }
-
-            @Override
-            public boolean isAnonymous() {
-                return false;
-            }
-
-            @Override
-            public String getOriginatingUser() {
-                return null;
-            }
-
-            @Override
-            public void setOriginatingUser(String s) {
-
-            }
-
-            @Override
-            public String getActingUser() {
-                return null;
-            }
-
-            @Override
-            public boolean isTransient() {
-                return false;
-            }
-
-            @Override
-            public String getName() {
-                return "jdoe";
-            }
-        };
+        var principal = new UserPrincipal("jdoe", List.of("group1", "group2", "members"), false, false);
+        principal.setFirstName("John");
+        principal.setLastName("Doe");
+        return principal;
     }
 
+    @SuppressWarnings("EscapedSpace")
+    protected static String minifyPayload(String payload) {
+        return payload.replaceAll("\s*\n*", "");
+    }
 }
