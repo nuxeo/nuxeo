@@ -199,7 +199,6 @@ pipeline {
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
     TEST_KAFKA_K8S_OBJECT = 'kafka'
     TEST_KAFKA_PORT = '9092'
-    BASE_IMAGE_NAME = 'nuxeo-base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     NUXEO_BENCHMARK_IMAGE_NAME = 'nuxeo-benchmark'
     MAVEN_OPTS = "$MAVEN_OPTS -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
@@ -318,10 +317,6 @@ pipeline {
               Image tag: ${VERSION}
               """
 
-              dir('docker/nuxeo-base') {
-                echo "Build and push Base Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-                nxDocker.build(skaffoldFile: 'skaffold.yaml')
-              }
               dir('docker/nuxeo') {
                 echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
                 sh "mvn ${MAVEN_ARGS} -T4C process-resources"
@@ -345,7 +340,6 @@ pipeline {
               }
 
               if (!nxUtils.isPullRequest()) {
-                dockerPushFixedVersion("${BASE_IMAGE_NAME}")
                 dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
                 dockerPushFixedVersion("${NUXEO_BENCHMARK_IMAGE_NAME}")
               }
@@ -682,7 +676,6 @@ pipeline {
             Image tag: ${VERSION}
             """
             echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
-            dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${BASE_IMAGE_NAME}")
             dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
             dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_BENCHMARK_IMAGE_NAME}")
           }

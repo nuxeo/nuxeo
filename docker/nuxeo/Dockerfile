@@ -4,7 +4,8 @@
 #
 # It uses a multi-stage build to copy and unzip the Nuxeo server ZIP file.
 
-ARG BASE_IMAGE
+ARG ROCKY_LINUX_VERSION=9.2
+
 # ------------------------------------------------------------------------
 # Build stage
 FROM azul/zulu-openjdk:17 as builder
@@ -34,18 +35,82 @@ RUN mkdir -p /tmp/nuxeo-distribution \
 
 # ------------------------------------------------------------------------
 # Target stage
-FROM $BASE_IMAGE
+FROM rockylinux:$ROCKY_LINUX_VERSION
 
 ARG BUILD_TAG
 ARG SCM_REF
 ARG VERSION
 
+ARG ROCKY_LINUX_VERSION=9.2
+ARG LIBREOFFICE_VERSION=7.4.2
+ARG GHOSTSCRIPT_MAJOR_VERSION=9
+ARG GHOSTSCRIPT_MINOR_VERSION=25
+ARG GHOSTSCRIPT_VERSION=$GHOSTSCRIPT_MAJOR_VERSION.$GHOSTSCRIPT_MINOR_VERSION
+
 LABEL org.nuxeo.build-tag=$BUILD_TAG
 LABEL org.nuxeo.scm-ref=$SCM_REF
 LABEL org.nuxeo.version=$VERSION
 # Override parent ones
+LABEL org.label-schema.build-date=""
+LABEL org.label-schema.license="Apache 2.0"
 LABEL org.label-schema.name="Nuxeo Server"
+LABEL org.label-schema.vendor="Nuxeo"
+LABEL org.opencontainers.image.created=""
+LABEL org.opencontainers.image.licenses="Apache 2.0"
 LABEL org.opencontainers.image.title="Nuxeo Server"
+LABEL org.opencontainers.image.vendor="Nuxeo"
+
+# Configure Zulu Repository
+RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
+  && rpm --install https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm
+
+# Install required software
+RUN dnf -y update \
+  && dnf -y --setopt=skip_missing_names_on_install=False install \
+    epel-release \
+    # Install java first to provide it for depend packages (such as libreoffice)
+    zulu17-jdk \
+    # Find is not included in the base rockylinux image
+    findutils \
+    # Install gzip first to allow using tar
+    gzip \
+  # Install LibreOffice
+  && curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
+  && dnf -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
+  && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/soffice \
+  && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/libreoffice \
+  && rm -rf /tmp/LibreOffice_${LIBREOFFICE_VERSION}* \
+  # Install older version of Ghostscript to avoid breaking changes on EPS to PDF conversion
+  && curl -f -L https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION/ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64.tgz | tar -xzv \
+  && mv ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64/gs-$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION-linux-x86_64 /usr/bin/gs \
+  && rm -rf ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64 \
+  # ImageMagick 7 for Rocky Linux 9 is only provided by a third party repo
+  && dnf -y install https://rpms.remirepo.net/enterprise/remi-release-$ROCKY_LINUX_VERSION.rpm \
+  && dnf -y --enablerepo=remi install ImageMagick7 \
+  # devel repository required for some packages such as libwpd-tools
+  && dnf -y --setopt=skip_missing_names_on_install=False --enablerepo=devel install \
+    libwpd-tools \
+    # Required by exiftool to extract binary metadata from open office document
+    perl-Archive-Zip \
+    perl-Image-ExifTool \
+    poppler-utils \
+    # ps is not included in the base rockylinux image
+    procps \
+    unzip \
+    wget \
+    # Add CJK fonts
+    google-noto-cjk-fonts-common \
+  && dnf clean all
+
+# Remove perl-Net-SSLeay example private key
+RUN rm /usr/share/doc/perl-Net-SSLeay/examples/server_key.pem
+
+# Remove setuid/setgid binaries from images for security
+RUN find / -ignore_readdir_race -perm 6000 -type f -exec chmod a-s {} \; || true
+
+# Set an UTF-8 LANG
+RUN dnf -y install glibc-langpack-en
+ENV LANG en_US.utf8
 
 # Add a nuxeo user with a fixed UID
 # We chose an arbitrary UID that doesn't conflict with possibly existing users

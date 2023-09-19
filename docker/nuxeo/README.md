@@ -6,11 +6,7 @@ Nuxeo provides a ready to use Docker image that is pushed to our Docker registry
 docker pull <DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG>
 ```
 
-## Disclaimer
-
-This Docker image doesn't aim to replace the [Nuxeo Docker official image](https://hub.docker.com/_/nuxeo/). It implements a different approach to try having an immutable image configured at build time instead of runtime.
-
-## Nuxeo Image
+## Image Content
 
 Based on Rocky Linux 9, it includes:
 
@@ -55,16 +51,10 @@ There are several ways to build the image, depending on the context:
 
 ### With Maven
 
-To build the `nuxeo/nuxeo` image locally, you need to have built the `nuxeo/nuxeo-base:latest-lts-2023` image first, see its [README](../nuxeo-base/README.md), then run:
+To build the `nuxeo/nuxeo` image locally, run:
 
 ```bash
 mvn -nsu install
-```
-
-To build the `nuxeo/nuxeo` image locally by leveraging the `nuxeo/nuxeo-base:<TAG>` from another registry, run:
-
-```bash
-mvn -nsu -Ddocker.base.image=<DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG> install
 ```
 
 ### With Skaffold
@@ -105,7 +95,7 @@ mvn -nsu process-resources
 Then, run:
 
 ```bash
-docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo-base:<TAG> -t nuxeo/nuxeo:latest-lts-2023 .
+docker build -t nuxeo/nuxeo:latest-lts-2023 .
 ```
 
 ## Run the Image
