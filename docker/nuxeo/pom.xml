@@ -13,10 +13,6 @@
   <name>Nuxeo Docker Image</name>
   <packaging>pom</packaging>
 
-  <properties>
-    <docker.base.image>nuxeo/nuxeo-base:latest-lts</docker.base.image>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -57,12 +53,12 @@
           </execution>
         </executions>
         <configuration>
+          <verbose>true</verbose>
           <images>
             <image>
               <name>nuxeo/nuxeo:latest-lts</name>
               <build>
                 <args>
-                  <BASE_IMAGE>${docker.base.image}</BASE_IMAGE>
                   <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
                   <SCM_REF>built-locally</SCM_REF>
                   <VERSION>latest-lts</VERSION>
