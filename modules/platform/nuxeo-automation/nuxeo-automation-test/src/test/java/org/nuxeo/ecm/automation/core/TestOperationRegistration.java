@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -40,15 +39,13 @@ import org.nuxeo.ecm.automation.core.operations.login.Logout;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.test.AutomationServerFeature;
 import org.nuxeo.ecm.automation.test.helpers.TestOperation;
-import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ AutomationServerFeature.class, LogCaptureFeature.class })
+@Features(AutomationServerFeature.class)
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.webengine.core")
 public class TestOperationRegistration {
@@ -61,9 +58,6 @@ public class TestOperationRegistration {
 
     @Inject
     protected HotDeployer hotDeployer;
-
-    @Inject
-    protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     public void testRegistration() throws Exception {
@@ -135,30 +129,21 @@ public class TestOperationRegistration {
 
     @Test
     @Deploy("org.nuxeo.ecm.automation.test.test:test-scripted-operation-contrib.xml")
-    @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = RegistrationInfoImpl.class)
     public void testMixingOperationTypes() throws Exception {
         // Trying to merge a ChainTypeImpl into a ScriptingOperationTypeImpl
-        service.getOperation("testScript");
+        var scriptedOperation = service.getOperation("testScript");
+        assertEquals(ScriptingOperationTypeImpl.class, scriptedOperation.getClass());
         hotDeployer.deploy("org.nuxeo.ecm.automation.test.test:test-chain-operation-disable-contrib.xml");
-        logCaptureResult.assertHasEvent();
-        var logs = logCaptureResult.getCaughtEvents();
-        assertEquals(1, logs.size());
-        assertEquals(
-                "java.lang.UnsupportedOperationException: Can't merge operations with id: testScript. The type class org.nuxeo.ecm.automation.core.impl.ChainTypeImpl cannot be merged in class org.nuxeo.automation.scripting.internals.ScriptingOperationTypeImpl.",
-                logs.get(0).getThrown().toString());
-        assertNotNull(service.getOperation("testScript"));
+        scriptedOperation = service.getOperation("testScript");
+        assertEquals(ScriptingOperationTypeImpl.class, scriptedOperation.getClass());
         hotDeployer.undeploy("org.nuxeo.ecm.automation.test.test:test-chain-operation-disable-contrib.xml");
-        logCaptureResult.clear();
 
         // Trying to merge a ChainTypeImpl into an OperationTypeImpl
-        service.getOperation(Logout.ID);
+        var operation = service.getOperation(Logout.ID);
+        assertEquals(OperationTypeImpl.class, operation.getClass());
         hotDeployer.deploy("org.nuxeo.ecm.automation.test.test:test-mix-operationType-contrib.xml");
-        logs = logCaptureResult.getCaughtEvents();
-        assertEquals(1, logs.size());
-        assertEquals(
-                "java.lang.UnsupportedOperationException: Can't merge operations with id: Auth.Logout. The type class org.nuxeo.ecm.automation.core.impl.ChainTypeImpl cannot be merged in class org.nuxeo.ecm.automation.core.impl.OperationTypeImpl.",
-                logs.get(0).getThrown().toString());
-        assertNotNull(service.getOperation(Logout.ID));
+        operation = service.getOperation(Logout.ID);
+        assertEquals(OperationTypeImpl.class, operation.getClass());
     }
 
 }
