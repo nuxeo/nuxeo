@@ -123,38 +123,11 @@ ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
 # Set permissions on writeable directories to support arbitrary user IDs for OpenShift.
 # These directories must be owned by the root group and be readable/writable by that group.
 # See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
-RUN mkdir -p $NUXEO_HOME \
-  # Create folders until `nuxeo.war` to allow it to be mounted
-  && mkdir -p $NUXEO_HOME/nxserver/nuxeo.war \
-  && chown 900:0 $NUXEO_HOME && chmod g+rwX $NUXEO_HOME \
-  && mkdir -p /etc/nuxeo \
-  && chown 900:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo \
-  && mkdir -p /var/lib/nuxeo \
-  && chown 900:0 /var/lib/nuxeo && chmod g+rwX /var/lib/nuxeo \
-  && mkdir -p /var/log/nuxeo \
-  && chown  900:0 /var/log/nuxeo && chmod g+rwX /var/log/nuxeo \
-  && mkdir -p /var/pid/nuxeo \
-  && chown 900:0 /var/pid/nuxeo && chmod g+rwX /var/pid/nuxeo \
-  && chmod g=u /etc/passwd
+RUN chmod g=u /etc/passwd
 
-COPY docker-entrypoint.sh /
-
-# Copy packages installation script
-COPY install-packages.sh /
-
-# Copy script to run Nuxeo in dev environment
-COPY nuxeo-run-dev.sh /
-
-# Create directory in which to mount property files appended to nuxeo.conf at runtime
-RUN mkdir /etc/nuxeo/conf.d
-# Copy base property files.
-COPY conf.d /etc/nuxeo/conf.d/
-
-# Create directory in which to copy shell scripts to run at runtime
-RUN mkdir /docker-entrypoint-initnuxeo.d && chmod g+rwx,o+rx /docker-entrypoint-initnuxeo.d \
-  && chmod -R g+rwX,o+rX /etc/nuxeo/conf.d \
-  && chmod g+rwx,o+rx /docker-entrypoint.sh \
-  && chmod g+rwx,o+rx /install-packages.sh
+# Copy scripts and configuration files and create needed folders
+# COPY --chmod only supports octal notation, using 775 that is equivalent to rwxrwxr-x
+COPY --chown=900:0 --chmod=775 rootfs /
 
 # Copy Nuxeo distribution
 COPY --chown=900:0 --from=builder /distrib $NUXEO_HOME
