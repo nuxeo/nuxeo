@@ -14,9 +14,38 @@
   <name>Nuxeo Docker Images</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <docker.platforms>linux/amd64</docker.platforms>
+  </properties>
+
   <modules>
     <module>nuxeo</module>
     <module>nuxeo-benchmark</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>amd64</id>
+      <activation>
+        <os>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <docker.platforms>linux/amd64</docker.platforms>
+      </properties>
+    </profile>
+    <profile>
+      <id>arm64</id>
+      <activation>
+        <os>
+          <arch>aarch64</arch>
+        </os>
+      </activation>
+      <properties>
+        <docker.platforms>linux/arm64</docker.platforms>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>

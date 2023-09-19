@@ -60,10 +60,15 @@
               <build>
                 <args>
                   <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
-                  <SCM_REF>built-locally</SCM_REF>
+                  <SCM_REF>local</SCM_REF>
                   <VERSION>latest-lts-2023</VERSION>
                 </args>
                 <contextDir>${basedir}</contextDir>
+                <buildx>
+                  <platforms>
+                    <platform>${docker.platforms}</platform>
+                  </platforms>
+                </buildx>
               </build>
             </image>
           </images>

@@ -1,4 +1,4 @@
-# (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+# (C) Copyright 2019-2023 Nuxeo (http://nuxeo.com/) and others.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,36 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-apiVersion: skaffold/v2beta17
+apiVersion: skaffold/v2beta29
 kind: Config
 build:
   tagPolicy:
     envTemplate:
       template: "{{.VERSION}}"
   artifacts:
-    - image: "$DOCKER_REGISTRY/nuxeo/nuxeo"
+    - image: nuxeo/nuxeo
       context: .
-      kaniko:
-        useNewRun: true
-        singleSnapshot: true
-        snapshot-mode: "time"
-        buildArgs:
-          BUILD_TAG: "{{.BUILD_TAG}}"
-          SCM_REF: "{{.GIT_COMMIT}}"
-          VERSION: "{{.VERSION}}"
-  cluster:
-    namespace: $CURRENT_NAMESPACE
-    dockerConfig:
-      secretName: jenkins-docker-cfg
-    resources:
-      requests:
-        cpu: "1"
-        memory: "3Gi"
-      limits:
-        cpu: "2"
-        memory: "6Gi"
-    tolerations:
-      - key: team
-        operator: "Equal"
-        value: platform
-        effect: "NoSchedule"
+      custom:
+        buildCommand: |
+          docker-buildx \
+            --build-arg BUILD_TAG={{.BUILD_TAG}} \
+            --build-arg SCM_REF={{.GIT_COMMIT}} \
+            --build-arg VERSION={{.VERSION}}

@@ -157,12 +157,7 @@ RUN mkdir /docker-entrypoint-initnuxeo.d && chmod g+rwx,o+rx /docker-entrypoint-
   && chmod g+rwx,o+rx /install-packages.sh
 
 # Copy Nuxeo distribution
-COPY --from=builder /distrib $NUXEO_HOME
-
-# Work around missing support for --chown flag with COPY instruction in Kaniko
-# TODO NXP-28052: remove and use COPY --chown when fixed in Kaniko, or find a proper way
-RUN chown -R 900:0 $NUXEO_HOME \
-  && chmod -R g+rwX $NUXEO_HOME
+COPY --chown=900:0 --from=builder /distrib $NUXEO_HOME
 
 VOLUME /var/lib/nuxeo
 VOLUME /var/log/nuxeo

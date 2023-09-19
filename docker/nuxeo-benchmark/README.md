@@ -8,65 +8,65 @@ docker pull <DOCKER_REGISTRY>/nuxeo/nuxeo-benchmark:<TAG>
 
 ## Build the Image
 
-It requires to install [Docker](https://docs.docker.com/install/).
+It requires to install:
 
-There are several ways to build the image, depending on the context:
+- [Docker](https://docs.docker.com/install/) 19.03 or newer.
+- [Docker Buildx](https://docs.docker.com/build/architecture/#buildx).
 
-- For a local build, use [Maven](#with-maven).
-- For a pipeline running in Jenkins on Kubernetes, use [Skaffold](#with-skaffold).
-- In any case, you can use [Docker](#with-docker).
+Note that [BuildKit](https://docs.docker.com/build/buildkit/) is the default builder for users on Docker Desktop and Docker Engine v23.0 and later.
+
+There are two ways to build the image:
+
+- With [Maven](#with-maven): suitable for local use.
+- With [Skaffold](#with-skaffold): used by the [nuxeo](https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/lts/job/nuxeo/) CI pipeline, can also be used locally.
 
 ### With Maven
 
-To build the `nuxeo/nuxeo-benchmark` image locally, you need to have built the `nuxeo/nuxeo:latest-lts-2023` image first, see its [README](../nuxeo/README.md), then run:
+To build the `nuxeo/nuxeo-benchmark` image with Maven, just run:
 
 ```bash
 mvn -nsu install
 ```
 
-To build the `nuxeo/nuxeo-benchmark` image locally by leveraging the `nuxeo/nuxeo:<TAG>` from another registry, run:
+The base image is `docker.platform.dev.nuxeo.com/nuxeo/nuxeo:latest-lts-2023` by default.
+
+To build the `nuxeo/nuxeo-benchmark` image from a `nuxeo/nuxeo:<TAG>` image hosted in another registry, run:
 
 ```bash
 mvn -nsu -Ddocker.base.image=<DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG> install
 ```
 
+By default, the image is built for the host's architecture, e.g. `linux/amd64` or `linux/arm64`.
+
+You can override the built platform, for instance to build a multi-architecture image:
+
+```bash
+mvn -nsu install -Ddocker.platforms=linux/amd64,linux/arm64
+```
+
 ### With Skaffold
 
-We use Skaffold to build the image as part of the [nuxeo](https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/lts/job/nuxeo/) pipeline in our Jenkins CI/CD platform.
+To build the `nuxeo/nuxeo-benchmark` image with Skaffold, you need to have:
 
-This requires to:
+- [Skaffold](https://skaffold.dev/docs/install/) installed, v2 is recommended, otherwise v1.39 is the minimum.
+- The [docker-buildx](https://github.com/nuxeo/platform-builder-base/blob/main/_common/rootfs/usr/local/bin/docker-buildx) script present in your `PATH` environment variable.
 
-- Install [Skaffold](https://skaffold.dev/docs/getting-started/#installing-skaffold).
-- Install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
-- Configure `kubectl` to connect to a Kubernetes cluster.
+Then, you need to tell Skaffold that you're building locally, otherwise it might try to push the image to a Docker registry such as docker.io if it detects a Kubernetes context.
 
-It also requires the following environment variables:
+```bash
+skaffold config set --global local-cluster true
+```
 
-- `DOCKER_REGISTRY`: the Docker registry to push the image to.
-- `VERSION`: the image tag, for instance `latest-lts-2023`.
-
-To build the `nuxeo/nuxeo-benchmark` image with Skaffold, you first need to fetch the needed Nuxeo packages and make it available for the Docker build with Maven:
+Fetch the needed Nuxeo packages with Maven and make them available for the Docker build:
 
 ```bash
 mvn -nsu process-resources
 ```
 
-Then, from the module directory, run:
+Finally, run:
 
 ```bash
-skaffold build -f skaffold.yaml
+skaffold build
 ```
 
-### With Docker
-
-To build the `nuxeo/nuxeo-benchmark` image with Docker, you first need to fetch the the needed Nuxeo packages and make it available for the Docker build with Maven:
-
-```bash
-mvn -nsu process-resources
-```
-
-Then, run:
-
-```bash
-docker build --build-arg BASE_IMAGE=<DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG> -t nuxeo/nuxeo-benchmark:latest-lts-2023 .
-```
+This builds the image described in the [skaffold.yaml](./skaffold.yaml) file and loads it inside your Docker daemon.
