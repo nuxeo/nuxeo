@@ -64,13 +64,13 @@
         <configuration>
           <images>
             <image>
-              <name>nuxeo/nuxeo-benchmark:latest-lts</name>
+              <name>nuxeo/nuxeo-benchmark:2021.x</name>
               <build>
                 <args>
                   <BASE_IMAGE>${docker.base.image}</BASE_IMAGE>
                   <BUILD_TAG>local-nuxeo-nuxeo-benchmark</BUILD_TAG>
                   <SCM_REF>local</SCM_REF>
-                  <VERSION>latest-lts</VERSION>
+                  <VERSION>2021.x</VERSION>
                 </args>
                 <contextDir>${basedir}</contextDir>
                 <buildx>

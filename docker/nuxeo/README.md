@@ -125,7 +125,7 @@ This builds the image described in the [skaffold.yaml](./skaffold.yaml) file and
 To run a container from the `nuxeo/nuxeo` image built locally, run:
 
 ```bash
-docker run -it -p 8080:8080 nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 nuxeo/nuxeo:2021.x
 ```
 
 To pull the `nuxeo/nuxeo` image from our Docker registry and run a container from it, run:
@@ -139,13 +139,13 @@ docker run -it -p 8080:8080 <DOCKER_REGISTRY>/nuxeo/nuxeo:<TAG>
 To inspect the different layers included in the image, you can run:
 
 ```bash
-docker history nuxeo/nuxeo:latest-lts
+docker history nuxeo/nuxeo:2021.x
 ```
 
 The [dive](https://github.com/wagoodman/dive) tool is also very good for exploring an image, its layer contents and discovering ways to shrink the image size:
 
 ```bash
-dive nuxeo/nuxeo:latest-lts
+dive nuxeo/nuxeo:2021.x
 ```
 
 ## Build a Custom Image From Nuxeo
@@ -190,7 +190,7 @@ nuxeo.db.port=5432
 you can run:
 
 ```bash
-docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/nuxeo:2021.x
 ```
 
 ### Environment Variables
@@ -211,7 +211,7 @@ The value of `JAVA_OPTS` is appended to the `JAVA_OPTS` property defined in `nux
 For instance, to make the Nuxeo Launcher display the JVM settings in the console, run:
 
 ```bash
-docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/nuxeo:2021.x
 ```
 
 #### NUXEO_CLID
@@ -221,7 +221,7 @@ The value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/instance.clid` at startup
 For instance, to run a container with a registered Nuxeo instance:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:2021.x
 ```
 
 #### NUXEO_CONNECT_URL
@@ -231,7 +231,7 @@ docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:latest-lts
 For instance, to run a container with another Connect URL than the default one:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/nuxeo:2021.x
 ```
 
 #### NUXEO_PACKAGES
@@ -241,7 +241,7 @@ docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/nuxeo
 For instance, to run a container with the `nuxeo-web-ui` and `nuxeo-drive` packages installed:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/nuxeo:latest-lts
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/nuxeo:2021.x
 ```
 
 ### Shell Scripts

@@ -56,12 +56,12 @@
           <verbose>true</verbose>
           <images>
             <image>
-              <name>nuxeo/nuxeo:latest-lts</name>
+              <name>nuxeo/nuxeo:2021.x</name>
               <build>
                 <args>
                   <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
                   <SCM_REF>local</SCM_REF>
-                  <VERSION>latest-lts</VERSION>
+                  <VERSION>2021.x</VERSION>
                 </args>
                 <contextDir>${basedir}</contextDir>
                 <buildx>
