@@ -867,7 +867,7 @@ public class SessionImpl implements Session {
     }
 
     @Override
-    public void removeNode(Node node, Consumer<Node> beforeRecordRemove) {
+    public void removeNode(Node node, Consumer<Node> beforeRemove) {
         flush();
         // remove the lock using the lock manager
         // TODO children locks?
@@ -892,12 +892,11 @@ public class SessionImpl implements Session {
             }
         }
 
-        // pre-processing before record removal (notify the record blob manager)
-        if (beforeRecordRemove != null) {
+        // pre-processing before removal (notify the blob manager)
+        if (beforeRemove != null) {
             nodeInfos.stream() //
-                     .filter(info -> info.isRecord)
                      .map(info -> getNodeById(info.id))
-                     .forEach(beforeRecordRemove::accept);
+                     .forEach(beforeRemove::accept);
         }
 
         // if a proxy target is removed, check that all proxies to it are removed

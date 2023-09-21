@@ -510,7 +510,14 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     @Override
     public void notifyBeforeRemove(Document doc) {
+        if (doc == null) {
+            return;
+        }
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        if (repositoryService == null) {
+            log.warn("Unable to notify removal of doc: " + doc + ", Framework not ready.");
+            return;
+        }
         Repository repository = repositoryService.getRepository(doc.getRepositoryName());
         if (repository.hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS)) {
             EventService es = Framework.getService(EventService.class);
@@ -526,14 +533,14 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             } catch (PropertyConversionException e) {
                 log.error("Cannot visit blobs for doc: " + doc.getUUID(), e);
             }
-        } else {
+        } else if (doc.isRecord()) {
             // Legacy: VCS does not support ecm:blobKeys
             // Let's handle record's main blob deletion
             String xpath = MAIN_BLOB_XPATH;
             Blob blob;
             try {
                 blob = (Blob) doc.getValue(xpath);
-            } catch (PropertyNotFoundException e) {
+            } catch (PropertyNotFoundException | ClassCastException e) {
                 return;
             }
             if (!(blob instanceof ManagedBlob)) {
