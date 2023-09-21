@@ -66,7 +66,7 @@ RUN yum -y update \
     epel-release \
     # Install java first to provide it for depend packages (such as libreoffice)
     zulu11-jdk \
-  # install libreoffice
+  # Install LibreOffice
   && curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
   && yum -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
   && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/soffice \
@@ -106,8 +106,12 @@ ENV PKG_CONFIG_PATH /opt/rh/python27/root/usr/lib64/pkgconfig${PKG_CONFIG_PATH:+
 # Remove setuid/setgid binaries from images for security
 RUN find / -ignore_readdir_race -perm 6000 -type f -exec chmod a-s {} \; || true
 
+# Set permissions on writeable directories to support arbitrary user IDs for OpenShift.
+# These directories must be owned by the root group and be readable/writable by that group.
+# See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
+RUN chmod g=u /etc/passwd
+
 # Set an UTF-8 LANG
-RUN dnf -y install glibc-langpack-en
 ENV LANG en_US.utf8
 
 # Add a nuxeo user with a fixed UID
@@ -117,11 +121,7 @@ RUN useradd -m -d /home/$NUXEO_USER -u 900 -s /bin/bash $NUXEO_USER
 
 ENV NUXEO_HOME /opt/nuxeo/server
 ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
-
-# Set permissions on writeable directories to support arbitrary user IDs for OpenShift.
-# These directories must be owned by the root group and be readable/writable by that group.
-# See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
-RUN chmod g=u /etc/passwd
+ENV PATH $NUXEO_HOME/bin:$PATH
 
 # Copy scripts and configuration files and create needed folders
 # COPY --chmod only supports octal notation, using 775 that is equivalent to rwxrwxr-x
@@ -133,8 +133,6 @@ COPY --chown=900:0 --from=builder /distrib $NUXEO_HOME
 VOLUME /var/lib/nuxeo
 VOLUME /var/log/nuxeo
 VOLUME /tmp
-
-ENV PATH $NUXEO_HOME/bin:$PATH
 
 EXPOSE 8080
 ENTRYPOINT ["/docker-entrypoint.sh"]
