@@ -102,6 +102,10 @@ public class TestTrashedStateMigrator {
             public boolean isShutdownRequested() {
                 return false;
             }
+
+            @Override
+            public void reportError(String message, int code) {
+            }
         };
 
         testMigration(() -> migrator.run(MIGRATION_STEP_LIFECYCLE_TO_PROPERTY, migrationContext));

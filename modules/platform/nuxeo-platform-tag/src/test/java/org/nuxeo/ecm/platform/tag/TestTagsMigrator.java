@@ -109,6 +109,10 @@ public class TestTagsMigrator {
             public boolean isShutdownRequested() {
                 return false;
             }
+
+            @Override
+            public void reportError(String message, int code) {
+            }
         };
 
         testMigration(() -> migrator.run(MIGRATION_STEP_RELATIONS_TO_FACETS, migrationContext));

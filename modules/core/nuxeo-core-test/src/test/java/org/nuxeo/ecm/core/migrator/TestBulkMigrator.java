@@ -148,4 +148,20 @@ public class TestBulkMigrator {
         // assert it is terminated
         assertTrue(processor.isTerminated());
     }
+
+    @Test
+    public void testBulkMigrationFailingScroll() {
+        var processor = streamService.getStreamManager().getProcessor(MIGRATION_PROCESSOR_NAME);
+        // processor could not exist (test is first to run) or could be terminated (test is run another one)
+        assertTrue(processor == null || processor.isTerminated());
+        migrationService.probeAndRun(DummyFailingBulkMigrator.MIGRATION_ID);
+        // await its failure
+        await().dontCatchUncaughtExceptions().atMost(ONE_MINUTE).until(() -> {
+            var status = migrationService.getStatus(DummyFailingBulkMigrator.MIGRATION_ID);
+            return !status.isRunning() && status.hasError();
+        });
+        // assert before state because there was a failure
+        var afterState = migrationService.probeAndSetState(DummyFailingBulkMigrator.MIGRATION_ID);
+        assertEquals(DummyFailingBulkMigrator.MIGRATION_BEFORE_STATE, afterState);
+    }
 }

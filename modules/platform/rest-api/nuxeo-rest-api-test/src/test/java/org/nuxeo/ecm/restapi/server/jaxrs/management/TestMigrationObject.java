@@ -22,6 +22,8 @@ import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Duration.ONE_MINUTE;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -41,6 +43,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @since 11.3
  */
 @Deploy("org.nuxeo.runtime.migration.tests:OSGI-INF/dummy-migration.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-dummy-bulk-migrator.xml")
 public class TestMigrationObject extends ManagementBaseTest {
 
     @Test
@@ -104,6 +107,28 @@ public class TestMigrationObject extends ManagementBaseTest {
             String json = response.getEntity(String.class);
             assertJsonResponse(json, "json/testGetFinalStep.json");
         }
+    }
+
+    @Test
+    public void testRunFailingMigration() throws IOException, JSONException, InterruptedException {
+        try (CloseableClientResponse response = httpClientRule.get(
+                "/management/migration/dummy-failing-bulk-migration")) {
+            assertEquals(SC_OK, response.getStatus());
+            String json = response.getEntity(String.class);
+            assertJsonResponse(json, "json/testGetFailing.json");
+        }
+        try (CloseableClientResponse response = httpClientRule.post(
+                "/management/migration/dummy-failing-bulk-migration/run", null)) {
+            assertEquals(SC_ACCEPTED, response.getStatus());
+        }
+        await().dontCatchUncaughtExceptions().atMost(ONE_MINUTE).untilAsserted(() -> {
+            try (CloseableClientResponse response = httpClientRule.get(
+                    "/management/migration/dummy-failing-bulk-migration")) {
+                assertEquals(SC_OK, response.getStatus());
+                String json = response.getEntity(String.class);
+                assertJsonResponse(json, "json/testGetFailed.json");
+            }
+        });
     }
 
     @Test

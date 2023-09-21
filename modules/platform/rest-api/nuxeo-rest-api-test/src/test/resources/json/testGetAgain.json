@@ -11,6 +11,8 @@
     "progressMessage": null,
     "progressNum": 0,
     "progressTotal": 0,
+    "errorMessage": null,
+    "errorCode": 0,
     "running": false
   },
   "steps": [
