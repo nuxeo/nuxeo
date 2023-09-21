@@ -761,6 +761,10 @@ public class TestCommentsMigrator {
         public boolean isShutdownRequested() {
             return false;
         }
+
+        @Override
+        public void reportError(String message, int code) {
+        }
     }
 
     protected void runMigrationStep(String step) {

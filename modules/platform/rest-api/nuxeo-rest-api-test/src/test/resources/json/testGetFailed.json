@@ -1,8 +1,8 @@
 {
   "entity-type": "migration",
-  "id": "dummy-migration",
-  "description": "Dummy Migration",
-  "descriptionLabel": "migration.dummy",
+  "id": "dummy-failing-bulk-migration",
+  "description": "Dummy Bulk Migration",
+  "descriptionLabel": "migration.dummy.failing.bulk",
   "status": {
     "state": "before",
     "step": null,
@@ -11,8 +11,8 @@
     "progressMessage": null,
     "progressNum": 0,
     "progressTotal": 0,
-    "errorMessage": null,
-    "errorCode": 0,
+    "errorMessage": "Invalid query",
+    "errorCode": 400,
     "running": false
   },
   "steps": [
@@ -20,7 +20,7 @@
       "id": "before-to-after",
       "fromState": "before",
       "toState": "after",
-      "description": "Migrate dummy state from before to after",
+      "description": "Migrate dummy failing state from before to after",
       "descriptionLabel": "migration.dummy.before-to-after"
     }
   ]

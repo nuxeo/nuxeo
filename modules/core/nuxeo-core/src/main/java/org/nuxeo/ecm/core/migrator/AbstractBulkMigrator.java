@@ -157,6 +157,15 @@ public abstract class AbstractBulkMigrator implements Migrator {
                 finish = finish && bulkStatus.getState() == COMPLETED;
                 processed += bulkStatus.getProcessed();
                 total += bulkStatus.getTotal();
+                if (bulkStatus.hasError()) {
+                    // An error occurred and must be reported
+                    // migration will be stopped and remain in its initial state
+                    // It can be relaunched after the error is fixed
+                    var errorMessage = bulkStatus.getErrorMessage();
+                    var errorCode = bulkStatus.getErrorCode();
+                    migrationContext.reportError(errorMessage, errorCode);
+                    throw new NuxeoException(errorMessage, errorCode);
+                }
             }
             migrationContext.reportProgress(finish ? "Done" : "Migrating content", processed, total);
         } while (!finish);

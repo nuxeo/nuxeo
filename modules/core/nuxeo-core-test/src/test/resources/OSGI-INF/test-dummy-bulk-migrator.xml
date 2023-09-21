@@ -17,6 +17,21 @@
         <description label="migration.dummy.before-to-after">Migrate dummy state from before to after</description>
       </step>
     </migration>
+    <migration id="dummy-failing-bulk-migration">
+      <description label="migration.dummy.failing.bulk">Dummy Bulk Migration</description>
+      <class>org.nuxeo.ecm.core.migrator.DummyFailingBulkMigrator</class>
+      <defaultState>before</defaultState>
+      <state id="before">
+        <description label="migration.dummy.before">before dummy failing migration state</description>
+      </state>
+      <state id="after">
+        <description label="migration.dummy.after">after dummy failing migration state</description>
+      </state>
+
+      <step id="before-to-after" fromState="before" toState="after">
+        <description label="migration.dummy.before-to-after">Migrate dummy failing state from before to after</description>
+      </step>
+    </migration>
   </extension>
 
 </component>

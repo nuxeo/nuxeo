@@ -20,6 +20,8 @@ package org.nuxeo.runtime.migration;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Migration Service.
  *
@@ -84,6 +86,14 @@ public interface MigrationService {
         void reportProgress(String message, long num, long total);
 
         /**
+         * Notifies the migration context of an error.
+         *
+         * @param message an informative message about what went wrong
+         * @param code the error code
+         */
+        void reportError(String message, int code);
+
+        /**
          * Requests a shutdown. Called internally by the migration service when the server shuts down.
          */
         void requestShutdown();
@@ -127,6 +137,16 @@ public interface MigrationService {
 
         protected final long progressTotal;
 
+        /**
+         * @since 2023.3
+         */
+        protected final String errorMessage;
+
+        /**
+         * @since 2023.3
+         */
+        protected final int errorCode;
+
         public MigrationStatus(String state) {
             this.state = state;
             step = null;
@@ -135,10 +155,29 @@ public interface MigrationService {
             progressMessage = null;
             progressNum = 0;
             progressTotal = 0;
+            errorMessage = null;
+            errorCode = 0;
+        }
+
+        public MigrationStatus(String state, String errorMessage, int errorCode) {
+            this.state = state;
+            step = null;
+            startTime = 0;
+            pingTime = 0;
+            progressMessage = null;
+            progressNum = 0;
+            progressTotal = 0;
+            this.errorMessage = errorMessage;
+            this.errorCode = errorCode;
         }
 
         public MigrationStatus(String step, long startTime, long pingTime, String progressMessage, long progressNum,
                 long progressTotal) {
+            this(step, startTime, pingTime, progressMessage, progressNum, progressTotal, null, 0);
+        }
+
+        public MigrationStatus(String step, long startTime, long pingTime, String progressMessage, long progressNum,
+                long progressTotal, String errorMessage, int errorCode) {
             state = null;
             this.step = step;
             this.startTime = startTime;
@@ -146,6 +185,8 @@ public interface MigrationService {
             this.progressMessage = progressMessage;
             this.progressNum = progressNum;
             this.progressTotal = progressTotal;
+            this.errorMessage = errorMessage;
+            this.errorCode = errorCode;
         }
 
         /**
@@ -204,6 +245,33 @@ public interface MigrationService {
          */
         public long getProgressTotal() {
             return progressTotal;
+        }
+
+        /**
+         * Gets the error message if any.
+         *
+         * @since 2023.3
+         */
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        /**
+         * Gets the error code if any.
+         *
+         * @since 2023.3
+         */
+        public int getErrorCode() {
+            return errorCode;
+        }
+
+        /**
+         * Is there any error ?
+         *
+         * @since 2023.3
+         */
+        public boolean hasError() {
+            return StringUtils.isNotBlank(errorMessage);
         }
     }
 

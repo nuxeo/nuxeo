@@ -86,6 +86,10 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     public static final String PING_TIME = ":pingtime";
 
+    public static final String ERROR_MESSAGE = ":errorMessage";
+
+    public static final String ERROR_CODE = ":errorCode";
+
     public static final String PROGRESS_MESSAGE = ":message";
 
     public static final String PROGRESS_NUM = ":num";
@@ -232,6 +236,15 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             keyValueStore.put(id + PROGRESS_TOTAL, total == -2 ? null : String.valueOf(total));
             keyValueStore.put(id + PING_TIME, ping ? String.valueOf(System.currentTimeMillis()) : null);
         }
+
+        /**
+         * @since 2023.3
+         */
+        public void reportError(String message, Integer code) {
+            KeyValueStore keyValueStore = getKeyValueStore();
+            keyValueStore.put(id + ERROR_MESSAGE, message);
+            keyValueStore.put(id + ERROR_CODE, String.valueOf(code));
+        }
     }
 
     /**
@@ -252,6 +265,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         @Override
         public void reportProgress(String message, long num, long total) {
             progressReporter.reportProgress(message, num, total, true);
+        }
+
+        @Override
+        public void reportError(String message, int code) {
+            progressReporter.reportError(message, code);
         }
 
         @Override
@@ -380,8 +398,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         }
         KeyValueStore kv = getKeyValueStore();
         String state = kv.getString(id);
+        String errorMessage = kv.getString(id + ERROR_MESSAGE);
+        var ec = kv.getString(id + ERROR_CODE);
+        int errorCode = ec != null ? Integer.parseInt(ec) : 0;
         if (state != null) {
-            return new MigrationStatus(state);
+            return new MigrationStatus(state, errorMessage, errorCode);
         }
         String step = kv.getString(id + STEP);
         if (step == null) {
@@ -396,7 +417,8 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         if (progressMessage == null) {
             progressMessage = "";
         }
-        return new MigrationStatus(step, startTime, pingTime, progressMessage, progressNum, progressTotal);
+        return new MigrationStatus(step, startTime, pingTime, progressMessage, progressNum, progressTotal, errorMessage,
+                errorCode);
     }
 
     @Override
