@@ -28,7 +28,7 @@ To build the `nuxeo/nuxeo-benchmark` image with Maven, just run:
 mvn -nsu install
 ```
 
-The base image is `docker.platform.dev.nuxeo.com/nuxeo/nuxeo:latest-lts-2023` by default.
+The base image is `docker.platform.dev.nuxeo.com/nuxeo/nuxeo:2023.x` by default.
 
 To build the `nuxeo/nuxeo-benchmark` image from a `nuxeo/nuxeo:<TAG>` image hosted in another registry, run:
 
