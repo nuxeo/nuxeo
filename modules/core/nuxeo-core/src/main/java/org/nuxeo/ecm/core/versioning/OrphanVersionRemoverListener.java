@@ -40,7 +40,9 @@ import org.nuxeo.runtime.api.Framework;
  * the orphan versions to be kept.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * @deprecated since 2021.44 there is now an orphan versions incremental GC (StreamDocumentGC)
  */
+@Deprecated
 public class OrphanVersionRemoverListener implements PostCommitEventListener {
 
     protected static final Log log = LogFactory.getLog(OrphanVersionRemoverListener.class);

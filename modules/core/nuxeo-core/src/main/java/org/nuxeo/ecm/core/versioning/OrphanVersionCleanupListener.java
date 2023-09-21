@@ -30,8 +30,10 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  * Asynchronous listener that calls the orphan versions cleanup service. Designed to be called periodically by a
  * scheduler.
  *
+ * @deprecated since 2021.44 there is now an orphan versions Full GC bulk action (garbageCollectOrphanVersions)
  * @since 9.1
  */
+@Deprecated
 public class OrphanVersionCleanupListener implements PostCommitEventListener {
 
     private static final Log log = LogFactory.getLog(OrphanVersionCleanupListener.class);

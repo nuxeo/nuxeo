@@ -6,10 +6,11 @@
     point="listener">
 
     <documentation>
+      Deprecated since 2021.44 there is now an orphan versions incremental GC (StreamDocumentGC).
       Listener used by DefaultVersionRemovalPolicy to remove the Orphan versions from repository in an async manner.
     </documentation>
     <listener name="orphanVersionRemoverListener" async="true" postCommit="true"
-      class="org.nuxeo.ecm.core.versioning.OrphanVersionRemoverListener">
+      class="org.nuxeo.ecm.core.versioning.OrphanVersionRemoverListener" enabled="false">
       <event>orphan_versions_to_remove</event>
     </listener>
 
