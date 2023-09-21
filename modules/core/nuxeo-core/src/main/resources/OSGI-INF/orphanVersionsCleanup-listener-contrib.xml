@@ -3,38 +3,13 @@
 
   <require>org.nuxeo.ecm.core.bulk</require>
 
-  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
-    <schedule id="orphanVersionsCleanup">
-      <!-- cleanup every day at 1:30 AM -->
-      <cronExpression>0 30 1 * * ?</cronExpression>
-      <event>orphanVersionsCleanup</event>
-    </schedule>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="orphanVersionsCleanup" async="true" postCommit="true" enabled="false"
-      class="org.nuxeo.ecm.core.versioning.OrphanVersionCleanupListener">
-      <event>orphanVersionsCleanup</event>
-    </listener>
-  </extension>
-
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <documentation>
-      Configuration property for the maximum number of orphan versions to delete in one transaction.
-      This is only meaningful if the OrphanVersionCleanupListener is active.
-      @deprecated since 2023, the Bulk GarbageCollectOrphanVersionsAction is now the preferred way to clean up orphan
-      versions.
-    </documentation>
-    <property name="org.nuxeo.orphanVersionsCleanup.commitSize">1000</property>
-  </extension>
-
+  <!-- bulk action implementing the new orphan versions full GC -->
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <action name="garbageCollectOrphanVersions" inputStream="bulk/garbageCollectOrphanVersions" bucketSize="100"
       batchSize="25" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <!-- GarbageCollectOrphanVersion processor -->
     <streamProcessor name="garbageCollectOrphanVersions"
       class="org.nuxeo.ecm.core.action.GarbageCollectOrphanVersionsAction"
       defaultConcurrency="${nuxeo.bulk.action.garbageCollectOrphanVersions.defaultConcurrency:=2}"
