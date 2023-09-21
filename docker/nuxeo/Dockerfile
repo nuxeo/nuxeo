@@ -72,6 +72,7 @@ RUN dnf -y update \
     zulu17-jdk \
     # Find is not included in the base rockylinux image
     findutils \
+    glibc-langpack-en \
     # Install gzip first to allow using tar
     gzip \
   # Install LibreOffice
@@ -108,8 +109,12 @@ RUN rm /usr/share/doc/perl-Net-SSLeay/examples/server_key.pem
 # Remove setuid/setgid binaries from images for security
 RUN find / -ignore_readdir_race -perm 6000 -type f -exec chmod a-s {} \; || true
 
+# Set permissions on writeable directories to support arbitrary user IDs for OpenShift.
+# These directories must be owned by the root group and be readable/writable by that group.
+# See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
+RUN chmod g=u /etc/passwd
+
 # Set an UTF-8 LANG
-RUN dnf -y install glibc-langpack-en
 ENV LANG en_US.utf8
 
 # Add a nuxeo user with a fixed UID
@@ -119,11 +124,7 @@ RUN useradd -m -d /home/$NUXEO_USER -u 900 -s /bin/bash $NUXEO_USER
 
 ENV NUXEO_HOME /opt/nuxeo/server
 ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
-
-# Set permissions on writeable directories to support arbitrary user IDs for OpenShift.
-# These directories must be owned by the root group and be readable/writable by that group.
-# See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
-RUN chmod g=u /etc/passwd
+ENV PATH $NUXEO_HOME/bin:$PATH
 
 # Copy scripts and configuration files and create needed folders
 # COPY --chmod only supports octal notation, using 775 that is equivalent to rwxrwxr-x
@@ -135,8 +136,6 @@ COPY --chown=900:0 --from=builder /distrib $NUXEO_HOME
 VOLUME /var/lib/nuxeo
 VOLUME /var/log/nuxeo
 VOLUME /tmp
-
-ENV PATH $NUXEO_HOME/bin:$PATH
 
 EXPOSE 8080
 ENTRYPOINT ["/docker-entrypoint.sh"]
