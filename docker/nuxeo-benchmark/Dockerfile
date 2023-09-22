@@ -21,7 +21,4 @@ COPY --chown=900:0 target/packages/*.zip /tmp/local-packages/
 
 RUN /install-packages.sh --offline /tmp/local-packages/*.zip
 
-# Kaniko doesn't properly support --chown on copy, thus we need to be root to delete what was copied
-USER 0
 RUN rm -rf /tmp/local-packages
-USER 900

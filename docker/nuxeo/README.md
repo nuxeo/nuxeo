@@ -39,62 +39,86 @@ USER 900
 
 ## Build the Image
 
-It requires to install [Docker](https://docs.docker.com/install/).
+It requires to install:
 
-There are several ways to build the image, depending on the context:
+- [Docker](https://docs.docker.com/install/) 19.03 or newer.
+- [Docker Buildx](https://docs.docker.com/build/architecture/#buildx).
 
-- For a local build, use [Maven](#with-maven).
-- For a pipeline running in Jenkins on Kubernetes, use [Skaffold](#with-skaffold).
-- In any case, you can use [Docker](#with-docker).
+Note that [BuildKit](https://docs.docker.com/build/buildkit/) is the default builder for users on Docker Desktop and Docker Engine v23.0 and later.
+
+> INFO
+You might need to run `docker logout` if you get errors such as:
+
+```bash
+[INFO] DOCKER> #2 [internal] load metadata for docker.io/azul/zulu-openjdk:17
+[INFO] DOCKER> #2 ERROR: failed to do request: Head "https://registry-1.docker.io/v2/azul/zulu-openjdk/manifests/17": dial tcp: lookup registry-1.docker.io on 192.168.0.1:53: read udp 172.17.0.2:53228->192.168.0.1:53: i/o timeout
+```
+
+There are two ways to build the image:
+
+- With [Maven](#with-maven): suitable for local use.
+- With [Skaffold](#with-skaffold): used by the [nuxeo](https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/lts/job/nuxeo/) CI pipeline, can also be used locally.
+
+In both cases, the build relies on the following Maven dependency for the Nuxeo server ZIP:
+
+```xml
+<dependency>
+  <groupId>org.nuxeo.ecm.distribution</groupId>
+  <artifactId>nuxeo-server-tomcat</artifactId>
+  <type>zip</type>
+</dependency>
+```
+
+If you want the Docker image to be built from the latest changes in the current repository, including the `server` Maven module, you need to start by building the Nuxeo sources with the `distrib` profile. At the root of the repository, run:
+
+```bash
+mvn -nsu install -Pdistrib -DskipTests
+```
 
 ### With Maven
 
-To build the `nuxeo/nuxeo` image locally, run:
+We use the [docker-maven-plugin](https://github.com/fabric8io/docker-maven-plugin).
+
+To build the `nuxeo/nuxeo` image with Maven, just run:
 
 ```bash
 mvn -nsu install
 ```
 
+By default, the image is built for the host's architecture, e.g. `linux/amd64` or `linux/arm64`.
+
+You can override the built platform, for instance to build a multi-architecture image:
+
+```bash
+mvn -nsu install -Ddocker.platforms=linux/amd64,linux/arm64
+```
+
 ### With Skaffold
 
-We use Skaffold to build the image as part of the [nuxeo](https://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/lts/job/nuxeo/) pipeline in our Jenkins CI/CD platform.
+To build the `nuxeo/nuxeo` image with Skaffold, you need to have:
 
-This requires to:
+- [Skaffold](https://skaffold.dev/docs/install/) installed, v2 is recommended, otherwise v1.39 is the minimum.
+- The [docker-buildx](https://github.com/nuxeo/platform-builder-base/blob/main/_common/rootfs/usr/local/bin/docker-buildx) script present in your `PATH` environment variable.
 
-- Install [Skaffold](https://skaffold.dev/docs/getting-started/#installing-skaffold).
-- Install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
-- Configure `kubectl` to connect to a Kubernetes cluster.
+Then, you need to tell Skaffold that you're building locally, otherwise it might try to push the image to a Docker registry such as docker.io if it detects a Kubernetes context:
 
-It also requires the following environment variables:
+```bash
+skaffold config set --global local-cluster true
+```
 
-- `DOCKER_REGISTRY`: the Docker registry to push the image to.
-- `VERSION`: the image tag, for instance `latest-lts`.
-
-To build the `nuxeo/nuxeo` image with Skaffold, you first need to fetch the Nuxeo server ZIP file and make it available for the Docker build with Maven:
+Fetch the Nuxeo server ZIP file with Maven and make it available for the Docker build:
 
 ```bash
 mvn -nsu process-resources
 ```
 
-Then, from the module directory, run:
+Finally, run:
 
 ```bash
-skaffold build -f skaffold.yaml
+skaffold build
 ```
 
-### With Docker
-
-To build the `nuxeo/nuxeo` image with Docker, you first need to fetch the Nuxeo server ZIP file and make it available for the Docker build with Maven:
-
-```bash
-mvn -nsu process-resources
-```
-
-Then, run:
-
-```bash
-docker build -t nuxeo/nuxeo:latest-lts .
-```
+This builds the image described in the [skaffold.yaml](./skaffold.yaml) file and loads it inside your Docker daemon.
 
 ## Run the Image
 

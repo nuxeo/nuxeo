@@ -327,7 +327,7 @@ pipeline {
                 sh "mvn ${MAVEN_ARGS} -T4C process-resources"
 
                 echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-                nxDocker.build(skaffoldFile: 'skaffold.yaml')
+                sh 'skaffold build -f skaffold.yaml'
               }
               echo "Build needed packages for the benchmark image"
               // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
@@ -341,7 +341,7 @@ pipeline {
                 sh "mvn ${MAVEN_ARGS} -T4C process-resources"
 
                 echo "Build and push Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-                nxDocker.build(skaffoldFile: 'skaffold.yaml')
+                sh 'skaffold build -f skaffold.yaml'
               }
 
               if (!nxUtils.isPullRequest()) {
