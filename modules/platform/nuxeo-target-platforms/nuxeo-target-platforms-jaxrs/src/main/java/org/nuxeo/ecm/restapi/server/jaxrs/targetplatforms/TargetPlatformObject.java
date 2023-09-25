@@ -51,8 +51,8 @@ public class TargetPlatformObject extends DefaultObject {
         String platforms = PUBLIC_CACHE.get(PUBLIC_TP_CACHE_KEY, () -> {
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
-                List<TargetPlatform> res = tps.getAvailableTargetPlatforms(
-                        new TargetPlatformFilterImpl(false, true, true, false, null));
+                List<TargetPlatform> res = Framework.doPrivileged(() -> tps.getAvailableTargetPlatforms(
+                        new TargetPlatformFilterImpl(false, true, true, false, null)));
                 if (res == null) {
                     res = new ArrayList<>();
                 }
