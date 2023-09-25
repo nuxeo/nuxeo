@@ -186,11 +186,11 @@ public class BulkServiceImpl implements BulkService, Synchronization {
         byte[] commandAsBytes = setCommand(command);
 
         String shardKey;
-        if (adminService.isSequentialCommands(command.getAction())) {
-            // no concurrency all commands for this action goes to the same partition
+        if (adminService.isSequentialScroll(command.getAction())) {
+            // all bulk commands for this action go to the same scroller thread in order to be scrolled sequentially
             shardKey = command.getAction();
         } else {
-            // use a random value
+            // use a random value to dispatch bulk commands between scroller threads
             shardKey = command.getId();
         }
         // send command to bulk processor

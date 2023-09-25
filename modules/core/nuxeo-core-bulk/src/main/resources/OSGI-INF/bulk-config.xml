@@ -69,7 +69,7 @@
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <!-- Internal -->
-    <action name="trash" inputStream="bulk/trash" bucketSize="100" batchSize="25" sequentialCommands="true" />
+    <action name="trash" inputStream="bulk/trash" bucketSize="100" batchSize="25" sequentialScroll="true" />
     <action name="removeProxy" inputStream="bulk/removeProxy" bucketSize="100" batchSize="25" />
     <action name="setSystemProperties" inputStream="bulk/setSystemProperties" bucketSize="100" batchSize="25" />
     <!-- Exposed through REST API -->

@@ -64,8 +64,18 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@httpEnabled")
     public Boolean httpEnabled = Boolean.FALSE;
 
+    // @deprecated since 2021.45 use sequentialScroll instead
+    @Deprecated
     @XNode("@sequentialCommands")
     public Boolean sequentialCommands = Boolean.FALSE;
+
+    // @since 2021.45
+    @XNode("@sequentialScroll")
+    public Boolean sequentialScroll = Boolean.FALSE;
+
+    // @since 2021.45
+    @XNode("@sequentialProcessing")
+    public Boolean sequentialProcessing = Boolean.FALSE;
 
     @XNode("@validationClass")
     public Class<? extends BulkActionValidation> validationClass;

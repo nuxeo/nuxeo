@@ -8,7 +8,7 @@
     <action name="garbageCollectOrphanBlobs"
       validationClass="org.nuxeo.ecm.core.action.validation.GarbageCollectOrphanBlobsValidation"
       inputStream="bulk/garbageCollectOrphanBlobs" bucketSize="100"
-      batchSize="50" sequentialCommands="true" />
+      batchSize="50" sequentialScroll="true" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
