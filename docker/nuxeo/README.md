@@ -87,13 +87,7 @@ To build the `nuxeo/nuxeo` image with Maven, just run:
 mvn -nsu install
 ```
 
-By default, the image is built for the host's architecture, e.g. `linux/amd64` or `linux/arm64`.
-
-You can override the built platform, for instance to build a multi-architecture image:
-
-```bash
-mvn -nsu install -Ddocker.platforms=linux/amd64,linux/arm64
-```
+The image is built for the host's architecture, e.g. `linux/amd64` or `linux/arm64`.
 
 ### With Skaffold
 
@@ -121,6 +115,12 @@ skaffold build
 ```
 
 This builds the image described in the [skaffold.yaml](./skaffold.yaml) file and loads it inside your Docker daemon.
+
+By default, this builds a multi-platform image supporting both `linux/amd64` and `linux/arm64` architectures, which is relevant in the CI. Yet, such a multi-platform build requires pushing images to a valid container registry. When building locally, you need to override the built platform with the host's architecture, e.g. `linux/amd64` or `linux/arm64`:
+
+```bash
+skaffold build --platform=linux/amd64
+```
 
 ## Run the Image
 

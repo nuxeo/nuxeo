@@ -19,6 +19,9 @@ build:
       template: "{{.VERSION}}"
   artifacts:
     - image: nuxeo/nuxeo
+      platforms:
+        - "linux/amd64"
+        - "linux/arm64"
       context: .
       custom:
         buildCommand: |

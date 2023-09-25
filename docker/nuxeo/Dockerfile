@@ -43,9 +43,7 @@ ARG VERSION
 
 ARG ROCKY_LINUX_VERSION=9.2
 ARG LIBREOFFICE_VERSION=7.4.2
-ARG GHOSTSCRIPT_MAJOR_VERSION=9
-ARG GHOSTSCRIPT_MINOR_VERSION=25
-ARG GHOSTSCRIPT_VERSION=$GHOSTSCRIPT_MAJOR_VERSION.$GHOSTSCRIPT_MINOR_VERSION
+ARG TARGETPLATFORM
 
 LABEL org.nuxeo.build-tag=$BUILD_TAG
 LABEL org.nuxeo.scm-ref=$SCM_REF
@@ -72,19 +70,18 @@ RUN dnf -y update \
     zulu17-jdk \
     # Find is not included in the base rockylinux image
     findutils \
+    ghostscript \
     glibc-langpack-en \
     # Install gzip first to allow using tar
     gzip \
-  # Install LibreOffice
-  && curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
-  && dnf -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
-  && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/soffice \
-  && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/libreoffice \
-  && rm -rf /tmp/LibreOffice_${LIBREOFFICE_VERSION}* \
-  # Install older version of Ghostscript to avoid breaking changes on EPS to PDF conversion
-  && curl -f -L https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION/ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64.tgz | tar -xzv \
-  && mv ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64/gs-$GHOSTSCRIPT_MAJOR_VERSION$GHOSTSCRIPT_MINOR_VERSION-linux-x86_64 /usr/bin/gs \
-  && rm -rf ghostscript-$GHOSTSCRIPT_VERSION-linux-x86_64 \
+  # Install LibreOffice, only for amd64 since not available for arm64
+  && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+       curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
+       && dnf -y localinstall /tmp/LibreOffice_${LIBREOFFICE_VERSION}*/RPMS/*.rpm \
+       && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/soffice \
+       && ln -s /opt/libreoffice$(echo $LIBREOFFICE_VERSION | cut -f 1,2 -d ".")/program/soffice /usr/bin/libreoffice \
+       && rm -rf /tmp/LibreOffice_${LIBREOFFICE_VERSION}* ; \
+     fi \
   # ImageMagick 7 for Rocky Linux 9 is only provided by a third party repo
   && dnf -y install https://rpms.remirepo.net/enterprise/remi-release-$ROCKY_LINUX_VERSION.rpm \
   && dnf -y --enablerepo=remi install ImageMagick7 \

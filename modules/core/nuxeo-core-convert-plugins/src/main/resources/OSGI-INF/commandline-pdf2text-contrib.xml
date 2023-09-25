@@ -14,7 +14,7 @@
     <command enabled="true" name="ps2pdf">
       <commandLine>gs</commandLine>
       <winCommand>gswin64c</winCommand>
-      <parameterString>-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dEPSFitPage -sOutputFile=#{targetFilePath}
+      <parameterString>-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dEPSCrop -sOutputFile=#{targetFilePath}
         #{sourceFilePath}</parameterString>
       <testParameterString>-dNODISPLAY</testParameterString>
       <installationDirective>You need to install GhostScript.</installationDirective>
