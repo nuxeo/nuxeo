@@ -23,6 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.time.Duration;
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
 import org.nuxeo.runtime.api.Framework;
@@ -48,6 +49,8 @@ public class DocumentScrollRequest implements ScrollRequest {
 
     protected final String username;
 
+    protected final String reference;
+
 
     protected DocumentScrollRequest(Builder builder) {
         this.name = builder.getName();
@@ -56,6 +59,7 @@ public class DocumentScrollRequest implements ScrollRequest {
         this.size = builder.getSize();
         this.username = builder.getUsername();
         this.repository = builder.getRepository();
+        this.reference = builder.getReference();
     }
 
     @Override
@@ -71,6 +75,11 @@ public class DocumentScrollRequest implements ScrollRequest {
     @Override
     public int getSize() {
         return size;
+    }
+
+    @Override
+    public String getReference() {
+        return reference;
     }
 
     public String getQuery() {
@@ -91,9 +100,7 @@ public class DocumentScrollRequest implements ScrollRequest {
 
     @Override
     public String toString() {
-        return "DocumentScrollRequest{" + "name='" + name + '\'' + ", query='" + query + '\'' + ", repository='"
-                + repository + '\'' + ", timeout=" + timeout + ", size=" + size + ", username='" + username + '\''
-                + '}';
+        return ToStringBuilder.reflectionToString(this);
     }
 
     /**
@@ -112,6 +119,8 @@ public class DocumentScrollRequest implements ScrollRequest {
         protected String username;
 
         protected String repository;
+
+        protected String reference;
 
         protected Duration timeout;
 
@@ -170,6 +179,16 @@ public class DocumentScrollRequest implements ScrollRequest {
             return this;
         }
 
+        /**
+         * Associates a reference to the scroll.
+         *
+         * @since 2021.44
+         */
+        public Builder reference(String reference) {
+            this.reference = reference;
+            return this;
+        }
+
         public String getName() {
             return name;
         }
@@ -199,6 +218,10 @@ public class DocumentScrollRequest implements ScrollRequest {
                 return repoManager.getDefaultRepositoryName();
             }
             return repository;
+        }
+
+        public String getReference() {
+            return reference;
         }
 
         public DocumentScrollRequest build() {

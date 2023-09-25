@@ -37,6 +37,8 @@ public class GenericScrollRequest implements ScrollRequest {
 
     protected final int size;
 
+    protected final String reference;
+
     protected final String query;
 
     protected final String scrollName;
@@ -48,6 +50,7 @@ public class GenericScrollRequest implements ScrollRequest {
         this.scrollName = builder.scrollerName;
         this.size = builder.getSize();
         this.options = builder.getOptions();
+        this.reference = builder.getReference();
     }
 
     @Override
@@ -63,6 +66,11 @@ public class GenericScrollRequest implements ScrollRequest {
     @Override
     public int getSize() {
         return size;
+    }
+
+    @Override
+    public String getReference() {
+        return reference;
     }
 
     public String getQuery() {
@@ -92,6 +100,8 @@ public class GenericScrollRequest implements ScrollRequest {
 
         protected int size;
 
+        protected String reference;
+
         protected Map<String, Serializable> options;
 
         public Builder(String scrollerName, String query) {
@@ -111,6 +121,15 @@ public class GenericScrollRequest implements ScrollRequest {
 
         public int getSize() {
             return size == 0 ? DEFAULT_SCROLL_SIZE : size;
+        }
+
+        public Builder reference(String reference) {
+            this.reference = reference;
+            return this;
+        }
+
+        public String getReference() {
+            return reference;
         }
 
         public Builder options(Map<String, Serializable> options) {

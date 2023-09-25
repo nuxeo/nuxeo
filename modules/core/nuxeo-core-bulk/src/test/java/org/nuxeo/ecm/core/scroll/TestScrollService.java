@@ -145,7 +145,7 @@ public class TestScrollService {
         assertNotNull(scrollService);
         int size = 13;
         String file = createFile(size);
-        ScrollRequest request = GenericScrollRequest.builder("myFileScroll", file).size(5).build();
+        ScrollRequest request = GenericScrollRequest.builder("myFileScroll", file).size(5).reference("abc").build();
         assertTrue(scrollService.exists(request));
         try (Scroll scroll = scrollService.scroll(request)) {
             assertNotNull(scroll);

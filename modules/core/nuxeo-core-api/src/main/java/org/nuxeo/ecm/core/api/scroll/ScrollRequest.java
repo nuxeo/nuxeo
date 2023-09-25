@@ -39,4 +39,13 @@ public interface ScrollRequest {
      * The number of items to return per iteration.
      */
     int getSize();
+
+    /**
+     * Gets a reference associated with the scroll request.
+     *
+     * @since 2021.44
+     */
+    default String getReference() {
+        return null;
+    }
 }
