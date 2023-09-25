@@ -43,6 +43,8 @@ public class MyFileScroll implements Scroll {
 
     protected int size;
 
+    protected String ref;
+
     @Override
     public void init(ScrollRequest scrollRequest, Map<String, String> map) {
         if (!(scrollRequest instanceof GenericScrollRequest)) {
@@ -57,7 +59,8 @@ public class MyFileScroll implements Scroll {
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid file " + file, e);
         }
-        log.info("Scroll init: {}, size: {}", file.getAbsolutePath(), size);
+        ref = scrollRequest.getReference();
+        log.info("Scroll init: {}, ref: {}, size: {}", file.getAbsolutePath(), ref, size);
     }
 
     @Override

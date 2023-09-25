@@ -253,6 +253,7 @@ public class BulkScrollerComputation extends AbstractComputation {
             request = GenericScrollRequest.builder(command.getScroller(), query)
                                           .options(command.getParams())
                                           .size(scrollSize)
+                                          .reference(command.getId())
                                           .build();
 
         } else {
@@ -262,6 +263,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                                            .size(scrollSize)
                                            .timeout(Duration.ofSeconds(scrollKeepAliveSeconds))
                                            .name(command.getScroller())
+                                           .reference(command.getId())
                                            .build();
         }
         ScrollService service = Framework.getService(ScrollService.class);
