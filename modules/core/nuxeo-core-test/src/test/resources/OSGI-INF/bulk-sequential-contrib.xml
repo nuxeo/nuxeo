@@ -16,17 +16,17 @@
 
   <!-- Add 2 test actions -->
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="dummySequential" bucketSize="1" batchSize="1" sequentialCommands="true" />
+    <action name="dummySequential" bucketSize="1" batchSize="1" sequentialScroll="true" sequentialProcessing="true"/>
     <action name="dummyConcurrent" bucketSize="1" batchSize="1" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="dummySequential" class="org.nuxeo.ecm.core.bulk.DummyAction"
-      defaultConcurrency="1" defaultPartitions="1">
+      defaultConcurrency="3" defaultPartitions="3">
       <option name="actionName">dummySequential</option>
     </streamProcessor>
     <streamProcessor name="dummyConcurrent" class="org.nuxeo.ecm.core.bulk.DummyAction"
-      defaultConcurrency="2" defaultPartitions="2">
+      defaultConcurrency="3" defaultPartitions="3">
       <option name="actionName">dummyConcurrent</option>
     </streamProcessor>
   </extension>

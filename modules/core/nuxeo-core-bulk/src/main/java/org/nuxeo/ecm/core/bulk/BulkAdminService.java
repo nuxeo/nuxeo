@@ -72,11 +72,27 @@ public interface BulkAdminService {
     boolean isHttpEnabled(String actionId);
 
     /**
-     * Returns true if commands about this action need to be executed sequentially instead of being run concurrently.
+     * Returns true if commands of this action need to be scrolled sequentially.
+     * @deprecated since 2021.45, use {@link #isSequentialScroll(String)} instead.
      *
      * @since 10.3
      */
+    @Deprecated
     boolean isSequentialCommands(String actionId);
+
+    /**
+     * Returns true if commands of this action need to be scrolled sequentially.
+     *
+     * @since 2021.45
+     */
+    boolean isSequentialScroll(String actionId);
+
+    /**
+     * Returns true if command processing for this action should be done sequentially.
+     *
+     * @since 2021.45
+     */
+    boolean isSequentialProcessing(String actionId);
 
     /**
      * Gets the validation class of an action.
