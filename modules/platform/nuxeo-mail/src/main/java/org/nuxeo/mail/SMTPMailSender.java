@@ -16,20 +16,10 @@
 
 package org.nuxeo.mail;
 
-import java.util.List;
-
-import javax.activation.DataHandler;
-import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
-import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * Default implementation of {@link MailSender} building {@link MimeMessage}s and sending via SMTP protocol.
@@ -51,54 +41,10 @@ public class SMTPMailSender implements MailSender {
     @Override
     public void sendMail(MailMessage msg) {
         try {
-            MimeMessage mimeMsg = composeMimeMessage(msg);
-
-            mimeMsg.addFrom(toAddresses(msg.getFroms()));
-            mimeMsg.setRecipients(MimeMessage.RecipientType.TO, toAddresses(msg.getTos()));
-            mimeMsg.setRecipients(MimeMessage.RecipientType.CC, toAddresses(msg.getCcs()));
-            mimeMsg.setRecipients(MimeMessage.RecipientType.BCC, toAddresses(msg.getBccs()));
-            mimeMsg.setReplyTo(toAddresses(msg.getReplyTos()));
-            mimeMsg.setSentDate(msg.getDate());
-            mimeMsg.setSubject(msg.getSubject(), msg.getSubjectCharset().toString());
-            Transport.send(mimeMsg);
+            Transport.send(MimeMessageHelper.composeMimeMessage(msg, session));
         } catch (MessagingException e) {
             throw new MailException("An error occurred while sending a mail", e);
         }
     }
 
-    protected MimeMessage composeMimeMessage(MailMessage msg) throws MessagingException {
-        var mail = new MimeMessage(session);
-        if (!msg.hasAttachments()) {
-            mail.setContent(msg.getContent(), msg.getContentType());
-        } else { // text goes into a body part
-            var body = new MimeBodyPart();
-            body.setContent(msg.getContent(), msg.getContentType());
-            // then get the attachments
-            MimeMultipart bodyParts = assembleMultiPart(body, msg.getAttachments());
-            mail.setContent(bodyParts);
-        }
-        return mail;
-    }
-
-    protected MimeMultipart assembleMultiPart(MimeBodyPart body, List<Blob> attachments) throws MessagingException {
-        var mp = new MimeMultipart();
-        mp.addBodyPart(body);
-        for (Blob blob : attachments) {
-            MimeBodyPart a = new MimeBodyPart();
-            a.setDataHandler(new DataHandler(new BlobDataSource(blob)));
-            a.setFileName(blob.getFilename());
-            mp.addBodyPart(a);
-        }
-        return mp;
-    }
-
-    protected Address[] toAddresses(List<String> list) {
-        return list.stream().map(a -> {
-            try {
-                return new InternetAddress(a);
-            } catch (AddressException e) {
-                throw new MailException("Could not parse mail address: " + a, e);
-            }
-        }).toArray(InternetAddress[]::new);
-    }
 }

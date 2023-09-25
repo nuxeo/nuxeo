@@ -214,6 +214,7 @@ pipeline {
     AWS_REGION = 'eu-west-3'
     AWS_ROLE_ARN = 'arn:aws:iam::783725821734:role/nuxeo-s3directupload-role'
     AWS_CREDENTIALS_SECRET = 'aws-credentials'
+    AWS_SES_MAIL_SENDER = 'platform@hyland.com'
     GITHUB_WORKFLOW_DOCKER_SCAN = 'docker-image-scan.yaml'
   }
 

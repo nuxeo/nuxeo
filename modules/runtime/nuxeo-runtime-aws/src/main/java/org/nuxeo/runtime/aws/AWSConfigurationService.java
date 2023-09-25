@@ -67,6 +67,16 @@ public interface AWSConfigurationService {
     void configureSSL(String id, ClientConfiguration config);
 
     /**
+     * Enriches the given {@link ClientConfiguration} with default proxy configuration.
+     *
+     * @param config the configuration to enrich
+     * @since 2023.4
+     */
+    default void configureProxy(ClientConfiguration config) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Gets the AWS Region for the default configuration.
      *
      * @return the AWS Region, or {@code null} if not defined

@@ -36,6 +36,8 @@ import javax.net.ssl.SSLContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.nuxeo.common.Environment;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.amazonaws.ClientConfiguration;
@@ -99,6 +101,27 @@ public class AWSConfigurationServiceImpl extends DefaultComponent implements AWS
         if (sslContext != null) {
             SSLConnectionSocketFactory factory = new SSLConnectionSocketFactory(sslContext);
             config.getApacheHttpClientConfig().setSslSocketFactory(factory);
+        }
+    }
+
+    @Override
+    public void configureProxy(ClientConfiguration config) {
+        String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
+        String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
+        String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
+        String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
+
+        if (isNotBlank(proxyHost)) {
+            config.setProxyHost(proxyHost);
+        }
+        if (isNotBlank(proxyPort)) {
+            config.setProxyPort(Integer.parseInt(proxyPort));
+        }
+        if (isNotBlank(proxyLogin)) {
+            config.setProxyUsername(proxyLogin);
+        }
+        if (proxyPassword != null) { // could be blank
+            config.setProxyPassword(proxyPassword);
         }
     }
 

@@ -44,7 +44,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.CloudBlobStoreConfiguration;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.S3Utils;
@@ -464,11 +463,6 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     }
 
     protected ClientConfiguration getClientConfiguration() {
-        boolean proxyDisabled = Framework.isBooleanPropertyTrue(DISABLE_PROXY_PROPERTY);
-        String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
-        String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
-        String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
-        String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
         int maxConnections = getIntProperty(CONNECTION_MAX_PROPERTY);
         int maxErrorRetry = getIntProperty(CONNECTION_RETRY_PROPERTY);
         int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_PROPERTY);
@@ -476,20 +470,6 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         String userAgentPrefix = getProperty(USER_AGENT_PREFIX_PROPERTY);
         String userAgentSuffix = getProperty(USER_AGENT_SUFFIX_PROPERTY);
         ClientConfiguration clientConfiguration = new ClientConfiguration();
-        if (!proxyDisabled) {
-            if (isNotBlank(proxyHost)) {
-                clientConfiguration.setProxyHost(proxyHost);
-            }
-            if (isNotBlank(proxyPort)) {
-                clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
-            }
-            if (isNotBlank(proxyLogin)) {
-                clientConfiguration.setProxyUsername(proxyLogin);
-            }
-            if (proxyPassword != null) { // could be blank
-                clientConfiguration.setProxyPassword(proxyPassword);
-            }
-        }
         if (maxConnections > 0) {
             clientConfiguration.setMaxConnections(maxConnections);
         }
@@ -510,6 +490,9 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         }
         AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);
         if (service != null) {
+            if (Framework.isBooleanPropertyFalse(DISABLE_PROXY_PROPERTY)) {
+                service.configureProxy(clientConfiguration);
+            }
             service.configureSSL(clientConfiguration);
         }
         return clientConfiguration;

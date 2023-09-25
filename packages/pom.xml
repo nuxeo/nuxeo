@@ -31,6 +31,7 @@
     <module>nuxeo-keycloak-package</module>
     <module>nuxeo-lang-ext-incomplete-package</module>
     <module>nuxeo-liveconnect-package</module>
+    <module>nuxeo-mail-amazon-ses-package</module>
     <module>nuxeo-mariadb-package</module>
     <module>nuxeo-microsoft-azure-package</module>
     <module>nuxeo-mssql-package</module>

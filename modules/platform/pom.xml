@@ -34,6 +34,7 @@
     <module>nuxeo-liveconnect</module>
     <module>nuxeo-localconf-simple</module>
     <module>nuxeo-mail</module>
+    <module>nuxeo-mail-amazon-ses</module>
     <module>nuxeo-multi-tenant-core</module>
     <module>nuxeo-permissions</module>
     <module>nuxeo-platform-3d</module>

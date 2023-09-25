@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package type="addon" name="nuxeo-mail-amazon-ses" version="@VERSION@">
+  <title>Nuxeo Mail Amazon SES Addon</title>
+  <description>
+    <p>The Mail Amazon SES addon allows users to send mails through Amazon SES (Simple Email Service).</p>
+  </description>
+  <vendor>Nuxeo</vendor>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+</package>

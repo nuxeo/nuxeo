@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.mail.sender.amazon.ses.test.wrong.contrib">
+  <require>org.nuxeo.mail.sender.amazon.ses.test</require>
+  <extension target="org.nuxeo.mail.MailServiceComponent" point="senders">
+    <sender name="wrongSender" class="org.nuxeo.mail.amazon.ses.SESMailSender">
+      <property name="awsConfigurationId">wrongConfig</property>
+    </sender>
+  </extension>
+  <extension target="org.nuxeo.runtime.aws.AWSConfigurationService" point="configuration">
+    <configuration id="wrongConfig">
+      <accessKeyId>foo</accessKeyId>
+      <secretKey>bar</secretKey>
+    </configuration>
+  </extension>
+</component>

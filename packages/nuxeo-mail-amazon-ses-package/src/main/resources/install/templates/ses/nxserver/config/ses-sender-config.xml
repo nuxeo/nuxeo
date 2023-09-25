@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.mail.sender.amazon.ses" version="1.0">
+  <require>org.nuxeo.mail.sender.default.config</require>
+  <extension target="org.nuxeo.mail.MailServiceComponent" point="senders">
+    <sender name="default" class="org.nuxeo.mail.amazon.ses.SESMailSender">
+      <property name="awsConfigurationId">${nuxeo.ses.aws.configuration.id}</property>
+    </sender>
+  </extension>
+</component>

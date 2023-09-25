@@ -46,6 +46,18 @@ public class MailSenderDescriptor implements Descriptor {
         return name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Class<? extends MailSender> getKlass() {
+        return klass;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
     public MailSender newInstance() {
         if (!MailSender.class.isAssignableFrom(klass)) {
             throw new IllegalArgumentException(

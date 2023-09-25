@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.blob.s3.S3ManagedTransfer;
@@ -249,12 +248,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         String awsSecret = getProperty(AWS_SECRET_PROPERTY);
         String awsToken = getProperty(AWS_SESSION_TOKEN_PROPERTY);
 
-        boolean proxyDisabled = Framework.isBooleanPropertyTrue(DISABLE_PROXY_PROPERTY);
-        String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
-        String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
-        String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
-        String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
-
         int maxConnections = getIntProperty(CONNECTION_MAX_PROPERTY);
         int maxErrorRetry = getIntProperty(CONNECTION_RETRY_PROPERTY);
         int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_PROPERTY);
@@ -297,20 +290,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
 
         // set up client configuration
         clientConfiguration = new ClientConfiguration();
-        if (!proxyDisabled) {
-            if (isNotBlank(proxyHost)) {
-                clientConfiguration.setProxyHost(proxyHost);
-            }
-            if (isNotBlank(proxyPort)) {
-                clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
-            }
-            if (isNotBlank(proxyLogin)) {
-                clientConfiguration.setProxyUsername(proxyLogin);
-            }
-            if (proxyPassword != null) { // could be blank
-                clientConfiguration.setProxyPassword(proxyPassword);
-            }
-        }
         if (maxConnections > 0) {
             clientConfiguration.setMaxConnections(maxConnections);
         }
@@ -332,6 +311,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
 
         AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);
         if (service != null) {
+            if (Framework.isBooleanPropertyFalse(DISABLE_PROXY_PROPERTY)) {
+                service.configureProxy(clientConfiguration);
+            }
             service.configureSSL(clientConfiguration);
         }
 
