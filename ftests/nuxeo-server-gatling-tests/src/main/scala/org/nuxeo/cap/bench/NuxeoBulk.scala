@@ -123,4 +123,12 @@ object NuxeoBulk {
         }
     }
 
+    def disableScheduler = () => {
+      http("Disable scheduler")
+        .put(Constants.API_MANAGEMENT + "/scheduler/stop")
+        .basicAuth("${adminId}", "${adminPassword}")
+        .headers(Headers.base)
+        .check(status.in(204))
+    }
+
 }
