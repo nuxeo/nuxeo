@@ -28,8 +28,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * {@link MailService} implementation, leveraging {@link MailSender} to effectively send the {@link MailMessage}.
- *
- * @since 2023.3
  */
 public class MailServiceImpl extends DefaultComponent implements MailService {
 

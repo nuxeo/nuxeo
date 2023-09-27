@@ -33,7 +33,7 @@ import org.nuxeo.runtime.model.Descriptor;
 public class MailSenderDescriptor implements Descriptor {
 
     @XNode("@class")
-    protected Class<? extends MailSender> klass;
+    public Class<? extends MailSender> klass;
 
     @XNode("@name")
     protected String name;

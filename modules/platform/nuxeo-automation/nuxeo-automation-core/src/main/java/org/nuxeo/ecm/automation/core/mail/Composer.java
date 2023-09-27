@@ -133,11 +133,11 @@ public class Composer {
     }
 
     protected static File getMailPropertiesFile() {
+        log.warn("mail properties should be directly placed in nuxeo.conf or in a MailSender contribution");
         org.nuxeo.common.Environment env = org.nuxeo.common.Environment.getDefault();
         if (env != null) {
             File file = new File(env.getConfig(), "mail.properties");
             if (file.isFile()) {
-                log.warn("mail properties should be directly placed in nuxeo.conf or in a MailSender contribution");
                 return file;
             }
         }
