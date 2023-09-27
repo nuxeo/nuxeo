@@ -84,7 +84,6 @@ import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
-import org.nuxeo.ecm.platform.ec.notification.NotificationFeature;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -105,8 +104,9 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CommentFeature.class, LogFeature.class, LogCaptureFeature.class, NotificationFeature.class })
+@Features({ CommentFeature.class, LogFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.notification")
 @Deploy("org.nuxeo.ecm.relations.api")
 @Deploy("org.nuxeo.ecm.relations")
 @Deploy("org.nuxeo.ecm.relations.jena")

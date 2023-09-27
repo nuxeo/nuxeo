@@ -39,9 +39,6 @@ public class GeneralSettingsDescriptor {
     @XNode("mailSessionJndiName")
     protected String mailSessionJndiName;
 
-    @XNode("mailSenderName")
-    protected String mailSenderName;
-
     public String getEMailSubjectPrefix() {
         return eMailSubjectPrefix;
     }
@@ -50,21 +47,8 @@ public class GeneralSettingsDescriptor {
         return serverPrefix;
     }
 
-    /**
-     * @deprecated since 2023.3 use {@link #getMailSenderName()} instead.
-     */
-    @Deprecated(since = "2023.3")
     public String getMailSessionJndiName() {
         return mailSessionJndiName;
-    }
-
-    /**
-     * Gets the name of the {@link org.nuxeo.mail.MailSender} to use.
-     *
-     * @since 2023.3
-     */
-    public String getMailSenderName() {
-        return mailSenderName;
     }
 
 }

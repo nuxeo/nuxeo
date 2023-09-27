@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.notifications.contribution.comments.test">
+  <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+             point="generalSettings">
+    <settings>
+      <serverPrefix>http://localhost:8080/nuxeo/</serverPrefix>
+      <eMailSubjectPrefix>[Nuxeo5]</eMailSubjectPrefix>
+      <mailSessionJndiName>java:comp/env/Mail</mailSessionJndiName>
+    </settings>
+  </extension>
+</component>

@@ -22,17 +22,35 @@ package org.nuxeo.mail;
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElseGet;
+import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_FROM;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_PREFIX;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_FROM;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_HOST;
 import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PORT;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
+import static org.nuxeo.mail.MailConstants.DEFAULT_MAIL_JNDI_NAME;
+import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_HOST;
+import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PORT;
+import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.mail.Session;
+import javax.naming.Context;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -42,12 +60,12 @@ import org.apache.logging.log4j.Logger;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
@@ -56,13 +74,15 @@ import com.google.inject.Binder;
 /**
  * @since 11.1
  */
-@Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.jtajca")
-@Deploy("org.nuxeo.mail")
-@Deploy("org.nuxeo.mail.test")
+@Features(RuntimeFeature.class)
 public class SmtpMailServerFeature implements RunnerFeature {
 
     private static final Logger log = LogManager.getLogger(SmtpMailServerFeature.class);
+
+    protected static final String SERVER_HOST = "127.0.0.1";
+
+    protected static final String DEFAULT_MAIL_SENDER = "noreply@nuxeo.com";
 
     /**
      * Pattern to parse and retrieve the text date in {@link DateTimeFormatter#RFC_1123_DATE_TIME} format.
@@ -77,13 +97,28 @@ public class SmtpMailServerFeature implements RunnerFeature {
 
     protected MailsResult result = new MailsResult();
 
+    protected Map<String, Object> backupProperties;
+
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(MailsResult.class).toInstance(result);
     }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        start();
+    }
+
+    @Override
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        stop();
+    }
+
+    /**
+     * Starts a dummy SMTP server {@link SimpleSmtpServer}.
+     */
+    protected void start() {
+        // Create the server and start it
         try {
             server = SimpleSmtpServer.start(SimpleSmtpServer.AUTO_SMTP_PORT);
             result.skip = 0;
@@ -93,21 +128,79 @@ public class SmtpMailServerFeature implements RunnerFeature {
         int serverPort = server.getPort();
         log.debug("Fake smtp server started on port: {}", serverPort);
 
-        Framework.getProperties().setProperty("nuxeo.test." + CONFIGURATION_MAIL_SMTP_PORT, String.valueOf(serverPort));
-        RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-        harness.deployContrib("org.nuxeo.mail.test", "OSGI-INF/test-smtp-mail-sender-contrib.xml");
+        // backup previous Framework properties
+        Properties frameworkProperties = Framework.getProperties();
+        backupProperties = frameworkProperties.stringPropertyNames()
+                                              .stream()
+                                              .filter(k -> k.startsWith(CONFIGURATION_MAIL_PREFIX))
+                                              .collect(toMap(Function.identity(), frameworkProperties::get));
+
+        // build Properties for javax.mail.Session retrieval
+        Properties properties = new Properties();
+        properties.putAll(backupProperties);
+        properties.put(CONFIGURATION_MAIL_TRANSPORT_PROTOCOL, "smtp");
+        properties.put(CONFIGURATION_MAIL_SMTP_HOST, SERVER_HOST);
+        properties.put(CONFIGURATION_MAIL_SMTP_PORT, String.valueOf(serverPort));
+        properties.putIfAbsent(CONFIGURATION_MAIL_SMTP_FROM, DEFAULT_MAIL_SENDER);
+        properties.putIfAbsent(CONFIGURATION_MAIL_FROM, DEFAULT_MAIL_SENDER);
+
+        binding(properties);
+
+        // apply configuration to Framework
+        frameworkProperties.put(NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL, "smtp");
+        frameworkProperties.put(NUXEO_CONFIGURATION_MAIL_TRANSPORT_HOST, SERVER_HOST);
+        frameworkProperties.put(NUXEO_CONFIGURATION_MAIL_TRANSPORT_PORT, String.valueOf(serverPort));
     }
 
-    @Override
-    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        result.clearMails();
-    }
-
-    @Override
-    public void stop(FeaturesRunner runner) throws Exception {
+    /**
+     * Stops the dummy server.
+     */
+    protected void stop() {
         if (server != null) {
             server.stop();
         }
+        unbind();
+        clear();
+    }
+
+    /**
+     * Binds the {@link MailConstants#DEFAULT_MAIL_JNDI_NAME} resource to a mail {@link Session}.
+     */
+    protected void binding(Properties properties) {
+        try {
+            Context context = NuxeoContainer.getRootContext();
+            context.bind(DEFAULT_MAIL_JNDI_NAME, MailSessionBuilder.fromProperties(properties).build());
+        } catch (NamingException ne) {
+            throw new NuxeoException("Unable to bind the SMTP server in jndi", ne);
+        }
+    }
+
+    /**
+     * Unbinds the {@link MailConstants#DEFAULT_MAIL_JNDI_NAME} resource.
+     */
+    protected void unbind() {
+        try {
+            Context context = NuxeoContainer.getRootContext();
+            context.unbind(DEFAULT_MAIL_JNDI_NAME);
+        } catch (NameNotFoundException nnf) {
+            log.trace("{} is not found", DEFAULT_MAIL_JNDI_NAME, nnf);
+        } catch (NamingException ne) {
+            throw new NuxeoException("Unable to unbind the SMTP server in jndi", ne);
+        }
+    }
+
+    /**
+     * Removes the added properties during mail processing.
+     *
+     * @since 11.1
+     */
+    protected void clear() {
+        var frameworkProperties = Framework.getProperties();
+        frameworkProperties.remove(NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL);
+        frameworkProperties.remove(NUXEO_CONFIGURATION_MAIL_TRANSPORT_HOST);
+        frameworkProperties.remove(NUXEO_CONFIGURATION_MAIL_TRANSPORT_PORT);
+        // restore backup properties
+        frameworkProperties.putAll(backupProperties);
     }
 
     /**

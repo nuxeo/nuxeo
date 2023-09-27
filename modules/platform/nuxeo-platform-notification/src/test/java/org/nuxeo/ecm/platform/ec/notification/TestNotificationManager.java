@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -47,7 +48,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 9.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, NotificationFeature.class })
+@Features(CoreFeature.class)
+@Deploy("org.nuxeo.ecm.platform.notification")
 public class TestNotificationManager {
 
     @Inject
@@ -138,8 +140,7 @@ public class TestNotificationManager {
                 repositoryName);
         assertEquals(singletonList(file), subscribedDocuments);
 
-        // add subscriptions to proxy on a different notification to ensure it's not inherited from source doc or
-        // version
+        // add subscriptions to proxy on a different notification to ensure it's not inherited from source doc or version
         notificationManager.addSubscription(prefixedPrincipalName, "notification2", publishedDocument, FALSE, principal,
                 "notification2");
         transactionalFeature.nextTransaction();
@@ -147,8 +148,7 @@ public class TestNotificationManager {
         // check that we now have published document but not the version
         subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName);
         subscribedDocuments.sort(comparing(DocumentModel::getPathAsString));
-        List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(prefixedPrincipalName,
-                publishedDocument);
+        List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(prefixedPrincipalName, publishedDocument);
         assertEquals(1, subscriptions.size());
         assertEquals(asList(file, publishedDocument), subscribedDocuments);
 

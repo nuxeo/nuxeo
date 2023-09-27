@@ -21,8 +21,11 @@ package org.nuxeo.ecm.platform.ec.notification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.mail.MailServiceImpl.DEFAULT_SENDER;
+import static org.nuxeo.mail.MailConstants.DEFAULT_MAIL_JNDI_NAME;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Collection;
@@ -32,34 +35,42 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, NotificationFeature.class })
-@Deploy("org.nuxeo.mail")
-@WithFrameworkProperty(name = "org.nuxeo.ecm.notification.serverPrefix", value = "testServerPrefix")
-@WithFrameworkProperty(name = "org.nuxeo.ecm.notification.eMailSubjectPrefix", value = "testSubjectPrefix")
+@Features(RuntimeFeature.class)
 public class TestRegisterNotificationService {
 
     protected EmailHelper mailHelper = new EmailHelper();
 
     @Inject
     protected HotDeployer hotDeployer;
+
+    @Before
+    public void setUp() throws Exception {
+        File propertiesFile = FileUtils.getResourceFileFromContext("notifications.properties");
+        try (InputStream notificationsProperties = new FileInputStream(propertiesFile)) {
+            ((OSGiRuntimeService) Framework.getRuntime()).loadProperties(notificationsProperties);
+        }
+        hotDeployer.deploy("org.nuxeo.ecm.platform.notification:OSGI-INF/NotificationService.xml");
+    }
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.notification.tests:notification-contrib.xml")
@@ -143,19 +154,19 @@ public class TestRegisterNotificationService {
     public void testExpandVarsInGeneralSettings() throws Exception {
         hotDeployer.deploy("org.nuxeo.ecm.platform.notification.tests:notification-contrib.xml");
 
-        // these should not be altered
         assertEquals("http://localhost:8080/nuxeo/", getService().getServerUrlPrefix());
-        assertEquals("[Nuxeo]", getService().getEMailSubjectPrefix());
-        assertEquals(DEFAULT_SENDER, getService().getMailSenderName());
+        assertEquals("[Nuxeo5]", getService().getEMailSubjectPrefix());
+
+        // this one should not be expanded
+        assertEquals(DEFAULT_MAIL_JNDI_NAME, getService().getMailSessionJndiName());
 
         hotDeployer.deploy("org.nuxeo.ecm.platform.notification.tests:notification-contrib-overridden.xml");
 
-        // these should be expanded
         assertEquals("http://testServerPrefix/nuxeo", getService().getServerUrlPrefix());
         assertEquals("testSubjectPrefix", getService().getEMailSubjectPrefix());
 
         // this one should not be expanded
-        assertEquals("${not.existing.property}", getService().getMailSenderName());
+        assertEquals("${not.existing.property}", getService().getMailSessionJndiName());
     }
 
     @Test
@@ -164,7 +175,7 @@ public class TestRegisterNotificationService {
     public void testVetoRegistration() {
 
         Collection<NotificationListenerVeto> vetos = getService().getNotificationVetos();
-        assertEquals(3, vetos.size());
+        assertEquals(2, vetos.size());
         assertEquals("org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto1",
                 getService().getNotificationListenerVetoRegistry().getVeto("veto1").getClass().getCanonicalName());
         assertEquals("org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto20",

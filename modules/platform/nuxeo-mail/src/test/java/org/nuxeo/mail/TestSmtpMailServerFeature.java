@@ -19,9 +19,13 @@
 
 package org.nuxeo.mail;
 
+import static javax.mail.Message.RecipientType.TO;
 import static org.junit.Assert.assertEquals;
 
 import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,22 +40,22 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestSmtpMailServerFeature {
 
     @Inject
-    protected MailService mailService;
-
-    @Inject
     protected SmtpMailServerFeature.MailsResult result;
 
     @Test
-    public void testFeature() {
-        var mail = new MailMessage.Builder("someone@nuxeo.com").content("Some content").build();
+    public void testFeature() throws MessagingException {
+        var session = MailSessionBuilder.fromNuxeoConf().build();
+        var message = new MimeMessage(session);
+        message.addRecipients(TO, "someone@nuxeo.com");
+        message.setText("Some content");
+        Transport.send(message);
 
-        mailService.sendMail(mail);
-
+        // assert email was sent
         assertEquals(1, result.getSize());
     }
 
     @Test
-    public void testFeatureResultIsolation() {
+    public void testFeatureResultIsolation() throws MessagingException {
         // send a mail again and check we only have this one
         testFeature();
     }

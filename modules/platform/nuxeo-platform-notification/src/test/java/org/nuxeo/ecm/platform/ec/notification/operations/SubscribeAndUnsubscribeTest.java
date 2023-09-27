@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.ec.notification.NotificationFeature;
 import org.nuxeo.ecm.platform.ec.notification.SubscriptionAdapter;
 import org.nuxeo.ecm.platform.ec.notification.automation.SubscribeOperation;
 import org.nuxeo.ecm.platform.ec.notification.automation.UnsubscribeOperation;
@@ -53,8 +52,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 8.10
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, NotificationFeature.class })
+@Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.notification")
 public class SubscribeAndUnsubscribeTest {
 
     protected DocumentModel testWorkspace;

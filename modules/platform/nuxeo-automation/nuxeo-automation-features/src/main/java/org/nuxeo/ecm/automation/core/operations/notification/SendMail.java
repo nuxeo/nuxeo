@@ -23,16 +23,14 @@ import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.IOUtils;
@@ -64,12 +62,8 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
-import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.mail.MailMessage;
-import org.nuxeo.mail.MailService;
 import org.nuxeo.runtime.api.Framework;
 
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
@@ -99,6 +93,9 @@ public class SendMail {
 
     @Param(name = "to", required = false)
     protected StringList to;
+
+    // Useful for tests.
+    protected Session mailSession;
 
     /**
      * @since 5.9.1
@@ -182,37 +179,27 @@ public class SendMail {
                     createDocUrlWithToken(MailTemplateHelper.getDocumentUrl(doc, viewId), (String) map.get("token")));
             map.put("subject", subject);
             map.put("to", to);
-            List<MailBox> tos = MailBox.fetchPersonsFromList(to, isStrict);
-            map.put("toResolved", tos);
+            map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
             map.put("from", from);
-            List<MailBox> froms = MailBox.fetchPersonsFromString(from, isStrict);
-            map.put("fromResolved", froms);
+            map.put("fromResolved", MailBox.fetchPersonsFromString(from, isStrict));
             map.put("cc", cc);
-            List<MailBox> ccs = MailBox.fetchPersonsFromList(cc, isStrict);
-            map.put("ccResolved", ccs);
+            map.put("ccResolved", MailBox.fetchPersonsFromList(cc, isStrict));
             map.put("bcc", bcc);
-            List<MailBox> bccs = MailBox.fetchPersonsFromList(bcc, isStrict);
-            map.put("bccResolved", bccs);
+            map.put("bccResolved", MailBox.fetchPersonsFromList(bcc, isStrict));
             map.put("replyto", replyto);
-            List<MailBox> replytos = MailBox.fetchPersonsFromList(replyto, isStrict);
-            map.put("replytoResolved", replytos);
+            map.put("replytoResolved", MailBox.fetchPersonsFromList(replyto, isStrict));
             map.put("viewId", viewId);
             map.put("baseUrl", NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
             map.put("Runtime", Framework.getRuntime());
+            Mailer.Message msg = createMessage(doc, getContent(), map);
+            msg.setSubject(subject, "UTF-8");
+            msg.setSentDate(new Date());
 
-            var contentType = String.format("text/%s ; charset=utf-8", asHtml ? "html" : "plain");
-            var msg = new MailMessage.Builder(asStringList(tos)).from(asStringList(froms))
-                                                                .cc(asStringList(ccs))
-                                                                .bcc(asStringList(bccs))
-                                                                .replyTo(asStringList(replytos))
-                                                                .attachments(getBlobs(doc))
-                                                                .subject(subject)
-                                                                .content(renderContent(map), contentType)
-                                                                .build();
+            addMailBoxInfo(msg, map);
 
-            // send
-            Framework.getService(MailService.class).sendMail(msg);
-        } catch (NuxeoException | TemplateException | OperationException | IOException e) {
+            msg.send();
+        } catch (NuxeoException | TemplateException | RenderingException | OperationException | MessagingException
+                | IOException e) {
             if (rollbackOnError) {
                 throw e;
             } else {
@@ -236,9 +223,7 @@ public class SendMail {
 
     /**
      * @since 5.9.1
-     * @deprecated since 2023.3 unused. {@link #send(DocumentModel)} now uses a {@link MailMessage.Builder}
      */
-    @Deprecated(since = "2023.3")
     protected void addMailBoxInfo(Mailer.Message msg, Map<String, Object> map) throws MessagingException {
         addMailBoxInfoInMessageHeader(msg, AS.FROM, (List<MailBox>) map.get("fromResolved"));
         addMailBoxInfoInMessageHeader(msg, AS.TO, (List<MailBox>) map.get("toResolved"));
@@ -259,60 +244,43 @@ public class SendMail {
         }
     }
 
-    /**
-     * @deprecated since 2023.3 unused. {@link #send(DocumentModel)} now uses a {@link MailMessage.Builder}
-     */
-    @Deprecated(since = "2023.3")
     protected Mailer.Message createMessage(DocumentModel doc, String message, Map<String, Object> map)
             throws MessagingException, TemplateException, RenderingException, IOException {
         var composer = new Composer();
-        return composer.newMixedMessage(message, map, asHtml ? "html" : "plain", getBlobs(doc));
-    }
-
-    protected String renderContent(Map<String, Object> map) throws IOException, OperationException, TemplateException {
-        var engine = new FreemarkerEngine();
-        var reader = new StringReader(getContent());
-        var template = new Template("@inline", reader, engine.getConfiguration(), "UTF-8");
-        var writer = new StringWriter();
-        var env = template.createProcessingEnvironment(map, writer, engine.getObjectWrapper());
-        env.process();
-        return writer.toString();
-    }
-
-    protected <P> List<String> asStringList(List<P> inputList) {
-        return inputList.stream().map(Objects::toString).collect(Collectors.toList());
-    }
-
-    protected List<Blob> getBlobs(DocumentModel doc) {
         if (blobXpath == null) {
-            return List.of();
-        }
-        List<Blob> blobs = new ArrayList<>();
-        for (String xpath : blobXpath) {
-            try {
-                Property p = doc.getProperty(xpath);
-                if (p instanceof BlobProperty) {
-                    getBlob(p.getValue(), blobs);
-                } else if (p instanceof ListProperty) {
-                    for (Property pp : p) {
-                        getBlob(pp.getValue(), blobs);
-                    }
-                } else if (p instanceof MapProperty) {
-                    for (Property sp : ((MapProperty) p).values()) {
-                        getBlob(sp.getValue(), blobs);
-                    }
-                } else {
-                    Object o = p.getValue();
-                    if (o instanceof Blob) {
-                        blobs.add((Blob) o);
-                    }
-                }
-            } catch (PropertyException pe) {
-                log.error("Error while fetching blobs: {}", pe.getMessage());
-                log.debug(pe, pe);
+            if (asHtml) {
+                return composer.newHtmlMessage(message, map);
+            } else {
+                return composer.newTextMessage(message, map);
             }
+        } else {
+            List<Blob> blobs = new ArrayList<>();
+            for (String xpath : blobXpath) {
+                try {
+                    Property p = doc.getProperty(xpath);
+                    if (p instanceof BlobProperty) {
+                        getBlob(p.getValue(), blobs);
+                    } else if (p instanceof ListProperty) {
+                        for (Property pp : p) {
+                            getBlob(pp.getValue(), blobs);
+                        }
+                    } else if (p instanceof MapProperty) {
+                        for (Property sp : ((MapProperty) p).values()) {
+                            getBlob(sp.getValue(), blobs);
+                        }
+                    } else {
+                        Object o = p.getValue();
+                        if (o instanceof Blob) {
+                            blobs.add((Blob) o);
+                        }
+                    }
+                } catch (PropertyException pe) {
+                    log.error("Error while fetching blobs: {}", pe.getMessage());
+                    log.debug(pe, pe);
+                }
+            }
+            return composer.newMixedMessage(message, map, asHtml ? "html" : "plain", blobs);
         }
-        return blobs;
     }
 
     /**

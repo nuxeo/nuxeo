@@ -26,26 +26,31 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mvel2.MVEL;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
-import org.nuxeo.mail.MailMessage;
-import org.nuxeo.mail.MailService;
 import org.nuxeo.mail.MailSessionBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.NuxeoLoginContext;
@@ -78,6 +83,8 @@ public class EmailHelper {
     // used for loading templates from strings
     private final Configuration stringCfg = new Configuration(Configuration.VERSION_2_3_0);
 
+    protected static boolean javaMailNotAvailable = false;
+
     /**
      * Static Method: sendmail(Map mail).
      *
@@ -91,31 +98,32 @@ public class EmailHelper {
         }
     }
 
-    protected void sendmail0(Map<String, Object> mail) throws IOException, TemplateException, RenderingException {
+    protected void sendmail0(Map<String, Object> mail)
+            throws MessagingException, IOException, TemplateException, RenderingException {
+
+        Session session = getSession();
+        if (javaMailNotAvailable || session == null) {
+            log.warn("Not sending email since JavaMail is not configured");
+            return;
+        }
+
+        // Construct a MimeMessage
+        MimeMessage msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
         Object to = mail.get("mail.to");
-        if (!(to instanceof String recipient)) {
+        if (!(to instanceof String)) {
             log.error("Invalid email recipient: {}", to);
             return;
         }
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse((String) to, false));
+
+        RenderingService rs = Framework.getService(RenderingService.class);
 
         DocumentRenderingContext context = new DocumentRenderingContext();
         context.putAll(mail);
         context.setDocument((DocumentModel) mail.get("document"));
         context.put("Runtime", Framework.getRuntime());
 
-        // Build the message.
-        var mailMessage = new MailMessage.Builder(recipient).subject(computeSubject(mail, context))
-                                                            .content(renderHTMLBody(mail, context),
-                                                                    "text/html; charset=utf-8")
-                                                            .senderName(getSenderName())
-                                                            .build();
-
-        // Send the message.
-        Framework.getService(MailService.class).sendMail(mailMessage);
-    }
-
-    protected String computeSubject(Map<String, Object> mail, DocumentRenderingContext context)
-            throws IOException, TemplateException, RenderingException {
         String customSubjectTemplate = (String) mail.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
         if (customSubjectTemplate == null) {
             String subjTemplate = (String) mail.get(NotificationConstants.SUBJECT_KEY);
@@ -125,9 +133,8 @@ public class EmailHelper {
             templ.process(mail, out);
             out.flush();
 
-            return out.toString();
+            msg.setSubject(out.toString(), "UTF-8");
         } else {
-            RenderingService rs = Framework.getService(RenderingService.class);
             rs.registerEngine(new NotificationsRenderingEngine(customSubjectTemplate));
 
             try (NuxeoLoginContext loginContext = Framework.loginSystem()) {
@@ -138,14 +145,12 @@ public class EmailHelper {
                     subjectMail = (String) result.getOutcome();
                 }
                 subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + subjectMail;
-                return subjectMail;
+                msg.setSubject(subjectMail, "UTF-8");
             }
         }
-    }
 
-    protected String renderHTMLBody(Map<String, Object> mail, DocumentRenderingContext context)
-            throws RenderingException {
-        RenderingService rs = Framework.getService(RenderingService.class);
+        msg.setSentDate(new Date());
+
         String template = (String) mail.get(NotificationConstants.TEMPLATE_KEY);
         rs.registerEngine(new NotificationsRenderingEngine(template));
 
@@ -161,11 +166,27 @@ public class EmailHelper {
 
         rs.unregisterEngine(template);
 
-        return bodyMail;
+        msg.setContent(bodyMail, "text/html; charset=utf-8");
+
+        // Send the message.
+        Transport.send(msg);
     }
 
-    private static String getSenderName() {
-        return Framework.getService(NotificationManager.class).getMailSenderName();
+    /**
+     * Gets the session from the JNDI.
+     */
+    private static Session getSession() {
+        if (!javaMailNotAvailable) {
+            // First, try to get the session from JNDI, as would be done under J2EE.
+            try {
+                NotificationService service = (NotificationService) Framework.getService(NotificationManager.class);
+                return MailSessionBuilder.fromJndi(service.getMailSessionJndiName()).build();
+            } catch (NuxeoException ex) {
+                log.warn("Unable to find Java mail API", ex);
+                javaMailNotAvailable = true;
+            }
+        }
+        return null;
     }
 
     /**

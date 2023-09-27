@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.comment;
 
-import org.nuxeo.ecm.platform.ec.notification.NotificationFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -29,7 +28,9 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  *
  * @since 11.1
  */
-@Features({ CommentFeature.class, NotificationFeature.class })
+@Features(CommentFeature.class)
+@Deploy("org.nuxeo.ecm.platform.notification")
 @Deploy("org.nuxeo.ecm.platform.url")
+@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/notification-contrib.xml")
 public class CommentNotificationFeature implements RunnerFeature {
 }
