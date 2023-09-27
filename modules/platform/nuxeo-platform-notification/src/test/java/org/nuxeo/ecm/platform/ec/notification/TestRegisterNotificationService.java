@@ -58,6 +58,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features(RuntimeFeature.class)
 public class TestRegisterNotificationService {
 
+
     protected EmailHelper mailHelper = new EmailHelper();
 
     @Inject

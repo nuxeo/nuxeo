@@ -18,13 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.mail;
 
-import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_DEBUG;
-import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_AUTH;
-import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_HOST;
-import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PASSWORD;
-import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PORT;
-import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_USER;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -39,6 +32,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.nuxeo.mail.MailSessionBuilder;
+
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_DEBUG;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_AUTH;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_HOST;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PASSWORD;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PORT;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_USER;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
