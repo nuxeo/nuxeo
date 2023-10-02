@@ -694,8 +694,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     }
 
     protected void setValueBlob(T state, Blob blob, String xpath) throws PropertyException {
+        setValueBlob(state, blob, xpath, true);
+    }
+
+    protected void setValueBlob(T state, Blob blob, String xpath, boolean gcOldBlob) throws PropertyException {
         Blob oldValue = getValueBlob(state, xpath);
-        if (oldValue instanceof ManagedBlob oldBlob) {
+        if (gcOldBlob && oldValue instanceof ManagedBlob oldBlob) {
             EventService es = Framework.getService(EventService.class);
             es.fireEvent(new BlobEventContext(NuxeoPrincipal.getCurrent(), getRepositoryName(), getUUID(), xpath,
                     oldBlob).newEvent(BLOBS_CANDIDATE_FOR_DELETION_EVENT));
@@ -1075,10 +1079,10 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
 
         @Override
-        public void setBlob(Blob blob) throws PropertyException {
+        public void setBlob(Blob blob, boolean gcOldBlob) throws PropertyException {
             // markDirty has to be called *before* we change the state
             markDirty.run();
-            setValueBlob(state, blob, getXPath());
+            setValueBlob(state, blob, getXPath(), gcOldBlob);
         }
     }
 

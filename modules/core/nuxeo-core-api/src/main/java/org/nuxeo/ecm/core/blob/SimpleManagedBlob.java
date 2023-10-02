@@ -18,9 +18,9 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
-
 import java.io.File;
+
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 
 /**
  * Simple managed blob implementation holding just a key and delegating to its provider for implementation.

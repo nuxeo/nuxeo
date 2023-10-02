@@ -150,8 +150,19 @@ public interface Document {
         /** Gets the blob. */
         Blob getBlob();
 
-        /** Sets the blob. */
-        void setBlob(Blob blob);
+        /** Sets the blob and garbage collect old value if any. */
+        default void setBlob(Blob blob) {
+            setBlob(blob, true);
+        }
+
+        /**
+         * Sets the blob.
+         *
+         * @param blob the blob
+         * @param gcOldBlob do we want to garbage collect the old value if any
+         * @since 2023.4
+         */
+        void setBlob(Blob blob, boolean gcOldBlob);
     }
 
     /**
