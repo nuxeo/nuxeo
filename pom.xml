@@ -4144,7 +4144,7 @@
       <dependency>
         <groupId>net.jodah</groupId>
         <artifactId>expiringmap</artifactId>
-        <version>0.5.10</version>
+        <version>0.5.11</version>
       </dependency>
       <dependency>
         <groupId>com.github.mike10004</groupId>
