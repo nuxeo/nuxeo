@@ -545,7 +545,9 @@ public class DBSDocument extends BaseDocument<State> {
         // if there was no digest, return a non-null value nevertheless
         // as a real null is a signal that no replacement was done
         oldDigestHolder.setValue(String.valueOf(blob.getDigest()));
-        accessor.setBlob(managedBlob.withKeyAndDigest(newKey, newDigest));
+        // do not GC old blob if any, we are probably in async blob digest computation
+        // org.nuxeo.ecm.core.blob.BlobDeleteListener will handle deletion
+        accessor.setBlob(managedBlob.withKeyAndDigest(newKey, newDigest), false);
     }
 
     protected DocumentBlobManager getDocumentBlobManager() {
