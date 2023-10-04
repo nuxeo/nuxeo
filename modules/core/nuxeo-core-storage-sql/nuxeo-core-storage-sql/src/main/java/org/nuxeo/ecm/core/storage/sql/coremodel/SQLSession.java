@@ -602,6 +602,9 @@ public class SQLSession extends BaseSession {
 
     protected void notifyDocumentRemove(Node node) {
         Document doc = newDocument(node);
+        if (node == null || doc == null) {
+            return;
+        }
         getDocumentBlobManager().notifyBeforeRemove(doc);
         DocumentDomainEventContext ctx = new DocumentDomainEventContext(NuxeoPrincipal.getCurrent(), doc);
         Event event = ctx.newEvent(DocumentEventTypes.INTERNAL_DOCUMENT_DELETED);
