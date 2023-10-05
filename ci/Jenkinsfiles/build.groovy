@@ -212,7 +212,7 @@ pipeline {
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
     GITHUB_REPO = 'nuxeo-lts'
     AWS_REGION = 'eu-west-3'
-    AWS_ROLE_ARN= 'arn:aws:iam::783725821734:role/nuxeo-s3directupload-role'
+    AWS_ROLE_ARN = 'arn:aws:iam::783725821734:role/nuxeo-s3directupload-role'
     AWS_CREDENTIALS_SECRET = 'aws-credentials'
     GITHUB_WORKFLOW_DOCKER_SCAN = 'docker-image-scan.yaml'
   }
