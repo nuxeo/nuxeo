@@ -26,10 +26,6 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 
-import io.opencensus.trace.AttributeValue;
-import io.opencensus.trace.Span;
-import io.opencensus.trace.Tracing;
-
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
@@ -70,6 +66,10 @@ import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
+
 /**
  * Basic implementation of {@link BulkService}.
  *
@@ -108,6 +108,8 @@ public class BulkServiceImpl implements BulkService, Synchronization {
 
     public static final String STATUS_PREFIX = "status:";
 
+    public static final String EXCLUSIVE_PREFIX = "exclusive:";
+
     public static final String PRODUCE_IMMEDIATE_OPTION = "produceImmediate";
 
     // How long we keep the command and its status in the kv store once completed
@@ -119,6 +121,9 @@ public class BulkServiceImpl implements BulkService, Synchronization {
     // @since 11.5
     // How long we keep the command and its status in the kv store once completed with an error
     public static final long COMPLETED_IN_ERROR_TTL_SECONDS = 86_400;
+
+    // How long we keep the exclusive bulk command
+    protected static final long EXCLUSIVE_TTL_SECONDS = 86_400;
 
     // @since 11.3
     protected final AtomicLong externalScrollerCounter = new AtomicLong();
@@ -175,7 +180,9 @@ public class BulkServiceImpl implements BulkService, Synchronization {
             }
         }
         checkIfScrollerExists(command);
-
+        if (adminService.isExclusive(command.getAction())) {
+            setExclusive(command);
+        }
         // store the bulk command and status in the key/value store
         BulkStatus status = new BulkStatus(command.getId());
         status.setState(SCHEDULED);
@@ -238,6 +245,25 @@ public class BulkServiceImpl implements BulkService, Synchronization {
             return BulkStatus.unknownOf(commandId);
         }
         return BulkCodecs.getStatusCodec().decode(statusAsBytes);
+    }
+
+    protected void setExclusive(BulkCommand command) {
+        KeyValueStore kv = getKvStore();
+        String key = EXCLUSIVE_PREFIX + command.getAction() + ":" + command.getRepository();
+        String existingCommand = kv.getString(key);
+        if (existingCommand != null) {
+            BulkStatus status = getStatus(existingCommand);
+            if (!UNKNOWN.equals(status.getState()) && !status.isCompleted()) {
+                throw new IllegalStateException(
+                        String.format("Bulk Action: %s is exclusive, command: %s is already running", command.getId(),
+                                existingCommand));
+            }
+        }
+        if (!kv.compareAndSet(key, existingCommand, command.getId(), EXCLUSIVE_TTL_SECONDS)) {
+            existingCommand = kv.getString(key);
+            throw new IllegalStateException(String.format(
+                    "Bulk Action: %s is exclusive, command: %s is already running", command.getId(), existingCommand));
+        }
     }
 
     /**

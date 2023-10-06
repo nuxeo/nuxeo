@@ -95,6 +95,13 @@ public interface BulkAdminService {
     boolean isSequentialProcessing(String actionId);
 
     /**
+     * Returns true if action is exclusive and only one of such command per repository can be scheduled or running.
+     *
+     * @since 2021.45
+     */
+    boolean isExclusive(String actionId);
+
+    /**
      * Gets the validation class of an action.
      *
      * @since 10.10

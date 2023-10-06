@@ -24,6 +24,7 @@ import static org.awaitility.Duration.ONE_MINUTE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM_NAME;
@@ -242,7 +243,7 @@ public class TestBulkProcessor {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-sequential-contrib.xml")
-    public void testSequentialScrollAndProcessing() throws Exception {
+    public void testSequentialAndExclusiveExecutions() throws Exception {
         final int nbDocs = 10;
         final int nbCommands = 10;
         // create some docs
@@ -277,6 +278,18 @@ public class TestBulkProcessor {
         assertEquals("dummyConcurrent", results.get(0).getAction());
         // the slowest must be a sequential processing
         assertEquals("dummySequential", results.get(results.size() - 1).getAction());
+
+        // check exclusive command
+        String commandId = service.submit(
+                new BulkCommand.Builder("dummyExclusive", "SELECT * FROM File", "Administrator").build());
+        assertThrows("Should not be able to submit another exclusive bulk command.", IllegalStateException.class,
+                () -> service.submit(
+                        new BulkCommand.Builder("dummyExclusive", "SELECT * FROM File", "Administrator").build()));
+        service.await(commandId, Duration.ofMinutes(1));
+        // once completed it's possible to submit a new one
+        commandId = service.submit(
+                new BulkCommand.Builder("dummyExclusive", "SELECT * FROM File", "Administrator").build());
+        service.await(commandId, Duration.ofMinutes(1));
     }
 
     @Test
