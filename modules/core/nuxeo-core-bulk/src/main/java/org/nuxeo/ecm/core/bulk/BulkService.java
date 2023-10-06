@@ -43,6 +43,8 @@ public interface BulkService extends AsyncService<String, BulkStatus, Map<String
      * Submits a {@link BulkCommand} that will be processed asynchronously, even if the current transaction rolls back
      * (the method is not transactional).
      *
+     * @throws IllegalArgumentException when the command is invalid
+     * @throws IllegalStateException when the bulk action is exclusive and another one is already running
      * @param command the command to submit
      * @return a unique bulk command identifier
      */

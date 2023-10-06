@@ -140,6 +140,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     }
 
     @Override
+    public boolean isExclusive(String actionId) {
+        return descriptors.get(actionId).exclusive;
+    }
+
+    @Override
     public BulkActionValidation getActionValidation(String action) {
         return actionValidations.get(action);
     }

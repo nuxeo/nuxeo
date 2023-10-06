@@ -18,6 +18,7 @@
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <action name="dummySequential" bucketSize="1" batchSize="1" sequentialScroll="true" sequentialProcessing="true"/>
     <action name="dummyConcurrent" bucketSize="1" batchSize="1" />
+    <action name="dummyExclusive" bucketSize="1" batchSize="1" exclusive="true" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
@@ -28,6 +29,10 @@
     <streamProcessor name="dummyConcurrent" class="org.nuxeo.ecm.core.bulk.DummyAction"
       defaultConcurrency="3" defaultPartitions="3">
       <option name="actionName">dummyConcurrent</option>
+    </streamProcessor>
+    <streamProcessor name="dummyExclusive" class="org.nuxeo.ecm.core.bulk.DummyAction"
+      defaultConcurrency="1" defaultPartitions="1">
+      <option name="actionName">dummyExclusive</option>
     </streamProcessor>
   </extension>
 

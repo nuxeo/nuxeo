@@ -77,6 +77,10 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@sequentialProcessing")
     public Boolean sequentialProcessing = Boolean.FALSE;
 
+    // @since 2021.45
+    @XNode("@exclusive")
+    public Boolean exclusive = Boolean.FALSE;
+
     @XNode("@validationClass")
     public Class<? extends BulkActionValidation> validationClass;
 
