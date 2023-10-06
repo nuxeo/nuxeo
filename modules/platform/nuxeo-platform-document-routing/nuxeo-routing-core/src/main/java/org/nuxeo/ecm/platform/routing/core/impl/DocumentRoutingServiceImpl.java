@@ -800,7 +800,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public String getRouteModelDocIdWithId(CoreSession session, String id) {
-        return modelsCache.computeIfAbsent(session.getRepositoryName() + ":" + id, () ->  {
+        return modelsCache.computeIfAbsent(session.getRepositoryName() + ":" + id, () -> {
             String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
             List<String> routeIds = new ArrayList<>();
             try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {
@@ -1109,46 +1109,63 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     throw new DocumentRouteException("Task " + taskId + " can not be reassigned. Node " + node.getId()
                             + " doesn't allow reassignment.");
                 }
-                DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                // remove permissions on the document following the
-                // workflow for the current assignees
-                removePermissionFromTaskAssignees(session, docs, task);
-                Framework.getService(TaskService.class)
-                         .reassignTask(session, taskId, actors, comment, getWorkflowContextualInfo(session, task));
-                // refresh task
-                task.getDocument().refresh();
-                // grant permission to the new assignees
-                grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
+                // Avoid concurrent reassignment for a given task
+                LockHelper.doAtomically(taskId, () -> {
+                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                    // remove permissions on the document following the
+                    // workflow for the current assignees
+                    removePermissionFromTaskAssignees(session, docs, task);
+                    Framework.getService(TaskService.class)
+                             .reassignTask(session, taskId, actors, comment, getWorkflowContextualInfo(session, task));
+                    // refresh task
+                    task.getDocument().refresh();
+                    // grant permission to the new assignees
+                    grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
 
-                // Audit task reassignment
-                Map<String, Serializable> eventProperties = new HashMap<>();
-                eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                        DocumentRoutingConstants.ROUTING_CATEGORY);
-                eventProperties.put("taskName", task.getName());
-                eventProperties.put("actors", (Serializable) actors);
-                eventProperties.put("modelId", routeInstance.getModelId());
-                eventProperties.put("modelName", routeInstance.getModelName());
-                eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
-                eventProperties.put("comment", comment);
-                // compute duration since workflow started
-                long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
-                if (timeSinceWfStarted >= 0) {
-                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
-                }
-                // compute duration since task started
-                long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
-                if (timeSinceWfStarted >= 0) {
-                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
-                }
-                DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
-                        task.getDocument());
-                envContext.setProperties(eventProperties);
-                EventProducer eventProducer = Framework.getService(EventProducer.class);
-                eventProducer.fireEvent(
-                        envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
+                    // Audit task reassignment
+                    prepareAndFireEvent((Serializable) actors, Events.afterWorkflowTaskReassigned, comment, session,
+                            task, routeInstance);
+                });
             }
         });
+    }
+
+    protected void prepareAndFireEvent(Serializable actors, Events event, String comment, CoreSession session,
+            Task task, GraphRoute routeInstance) {
+        String actorsType;
+        switch (event) {
+            case afterWorkflowTaskReassigned:
+                actorsType = "actors";
+                break;
+            case afterWorkflowTaskDelegated:
+                actorsType = "delegatedActors";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid event");
+        }
+        Map<String, Serializable> eventProperties = new HashMap<>();
+        eventProperties.put(actorsType, actors);
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+        eventProperties.put("taskName", task.getName());
+        eventProperties.put("modelId", routeInstance.getModelId());
+        eventProperties.put("modelName", routeInstance.getModelName());
+        eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
+        eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
+        eventProperties.put("comment", comment);
+        // compute duration since workflow started
+        long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
+        if (timeSinceWfStarted >= 0) {
+            eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
+        }
+        // compute duration since task started
+        long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
+        if (timeSinceWfStarted >= 0) {
+            eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
+        }
+        DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+        envContext.setProperties(eventProperties);
+
+        Framework.getService(EventProducer.class).fireEvent(envContext.newEvent(event.name()));
     }
 
     protected Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, Task item) {
@@ -1185,44 +1202,21 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 if (node == null) {
                     throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task " + taskId);
                 }
-                DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                Framework.getService(TaskService.class)
-                         .delegateTask(session, taskId, delegatedActors, comment,
-                                 getWorkflowContextualInfo(session, task));
-                // refresh task
-                task.getDocument().refresh();
-                // grant permission to the new assignees
-                grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
+                // Avoid concurrent delegation for a given task
+                LockHelper.doAtomically(taskId, () -> {
+                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                    Framework.getService(TaskService.class)
+                             .delegateTask(session, taskId, delegatedActors, comment,
+                                     getWorkflowContextualInfo(session, task));
+                    // refresh task
+                    task.getDocument().refresh();
+                    // grant permission to the new assignees
+                    grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
 
-                // Audit task delegation
-                Map<String, Serializable> eventProperties = new HashMap<>();
-                eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                        DocumentRoutingConstants.ROUTING_CATEGORY);
-                eventProperties.put("taskName", task.getName());
-                eventProperties.put("delegatedActors", (Serializable) delegatedActors);
-                eventProperties.put("modelId", routeInstance.getModelId());
-                eventProperties.put("modelName", routeInstance.getModelName());
-                eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
-                eventProperties.put("comment", comment);
-
-                // compute duration since workflow started
-                long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
-                if (timeSinceWfStarted >= 0) {
-                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
-                }
-                // compute duration since task started
-                long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
-                if (timeSinceWfStarted >= 0) {
-                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
-                }
-
-                DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
-                        task.getDocument());
-                envContext.setProperties(eventProperties);
-                EventProducer eventProducer = Framework.getService(EventProducer.class);
-                eventProducer.fireEvent(
-                        envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
+                    // Audit task delegation
+                    prepareAndFireEvent((Serializable) delegatedActors, Events.afterWorkflowTaskDelegated, comment,
+                            session, task, routeInstance);
+                });
             }
         });
     }
