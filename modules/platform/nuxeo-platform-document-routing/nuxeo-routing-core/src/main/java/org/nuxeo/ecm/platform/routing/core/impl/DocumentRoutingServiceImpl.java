@@ -88,6 +88,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.Events;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
@@ -222,12 +223,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             route.save(session);
             Map<String, Serializable> props = new HashMap<>();
             props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY, session.getPrincipal().getActingUser());
-            fireEvent(DocumentRoutingConstants.Events.beforeRouteReady.name(), props, route, session);
+            fireEvent(Events.beforeRouteReady.name(), props, route, session);
             route.setReady(session);
-            fireEvent(DocumentRoutingConstants.Events.afterRouteReady.name(), props, route, session);
+            fireEvent(Events.afterRouteReady.name(), props, route, session);
             route.save(session);
             if (startInstance) {
-                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
+                fireEvent(Events.beforeRouteStart.name(), new HashMap<>(), route, session);
                 DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
                 fireEventAfterWorkflowStarted(route, session);
@@ -278,7 +279,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 route.setAttachedDocuments(docIds);
                 route.save(session);
             }
-            fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
+            fireEvent(Events.beforeRouteStart.name(), new HashMap<>(), route, session);
             DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
             routingEngine.start(route, map, session);
             fireEventAfterWorkflowStarted(route, session);
@@ -294,7 +295,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES,
                     (Serializable) ((GraphRoute) route).getVariables());
         }
-        fireEvent(DocumentRoutingConstants.Events.afterWorkflowStarted.name(), eventProperties, route, session);
+        fireEvent(Events.afterWorkflowStarted.name(), eventProperties, route, session);
     }
 
     @Override
