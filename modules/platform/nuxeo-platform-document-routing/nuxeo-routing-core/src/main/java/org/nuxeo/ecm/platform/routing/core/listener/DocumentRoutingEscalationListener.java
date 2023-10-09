@@ -84,7 +84,13 @@ public class DocumentRoutingEscalationListener implements EventListener {
                         var command = new BulkCommand.Builder(DocumentRoutingEscalationAction.ACTION_NAME,
                                 SUSPENDED_NODES_WITH_ESCALATION_QUERY, SYSTEM_USERNAME).repository(repositoryName)
                                                                                        .build();
-                        bulkService.submit(command);
+                        try {
+                            bulkService.submit(command);
+                        } catch (IllegalStateException e) {
+                            log.warn(
+                                    "Not scheduling Workflow Escalation execution on repository: {} because one is already running",
+                                    repositoryName);
+                        }
                     }
                 }
             }
