@@ -458,6 +458,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 searchIndex = writeIndex;
             }
         }
+        repoNames.put(searchIndex, conf.getRepositoryName());
         log.warn("Managed index aliases, search: {} -> {}, write: {} -> {}, secondary write index: {}", searchAlias,
                 searchIndex, writeAlias, writeIndex, secondaryWriteIndexNames.get(searchAlias));
     }
