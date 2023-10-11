@@ -19,6 +19,7 @@
 package org.nuxeo.elasticsearch.test.bulk;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -28,6 +29,10 @@ import static org.nuxeo.elasticsearch.bulk.IndexAction.INDEX_UPDATE_ALIAS_PARAM;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.REFRESH_INDEX_PARAM;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -42,6 +47,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -51,7 +57,9 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.bulk.IndexAction;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -90,12 +98,12 @@ public class TestBulkIndex {
         }
         for (int i = 0; i < 20; i++) {
             String name = "file" + i;
+            String title =  String.format("File%02d", i);
             DocumentModel doc = session.createDocumentModel("/", name, "File");
+            doc.setPropertyValue("dc:title", title);
             if (i == 0) {
                 // create a huge field to make the doc bigger than a record
-                doc.setPropertyValue("dc:title", new String(new char[BIG_FIELD_SIZE]).replace('\0', 'X'));
-            } else {
-                doc.setPropertyValue("dc:title", "File" + i);
+                doc.setPropertyValue("dc:source", new String(new char[BIG_FIELD_SIZE]).replace('\0', 'X'));
             }
             session.createDocument(doc);
         }
@@ -118,6 +126,7 @@ public class TestBulkIndex {
 
     @Test
     public void testIndexAction() throws InterruptedException {
+        checkSearchOrder();
         esa.initIndexes(true);
         BulkCommand command = new Builder(ACTION_NAME, "SELECT * FROM Document", "Administrator")
                 .param(REFRESH_INDEX_PARAM, true)
@@ -137,6 +146,7 @@ public class TestBulkIndex {
     @Test
     @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-write-alias2-contrib.xml")
     public void testBulkReindexWithAlias() throws Exception {
+        checkSearchOrder();
         String repo = esa.getRepositoryNames().iterator().next();
         String searchAlias = esa.getIndexNameForRepository(repo);
         String searchIndex = esa.getClient().getFirstIndexForAlias(searchAlias);
@@ -207,6 +217,7 @@ public class TestBulkIndex {
         assertEquals(searchIndex, writeIndex);
         secondaryWriteIndex = esa.getSecondaryWriteIndexName(searchAlias);
         assertNull(secondaryWriteIndex);
+        checkSearchOrder();
     }
 
     protected SearchResponse searchAll(String indexName) {
@@ -219,4 +230,14 @@ public class TestBulkIndex {
         return searchAll(indexName).getHits().getTotalHits().value;
     }
 
+    protected void checkSearchOrder() {
+        EsResult res = ess.queryAndAggregate(
+                new NxQueryBuilder(session).nxql("SELECT * FROM File").addSort(new SortInfo("dc:title", false)));
+        assertNotNull(res.getDocuments());
+        assertFalse(res.getDocuments().isEmpty());
+        List<String> ids = res.getDocuments().stream().map(DocumentModel::getTitle).collect(Collectors.toList());
+        List<String> ordered = new ArrayList<>(ids);
+        ordered.sort(Comparator.reverseOrder());
+        assertEquals(ordered, ids);
+    }
 }
