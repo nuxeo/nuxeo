@@ -64,6 +64,7 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.mail.MailException;
 import org.nuxeo.mail.MailMessage;
 import org.nuxeo.mail.MailService;
 import org.nuxeo.runtime.api.Framework;
@@ -211,6 +212,11 @@ public class SendMail {
             Framework.getService(MailService.class).sendMail(msg);
         } catch (NuxeoException | TemplateException | OperationException | IOException e) {
             if (rollbackOnError) {
+                if (e instanceof MailException) {
+                    // the Automation framework doesn't handle MailException (instance of NuxeoException) the same way
+                    // as OperationException
+                    throw new OperationException(e);
+                }
                 throw e;
             } else {
                 log.warn(
