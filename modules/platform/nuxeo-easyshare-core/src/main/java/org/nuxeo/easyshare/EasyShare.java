@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.mail.MailException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -298,8 +300,9 @@ public class EasyShare extends ModuleRoot {
 
                     mailProps.putAll(mail);
 
-                    emailHelper.sendmail(mailProps);
-
+                    emailHelper.sendMailMessage(mailProps);
+                } catch (MailException me) {
+                    throw me;
                 } catch (NuxeoException e) {
                     log.warn(e.getMessage());
                 }

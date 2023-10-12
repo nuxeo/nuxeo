@@ -56,9 +56,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
- * Class EmailHelper.
- * <p>
- * An email helper:
+ * Helper class to build some {@link MailMessage}s from {@link Map}s and send them through the
+ * {@link MailService}.
  *
  * <pre>
  * Hashtable mail = new Hashtable();
@@ -67,10 +66,8 @@ import freemarker.template.TemplateException;
  * mail.put(&quot;subject&quot;, &quot;a subject&quot;);
  * mail.put(&quot;template&quot;, &quot;a template name&quot;);
  * &lt;p&gt;
- * EmailHelper.sendmail(mail);
+ * EmailHelper.sendMailMessage(mail);
  * </pre>
- *
- * Currently only supports one email in to address
  */
 public class EmailHelper {
 

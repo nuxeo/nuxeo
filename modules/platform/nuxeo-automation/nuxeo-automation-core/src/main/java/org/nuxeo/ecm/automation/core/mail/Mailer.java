@@ -41,6 +41,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.mail.MailException;
 import org.nuxeo.mail.MailMessage;
 import org.nuxeo.mail.MailSender;
 import org.nuxeo.mail.MailService;
@@ -305,7 +306,7 @@ public class Mailer {
             Framework.getService(MailService.class).sendMail(fromMimeMessage(this));
         }
 
-        protected MailMessage fromMimeMessage(MimeMessage original) throws MessagingException {
+        protected MailMessage fromMimeMessage(MimeMessage original) {
             try {
                 // get subject details
                 String subject = null;
@@ -330,8 +331,8 @@ public class Mailer {
                                                        .subject(subject, subjectCharset)
                                                        .content(original.getContent(), original.getContentType())
                                                        .build();
-            } catch (IOException e) {
-                throw new NuxeoException("Could not read mail content", e);
+            } catch (IOException | MessagingException e) {
+                throw new MailException("Could not read mail content", e);
             }
         }
 

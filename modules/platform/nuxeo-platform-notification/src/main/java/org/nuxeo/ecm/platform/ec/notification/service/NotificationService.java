@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -65,6 +63,7 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.mail.MailConstants;
+import org.nuxeo.mail.MailException;
 import org.nuxeo.mail.MailService;
 import org.nuxeo.mail.MailServiceImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -441,8 +440,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         infoMap.put("template", mailTemplate);
 
         try {
-            emailHelper.sendmail(infoMap);
-        } catch (MessagingException e) {
+            emailHelper.sendMailMessage(infoMap);
+        } catch (MailException e) {
             throw new NuxeoException("Failed to send notification email ", e);
         }
     }
@@ -470,8 +469,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         for (String to : sendTo) {
             infoMap.put("mail.to", to);
             try {
-                emailHelper.sendmail(infoMap);
-            } catch (MessagingException e) {
+                emailHelper.sendMailMessage(infoMap);
+            } catch (MailException e) {
                 log.debug("Failed to send notification email: {}", e::toString);
             }
         }

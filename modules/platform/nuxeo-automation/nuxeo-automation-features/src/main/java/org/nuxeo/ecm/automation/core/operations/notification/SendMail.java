@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
-import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.mail.MailMessage;
 import org.nuxeo.mail.MailService;
@@ -143,8 +142,7 @@ public class SendMail {
     protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc)
-            throws TemplateException, RenderingException, OperationException, MessagingException, IOException {
+    public DocumentModel run(DocumentModel doc) throws TemplateException, OperationException, IOException {
         send(doc);
         return doc;
     }
@@ -165,8 +163,7 @@ public class SendMail {
         }
     }
 
-    protected void send(DocumentModel doc)
-            throws TemplateException, RenderingException, OperationException, MessagingException, IOException {
+    protected void send(DocumentModel doc) throws TemplateException, OperationException, IOException {
         // TODO should sent one by one to each recipient? and have the template
         // rendered for each recipient? Use: "mailto" var name?
         try {
@@ -264,7 +261,7 @@ public class SendMail {
      */
     @Deprecated(since = "2023.4")
     protected Mailer.Message createMessage(DocumentModel doc, String message, Map<String, Object> map)
-            throws MessagingException, TemplateException, RenderingException, IOException {
+            throws MessagingException, TemplateException, IOException {
         var composer = new Composer();
         return composer.newMixedMessage(message, map, asHtml ? "html" : "plain", getBlobs(doc));
     }
