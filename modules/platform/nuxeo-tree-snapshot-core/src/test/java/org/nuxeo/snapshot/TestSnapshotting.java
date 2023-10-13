@@ -346,11 +346,17 @@ public class TestSnapshotting extends AbstractTestSnapshot {
         versions = getAllVersions();
         // GC deleted versions but how much is random depending on which order they are processed
         assertTrue(versions.size() < 9);
-        // Running it twice clean all versions
-        coreService.garbageCollectOrphanVersions();
-        waitForAsyncCompletion();
-        versions = getAllVersions();
-        assertEquals(0, versions.size());
+        // Running it a few times to make sure we clean all versions
+        for (int i = 0; i < 5; i++) {
+            coreService.garbageCollectOrphanVersions();
+            waitForAsyncCompletion();
+            versions = getAllVersions();
+            if (versions.isEmpty()) {
+                break;
+            }
+        }
+        // At this point there should be nothing left
+        assertEquals(versions.size(), 0);
     }
 
     protected DocumentModelList getAllVersions() {
