@@ -20,7 +20,9 @@ package org.nuxeo.snapshot;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
@@ -32,7 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.stream.StreamDocumentGC;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -44,17 +45,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.snapshot")
 @WithFrameworkProperty(name = StreamDocumentGC.ENABLED_PROPERTY_NAME, value = "false")
-public class TestSnapshoting extends AbstractTestSnapshot {
-
-    @Inject
-    protected EventService eventService;
+@RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
+public class TestSnapshotting extends AbstractTestSnapshot {
 
     @Inject
     protected CoreFeature coreFeature;
@@ -62,7 +59,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
     @Inject
     protected TransactionalFeature transactionalFeature;
 
-    protected String getContentHash() throws Exception {
+    protected String getContentHash() {
         DocumentModelList alldocs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
         StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : alldocs) {
@@ -98,7 +95,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
         if (verbose) {
             System.out.println("## Initial Tree Snapshot");
-            System.out.println(snapshot.toString());
+            System.out.println(snapshot);
         }
 
         for (Snapshot snap : snapshot.getFlatTree()) {
@@ -213,7 +210,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("0.3", snapshot.getDocument().getVersionLabel());
 
         String hash03 = getContentHash();
-        assertFalse(hash02.equals(hash03));
+        assertNotEquals(hash02, hash03);
 
         // now restore
         DocumentModel restored = snapshot.restore("0.2");
@@ -236,12 +233,12 @@ public class TestSnapshoting extends AbstractTestSnapshot {
     }
 
     @Test
-    public void testSnapshotableListener() throws Exception {
+    public void testSnapshotableListener() {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "SnapshotableFolder");
         doc = session.createDocument(doc);
         session.save();
         assertEquals("", doc.getVersionLabel());
-        assertEquals(null, doc.getPropertyValue("dc:title"));
+        assertNull(doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "without versioning");
         doc = session.saveDocument(doc);
@@ -283,7 +280,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
     }
 
     @Test
-    public void testSnapshotableVersionRemovalPolicy() throws Exception {
+    public void testSnapshotableVersionRemovalPolicy() {
         root = session.createDocumentModel("/", "root", "SnapshotableFolder");
         root = session.createDocument(root);
 
@@ -364,10 +361,4 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         coreFeature.waitForAsyncCompletion();
     }
 
-    protected void nextTransaction() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-    }
 }
