@@ -21,8 +21,10 @@ build:
     - image: nuxeo/nuxeo
       context: .
       custom:
+        # keep docker media type for backward compatibility with previous 2021 images and old Docker versions
         buildCommand: |
           docker-buildx \
             --build-arg BUILD_TAG={{.BUILD_TAG}} \
             --build-arg SCM_REF={{.GIT_COMMIT}} \
-            --build-arg VERSION={{.VERSION}}
+            --build-arg VERSION={{.VERSION}} \
+            --oci-mediatypes false
