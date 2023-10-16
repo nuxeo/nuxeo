@@ -3711,7 +3711,7 @@
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>20230227</version>
+        <version>20231013</version>
       </dependency>
       <!-- NXP-10566: juel-api is mentioned here for reference but is exluded
         by the distribution: org.apache.tomcat:tomcat-el-api should be used
