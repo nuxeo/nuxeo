@@ -71,6 +71,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.EncryptedPutObjectRequest;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
@@ -301,7 +302,11 @@ public class S3BlobStore extends AbstractBlobStore {
         }
 
         if (getKeyStrategy().useDeDuplication() && bucketKeyExists(bucketKey)) {
-            return null; // no key version used with deduplication
+            if (bucketKeyHasDefaultStorageClass(bucketKey)) {
+                return null; // no key version used with deduplication
+            } else {
+                log.warn("Restoring blob: s3://{}/{} by overwriting", bucketName, bucketKey);
+            }
         }
 
         PutObjectRequest putObjectRequest;
@@ -386,6 +391,26 @@ public class S3BlobStore extends AbstractBlobStore {
     @Override
     public boolean exists(String key) {
         return bucketKeyExists(bucketKey(key));
+    }
+
+    @Override
+    public boolean hasDefaultStorageClass(String key) {
+        return bucketKeyHasDefaultStorageClass(bucketKey(key));
+    }
+
+    protected boolean bucketKeyHasDefaultStorageClass(String bucketKey) {
+        GetObjectMetadataRequest request = new GetObjectMetadataRequest(config.bucketName, bucketKey);
+        ObjectMetadata metadata;
+        try {
+            metadata = config.amazonS3.getObjectMetadata(request);
+        } catch (AmazonServiceException e) {
+            if (!isMissingKey(e)) {
+                log.error("Failed to get information on blob: {}", bucketKey, e);
+            }
+            return false;
+        }
+        String storageClass = metadata.getStorageClass();
+        return storageClass == null; // null is the standard storage class for s3
     }
 
     protected boolean bucketKeyExists(String bucketKey) {
@@ -617,7 +642,11 @@ public class S3BlobStore extends AbstractBlobStore {
         }
 
         if (getKeyStrategy().useDeDuplication() && bucketKeyExists(bucketKey)) {
-            return key;
+            if (bucketKeyHasDefaultStorageClass(bucketKey)) {
+                return key;
+            } else {
+                log.warn("Restoring blob: s3://{}/{} by copy", bucketName, bucketKey);
+            }
         }
 
         // copy the blob

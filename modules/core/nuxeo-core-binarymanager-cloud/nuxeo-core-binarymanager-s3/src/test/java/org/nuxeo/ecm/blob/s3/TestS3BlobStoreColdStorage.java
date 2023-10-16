@@ -28,7 +28,6 @@ import java.time.Duration;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +80,78 @@ public class TestS3BlobStoreColdStorage {
         assertTrue(bp.isTransactional());
         assertFalse(bp.isRecordMode());
         assertTrue(bp.isColdStorageMode());
+    }
+
+    @Test
+    public void testHasDefaultStorageClass() throws IOException {
+        // Create a blob
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = bp.writeBlob(new BlobContext(Blobs.createBlob("hello blob"), "id", XPATH));
+        assertTrue(bs.hasDefaultStorageClass(blobInfo.key));
+
+        // Send to cold storage
+        BlobUpdateContext blobUpdateCtx = new BlobUpdateContext(blobInfo.key).withColdStorageClass(true);
+        bp.updateBlob(blobUpdateCtx);
+        assertFalse(bs.hasDefaultStorageClass(blobInfo.key));
+    }
+
+    @Test
+    public void testAutoRestoreFromColdStorageByOverwrite() throws IOException {
+        // Upload a blob
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = bp.writeBlob(new BlobContext(Blobs.createBlob("bar"), "id", XPATH));
+
+        // Send to cold storage
+        BlobUpdateContext blobUpdateCtx = new BlobUpdateContext(blobInfo.key).withColdStorageClass(true);
+        bp.updateBlob(blobUpdateCtx);
+
+        // check it is sent to cold storage
+        BlobStatus status = getBlobStatus(blobInfo);
+        assertFalse(status.isDownloadable());
+        assertEquals(StorageClass.Glacier.toString(), status.getStorageClass());
+        assertFalse(status.isOngoingRestore());
+
+        // Re-upload the blob
+        blobInfo.key = bp.writeBlob(new BlobContext(Blobs.createBlob("bar"), "id", XPATH));
+
+        // check it is now restored
+        status = getBlobStatus(blobInfo);
+        assertTrue(status.isDownloadable());
+        assertNull(status.getStorageClass());
+        assertFalse(status.isOngoingRestore());
+    }
+
+    @Test
+    public void testAutoRestoreFromColdStorageByCopy() throws IOException {
+        BlobProvider otherbp = blobManager.getBlobProvider("other");
+        BlobStore sourceStore = ((BlobStoreBlobProvider) otherbp).store;
+
+        // Upload a blob to source
+        var key = otherbp.writeBlob(new BlobContext(Blobs.createBlob("bar"), "id", XPATH));
+
+        // Copy the blob to destination
+        bs.copyOrMoveBlob(key, sourceStore, key, false);
+
+        // Send to cold storage the copy in destination
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = key;
+        BlobUpdateContext blobUpdateCtx = new BlobUpdateContext(blobInfo.key).withColdStorageClass(true);
+        bp.updateBlob(blobUpdateCtx);
+
+        // Check it is sent to cold storage
+        BlobStatus status = getBlobStatus(blobInfo);
+        assertFalse(status.isDownloadable());
+        assertEquals(StorageClass.Glacier.toString(), status.getStorageClass());
+        assertFalse(status.isOngoingRestore());
+
+        // Copy the blob to destination another time
+        bs.copyOrMoveBlob(key, sourceStore, key, false);
+
+        // Check the copy in destination is now restored
+        status = getBlobStatus(blobInfo);
+        assertTrue(status.isDownloadable());
+        assertNull(status.getStorageClass());
+        assertFalse(status.isOngoingRestore());
     }
 
     @Test

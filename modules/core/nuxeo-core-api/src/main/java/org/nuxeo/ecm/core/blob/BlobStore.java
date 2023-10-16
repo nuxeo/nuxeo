@@ -309,6 +309,25 @@ public interface BlobStore {
     }
 
     /**
+     * Does a blob with the given key exist in the blob store with the default storage class.
+     * <p>
+     * The existence of the blob is checked in the store where the blob is effectively stored. Intermediate cache is
+     * ignored. A blob with a cold storage storage class is not in default storage class and this method will return
+     * false for such a blob.
+     *
+     * @param key the blob key
+     * @return true if it exists in the blob store and has the default storage class
+     * @since 2023.5
+     */
+    default boolean hasDefaultStorageClass(String key) {
+        BlobStore unwrapped = this.unwrap();
+        if (unwrapped == this) {
+            return false;
+        }
+        return unwrapped.hasDefaultStorageClass(key);
+    }
+
+    /**
      * Returns the binary garbage collector (GC).
      * <p>
      * Several calls to this method will return the same GC, so that its status can be monitored using
