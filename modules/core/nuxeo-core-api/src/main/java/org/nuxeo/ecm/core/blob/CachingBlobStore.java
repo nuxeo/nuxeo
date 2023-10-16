@@ -132,7 +132,8 @@ public class CachingBlobStore extends AbstractBlobStore {
         String key = blobWriteContext.getKey(); // may depend on write observer, for example for digests
 
         // when using deduplication, check if it's in the cache already
-        if (blobWriteContext.useDeDuplication() && getFileFromCache(key, true).isPresent() && exists(key)) {
+        if (blobWriteContext.useDeDuplication() && getFileFromCache(key, true).isPresent() && exists(key)
+                && hasDefaultStorageClass(key)) {
             // delete tmp file, not needed anymore
             cacheStore.deleteBlob(tmpKey);
             return key;
