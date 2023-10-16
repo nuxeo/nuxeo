@@ -33,7 +33,10 @@ import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBind
 import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding.SAML_RESPONSE;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
@@ -92,6 +95,11 @@ public class SAMLAuthenticatorTest {
         var redirectURL = responseHandler.getRedirect();
         assertTrue(redirectURL.startsWith("http://dummy/SSORedirect"));
 
+        Function<Instant, Object> format = i -> {
+            var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC);
+            return formatter.format(i);
+        };
+
         var expected = new ExpectedSAMLMessage<>(
                 """
                         <saml2p:AuthnRequest xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" AssertionConsumerServiceURL="null://null/nuxeo/home.html" Destination="http://dummy/SSORedirect" ID="%s" IssueInstant="%s" Version="2.0">
@@ -99,7 +107,7 @@ public class SAMLAuthenticatorTest {
                           <saml2p:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"/>
                         </saml2p:AuthnRequest>
                         """,
-                AuthnRequest::getID, AuthnRequest::getIssueInstant);
+                AuthnRequest::getID, format.compose(AuthnRequest::getIssueInstant));
         var actual = extractQueryParam(redirectURL, SAML_REQUEST);
         assertSAMLMessage(expected, actual);
     }
