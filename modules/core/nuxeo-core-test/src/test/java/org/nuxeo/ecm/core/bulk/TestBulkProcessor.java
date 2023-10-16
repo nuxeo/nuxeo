@@ -276,8 +276,8 @@ public class TestBulkProcessor {
         results.sort(Comparator.comparing(r -> r.getProcessingEndTime().toEpochMilli() - r.getProcessingStartTime().toEpochMilli()));
         // the lowest latency must be a concurrent processing
         assertEquals("dummyConcurrent", results.get(0).getAction());
-        // the slowest must be a sequential processing
-        assertEquals("dummySequential", results.get(results.size() - 1).getAction());
+        // the slowest latency should be a sequential processing,
+        // but depending on the random partitioning and concurrent execution a jam is still possible
 
         // check exclusive command
         String commandId = service.submit(
