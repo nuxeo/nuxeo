@@ -446,17 +446,13 @@ public class BulkStatus implements AsyncStatus<String> {
             if (v2 == null) {
                 continue;
             }
-            if (v1 instanceof Number) {
-                if (v1 instanceof Long && v2 instanceof Long) {
-                    map.put(e.getKey(), (Long) v1 + (Long) v2);
-                } else if (v1 instanceof Double && v2 instanceof Double) {
-                    map.put(e.getKey(), (Double) v1 + (Double) v2);
-                } else if (v1 instanceof Integer && v2 instanceof Integer) {
-                    map.put(e.getKey(), (Integer) v1 + (Integer) v2);
-                } else if (v1 instanceof Float && v2 instanceof Float) {
-                    map.put(e.getKey(), (Float) v1 + (Float) v2);
-                } else if (v1 instanceof Short && v2 instanceof Short) {
-                    map.put(e.getKey(), (Short) v1 + (Short) v2);
+            if (v1 instanceof Number && v2 instanceof Number) {
+                if ((v1 instanceof Long || v1 instanceof Short || v1 instanceof Integer)
+                        && (v2 instanceof Long || v2 instanceof Short || v2 instanceof Integer)) {
+                    map.put(e.getKey(), ((Number) v1).longValue() + ((Number) v2).longValue());
+                } else if ((v1 instanceof Double || v1 instanceof Float || v2 instanceof Double
+                        || v2 instanceof Float)) {
+                    map.put(e.getKey(), ((Number) v1).doubleValue() + ((Number) v2).doubleValue());
                 } else {
                     log.warn(
                             "Cannot merge values for result Key: {},  value 1: {} of type: {}, value 2: {} of type: {}",
