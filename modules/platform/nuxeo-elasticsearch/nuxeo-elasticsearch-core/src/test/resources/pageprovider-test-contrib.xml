@@ -291,6 +291,9 @@
         <aggregate id="primaryType" parameter="ecm:primaryType" type="terms">
           <field name="system_primaryType_agg" schema="advanced_search" />
         </aggregate>
+        <aggregate id="isVersion" parameter="ecm:isVersion" type="terms">
+          <field name="system_isVersion_agg" schema="advanced_search" />
+        </aggregate>
         <aggregate id="mixinType" parameter="ecm:mixinType" type="terms">
           <field name="system_mixinType_agg" schema="advanced_search" />
         </aggregate>
