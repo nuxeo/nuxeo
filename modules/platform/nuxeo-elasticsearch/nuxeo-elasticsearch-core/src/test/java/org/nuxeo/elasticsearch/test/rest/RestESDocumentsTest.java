@@ -246,6 +246,9 @@ public class RestESDocumentsTest extends BaseTest {
                                                  .orElse(null);
             assertNotNull(noteTypeNode);
 
+            JsonNode isVersionNode = node.get("aggregations").get("isVersion");
+            assertEquals("terms", isVersionNode.get("type").textValue());
+
             JsonNode mixinTypeNode = node.get("aggregations").get("mixinType");
             assertEquals("terms", mixinTypeNode.get("type").textValue());
             JsonNode tagFacetNode = StreamSupport.stream(mixinTypeNode.get("buckets").spliterator(), false)
