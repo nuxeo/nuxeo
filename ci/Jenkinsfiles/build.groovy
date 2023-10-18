@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.25"
+library identifier: "platform-ci-shared-library@v0.0.29"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -82,7 +82,9 @@ void dockerPushFixedVersion(String imageName) {
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
 
-  nxDocker.copy(from: fixedVersionInternalImage, to: latestInternalImage)
+  // the source image is multi-platform, so the manifest is a list of images
+  // copy all of the images in the list and the list itself
+  nxDocker.copy(from: fixedVersionInternalImage, to: latestInternalImage, options: '--all')
 }
 
 void dockerDeploy(String dockerRegistry, String imageName) {
@@ -91,7 +93,9 @@ void dockerDeploy(String dockerRegistry, String imageName) {
   String fixedVersionPublicImage = "${dockerRegistry}/${fullImageName}:${VERSION}"
   String latestPublicImage = "${dockerRegistry}/${fullImageName}:${DOCKER_TAG}"
 
-  nxDocker.copy(from: fixedVersionInternalImage, tos: [fixedVersionPublicImage, latestPublicImage])
+  // the source image is multi-platform, so the manifest is a list of images
+  // copy all of the images in the list and the list itself
+  nxDocker.copy(from: fixedVersionInternalImage, tos: [fixedVersionPublicImage, latestPublicImage], options: '--all')
 }
 
 def buildUnitTestStage(env) {
