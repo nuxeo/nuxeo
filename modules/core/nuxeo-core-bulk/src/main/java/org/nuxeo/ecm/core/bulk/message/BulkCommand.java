@@ -80,6 +80,18 @@ public class BulkCommand implements Serializable {
     @AvroDefault("false")
     protected boolean externalScroller;
 
+    // @since 2023.4
+    @Nullable
+    protected Boolean sequentialScroll;
+
+    // @since 2023.4
+    @Nullable
+    protected Boolean sequentialProcessing;
+
+    // @since 2023.4
+    @Nullable
+    protected Boolean exclusive;
+
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> params;
 
@@ -101,6 +113,9 @@ public class BulkCommand implements Serializable {
         this.scroller = builder.scroller;
         this.genericScroller = BooleanUtils.toBoolean(builder.genericScroller);
         this.externalScroller = BooleanUtils.toBoolean(builder.externalScroller);
+        this.sequentialScroll = builder.sequentialScroll;
+        this.sequentialProcessing = builder.sequentialProcessing;
+        this.exclusive = builder.exclusive;
     }
 
     public String getUsername() {
@@ -121,6 +136,21 @@ public class BulkCommand implements Serializable {
 
     public String getScroller() {
         return scroller;
+    }
+
+    // @since 2023.4
+    public Boolean getSequentialScroll() {
+        return sequentialScroll;
+    }
+
+    // @since 2023.4
+    public Boolean getSequentialProcessing() {
+        return sequentialProcessing;
+    }
+
+    // @since 2023.4
+    public Boolean getExclusive() {
+        return exclusive;
     }
 
     /**
@@ -246,6 +276,12 @@ public class BulkCommand implements Serializable {
         protected Boolean genericScroller;
 
         protected Boolean externalScroller;
+
+        protected Boolean sequentialScroll;
+
+        protected Boolean sequentialProcessing;
+
+        protected Boolean exclusive;
 
         protected Map<String, Serializable> params = new HashMap<>();
 
@@ -444,6 +480,41 @@ public class BulkCommand implements Serializable {
             if (this.genericScroller != null || this.externalScroller != null) {
                 throw new IllegalArgumentException("Only one useScroller method should be called");
             }
+        }
+
+        /**
+         * When set to {@code true} the scroll with other bulk commands having the same flag is done sequentially. If
+         * {@code false} the scroll is done concurrently with others bulk commands. When unset {@code null} this choice
+         * is done at the action definition level.
+         *
+         * @since 2023.4
+         */
+        public Builder setSequentialScroll(Boolean value) {
+            this.sequentialScroll = value;
+            return this;
+        }
+
+        /**
+         * When set to {@code true} the processing of the command is done on the same thread sequentially. If
+         * {@code false} the processing is done concurrently. When unset {@code null} this choice is done at the action
+         * definition level.
+         *
+         * @since 2023.4
+         */
+        public Builder setSequentialProcessing(Boolean value) {
+            this.sequentialProcessing = value;
+            return this;
+        }
+
+        /**
+         * When set to {@code true} only one command of this action per repository can be scheduled or running.
+         * Submitting exclusive command while one is already running raises an exception.
+         *
+         * @since 2023.4
+         */
+        public Builder setExclusive(Boolean value) {
+            this.exclusive = value;
+            return this;
         }
 
         public BulkCommand build() {

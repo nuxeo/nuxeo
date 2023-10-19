@@ -287,7 +287,8 @@ public class BulkScrollerComputation extends AbstractComputation {
             }
         }
         actionStream = actionService.getInputStream(command.getAction());
-        sequentialProcessing = actionService.isSequentialProcessing(command.getAction());
+        sequentialProcessing = command.getSequentialProcessing() != null ? command.getSequentialProcessing()
+                : actionService.isSequentialProcessing(command.getAction());
     }
 
     protected boolean isAbortedCommand(String commandId) {

@@ -180,7 +180,7 @@ public class BulkServiceImpl implements BulkService, Synchronization {
             }
         }
         checkIfScrollerExists(command);
-        if (adminService.isExclusive(command.getAction())) {
+        if (command.getExclusive() != null ? command.getExclusive() : adminService.isExclusive(command.getAction())) {
             setExclusive(command);
         }
         // store the bulk command and status in the key/value store
@@ -193,7 +193,8 @@ public class BulkServiceImpl implements BulkService, Synchronization {
         byte[] commandAsBytes = setCommand(command);
 
         String shardKey;
-        if (adminService.isSequentialScroll(command.getAction())) {
+        if (command.getSequentialScroll() != null ? command.getSequentialScroll()
+                : adminService.isSequentialScroll(command.getAction())) {
             // all bulk commands for this action go to the same scroller thread in order to be scrolled sequentially
             shardKey = command.getAction();
         } else {
