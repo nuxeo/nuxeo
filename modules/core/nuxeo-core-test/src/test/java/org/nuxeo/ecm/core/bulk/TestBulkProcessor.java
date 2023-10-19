@@ -293,6 +293,21 @@ public class TestBulkProcessor {
     }
 
     @Test
+    public void testExclusiveCommand() throws InterruptedException {
+        String nxql = "SELECT * FROM Document";
+        String commandId = service.submit(
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").setExclusive(true)
+                                                                                      .setSequentialScroll(true)
+                                                                                      .setSequentialProcessing(true)
+                                                                                      .build());
+        assertThrows("Should not be able to submit another exclusive bulk command.", IllegalStateException.class,
+                () -> service.submit(
+                        new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").setExclusive(true)
+                                                                                              .build()));
+        service.await(commandId, Duration.ofMinutes(1));
+    }
+
+    @Test
     public void testScroller() throws InterruptedException {
         // use the default scroller, everything ok
         String nxql = "SELECT * FROM Document";
