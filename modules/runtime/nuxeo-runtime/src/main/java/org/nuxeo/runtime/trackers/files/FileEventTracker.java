@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -51,12 +52,18 @@ public class FileEventTracker extends DefaultComponent {
 
     protected static SafeFileDeleteStrategy deleteStrategy = new SafeFileDeleteStrategy();
 
+    protected static ForceSafeFileDeleteStrategy forceDeleteStrategy = new ForceSafeFileDeleteStrategy();
+
     static class SafeFileDeleteStrategy extends FileDeleteStrategy {
 
         protected CopyOnWriteArrayList<String> protectedPaths = new CopyOnWriteArrayList<>();
 
         protected SafeFileDeleteStrategy() {
             super("DoNotTouchNuxeoBinaries");
+        }
+
+        protected SafeFileDeleteStrategy(String name) {
+            super(name);
         }
 
         protected void registerProtectedPath(String path) {
@@ -77,11 +84,32 @@ public class FileEventTracker extends DefaultComponent {
 
         @Override
         protected boolean doDelete(File fileToDelete) throws IOException {
-            if (!isFileProtected(fileToDelete)) {
-                return super.doDelete(fileToDelete);
-            } else {
+            if (isFileProtected(fileToDelete)) {
                 return false;
             }
+            return super.doDelete(fileToDelete);
+        }
+
+    }
+
+    /**
+     * Similar to {@link FileDeleteStrategy#FORCE}.
+     *
+     * @since 2023.5
+     */
+    static class ForceSafeFileDeleteStrategy extends SafeFileDeleteStrategy {
+
+        protected ForceSafeFileDeleteStrategy() {
+            super("DoNotTouchNuxeoBinaries - ForceDirectoryDeletion");
+        }
+
+        @Override
+        protected boolean doDelete(File fileToDelete) throws IOException {
+            if (isFileProtected(fileToDelete)) {
+                return false;
+            }
+            FileUtils.forceDelete(fileToDelete);
+            return true;
         }
 
     }
@@ -93,14 +121,21 @@ public class FileEventTracker extends DefaultComponent {
      */
     public static void registerProtectedPath(String path) {
         deleteStrategy.registerProtectedPath(path);
+        forceDeleteStrategy.registerProtectedPath(path);
     }
 
     protected static class GCDelegate implements FileEventHandler {
+
         protected FileCleaningTracker delegate = new FileCleaningTracker();
 
         @Override
         public void onFile(File file, Object marker) {
             delegate.track(file, marker, deleteStrategy);
+        }
+
+        @Override
+        public void onDirectory(File file, Object marker) {
+            delegate.track(file, marker, forceDeleteStrategy);
         }
     }
 
@@ -152,8 +187,24 @@ public class FileEventTracker extends DefaultComponent {
 
     });
 
-    protected final FileEventListener filesListener = new FileEventListener(
-            (file, marker) -> onContext().onFile(file, marker));
+    /**
+     * @since 2023.5
+     */
+    protected class BaseFileEventHandler implements FileEventHandler {
+
+        @Override
+        public void onFile(File file, Object marker) {
+            onContext().onFile(file, marker);
+        }
+
+        @Override
+        public void onDirectory(File file, Object marker) {
+            onContext().onDirectory(file, marker);
+        }
+
+    }
+
+    protected final FileEventListener filesListener = new FileEventListener(new BaseFileEventHandler());
 
     @Override
     public void activate(ComponentContext context) {
@@ -222,6 +273,24 @@ public class FileEventTracker extends DefaultComponent {
         } finally {
             threads.remove();
         }
+    }
+
+    /**
+     * For test purpose.
+     *
+     * @since 2023.5
+     */
+    public static SafeFileDeleteStrategy getDeleteStrategy() {
+        return deleteStrategy;
+    }
+
+    /**
+     * For test purpose.
+     *
+     * @since 2023.5
+     */
+    public static ForceSafeFileDeleteStrategy getForceDeleteStrategy() {
+        return forceDeleteStrategy;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2023 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,29 +12,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ *  Contributors:
+ *     Nuxeo
+ *     Antoine Taillefer
  */
 package org.nuxeo.runtime.trackers.files;
 
 import java.io.File;
 
-import org.nuxeo.runtime.services.event.EventService;
-
 /**
- * {@link FileEvent} handler that should be implemented by consumers. Could be enlisted in the @{link
- * {@link EventService} through the use of a {@link FileEventListener}.
- *
- * @author Stephane Lacoin at Nuxeo (aka matic)
- * @since 6.0
+ * @since 2023.5
  */
-public interface FileEventHandler {
+public class DirectoryEvent extends FileEvent {
 
-    void onFile(File file, Object marker);
+    protected DirectoryEvent(Object source, File aFile, Object aMarker) {
+        super(source, aFile, aMarker);
+    }
 
-    /**
-     * @since 2023.5
-     */
-    default void onDirectory(File file, Object marker) {
-        onFile(file, marker);
+    @Override
+    public void handle(FileEventHandler handler) {
+        handler.onDirectory(getFile(), getMarker());
     }
 
 }

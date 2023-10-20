@@ -84,4 +84,12 @@ public class FileEvent extends Event {
     public static FileEvent onFile(Object source, File aFile, Object aMarker) {
         return new FileEvent(source, aFile, aMarker);
     }
+
+    /**
+     * @since 2023.5
+     */
+    public static DirectoryEvent onDirectory(Object source, File aFile, Object aMarker) {
+        return new DirectoryEvent(source, aFile, aMarker);
+    }
+
 }
