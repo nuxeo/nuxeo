@@ -199,8 +199,8 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
         Number[] values = { snapshot.getMax(), snapshot.getMean(), snapshot.getMin(), snapshot.getStdDev(),
                 snapshot.getMedian(), snapshot.get75thPercentile(), snapshot.get95thPercentile(),
                 snapshot.get98thPercentile(), snapshot.get99thPercentile(), snapshot.get999thPercentile() };
-
-        for (int i = 0; i < STATS_EXPANSIONS.length; i++) {
+        // same as STATS_EXPANSIONS without the last 'sum' item
+        for (int i = 0; i < STATS_EXPANSIONS.length - 1; i++) {
             if (expansions.contains(STATS_EXPANSIONS[i])) {
                 request.addGauge(new DatadogGauge(appendExpansionSuffix(name, STATS_EXPANSIONS[i]), toNumber(values[i]),
                         timestamp, host, tags));
