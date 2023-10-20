@@ -537,12 +537,33 @@ public final class Framework {
     }
 
     /**
-     * @see FileEventTracker
+     * Tracks the specified {@code file}, using the provided {@code marker}, deleting the file when the marker instance
+     * is garbage collected.
+     * <p>
+     * If the {@code file} is a directory, it is not deleted if not empty. To make sure a directory is deleted if not
+     * empty, use {@link #trackDirectory(File, Object)}.
+     *
      * @param file the file to delete
      * @param marker the marker Object
+     * @see FileEventTracker
      */
     public static void trackFile(File file, Object marker) {
         FileEvent.onFile(Framework.class, file, marker).send();
+    }
+
+    /**
+     * Tracks the specified {@code file}, using the provided {@code marker}, deleting the file when the marker instance
+     * is garbage collected.
+     * <p>
+     * Unlike {@link #trackFile(File, Object)}, the {@code file} is deleted even if it is a non empty directory.
+     *
+     * @param file the file to delete
+     * @param marker the marker Object
+     * @see #trackFile(File, Object)
+     * @since 2023.5
+     */
+    public static void trackDirectory(File file, Object marker) {
+        FileEvent.onDirectory(Framework.class, file, marker).send();
     }
 
     /**
