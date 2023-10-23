@@ -27,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.core.action.GarbageCollectOrphanVersionsAction;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -57,8 +58,15 @@ public class VersionsObject extends AbstractResource<ResourceTypeImpl> {
     @Path("orphaned")
     public BulkStatus garbageCollectVersions() {
         BulkService bulkService = Framework.getService(BulkService.class);
-        String commandId = bulkService.submit(new BulkCommand.Builder(GarbageCollectOrphanVersionsAction.ACTION_NAME,
-                ALL_VERSIONS_QUERY, SYSTEM_USERNAME).repository(ctx.getCoreSession().getRepositoryName()).build());
-        return bulkService.getStatus(commandId);
+        try {
+            String commandId = bulkService.submit(
+                    new BulkCommand.Builder(GarbageCollectOrphanVersionsAction.ACTION_NAME, ALL_VERSIONS_QUERY,
+                            SYSTEM_USERNAME).repository(ctx.getCoreSession().getRepositoryName())
+                                            .setExclusive(true)
+                                            .build());
+            return bulkService.getStatus(commandId);
+        } catch (IllegalStateException e) {
+            throw new ConcurrentUpdateException(e.getMessage(), e);
+        }
     }
 }

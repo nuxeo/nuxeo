@@ -24,6 +24,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.restapi.server.jaxrs.management.ElasticsearchObject.GET_ALL_DOCUMENTS_QUERY;
 
@@ -96,6 +97,24 @@ public class TestElasticsearchObject extends ManagementBaseTest {
         try (CloseableClientResponse response = httpClientRule.post("/management/elasticsearch/reindex", null)) {
             verifyIndexingResponse(response, 3 + initialDocCount);
         }
+    }
+
+    @Test
+    public void fullReindexShouldBeExclusive() {
+        txFeature.nextTransaction();
+        int status1, status2;
+        try(CloseableClientResponse response = httpClientRule.post("/management/elasticsearch/reindex",null)) {
+            status1 = response.getStatus();
+        }
+        try(CloseableClientResponse response = httpClientRule.post("/management/elasticsearch/reindex",null)) {
+            status2 = response.getStatus();
+        }
+        // One is accepted with a 200 the other is rejected with a 409
+        assertNotEquals(status1, status2);
+        assertTrue("status1: " + status1, status1 == 200 || status1 == 409);
+        assertTrue("status2: " + status2, status2 == 200 || status2 == 409);
+        // wait for full reindexing
+        txFeature.nextTransaction();
     }
 
     @Test

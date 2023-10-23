@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -57,11 +58,17 @@ public class ThumbnailsObject extends AbstractResource<ResourceTypeImpl> {
     @Path("recompute")
     public BulkStatus doPostThumbnails(@FormParam("query") String query) {
         final String finalQuery = StringUtils.defaultIfBlank(query, THUMBNAILS_DEFAULT_QUERY);
+        boolean entireRepository = StringUtils.isBlank(query);
         BulkService bulkService = Framework.getService(BulkService.class);
-        String commandId = bulkService.submit(
-                new BulkCommand.Builder(RecomputeThumbnailsAction.ACTION_NAME, finalQuery, SYSTEM_USERNAME).repository(
-                        ctx.getCoreSession().getRepositoryName()).build());
-        return bulkService.getStatus(commandId);
+        try {
+            String commandId = bulkService.submit(new BulkCommand.Builder(RecomputeThumbnailsAction.ACTION_NAME,
+                    finalQuery, SYSTEM_USERNAME).repository(ctx.getCoreSession().getRepositoryName())
+                                                .setExclusive(entireRepository)
+                                                .build());
+            return bulkService.getStatus(commandId);
+        } catch (IllegalStateException e) {
+            throw new ConcurrentUpdateException(e.getMessage(), e);
+        }
     }
 
 }

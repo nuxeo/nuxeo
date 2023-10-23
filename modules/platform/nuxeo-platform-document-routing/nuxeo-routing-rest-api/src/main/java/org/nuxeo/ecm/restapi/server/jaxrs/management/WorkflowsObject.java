@@ -28,6 +28,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -52,9 +53,13 @@ public class WorkflowsObject extends AbstractResource<ResourceTypeImpl> {
     @Path("orphaned")
     public BulkStatus garbageCollectRoutes() {
         BulkService bulkService = Framework.getService(BulkService.class);
-        String commandId = bulkService.submit(
-                new BulkCommand.Builder(GC_ROUTES_ACTION_NAME, ALL_WORKFLOWS_QUERY, SYSTEM_USERNAME).repository(
-                        ctx.getCoreSession().getRepositoryName()).build());
-        return bulkService.getStatus(commandId);
+        try {
+            String commandId = bulkService.submit(
+                    new BulkCommand.Builder(GC_ROUTES_ACTION_NAME, ALL_WORKFLOWS_QUERY, SYSTEM_USERNAME).repository(
+                            ctx.getCoreSession().getRepositoryName()).setExclusive(true).build());
+            return bulkService.getStatus(commandId);
+        } catch (IllegalStateException e) {
+            throw new ConcurrentUpdateException(e.getMessage(), e);
+        }
     }
 }

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -67,8 +68,8 @@ public class ElasticsearchBulkIndexOperation {
     @OperationMethod
     public Blob run() throws IOException {
         checkAccess();
-        esa.initRepositoryIndexWithAliases(session.getRepositoryName());
         String commandId = submitBulkCommand("SELECT ecm:uuid FROM Document", true);
+        esa.initRepositoryIndexWithAliases(session.getRepositoryName());
         log.warn("Submitted index command: {} to index the entire {} repository.", commandId,
                 session.getRepositoryName());
         return Blobs.createJSONBlobFromValue(Collections.singletonMap("commandId", commandId));
@@ -77,10 +78,15 @@ public class ElasticsearchBulkIndexOperation {
     protected String submitBulkCommand(String nxql, boolean syncAlias) {
         String username = session.getPrincipal().getName();
         String repository = session.getRepositoryName();
-        return bulkService.submit( //
-                new BulkCommand.Builder(ACTION_NAME, nxql, username).repository(repository)
-                                                                    .param(INDEX_UPDATE_ALIAS_PARAM, syncAlias)
-                                                                    .build());
+        try {
+            return bulkService.submit( //
+                    new BulkCommand.Builder(ACTION_NAME, nxql, username).repository(repository)
+                                                                        .param(INDEX_UPDATE_ALIAS_PARAM, syncAlias)
+                                                                        .setExclusive(syncAlias)
+                                                                        .build());
+        } catch (IllegalStateException e) {
+            throw new ConcurrentUpdateException(e.getMessage(), e);
+        }
     }
 
     protected void checkAccess() {
