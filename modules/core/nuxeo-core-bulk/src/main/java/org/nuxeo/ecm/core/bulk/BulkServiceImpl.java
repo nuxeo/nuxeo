@@ -256,14 +256,15 @@ public class BulkServiceImpl implements BulkService, Synchronization {
             BulkStatus status = getStatus(existingCommand);
             if (!UNKNOWN.equals(status.getState()) && !status.isCompleted()) {
                 throw new IllegalStateException(
-                        String.format("Bulk Action: %s is exclusive, command: %s is already running", command.getId(),
-                                existingCommand));
+                        String.format("Bulk Action: %s is exclusive, command: %s is already running",
+                                command.getAction(), existingCommand));
             }
         }
         if (!kv.compareAndSet(key, existingCommand, command.getId(), EXCLUSIVE_TTL_SECONDS)) {
             existingCommand = kv.getString(key);
-            throw new IllegalStateException(String.format(
-                    "Bulk Action: %s is exclusive, command: %s is already running", command.getId(), existingCommand));
+            throw new IllegalStateException(
+                    String.format("Bulk Action: %s is exclusive, command: %s is already running", command.getAction(),
+                            existingCommand));
         }
     }
 
