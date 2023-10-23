@@ -116,15 +116,20 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
         String nxql = StringUtils.defaultIfBlank(query, GET_ALL_DOCUMENTS_QUERY);
         String repository = ctx.getCoreSession().getRepositoryName();
         BulkService bulkService = Framework.getService(BulkService.class);
-        String commandId = bulkService.submit(
-                new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME).repository(repository)
-                                                                           .param(INDEX_UPDATE_ALIAS_PARAM, true)
-                                                                           .build());
-        if (fullReindex) {
-            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-            esa.initRepositoryIndexWithAliases(repository);
-            log.warn("Submitted index command: {} to index the entire {} repository.", commandId, repository);
+        try {
+            String commandId = bulkService.submit(
+                    new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME).repository(repository)
+                                                                               .setExclusive(fullReindex)
+                                                                               .param(INDEX_UPDATE_ALIAS_PARAM, true)
+                                                                               .build());
+            if (fullReindex) {
+                ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+                esa.initRepositoryIndexWithAliases(repository);
+                log.warn("Submitted index command: {} to index the entire {} repository.", commandId, repository);
+            }
+            return bulkService.getStatus(commandId);
+        } catch (IllegalStateException e) {
+            throw new ConcurrentUpdateException(e.getMessage(), e);
         }
-        return bulkService.getStatus(commandId);
     }
 }

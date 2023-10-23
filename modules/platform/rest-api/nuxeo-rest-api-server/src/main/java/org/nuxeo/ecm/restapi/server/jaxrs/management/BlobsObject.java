@@ -29,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.blob.scroll.RepositoryBlobScroll;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -59,10 +60,14 @@ public class BlobsObject extends AbstractResource<ResourceTypeImpl> {
                 SYSTEM_USERNAME).repository(repository)
                                 .useGenericScroller()
                                 .param(DRY_RUN_PARAM, dryRun)
+                                .setExclusive(true)
                                 .scroller(RepositoryBlobScroll.SCROLL_NAME)
                                 .build();
-        String commandId = bulkService.submit(command);
-        return bulkService.getStatus(commandId);
-
+        try {
+            String commandId = bulkService.submit(command);
+            return bulkService.getStatus(commandId);
+        } catch (IllegalStateException e) {
+            throw new ConcurrentUpdateException(e.getMessage(), e);
+        }
     }
 }

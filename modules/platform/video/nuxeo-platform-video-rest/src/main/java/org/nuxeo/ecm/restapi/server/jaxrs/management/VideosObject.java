@@ -34,6 +34,7 @@ import javax.ws.rs.Produces;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -65,16 +66,22 @@ public class VideosObject extends AbstractResource<ResourceTypeImpl> {
     public BulkStatus doPostVideos(@FormParam("query") String query,
             @FormParam("conversionNames") List<String> conversionNames,
             @FormParam("recomputeAllVideoInfo") Boolean recomputeAllVideoInfo) {
+        boolean entireRepository = StringUtils.isBlank(query);
         String finalQuery = StringUtils.defaultIfBlank(query, VIDEOS_DEFAULT_QUERY);
         Boolean finalRecomputeAllVideoInfo = BooleanUtils.toBooleanDefaultIfNull(recomputeAllVideoInfo, false);
         BulkService bulkService = Framework.getService(BulkService.class);
-        String commandId = bulkService.submit(new BulkCommand.Builder(RecomputeVideoConversionsAction.ACTION_NAME,
-                finalQuery, SYSTEM_USERNAME).repository(ctx.getCoreSession().getRepositoryName())
-                                            .param(PARAM_XPATH, "file:content")
-                                            .param(RECOMPUTE_ALL_VIDEO_INFO, finalRecomputeAllVideoInfo)
-                                            .param(PARAM_CONVERSION_NAMES, (Serializable) conversionNames)
-                                            .build());
-        return bulkService.getStatus(commandId);
+        try {
+            String commandId = bulkService.submit(new BulkCommand.Builder(RecomputeVideoConversionsAction.ACTION_NAME,
+                    finalQuery, SYSTEM_USERNAME).repository(ctx.getCoreSession().getRepositoryName())
+                                                .setExclusive(entireRepository)
+                                                .param(PARAM_XPATH, "file:content")
+                                                .param(RECOMPUTE_ALL_VIDEO_INFO, finalRecomputeAllVideoInfo)
+                                                .param(PARAM_CONVERSION_NAMES, (Serializable) conversionNames)
+                                                .build());
+            return bulkService.getStatus(commandId);
+        } catch (IllegalStateException e) {
+            throw new ConcurrentUpdateException(e.getMessage(), e);
+        }
     }
 
 }
