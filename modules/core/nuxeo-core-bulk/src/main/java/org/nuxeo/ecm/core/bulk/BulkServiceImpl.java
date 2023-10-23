@@ -253,8 +253,8 @@ public class BulkServiceImpl implements BulkService, Synchronization {
         String key = EXCLUSIVE_PREFIX + command.getAction() + ":" + command.getRepository();
         String existingCommand = kv.getString(key);
         if (existingCommand != null) {
-            BulkStatus status = getStatus(existingCommand);
-            if (!UNKNOWN.equals(status.getState()) && !status.isCompleted()) {
+            BulkStatus.State state = getStatus(existingCommand).getState();
+            if (state != UNKNOWN && state != COMPLETED && state != ABORTED) {
                 throw new IllegalStateException(
                         String.format("Bulk Action: %s is exclusive, command: %s is already running",
                                 command.getAction(), existingCommand));
