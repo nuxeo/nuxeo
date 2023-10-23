@@ -31,6 +31,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -49,6 +52,8 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = ManagementObject.MANAGEMENT_OBJECT_PREFIX + "elasticsearch")
 @Produces(APPLICATION_JSON)
 public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
+
+    private static final Logger log = LogManager.getLogger(ElasticsearchObject.class);
 
     public static final String GET_ALL_DOCUMENTS_QUERY = "SELECT * from Document";
 
@@ -107,14 +112,19 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
      * @return the {@link BulkStatus} of the ES indexing
      */
     protected BulkStatus performIndexing(String query) {
+        boolean fullReindex = StringUtils.isBlank(query);
         String nxql = StringUtils.defaultIfBlank(query, GET_ALL_DOCUMENTS_QUERY);
+        String repository = ctx.getCoreSession().getRepositoryName();
         BulkService bulkService = Framework.getService(BulkService.class);
         String commandId = bulkService.submit(
-                new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME)
-                                                                           .repository(ctx.getCoreSession()
-                                                                                          .getRepositoryName())
+                new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME).repository(repository)
                                                                            .param(INDEX_UPDATE_ALIAS_PARAM, true)
                                                                            .build());
+        if (fullReindex) {
+            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+            esa.initRepositoryIndexWithAliases(repository);
+            log.warn("Submitted index command: {} to index the entire {} repository.", commandId, repository);
+        }
         return bulkService.getStatus(commandId);
     }
 }
