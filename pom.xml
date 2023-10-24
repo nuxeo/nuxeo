@@ -4549,7 +4549,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
           <configuration>
             <ignoredUnusedDeclaredDependencies>
               <artifact>org.apache.logging.log4j:log4j-api</artifact>
