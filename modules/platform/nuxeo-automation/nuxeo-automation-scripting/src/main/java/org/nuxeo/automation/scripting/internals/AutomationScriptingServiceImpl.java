@@ -192,7 +192,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     protected ScriptEngine getScriptEngine(boolean cache, boolean filter) {
         NashornScriptEngineFactory nashorn = new NashornScriptEngineFactory();
         String[] args = cache
-                ? new String[] { "-strict", "--optimistic-types=true", "--persistent-code-cache",
+                ? new String[] { "-strict", "--optimistic-types=false", "--persistent-code-cache",
                         "--class-cache-size=50" }
                 : new String[] { "-strict" };
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
