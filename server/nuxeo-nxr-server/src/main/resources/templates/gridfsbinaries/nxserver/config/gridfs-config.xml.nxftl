@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="default">
-      <class>org.nuxeo.ecm.core.storage.mongodb.GridFSBinaryManager</class>
+      <class>${nuxeo.core.binarymanager}</class>
       <property name="bucket">${nuxeo.mongodb.gridfs.bucket}</property>
     </blobprovider>
   </extension>
