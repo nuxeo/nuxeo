@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.blob.AbstractBlobStore.BYTE_RANGE_SEP;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -140,7 +141,18 @@ public abstract class TestAbstractBlobStore {
         assertBlob(bs, key, value);
     }
 
+    /**
+     * Remove byte range part of the key if any.
+     */
+    protected String getBlobKey(String key) {
+        int byteRangeSep = key.indexOf(BYTE_RANGE_SEP);
+        return key.indexOf(BYTE_RANGE_SEP) > 0 ? key.substring(0, byteRangeSep) : key;
+    }
+
     protected void assertBlob(BlobStore bs, String key, String value) throws IOException {
+        if (!bp.isTransactional()) {
+            assertTrue(bs.exists(getBlobKey(key)));
+        }
         // check readBlobTo
         assertTrue(bs.readBlob(key, tmpFile));
         assertEquals(value, new String(Files.readAllBytes(tmpFile), UTF_8));
@@ -178,6 +190,9 @@ public abstract class TestAbstractBlobStore {
     }
 
     protected void assertNoBlob(BlobStore bs, String key) throws IOException {
+        if (!bp.isTransactional()) {
+            assertFalse(bs.exists(getBlobKey(key)));
+        }
         // check readBlobTo
         assertFalse(bs.readBlob(key, tmpFile));
         OptionalOrUnknown<Path> fileOpt = bs.getFile(key);
@@ -363,6 +378,7 @@ public abstract class TestAbstractBlobStore {
         assertEquals(FOO_MD5, key1);
         String key2 = bs.copyOrMoveBlob(ID2, sourceStore, key1, atomicMove);
         assertEquals(ID2, key2);
+        assertBlob(bs, key2, FOO);
         if (!useDeDuplication()) {
             assertBlob(ID2, FOO);
         }
