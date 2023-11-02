@@ -171,6 +171,7 @@
     <opencensus.version>0.31.1</opencensus.version>
     <okhttp.version>4.10.0</okhttp.version>
     <protobuf.java.version>3.21.9</protobuf.java.version>
+    <quartz.version>2.4.0-rc2</quartz.version>
   </properties>
 
   <dependencyManagement>
@@ -2998,7 +2999,7 @@
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>2.3.2</version>
+        <version>${quartz.version}</version>
       </dependency>
       <dependency>
         <groupId>com.novemberain</groupId>
