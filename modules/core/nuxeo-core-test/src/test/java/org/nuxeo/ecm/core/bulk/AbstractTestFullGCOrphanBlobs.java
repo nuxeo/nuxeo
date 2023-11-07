@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction.DRY_RUN_PARAM;
@@ -30,13 +29,11 @@ import static org.nuxeo.ecm.core.blob.scroll.RepositoryBlobScroll.SCROLL_NAME;
 import static org.nuxeo.ecm.core.blob.stream.StreamOrphanBlobGC.ENABLED_PROPERTY_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.action.DeletionAction;
 import org.nuxeo.ecm.core.action.GarbageCollectOrphanBlobsAction;
@@ -59,13 +56,13 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
- * @since 2023
+ * @since 2023.5
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, CoreBulkFeature.class })
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 @WithFrameworkProperty(name = ENABLED_PROPERTY_NAME, value = "false")
-public class TestGarbageCollectOrphanBlobs {
+public abstract class AbstractTestFullGCOrphanBlobs {
 
     protected static final String CONTENT = "hello world";
 
@@ -93,7 +90,8 @@ public class TestGarbageCollectOrphanBlobs {
     protected long sizeOfBinaries;
 
     @Before
-    public void createDocuments() {
+    public void setup() {
+        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
         sizeOfBinaries = 0L;
         for (int i = 0; i < NB_FILE; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
@@ -106,7 +104,6 @@ public class TestGarbageCollectOrphanBlobs {
     }
 
     protected void testGCBlobsAction(boolean dryRun) {
-        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
         assertEquals(NB_FILE, session.query(NXQL).size());
 
         // Perform 1st GC -> no blob deleted
@@ -150,54 +147,6 @@ public class TestGarbageCollectOrphanBlobs {
 
         // Check at blob store level
         assertEquals(dryRun ? NB_FILE : skipped, getBlobCount());
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-delete.xml")
-    public void testGCBlobsAction() {
-        testGCBlobsAction(false);
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-delete.xml")
-    public void testDryRunGCBlobsAction() {
-        testGCBlobsAction(true);
-    }
-
-    @Test
-    public void testUnsupportedDeleteOrphanedBlobOnVCS() {
-        assumeTrue("This test is to make sure Full GC cannot be done on repos without ecm:blobKeys capabilities.",
-                coreFeature.getStorageConfiguration().isVCS());
-        assertdoGCNotImplemented();
-    }
-
-    @Test
-    public void testUnsupportedDeleteBlobOnUnsupportedProvider() {
-        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
-        assertdoGCNotImplemented();
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-shared-storage-delete.xml")
-    public void testUnsupportedDeleteBlobOnSharedStorage() {
-        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
-        assertdoGCNotImplemented();
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-cross-repo-provider-delete.xml")
-    public void testBlobDeleteCrossRepositoryProvider() throws IOException {
-        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
-        assertdoGCNotImplemented();
-    }
-
-    protected void assertdoGCNotImplemented() {
-        assertThrows(NuxeoException.class, () -> {
-            BulkCommand command = new BulkCommand.Builder(GarbageCollectOrphanBlobsAction.ACTION_NAME,
-                    session.getRepositoryName(), session.getPrincipal().getName()).repository(
-                            session.getRepositoryName()).useGenericScroller().scroller(SCROLL_NAME).build();
-            service.submit(command);
-        });
     }
 
     protected int getBlobCount() {
