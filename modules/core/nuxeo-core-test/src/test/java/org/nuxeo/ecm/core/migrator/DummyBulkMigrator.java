@@ -58,6 +58,14 @@ public class DummyBulkMigrator extends AbstractBulkMigrator {
             var doc = session.getDocument(new IdRef(id));
             doc.setPropertyValue("dc:title", "Content migrated");
             session.saveDocument(doc);
+            if ("pause".equals(doc.getPropertyValue("dc:description"))) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                }
+            }
         }
         session.save();
     }

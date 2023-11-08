@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.migrator;
 
-import static java.util.function.Predicate.isEqual;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
@@ -27,15 +27,19 @@ import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.MigrationAction.A
 import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.MigrationAction.ACTION_NAME;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
+import static org.nuxeo.runtime.migration.MigrationServiceImpl.KEYVALUE_STORE_NAME;
 import static org.nuxeo.runtime.pubsub.ClusterActionServiceImpl.STREAM_START_PROCESSOR_ACTION;
 import static org.nuxeo.runtime.pubsub.ClusterActionServiceImpl.STREAM_STOP_PROCESSOR_ACTION;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -44,10 +48,11 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.migration.Migration;
 import org.nuxeo.runtime.migration.MigrationDescriptor;
 import org.nuxeo.runtime.migration.MigrationService;
@@ -112,51 +117,60 @@ public abstract class AbstractBulkMigrator implements Migrator {
 
     @Override
     public void run(String step, MigrationContext migrationContext) {
+        String id = descriptor.getId();
         if (!descriptor.getSteps().containsKey(step)) {
-            throw new NuxeoException("Unknown migration step: " + step + " for migration: " + descriptor.getId());
+            throw new NuxeoException("Unknown migration step: " + step + " for migration: " + id);
         }
         // start the migration processor
         Framework.getService(ClusterActionService.class)
                  .executeAction(STREAM_START_PROCESSOR_ACTION, MIGRATION_PROCESSOR_NAME);
-
         var bulkService = Framework.getService(BulkService.class);
-        migrationContext.reportProgress("Initializing", 0, -1);
-        var bulkIds = Framework.getService(RepositoryService.class)
+        List<String> bulkIds = getRunningBulkCommands(id, step);
+        long processed = 0;
+        long total = -1;
+        if (bulkIds.isEmpty()) {
+            migrationContext.reportProgress("Initializing", processed, total);
+            bulkIds = Framework.getService(RepositoryService.class)
                                .getRepositoryNames()
                                .stream()
                                .map(repoName -> createBulkCommand(repoName, descriptor.getId(), step))
                                .map(bulkService::submit)
                                .peek(bulkId -> log.trace("Bulk command: {} was submitted for migration: {}", bulkId,
-                                       descriptor.getId()))
+                                       id))
                                .toList();
+            saveRunningBulkCommands(id, step, bulkIds);
+        } else {
+            log.warn("Migration: {}, step: {} resuming bulk commands: {}", id, step, bulkIds);
+            migrationContext.reportProgress("Resuming", processed, total);
+        }
         boolean finish;
         do {
-            if (bulkIds.stream().map(bulkService::getStatus).map(BulkStatus::getState).anyMatch(isEqual(ABORTED))) {
-                migrationContext.requestShutdown();
-            }
             if (migrationContext.isShutdownRequested()) {
-                log.warn("Migration: {} is shutting down", descriptor::getId);
-                // abort all bulk actions
-                bulkIds.forEach(bulkService::abort);
-                break;
+                log.warn("Migration: {}, step: {} suspending", id, step);
+                migrationContext.reportProgress("Suspending", processed, total);
+                return;
             }
             try {
                 log.trace("Sleep a bit before checking status for migration: {}", descriptor::getId);
                 Thread.sleep(Duration.ofSeconds(1).toMillis());
             } catch (InterruptedException e) {
-                // don't stop the migration processor, Nuxeo is shutting down
                 Thread.currentThread().interrupt();
                 throw new NuxeoException(e);
             }
             // check if all bulk actions have finished and compute progress
             finish = true;
-            long processed = 0;
-            long total = 0;
+            processed = total = 0;
             for (var bulkId : bulkIds) {
                 var bulkStatus = bulkService.getStatus(bulkId);
                 finish = finish && bulkStatus.getState() == COMPLETED;
                 processed += bulkStatus.getProcessed();
                 total += bulkStatus.getTotal();
+                if (bulkStatus.getState() == ABORTED) {
+                    log.warn("Migration: {}, step: {} aborted on bulk command: {}", id, step, bulkStatus);
+                    migrationContext.reportError("Aborted bulk command: " + bulkId, SC_INTERNAL_SERVER_ERROR);
+                    clearRunningBulkCommands(id, step);
+                    throw new NuxeoException("Migration bulk command aborted: " + bulkId);
+                }
                 if (bulkStatus.hasError()) {
                     // An error occurred and must be reported
                     // migration will be stopped and remain in its initial state
@@ -169,7 +183,7 @@ public abstract class AbstractBulkMigrator implements Migrator {
             }
             migrationContext.reportProgress(finish ? "Done" : "Migrating content", processed, total);
         } while (!finish);
-        // stop the migration processor
+        clearRunningBulkCommands(id, step);
         var noMigrationRunning = Framework.getService(MigrationService.class)
                                           .getMigrations()
                                           .stream()
@@ -177,9 +191,34 @@ public abstract class AbstractBulkMigrator implements Migrator {
                                           .map(Migration::getStatus)
                                           .noneMatch(MigrationService.MigrationStatus::isRunning);
         if (noMigrationRunning) {
+            // stop the migration processor
             Framework.getService(ClusterActionService.class)
                      .executeAction(STREAM_STOP_PROCESSOR_ACTION, MIGRATION_PROCESSOR_NAME);
         }
+    }
+
+    protected void saveRunningBulkCommands(String migrationId, String step, List<String> bulkIds) {
+        KeyValueStore kv = getKeyValueStore();
+        String bulkCommandsValue = String.join(",", bulkIds);
+        kv.put(getBulkCommandsKey(migrationId, step), bulkCommandsValue);
+    }
+
+    protected List<String> getRunningBulkCommands(String migrationId, String step) {
+        KeyValueStore kv = getKeyValueStore();
+        String bulkIdsValue = kv.getString(getBulkCommandsKey(migrationId, step));
+        if (StringUtils.isBlank(bulkIdsValue)) {
+            return Collections.emptyList();
+        }
+        return List.of(bulkIdsValue.split(","));
+    }
+
+    protected void clearRunningBulkCommands(String migrationId, String step) {
+        KeyValueStore kv = getKeyValueStore();
+        kv.put(getBulkCommandsKey(migrationId, step), (String) null);
+    }
+
+    protected String getBulkCommandsKey(String migrationId, String step) {
+        return migrationId + ":" + step + ":commands";
     }
 
     protected BulkCommand createBulkCommand(String repositoryName, String migrationId, String migrationStep) {
@@ -256,5 +295,11 @@ public abstract class AbstractBulkMigrator implements Migrator {
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             migrator.compute(session, ids, properties);
         }
+    }
+
+    protected static KeyValueStore getKeyValueStore() {
+        KeyValueService service = Framework.getService(KeyValueService.class);
+        Objects.requireNonNull(service, "Missing KeyValueService");
+        return service.getKeyValueStore(KEYVALUE_STORE_NAME);
     }
 }

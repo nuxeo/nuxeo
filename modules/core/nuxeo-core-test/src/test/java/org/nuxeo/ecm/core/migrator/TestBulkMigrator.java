@@ -22,12 +22,14 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.ONE_MINUTE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.MIGRATION_PROCESSOR_NAME;
 import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.PARAM_MIGRATION_ID;
 import static org.nuxeo.ecm.core.migrator.AbstractBulkMigrator.PARAM_MIGRATION_STEP;
 
+import java.time.Duration;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -43,6 +45,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.migration.MigrationService;
+import org.nuxeo.runtime.migration.MigrationServiceImpl;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -78,6 +81,9 @@ public class TestBulkMigrator {
         for (var i = 0; i < 20; i++) {
             var doc = session.createDocumentModel("/", String.format("File%03d", i), "File");
             doc.setPropertyValue("dc:title", "Content to migrate");
+            if (i == 15) {
+                doc.setPropertyValue("dc:description", "pause");
+            }
             session.createDocument(doc);
         }
         session.save();
@@ -96,6 +102,37 @@ public class TestBulkMigrator {
         // await its end
         await().atMost(ONE_MINUTE).until(() -> !migrationService.getStatus(DummyBulkMigrator.MIGRATION_ID).isRunning());
 
+        // assert after state (ie: there are no documents with dc:title = 'Content to migrate')
+        var afterState = migrationService.probeAndSetState(DummyBulkMigrator.MIGRATION_ID);
+        assertEquals(DummyBulkMigrator.MIGRATION_AFTER_STATE, afterState);
+    }
+
+    @Test
+    public void testBulkMigrationWithRestart() throws InterruptedException {
+        // assert before state (ie: there are documents with dc:title = 'Content to migrate')
+        var beforeState = migrationService.probeAndSetState(DummyBulkMigrator.MIGRATION_ID);
+        assertEquals(DummyBulkMigrator.MIGRATION_BEFORE_STATE, beforeState);
+
+        // Run the migration
+        migrationService.runStep(DummyBulkMigrator.MIGRATION_ID, "before-to-after");
+        Thread.sleep(500);
+        // It's not possible to run the same step concurrently
+        assertThrows(IllegalArgumentException.class,
+                () -> migrationService.runStep(DummyBulkMigrator.MIGRATION_ID, "before-to-after"));
+
+        // Stop the processor while migration is in progress
+        streamService.getStreamManager().getProcessor(MIGRATION_PROCESSOR_NAME).stop(Duration.ZERO);
+        // migration stays in running state
+        assertTrue(migrationService.getStatus(DummyBulkMigrator.MIGRATION_ID).isRunning());
+        // Simulate a service restart
+        MigrationServiceImpl impl = (MigrationServiceImpl) migrationService;
+        impl.restartExecutor();
+
+        // Resume migration
+        migrationService.runStep(DummyBulkMigrator.MIGRATION_ID, "before-to-after");
+
+        // Await its end
+        await().atMost(ONE_MINUTE).until(() -> !migrationService.getStatus(DummyBulkMigrator.MIGRATION_ID).isRunning());
         // assert after state (ie: there are no documents with dc:title = 'Content to migrate')
         var afterState = migrationService.probeAndSetState(DummyBulkMigrator.MIGRATION_ID);
         assertEquals(DummyBulkMigrator.MIGRATION_AFTER_STATE, afterState);
