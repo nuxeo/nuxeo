@@ -21,6 +21,7 @@ package org.nuxeo.runtime.migration;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Migration Service.
@@ -157,6 +158,11 @@ public interface MigrationService {
             progressTotal = 0;
             errorMessage = null;
             errorCode = 0;
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
         }
 
         public MigrationStatus(String state, String errorMessage, int errorCode) {
