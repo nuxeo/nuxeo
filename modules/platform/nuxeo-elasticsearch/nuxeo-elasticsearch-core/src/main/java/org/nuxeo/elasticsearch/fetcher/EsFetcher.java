@@ -37,7 +37,9 @@ import org.nuxeo.elasticsearch.io.DocumentModelReaders;
 
 /**
  * @since 6.0
+ * @deprecated since 2023.5 use default VcsFetcher instead.
  */
+@Deprecated(since = "2023.5")
 public class EsFetcher extends Fetcher {
 
     protected final HitDocConsumer consumer;

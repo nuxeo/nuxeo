@@ -126,9 +126,6 @@ elasticsearch.nodeName=nuxeoNode
 elasticsearch.httpEnabled=false
 # Network binding. Policy is to accept request from local machine only.
 elasticsearch.networkHost=127.0.0.1
-# Load document model from Elasticsearch result (experimental)
-# if false load from document from VCS
-elasticsearch.fetchDocFromEs=false
 # Comma separated list of CorePageProvider names to supersede by Elasticsearch
 elasticsearch.override.pageproviders=default_search,default_document_suggestion,DEFAULT_DOCUMENT_SUGGESTION,advanced_document_content,domain_documents,expired_search,default_trash_search,REST_API_SEARCH_ADAPTER,all_collections,simple_search,document_content,section_content,document_trash_content,orderable_document_content,document_picker
 # Reindexing option, number of documents to process per worker @since 6.0-HF02
