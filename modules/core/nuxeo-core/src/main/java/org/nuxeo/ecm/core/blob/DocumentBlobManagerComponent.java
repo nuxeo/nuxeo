@@ -507,14 +507,11 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             throw new UnsupportedOperationException(
                     "Repository does not have QUERY_BLOB_KEYS capability: " + repositoryName);
         }
-        boolean multiRepos = rs.getRepositoryNames().size() > 1;
-        if (multiRepos) {
-            if (hasSharedStorage()) {
-                throw new UnsupportedOperationException("Cannot perform delete on shared storage.");
-            }
-            if (!isUseRepositoryName()) {
-                throw new UnsupportedOperationException("Cannot perform delete on cross-repository shared storage.");
-            }
+        if (hasSharedStorage()) {
+            throw new UnsupportedOperationException("Cannot perform delete on shared storage.");
+        }
+        if (!isUseRepositoryName() && rs.getRepositoryNames().size() > 1) {
+            throw new UnsupportedOperationException("Cannot perform delete on cross-repository shared storage.");
         }
     }
 
