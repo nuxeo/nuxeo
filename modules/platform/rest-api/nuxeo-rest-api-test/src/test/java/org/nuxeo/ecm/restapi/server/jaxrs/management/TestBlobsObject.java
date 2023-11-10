@@ -115,8 +115,9 @@ public class TestBlobsObject extends ManagementBaseTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-shared-storage-delete.xml")
-    public void testDeleteBlobOnSharedStorageMonoRepository() throws IOException {
-        testDeleteOrphanedBlobs(false);
+    public void testUnsupportedDeleteBlobOnSharedStorage() {
+        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
+        assertdoGCNotImplemented();
     }
 
     protected void assertdoGCNotImplemented() {
