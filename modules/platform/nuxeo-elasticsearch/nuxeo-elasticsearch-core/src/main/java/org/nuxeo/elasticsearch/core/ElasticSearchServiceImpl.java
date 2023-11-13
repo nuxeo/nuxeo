@@ -266,7 +266,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     protected SearchRequest buildEsSearchScrollRequest(NxQueryBuilder query, SearchType searchType, long keepAlive) {
         SearchRequest request = buildEsSearchRequest(query, searchType);
-        request.scroll(new TimeValue(keepAlive));
+        request.scroll(new TimeValue(keepAlive * 1000));
         return request;
     }
 
