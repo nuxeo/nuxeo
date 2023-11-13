@@ -270,6 +270,7 @@ nuxeo.stream.pubsub.log.codec=avroBinary
 
 # Bulk
 nuxeo.core.bulk.scroller.concurrencyMax=2
+nuxeo.core.bulk.scroller.scroll.keepAliveSeconds=300
 nuxeo.core.bulk.status.concurrencyMax=2
 nuxeo.core.bulk.done.concurrencyMax=1
 nuxeo.core.bulk.csvExport.scroller=elastic
