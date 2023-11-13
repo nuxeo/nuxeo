@@ -305,24 +305,62 @@ public class TestDocumentBlobGC {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-shared-storage-delete.xml")
-    public void testUnsupportedDeleteBlobOnSharedStorage() {
-        assumeTrue("MongoDB feature only", !coreFeature.getStorageConfiguration().isVCS());
-        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
-        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("shared GC"));
-        doc = session.createDocument(doc);
+    public void testDeleteBlobOnSharedStorageAndMonoRepository() {
+        assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
+
+        // Create 3 docs
+        // 2 referencing the same blob as main content but dispatched in 2 different providers
+        Blob b = Blobs.createBlob("dispatch");
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1.setPropertyValue("file:content", (Serializable) b);
+        doc1 = session.createDocument(doc1);
+        DocumentRef ref1 = doc1.getRef();
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        doc2.setPropertyValue("file:content", (Serializable) b);
+        doc2.setPropertyValue("dc:source", "foo");
+        doc2 = session.createDocument(doc2);
+        DocumentRef ref2 = doc2.getRef();
         session.save();
+        // A third unrelated in 2st provider
+        Blob b3 = Blobs.createBlob("otherDispatch");
+        DocumentModel doc3 = session.createDocumentModel("/", "doc3", "File");
+        doc3.setPropertyValue("file:content", (Serializable) b3);
+        doc3.setPropertyValue("dc:source", "foo");
+        doc3 = session.createDocument(doc3);
+        DocumentRef ref3 = doc3.getRef();
+        session.save();
+        ManagedBlob blob1 = (ManagedBlob) session.getDocument(ref1).getPropertyValue("file:content");
+        assertEquals("first", blob1.getProviderId());
+        BlobProvider blobProvider1 = Framework.getService(BlobManager.class).getBlobProvider(blob1.getProviderId());
+        assertNotNull(blobProvider1.getFile(blob1));
+        ManagedBlob blob2 = (ManagedBlob) session.getDocument(ref2).getPropertyValue("file:content");
+        assertEquals("second", blob2.getProviderId());
+        BlobProvider blobProvider2 = Framework.getService(BlobManager.class).getBlobProvider(blob2.getProviderId());
+        assertNotNull(blobProvider2.getFile(blob2));
+        ManagedBlob blob3 = (ManagedBlob) session.getDocument(ref3).getPropertyValue("file:content");
+        assertEquals("second", blob3.getProviderId());
+        BlobProvider blobProvider3 = Framework.getService(BlobManager.class).getBlobProvider(blob3.getProviderId());
+        assertNotNull(blobProvider3.getFile(blob3));
 
-        ManagedBlob blob = (ManagedBlob) doc.getPropertyValue("file:content");
-        String key = blob.getKey();
-
-        String repoName = doc.getRepositoryName();
-        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob.getProviderId());
-        assertThrows(UnsupportedOperationException.class, () -> documentBlobManager.deleteBlob(repoName, key, false));
-        assertNotNull(blobProvider.getFile(blob));
-
-        session.removeDocument(doc.getRef());
+        // Remove 1st doc
+        session.removeDocument(ref1);
         coreFeature.waitForAsyncCompletion();
-        assertNotNull(blobProvider.getFile(blob));
+        assertFalse(session.exists(ref1));
+
+        // Assert blobs referenced by doc2 and doc3 still exist
+        assertNotNull(blobProvider1.getFile(blob1));
+        assertNotNull(blobProvider2.getFile(blob2));
+        assertNotNull(blobProvider3.getFile(blob3));
+
+        // Remove 2nd doc
+        session.removeDocument(ref2);
+        coreFeature.waitForAsyncCompletion();
+
+        // Assert shared blobs does not exist anymore
+        assertNull(blobProvider1.getFile(blob1));
+        assertNull(blobProvider2.getFile(blob2));
+        // Assert blob referenced by doc3 still exists
+        assertNotNull(blobProvider3.getFile(blob3));
     }
 
     @Test

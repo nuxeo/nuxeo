@@ -69,8 +69,6 @@ public abstract class AbstractTestFullGCOrphanBlobs {
 
     protected static final int BUCKET_SIZE = 7;
 
-    protected static final int NB_FILE = 20;
-
     @Inject
     protected CoreFeature coreFeature;
 
@@ -88,11 +86,15 @@ public abstract class AbstractTestFullGCOrphanBlobs {
 
     protected long sizeOfBinaries;
 
+    protected int getNbFiles() {
+        return 20;
+    }
+
     @Before
     public void setup() {
         assumeTrue("MongoDB feature only", coreFeature.getStorageConfiguration().isDBS());
         sizeOfBinaries = 0L;
-        for (int i = 0; i < NB_FILE; i++) {
+        for (int i = 0; i < getNbFiles(); i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
             Blob blob = Blobs.createBlob(CONTENT + i);
             sizeOfBinaries += blob.getLength();
@@ -102,11 +104,11 @@ public abstract class AbstractTestFullGCOrphanBlobs {
         coreFeature.waitForAsyncCompletion();
     }
 
-    protected void testGCBlobsAction(boolean dryRun) {
-        assertEquals(NB_FILE, session.query(NXQL).size());
+    protected void testGCBlobsAction(boolean dryRun, int nbFiles, long sizeOfBinaries) {
+        assertEquals(getNbFiles(), session.query(NXQL).size());
 
         // Perform 1st GC -> no blob deleted
-        doGC(dryRun, true, NB_FILE, 0, NB_FILE, sizeOfBinaries, 0, NB_FILE);
+        doGC(dryRun, true, nbFiles, 0, nbFiles, sizeOfBinaries, 0, nbFiles);
 
         // Remove all documents
         BulkCommand command = new BulkCommand.Builder(DeletionAction.ACTION_NAME, NXQL,
@@ -118,7 +120,11 @@ public abstract class AbstractTestFullGCOrphanBlobs {
         assertEquals(COMPLETED, status.getState());
 
         // Perform 2nd GC -> all blobs deleted
-        doGC(dryRun, true, 0, sizeOfBinaries, NB_FILE, sizeOfBinaries, 0, NB_FILE);
+        doGC(dryRun, true, 0, sizeOfBinaries, nbFiles, sizeOfBinaries, 0, nbFiles);
+    }
+
+    protected void testGCBlobsAction(boolean dryRun) {
+        testGCBlobsAction(dryRun, getNbFiles(), sizeOfBinaries);
     }
 
     protected void doGC(boolean dryRun, boolean success, int skipped, long deletedSize, int processed, long totalSize,
@@ -145,11 +151,11 @@ public abstract class AbstractTestFullGCOrphanBlobs {
         assertEquals(totalSize, ((Number) status.getResult().get(RESULT_TOTAL_SIZE_KEY)).longValue());
 
         // Check at blob store level
-        assertEquals(dryRun ? NB_FILE : skipped, getBlobCount());
+        assertEquals(dryRun ? total : skipped, getBlobCount());
     }
 
     protected int getBlobCount() {
-        ScrollRequest request = GenericScrollRequest.builder(SCROLL_NAME, "test").size(NB_FILE + 1).build();
+        ScrollRequest request = GenericScrollRequest.builder(SCROLL_NAME, "test").size(getNbFiles() + 1).build();
         assertTrue(scrollService.exists(request));
         int blobCount = 0;
         try (Scroll scroll = scrollService.scroll(request)) {

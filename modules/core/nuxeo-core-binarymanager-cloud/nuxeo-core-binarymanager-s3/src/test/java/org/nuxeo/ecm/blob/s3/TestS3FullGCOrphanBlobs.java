@@ -16,16 +16,18 @@
  * Contributors:
  *     Guillaume Renard
  */
-package org.nuxeo.ecm.core.bulk;
+package org.nuxeo.ecm.blob.s3;
 
 import org.junit.Test;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.core.bulk.AbstractTestFullGCOrphanBlobs;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * @since 2023
+ * @since 2023.5
  */
-@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/blobGC/test-blob-shared-storage-delete.xml")
-public class TestFullGCOrphanBlobsSharedStorage extends AbstractTestFullGCOrphanBlobs {
+@Features({ CoreFeature.class, S3BlobProviderFeature.class })
+public class TestS3FullGCOrphanBlobs extends AbstractTestFullGCOrphanBlobs {
 
     @Override
     public int getNbFiles() {
@@ -34,7 +36,7 @@ public class TestFullGCOrphanBlobsSharedStorage extends AbstractTestFullGCOrphan
 
     @Test
     public void testGCBlobsAction() {
-        // because of shared storage, blobs are scrolled twice
-        testGCBlobsAction(false, getNbFiles() * 2, sizeOfBinaries * 2);
+        testGCBlobsAction(false);
     }
+
 }
