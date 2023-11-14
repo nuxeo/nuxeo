@@ -161,6 +161,18 @@ public final class MailMessage {
             Collections.addAll(this.tos, tos);
         }
 
+        public Builder(MailMessage m) {
+            this(m.tos);
+            from(m.froms).cc(m.ccs)
+                         .bcc(m.bccs)
+                         .replyTo(m.replyTos)
+                         .attachments(m.attachments)
+                         .date(m.date)
+                         .subject(m.subject, m.subjectCharset)
+                         .content(m.content, m.contentType)
+                         .senderName(m.senderName);
+        }
+
         public Builder to(List<String> to) {
             this.tos.addAll(to);
             return this;

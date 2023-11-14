@@ -16,11 +16,14 @@
 
 package org.nuxeo.mail.amazon.ses;
 
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_FROM;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,10 +55,13 @@ public class SESMailSender implements MailSender {
 
     protected static final String AWS_CONFIGURATION_ID_KEY = "awsConfigurationId";
 
+    protected final String defaultMailFrom;
+
     protected final AmazonSimpleEmailService client;
 
     public SESMailSender(MailSenderDescriptor descriptor) {
         var configurationId = descriptor.getProperties().get(AWS_CONFIGURATION_ID_KEY);
+        defaultMailFrom = descriptor.getProperties().get(CONFIGURATION_MAIL_FROM);
         var credentialsProvider = new NuxeoAWSCredentialsProvider(configurationId);
         var regionProvider = new NuxeoAWSRegionProvider(configurationId);
 
@@ -74,7 +80,7 @@ public class SESMailSender implements MailSender {
     @Override
     public void sendMail(MailMessage message) {
         try {
-            var mimeMessage = MimeMessageHelper.composeMimeMessage(message);
+            var mimeMessage = buildMimeMessage(message);
 
             var outputStream = new ByteArrayOutputStream();
             mimeMessage.writeTo(outputStream);
@@ -87,4 +93,26 @@ public class SESMailSender implements MailSender {
             throw new MailException("An error occurred while sending a mail with Amazon SES", e);
         }
     }
+
+    protected MimeMessage buildMimeMessage(MailMessage message) throws MessagingException {
+        var effectiveMessage = setMissingMandatoryValues(message);
+        return MimeMessageHelper.composeMimeMessage(effectiveMessage);
+    }
+
+    protected MailMessage setMissingMandatoryValues(MailMessage message) {
+        boolean addFrom = message.getFroms().isEmpty();
+        boolean addContent = message.getContent() == null;
+        if (addFrom || addContent) {
+            var builder = new MailMessage.Builder(message);
+            if (addFrom) {
+                builder.from(defaultMailFrom);
+            }
+            if (addContent) {
+                builder.content("");
+            }
+            return builder.build();
+        }
+        return message;
+    }
+
 }

@@ -44,23 +44,28 @@ public class MimeMessageHelper {
 
     public static MimeMessage composeMimeMessage(MailMessage msg, Session session) throws MessagingException {
         var mail = new MimeMessage(session);
-        if (!msg.hasAttachments()) {
-            mail.setContent(msg.getContent(), msg.getContentType());
-        } else { // text goes into a body part
-            var body = new MimeBodyPart();
-            body.setContent(msg.getContent(), msg.getContentType());
-            // then get the attachments
+        Object content = msg.getContent();
+        String contentType = msg.getContentType();
+        if (msg.hasAttachments()) {
+            MimeBodyPart body = null;
+            if (content != null) {
+                body = new MimeBodyPart();
+                body.setContent(msg.getContent(), contentType);
+            }
             MimeMultipart bodyParts = assembleMultiPart(body, msg.getAttachments());
             mail.setContent(bodyParts);
+        } else if (content != null) {
+            mail.setContent(msg.getContent(), contentType);
         }
-
         return fillDetails(msg, mail);
     }
 
     protected static MimeMultipart assembleMultiPart(MimeBodyPart body, List<Blob> attachments)
             throws MessagingException {
         var mp = new MimeMultipart();
-        mp.addBodyPart(body);
+        if (body != null) {
+            mp.addBodyPart(body);
+        }
         for (Blob blob : attachments) {
             var a = new MimeBodyPart();
             a.setDataHandler(new DataHandler(new BlobDataSource(blob)));

@@ -16,6 +16,8 @@
 
 package org.nuxeo.mail;
 
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_FROM;
+
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -39,12 +41,22 @@ public class SMTPMailSender implements MailSender {
     }
 
     @Override
-    public void sendMail(MailMessage msg) {
+    public void sendMail(MailMessage message) {
         try {
-            Transport.send(MimeMessageHelper.composeMimeMessage(msg, session));
+            var mimeMessage = buildMimeMessage(message);
+            Transport.send(mimeMessage);
         } catch (MessagingException e) {
             throw new MailException("An error occurred while sending a mail", e);
         }
+    }
+
+    protected MimeMessage buildMimeMessage(MailMessage message) throws MessagingException {
+        var effectiveMessage = message.getFroms().isEmpty() ? addFroms(message) : message;
+        return MimeMessageHelper.composeMimeMessage(effectiveMessage, session);
+    }
+
+    protected MailMessage addFroms(MailMessage message) {
+        return new MailMessage.Builder(message).from(session.getProperty(CONFIGURATION_MAIL_FROM)).build();
     }
 
 }

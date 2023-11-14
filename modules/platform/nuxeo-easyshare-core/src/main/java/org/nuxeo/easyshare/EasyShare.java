@@ -280,7 +280,6 @@ public class EasyShare extends ModuleRoot {
                 log.debug("Easyshare: starting email");
                 EmailHelper emailHelper = new EmailHelper();
                 Map<String, Object> mailProps = new HashMap<>();
-                mailProps.put("mail.from", Framework.getProperty("mail.from", "system@nuxeo.com"));
                 mailProps.put("mail.to", email);
                 mailProps.put("ip", getIpAddr());
                 mailProps.put("docShare", docShare);

@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.mail.sender.amazon.ses.test">
   <extension target="org.nuxeo.mail.MailServiceComponent" point="senders">
-    <sender name="default" class="org.nuxeo.mail.amazon.ses.SESMailSender" />
+    <sender name="default" class="org.nuxeo.mail.amazon.ses.SESMailSender">
+      <property name="mail.from">${mail.from}</property>
+    </sender>
   </extension>
 </component>

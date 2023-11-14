@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.mail.MailServiceComponent" point="senders">
     <sender name="wrongSender" class="org.nuxeo.mail.amazon.ses.SESMailSender">
       <property name="awsConfigurationId">wrongConfig</property>
+      <property name="mail.from">${mail.from}</property>
     </sender>
   </extension>
   <extension target="org.nuxeo.runtime.aws.AWSConfigurationService" point="configuration">
