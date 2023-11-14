@@ -51,6 +51,10 @@
       <groupId>net.java.dev.webdav</groupId>
       <artifactId>webdav-jaxrs</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
     
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
