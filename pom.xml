@@ -71,6 +71,7 @@
     <jaxb-api.version>2.3.3</jaxb-api.version>
     <jaxb.version>2.3.9</jaxb.version>
     <tomcat.version>9.0.83</tomcat.version>
+    <lucene.version>8.10.1</lucene.version>
     <opensearch.version>1.3.13</opensearch.version>
     <netty.version>4.1.100.Final</netty.version>
     <netty.boringssl.version>2.0.62.Final</netty.boringssl.version>
@@ -2414,6 +2415,13 @@
       </dependency>
 
       <!-- apache -->
+      <!-- fix version of lucene-core to avoid outdated transitive dependency of com.hp.hpl.jena:arq -->
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-asn1</artifactId>
