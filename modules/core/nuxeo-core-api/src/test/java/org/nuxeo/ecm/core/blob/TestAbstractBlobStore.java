@@ -211,6 +211,21 @@ public abstract class TestAbstractBlobStore {
     }
 
     @Test
+    public void testDeleteIsIdempotent() throws IOException {
+        BlobContext blobContext = blobContext(ID1, FOO);
+        String key1 = bp.writeBlob(blobContext);
+        assertKey(ID1, key1);
+        // check content
+        assertBlob(key1, FOO);
+
+        bs.deleteBlob(key1);
+        // check deleted
+        assertNoBlob(key1);
+        // check delete is idempotent
+        bs.deleteBlob(key1);
+    }
+
+    @Test
     public void testCRUD() throws IOException {
         // no blob initially
         assertNoBlob(ID1);

@@ -159,7 +159,9 @@ public class GridFSBlobStore extends AbstractBlobStore {
     @Override
     public void deleteBlob(String key) {
         GridFSFile dbFile = getGridFSFile(key);
-        getGridFSBucket().delete(dbFile.getId());
+        if (dbFile != null) {
+            getGridFSBucket().delete(dbFile.getId());
+        }
     }
 
     @Override
