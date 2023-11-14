@@ -730,6 +730,7 @@ class Release(object):
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
+        self.repo.git_recurse("config credential.helper store", with_optionals=True)
 
         log("[INFO] Check release-ability...")
         self.check()
