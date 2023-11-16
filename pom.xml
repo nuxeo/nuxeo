@@ -157,7 +157,7 @@
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
     <okhttp.version>4.12.0</okhttp.version>
-    <protobuf.java.version>3.24.4</protobuf.java.version>
+    <protobuf.java.version>3.25.1</protobuf.java.version>
     <opensaml.version>4.3.0</opensaml.version>
     <quartz.version>2.4.0-rc2</quartz.version>
   </properties>
