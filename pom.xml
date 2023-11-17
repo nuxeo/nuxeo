@@ -6499,7 +6499,7 @@
             <artifactId>nxrm3-maven-plugin</artifactId>
             <configuration>
               <nexusUrl>https://packages.nuxeo.com</nexusUrl>
-              <serverId>maven-internal-staging</serverId>
+              <serverId>nexus</serverId>
               <repository>maven-internal-staging</repository>
               <destinationRepository>maven-hotfix-releases</destinationRepository>
               <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
