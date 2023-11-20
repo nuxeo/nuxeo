@@ -140,7 +140,9 @@ public class RenditionWork extends AbstractWork {
         ts.setCompleted(getId(), false);
         try {
             Blob result = rendition.getBlob();
-            ts.putBlobs(getId(), Collections.singletonList(result));
+            if (result != null) {
+                ts.putBlobs(getId(), Collections.singletonList(result));
+            }
         } catch (NuxeoException e) {
             inError("Fail to apply rendition " + e.getMessage());
             return;
@@ -167,19 +169,18 @@ public class RenditionWork extends AbstractWork {
      */
     protected String getSourceId(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh == null) {
-            throw new IllegalArgumentException("No blob holder for doc: " + doc);
-        }
         try {
-            Blob blob = bh.getBlob();
-            if (blob != null && blob.getDigest() != null) {
-                return blob.getDigest();
+            if (bh != null) {
+                Blob blob = bh.getBlob();
+                if (blob != null && blob.getDigest() != null) {
+                    return blob.getDigest();
+                }
             }
-            // no blob, or StringBlob built on other props like note:note
-            return doc.getId() + ":" + doc.getChangeToken();
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot get blob for doc: " + doc, e);
         }
+        // no blob, or StringBlob built on other props like note:note
+        return doc.getId() + ":" + doc.getChangeToken();
     }
 
     protected void submitWork() {

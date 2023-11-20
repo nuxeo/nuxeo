@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.test;
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -81,6 +82,33 @@ public class RenditionTest extends BaseTest {
                 "path" + doc.getPathAsString() + "/@rendition/dummyRendition")) {
             assertEquals(SC_OK, response.getStatus());
             assertEquals("adoc", response.getEntity(String.class));
+        }
+    }
+
+    @Test
+    public void shouldRetrieveTheRenditionOnDocWithoutMainBlob() {
+        DocumentModel doc = session.createDocumentModel("/", "afolder", "Folder");
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@rendition/dummyRendition")) {
+            assertEquals(SC_OK, response.getStatus());
+            assertEquals("afolder", response.getEntity(String.class));
+        }
+    }
+
+    @Test
+    public void shouldAcceptNullRendition() {
+        DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        // thumbnail rendition for a folder is null inside unit test
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@rendition/thumbnail")) {
+            assertEquals(SC_NOT_FOUND, response.getStatus());
         }
     }
 
