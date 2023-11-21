@@ -222,6 +222,8 @@ kafka.keystore.password=
 
 # Legacy rendition are performed on front nodes
 nuxeo.rendition.legacy.enabled=false
+# Thumbnail renditions are pre calculated and can be returned in sync
+nuxeo.rendition.thumbnail.sync=true
 # Legacy preview are performed on front nodes
 nuxeo.preview.legacy.enabled=false
 # Thread pool for the new rendition and preview Works (when not in legacy mode)
