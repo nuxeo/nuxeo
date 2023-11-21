@@ -32,24 +32,50 @@ jobs:
       - name: Log in to Docker registry
         uses: docker/login-action@v2.1.0
         with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ env.DOCKER_REGISTRY_USERNAME }}
-          password: ${{ env.DOCKER_REGISTRY_PASSWORD }}
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ env.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ env.DOCKER_REGISTRY_PASSWORD }}
 
       - name: Pull Docker image
         run: docker pull ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
 
-      - name: Scan Docker image with Prisma Cloud
-        id: scan
-        uses: PaloAltoNetworks/prisma-cloud-scan@v1.4.0
+      - name: Scan Docker image with Grype - console output
+        uses: anchore/scan-action@v3.3.7
         with:
-          pcc_console_url: ${{ secrets.PRISMA_BASE_URL }}
-          pcc_user: ${{ secrets.PRISMA_ACCESS_KEY_ID }}
-          pcc_pass: ${{ secrets.PRISMA_SECRET_KEY }}
-          image_name: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
+          image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
+          severity-cutoff: critical
+          # don't report vulnerabilities marked as "won't fix", mostly CentOS 7 RPM packages
+          only-fixed: true
+          output-format: table
+
+      - name: Scan Docker image with Grype - JSON output
+        if: always() # necessary as using a failure threshold in the scan step
+        id: scan-json
+        uses: anchore/scan-action@v3.3.7
+        with:
+          image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
+          severity-cutoff: critical
+          # don't report vulnerabilities marked as "won't fix", mostly CentOS 7 RPM packages
+          only-fixed: true
+          output-format: json
+
+      - name: Print Grype JSON output
+        if: always() # necessary as using a failure threshold in the scan step
+        run:
+          cat ${{ steps.scan-json.outputs.json }} | jq
+
+      - name: Scan Docker image with Grype - SARIF output
+        if: always() # necessary as using a failure threshold in the scan step
+        id: scan-sarif
+        uses: anchore/scan-action@v3.3.7
+        with:
+          image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
+          severity-cutoff: critical
+          # don't report vulnerabilities marked as "won't fix", mostly CentOS 7 RPM packages
+          only-fixed: true
 
       - name: Upload SARIF file
-        if: always() # necessary as using failure thresholds in the image scan
+        if: always() # necessary as using a failure threshold in the scan step
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: ${{ steps.scan.outputs.sarif_file }}
+          sarif_file: ${{ steps.scan-sarif.outputs.sarif }}
