@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 
@@ -98,9 +99,9 @@ public class RenditionObject extends DefaultObject {
     }
 
     @GET
-    public Object doGet(@Context Request request) {
+    public Object doGet(@Context Request request, @QueryParam("sync") boolean sync) {
         Blob blob;
-        if (Framework.isBooleanPropertyTrue(LEGACY_RENDERING_PROP)) {
+        if (sync || Framework.isBooleanPropertyTrue(LEGACY_RENDERING_PROP)) {
             blob = getLegacyRenditionBlob();
         } else {
             blob = getRenditionBlob();
