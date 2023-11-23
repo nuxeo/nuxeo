@@ -1,4 +1,9 @@
 <@extends src="base.ftl">
+
+<@block name="header_scripts">
+  <script type="text/javascript" src="${skinPath}/script/oauth2.js"></script>
+</@block>
+
 <@block name="content">
 
   <#if error>
@@ -7,13 +12,7 @@
     <p>The token has been registered, you can now access to your service provider.</p>
   </#if>
 
-  <script>
-    var data = {
-      'token':'${token}'
-    };
-    window.opener.postMessage(JSON.stringify(data), "*");
-    window.close();
-  </script>
+  <div data-token="${token}"></div>
 
 </@block>
 </@extends>
