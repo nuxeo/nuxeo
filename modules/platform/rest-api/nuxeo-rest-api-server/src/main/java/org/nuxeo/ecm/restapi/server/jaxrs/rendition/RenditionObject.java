@@ -98,6 +98,16 @@ public class RenditionObject extends DefaultObject {
         }
     }
 
+    /**
+     * Get the rendition blob.
+     * <p>
+     * In legacy mode ({@code nuxeo.rendition.legacy.enabled=true}) all renditions are performed on the front nodes with
+     * the risk of overflow when processing lots of large renditions on the fly.
+     * <p>
+     * In normal mode renditions are processed asynchronously in worker nodes and cached in order to scale, for light
+     * renditions that are already preprocessed (like thumbnails) it is possible to use the {@code sync=true} parameter
+     * to force rendition on front node avoiding possible async latency.
+     */
     @GET
     public Object doGet(@Context Request request, @QueryParam("sync") boolean sync) {
         Blob blob;
