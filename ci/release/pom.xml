@@ -115,6 +115,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.packages</groupId>
+      <artifactId>nuxeo-mail-amazon-ses-package</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.packages</groupId>
       <artifactId>nuxeo-openid-login-package</artifactId>
       <type>zip</type>
     </dependency>
