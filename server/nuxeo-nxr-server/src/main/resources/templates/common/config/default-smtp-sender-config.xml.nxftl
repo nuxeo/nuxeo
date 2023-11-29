@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <?xml version="1.0"?>
 <component name="org.nuxeo.mail.sender.default.config">
 
@@ -29,3 +30,4 @@
   </extension>
 
 </component>
+</#escape>
