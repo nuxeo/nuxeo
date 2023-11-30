@@ -81,16 +81,24 @@ public class PropertyBasedConfiguration {
 
     /** Gets an integer property, or -1 if undefined or blank. */
     public int getIntProperty(String key) {
+        return getIntProperty(key, -1);
+    }
+
+    /**
+     * Gets an integer property, or the given default if undefined or blank.
+     *
+     * @since 2023.5
+     */
+    public int getIntProperty(String key, int defaultValue) {
         String s = getProperty(key);
-        int value = -1;
         if (!isBlank(s)) {
             try {
-                value = Integer.parseInt(s.trim());
+                return Integer.parseInt(s.trim());
             } catch (NumberFormatException e) {
                 log.error("Cannot parse integer " + key + ": " + s);
             }
         }
-        return value;
+        return defaultValue;
     }
 
     /** Gets a boolean property. */
