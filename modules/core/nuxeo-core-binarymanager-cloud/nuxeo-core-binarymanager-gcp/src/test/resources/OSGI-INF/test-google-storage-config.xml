@@ -1,0 +1,29 @@
+<component name="org.nuxeo.gcp.config.test">
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.core.storage.gcp.GoogleStorageBlobProvider</class>
+      <property name="project">${nuxeo.test.gcp.project}</property>
+      <property name="credentials">${nuxeo.test.gcp.credentials}</property>
+      <property name="bucket">${nuxeo.test.gcp.provider.test.bucket}</property>
+      <property name="bucket_prefix">${nuxeo.test.gcp.provider.test.bucket_prefix}</property>
+      <property name="allowByteRange">false</property>
+    </blobprovider>
+    <blobprovider name="other">
+      <class>org.nuxeo.ecm.core.storage.gcp.GoogleStorageBlobProvider</class>
+      <property name="project">${nuxeo.test.gcp.project}</property>
+      <property name="credentials">${nuxeo.test.gcp.credentials}</property>
+      <property name="bucket">${nuxeo.test.gcp.provider.other.bucket}</property>
+      <property name="bucket_prefix">${nuxeo.test.gcp.provider.other.bucket_prefix}</property>
+      <property name="allowByteRange">false</property>
+    </blobprovider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
+    <blobdispatcher>
+      <property name="default">test</property>
+      <property name="dc:source=foo">other</property>
+    </blobdispatcher>
+  </extension>
+
+</component>
