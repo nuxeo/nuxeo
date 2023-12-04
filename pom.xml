@@ -1949,6 +1949,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-mail-amazon-ses-package</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-microsoft-azure-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>
