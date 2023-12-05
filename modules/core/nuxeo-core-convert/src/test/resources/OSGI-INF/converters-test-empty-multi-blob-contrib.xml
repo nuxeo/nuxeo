@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.multi.empty">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+    <converter name="dummyEmptyMulti" class="org.nuxeo.ecm.core.convert.tests.DummyEmptyMultiOutputConverter">
+      <sourceMimeType>text/plain</sourceMimeType>
+    </converter>
+
+    <converter name="dummyChain3">
+      <conversionSteps>
+        <subconverter>dummyEmptyMulti</subconverter>
+      </conversionSteps>
+    </converter>
+  </extension>
+
+</component>

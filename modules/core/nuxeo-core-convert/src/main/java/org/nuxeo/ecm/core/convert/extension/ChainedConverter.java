@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -48,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author tiry
  */
 public class ChainedConverter implements Converter {
+
+    private static final Logger log = LogManager.getLogger(ChainedConverter.class);
 
     protected boolean subConvertersBased;
 
@@ -82,6 +86,11 @@ public class ChainedConverter implements Converter {
         ConversionService conversionService = Framework.getService(ConversionService.class);
         for (String converterName : subConverters) {
             result = conversionService.convert(converterName, result, parameters);
+            if (result == null || result.getBlob() == null || result.getBlobs() == null || result.getBlobs().isEmpty()) {
+                log.warn("Chain conversion aborted because of a null or empty result in {} subconverter.", converterName);
+                return null;
+            }
+
             // Mark for deletion intermediate results
             if (subConverters.indexOf(converterName) != subConverters.size() - 1) {
                 result.getBlobs()
