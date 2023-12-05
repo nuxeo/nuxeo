@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.gcp.scroll.config" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.scroll.service</require>
+
+  <extension point="scroll" target="org.nuxeo.ecm.core.scroll.service">
+    <scroll type="generic" name="googleStorageBlobScroll" class="org.nuxeo.ecm.core.storage.gcp.GoogleStorageBlobScroll" />
+  </extension>
+
+</component>
