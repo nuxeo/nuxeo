@@ -318,6 +318,10 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             throw new ConversionException("Converter " + converterName + " can not be found", blobHolder);
         }
 
+        if (blobHolder == null || blobHolder.getBlob() == null) {
+            return null;
+        }
+
         // make sure the converter can handle the blob mime type
         String mimeType = blobHolder.getBlob().getMimeType();
         if (!hasSourceMimeType(desc, mimeType)) {

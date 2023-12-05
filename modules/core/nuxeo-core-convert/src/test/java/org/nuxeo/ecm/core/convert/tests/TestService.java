@@ -385,4 +385,26 @@ public class TestService {
         assertEquals("text/plain", resultBlob.getMimeType());
         assertEquals("dummy", resultBlob.getFilename());
     }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
+    public void testConvertNullBlob() {
+        // null blob holder
+        assertNull(cs.convert("dummy1", null, Map.of()));
+        // null main blob in blob holder
+        Blob b = null;
+        assertNull(cs.convert("dummy1", new SimpleBlobHolder(b), Map.of()));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib2.xml")
+    @Deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-empty-multi-blob-contrib.xml")
+    public void testChainNullResultConverters() {
+        var blob = Blobs.createBlob("dummy", "text/plain", null, "dummy");
+        // null blob holder result from a subconverter
+        assertNull(cs.convert("dummyChain2", new SimpleBlobHolder(blob), Map.of()));
+        // empty blob list in blob holder result from a subconverter
+        assertNull(cs.convert("dummyChain3", new SimpleBlobHolder(blob), Map.of()));
+    }
 }
