@@ -1,0 +1,8 @@
+ingress:
+  enabled: false
+persistentVolumeStorage:
+  enabled: true
+  size: 100Mi
+strategy:
+  # Otherwise a Multi-Attach error could occur when trying to attach the existing PVC to the new pod.
+  type: Recreate

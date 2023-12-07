@@ -1,0 +1,7 @@
+podLabels:
+  dev.nuxeo.com/usage: upgradeTest
+{{ tpl (readFile "../values-kafka-extra-deploy.yaml") (dict "chartName" "kafka") }}
+zookeeper:
+  podLabels:
+    dev.nuxeo.com/usage: upgradeTest
+  {{ tpl (readFile "../values-kafka-extra-deploy.yaml") (dict "chartName" "zookeeper") | nindent 2 }}

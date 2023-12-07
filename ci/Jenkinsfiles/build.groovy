@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.25"
+library identifier: "platform-ci-shared-library@v0.0.30"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -187,6 +187,20 @@ def buildUnitTestStage(env) {
   }
 }
 
+def auditNuxeo(namespace) {
+  try {
+    // check running status
+    sh "ci/scripts/running-status.sh nuxeo.${namespace}.svc.cluster.local/nuxeo"
+    echo "Deployed Nuxeo $VERSION"
+  } catch (err) {
+    // log only the nuxeo pod
+    def logFile = "${namespace}_nuxeo.log"
+    sh(label: 'Kubernetes.getPodLog', script: "kubectl --namespace=${namespace} logs --tail=-1 -l app.kubernetes.io/instance=nuxeo > ${logFile}")
+    archiveArtifacts allowEmptyArchive: true, artifacts: logFile
+    throw err
+  }
+}
+
 pipeline {
   agent {
     label 'jenkins-nuxeo-platform-lts-2021'
@@ -202,6 +216,7 @@ pipeline {
     HOME = '/root'
     CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     TEST_NAMESPACE_PREFIX = "$CURRENT_NAMESPACE-nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
+    TEST_UPGRADE_NAMESPACE = "$CURRENT_NAMESPACE-nuxeo-upgrade-test-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
     TEST_REDIS_K8S_OBJECT = 'redis-master'
     TEST_KAFKA_K8S_OBJECT = 'kafka'
@@ -358,6 +373,37 @@ pipeline {
 
     stage('Verify Docker image') {
       parallel {
+        stage('Run upgrade test') {
+          when {
+            expression { nxUtils.getMinorVersion().toInteger() > 0 }
+          }
+          steps {
+            container('maven') {
+              script {
+                nxWithGitHubStatus(context: "docker/upgrade", message: "Run minor version upgrade test") {
+                  try {
+                    def helmEnv = "upgradeTest"
+                    // first deploy previous version
+                    withEnv([
+                      "DOCKER_REGISTRY=${PRIVATE_DOCKER_REGISTRY}",
+                      "VERSION=${nxUtils.getPreviousMajorDotMinorVersion()}"
+                    ]) {
+                      nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
+                      auditNuxeo(TEST_UPGRADE_NAMESPACE)
+                    }
+                    // then upgrade to actual version
+                    nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
+                    auditNuxeo(TEST_UPGRADE_NAMESPACE)
+                  } finally {
+                    // clean up
+                    nxK8s.deleteNamespace(TEST_UPGRADE_NAMESPACE)
+                  }
+                }
+              }
+            }
+          }
+        }
+
         stage('Test Docker image') {
           steps {
             container('maven') {
