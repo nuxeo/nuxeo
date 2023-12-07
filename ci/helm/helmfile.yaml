@@ -27,7 +27,7 @@ releases:
     - values/{{ $valuesDir }}/values-extra-deploy.yaml.gotmpl
 - name: nuxeo
   chart: nuxeo/nuxeo
-  version: 3.0.13
+  version: 3.0.19
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: nuxeo.enabled
   {{ if eq .Environment.Name "benchmark" }}
@@ -139,6 +139,9 @@ environments:
   elasticsearch8UnitTests:
     values:
     - environments/unit-tests-elasticsearch-8.yaml
+  upgradeTest:
+    values:
+    - environments/upgrade-test.yaml
   benchmark:
     values:
     - environments/benchmark.yaml
