@@ -39,6 +39,8 @@ import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.SYSTEM_PROPERTY_PRE
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.blob.AbstractCloudBlobProviderFeature;
+
 /**
  * Helper to connect to S3 in tests.
  *
@@ -85,8 +87,7 @@ public class S3TestHelper {
     }
 
     public static String getUniqueBucketPrefix(String prefix) {
-        long timestamp = System.nanoTime();
-        return String.format("%s-%s/", prefix, timestamp);
+        return AbstractCloudBlobProviderFeature.getUniqueBucketPrefix(prefix);
     }
 
 }

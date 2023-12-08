@@ -24,27 +24,19 @@ import static com.amazonaws.SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR;
 import static com.amazonaws.SDKGlobalConfiguration.AWS_REGION_ENV_VAR;
 import static com.amazonaws.SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR;
 import static com.amazonaws.SDKGlobalConfiguration.SECRET_KEY_ENV_VAR;
-import static org.apache.commons.lang3.ObjectUtils.getFirstNonNull;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.junit.Assume.assumeTrue;
-import static org.nuxeo.ecm.blob.s3.S3TestHelper.getUniqueBucketPrefix;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.function.Supplier;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.runners.model.FrameworkMethod;
+import org.nuxeo.ecm.blob.AbstractCloudBlobProviderFeature;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerFeature;
-import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
@@ -81,7 +73,7 @@ import org.osgi.framework.Bundle;
 @Features(BlobManagerFeature.class)
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3")
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests")
-public class S3BlobProviderFeature implements RunnerFeature {
+public class S3BlobProviderFeature extends AbstractCloudBlobProviderFeature {
 
     public static final String S3_DOC_TYPE = "FileS3";
 
@@ -160,44 +152,4 @@ public class S3BlobProviderFeature implements RunnerFeature {
         }
     }
 
-    protected Supplier<String> sysEnv(String key) {
-        return () -> StringUtils.trimToNull(System.getenv(key));
-    }
-
-    protected Supplier<String> sysProp(String key) {
-        return () -> StringUtils.trimToNull(System.getProperty(key));
-    }
-
-    protected Supplier<String> unique(String prefix) {
-        return () -> prefix == null ? null : getUniqueBucketPrefix(prefix);
-    }
-
-    protected String configureProperty(String key, @SuppressWarnings("unchecked") Supplier<String>... suppliers) {
-        String value = getFirstNonNull(suppliers);
-        if (value != null) {
-            Framework.getProperties().setProperty(key, value);
-        }
-        return value;
-    }
-
-    @Override
-    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        clearBlobStores();
-    }
-
-    @Override
-    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        clearBlobStores();
-    }
-
-    protected void clearBlobStores() {
-        clearBlobStore("test");
-        clearBlobStore("other");
-    }
-
-    protected void clearBlobStore(String blobProviderId) {
-        var blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
-        var blobStore = ((BlobStoreBlobProvider) blobProvider).store;
-        blobStore.clear();
-    }
 }
