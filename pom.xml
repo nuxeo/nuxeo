@@ -4383,9 +4383,14 @@
             <nuxeo.test.s3storage.bucket>${nuxeo.test.s3storage.bucket}</nuxeo.test.s3storage.bucket>
             <nuxeo.test.s3storage.transient.bucket>${nuxeo.test.s3storage.transient.bucket}</nuxeo.test.s3storage.transient.bucket>
             <nuxeo.test.s3storage.policy.bucket>${nuxeo.test.s3storage.policy.bucket}</nuxeo.test.s3storage.policy.bucket>
-            <nuxeo.test.s3storage.bucket_prefix>${nuxeo.test.s3storage.bucket_prefix}</nuxeo.test.s3storage.bucket_prefix>>
+            <nuxeo.test.s3storage.bucket_prefix>${nuxeo.test.s3storage.bucket_prefix}</nuxeo.test.s3storage.bucket_prefix>
             <nuxeo.test.s3storage.provider.test.bucket_prefix>${nuxeo.test.s3storage.provider.test.bucket_prefix}</nuxeo.test.s3storage.provider.test.bucket_prefix>
-            <nuxeo.test.s3storage.provider.other.bucket_prefix>${nuxeo.test.s3storage.provider.other.bucket_prefix}</nuxeo.test.s3storage.provider.other.bucket_prefix>>
+            <nuxeo.test.s3storage.provider.other.bucket_prefix>${nuxeo.test.s3storage.provider.other.bucket_prefix}</nuxeo.test.s3storage.provider.other.bucket_prefix>
+            <nuxeo.test.gcp.project>${nuxeo.test.gcp.project}</nuxeo.test.gcp.project>
+            <nuxeo.test.gcp.bucket>${nuxeo.test.gcp.bucket}</nuxeo.test.gcp.bucket>
+            <nuxeo.test.gcp.bucket_prefix>${nuxeo.test.gcp.bucket_prefix}</nuxeo.test.gcp.bucket_prefix>
+            <nuxeo.test.gcp.provider.test.bucket_prefix>${nuxeo.test.gcp.provider.test.bucket_prefix}</nuxeo.test.gcp.provider.test.bucket_prefix>
+            <nuxeo.test.gcp.provider.other.bucket_prefix>${nuxeo.test.gcp.provider.other.bucket_prefix}</nuxeo.test.gcp.provider.other.bucket_prefix>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>

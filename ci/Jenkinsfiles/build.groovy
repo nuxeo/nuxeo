@@ -138,6 +138,7 @@ def buildUnitTestStage(env) {
               cat ci/mvn/nuxeo-test-${env}.properties \
                 ci/mvn/nuxeo-test-opensearch.properties \
                 ci/mvn/nuxeo-test-s3.properties \
+                ci/mvn/nuxeo-test-gcp.properties \
                 > ci/mvn/nuxeo-test-${env}.properties~gen
               BUCKET_PREFIX=${bucketPrefix} \
                 TEST_BLOB_PROVIDER_PREFIX=${testBlobProviderPrefix} \
@@ -161,7 +162,8 @@ def buildUnitTestStage(env) {
                   "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
                   "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
                   "AWS_REGION=${AWS_REGION}",
-                  "AWS_ROLE_ARN=${AWS_ROLE_ARN}"
+                  "AWS_ROLE_ARN=${AWS_ROLE_ARN}",
+                  "GCP_CREDENTIALS_PATH=/home/jenkins/.config/gcloud/credentials.json"
               ]) {
                 executeUnitTestsMvnCommandWithRetry(mvnCommand, env)
               }
@@ -684,7 +686,7 @@ pipeline {
             sh """
               mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy
               mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
-  
+
               # update back nuxeo-parent version to CURRENT_VERSION version
               mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${CURRENT_VERSION} -DgenerateBackupPoms=false
               mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
