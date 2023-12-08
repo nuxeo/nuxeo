@@ -18,28 +18,21 @@
  */
 package org.nuxeo.ecm.core.storage.gcp;
 
-import static org.apache.commons.lang3.ObjectUtils.getFirstNonNull;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.function.Supplier;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.runners.model.FrameworkMethod;
+import org.nuxeo.ecm.blob.AbstractCloudBlobProviderFeature;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerFeature;
-import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
@@ -74,7 +67,7 @@ import org.osgi.framework.Bundle;
 @Features(BlobManagerFeature.class)
 @Deploy("org.nuxeo.ecm.core.storage.gcp")
 @Deploy("org.nuxeo.ecm.core.storage.gcp.tests")
-public class GoogleStorageBlobProviderFeature implements RunnerFeature {
+public class GoogleStorageBlobProviderFeature extends AbstractCloudBlobProviderFeature {
 
     protected static final Logger log = LogManager.getLogger(GoogleStorageBlobProviderFeature.class);
 
@@ -151,54 +144,5 @@ public class GoogleStorageBlobProviderFeature implements RunnerFeature {
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
-    }
-
-    // XXX Could factorize with org.nuxeo.ecm.blob.s3.S3TestHelper.getUniqueBucketPrefix(String)
-    protected Supplier<String> unique(String prefix) {
-        return () -> prefix == null ? null : getUniqueBucketPrefix(prefix);
-    }
-
-    // XXX Could factorize with org.nuxeo.ecm.blob.s3.S3BlobProviderFeature.unique(String)
-    public static String getUniqueBucketPrefix(String prefix) {
-        long timestamp = System.nanoTime();
-        return String.format("%s-%s/", prefix, timestamp);
-    }
-
-    @Override
-    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        clearBlobStores();
-    }
-
-    @Override
-    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        clearBlobStores();
-    }
-
-    protected void clearBlobStores() {
-        clearBlobStore("test");
-        clearBlobStore("other");
-    }
-
-    protected void clearBlobStore(String blobProviderId) {
-        var blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
-        var blobStore = ((BlobStoreBlobProvider) blobProvider).store;
-        blobStore.clear();
-    }
-
-    protected String configureProperty(String key, @SuppressWarnings("unchecked") Supplier<String>... suppliers) {
-        String value = getFirstNonNull(suppliers);
-        log.debug("ConfigureProperty for key: {}, value {}", key, value);
-        if (value != null) {
-            Framework.getProperties().setProperty(key, value);
-        }
-        return value;
-    }
-
-    protected Supplier<String> sysEnv(String key) {
-        return () -> StringUtils.trimToNull(System.getenv(key));
-    }
-
-    protected Supplier<String> sysProp(String key) {
-        return () -> StringUtils.trimToNull(System.getProperty(key));
     }
 }
