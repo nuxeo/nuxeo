@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.googleStorage" version="1.0.0">
+
+  <require>default-repository-config</require>
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="default">
+      <class>${nuxeo.core.binarymanager}</class>
+      <property name="project">${nuxeo.gcp.project}</property>
+      <property name="credentials">${nuxeo.gcp.credentials}</property>
+      <property name="bucket">${nuxeo.gcp.storage.bucket}</property>
+      <property name="bucket_prefix">${nuxeo.gcp.storage.bucket_prefix}</property>
+    </blobprovider>
+  </extension>
+
+</component>
