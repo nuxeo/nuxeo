@@ -3575,7 +3575,7 @@
         <!-- not used by the platform, keep it if third party leveraged it -->
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
-        <version>1.7</version>
+        <version>1.8.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
