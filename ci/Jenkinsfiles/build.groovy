@@ -356,62 +356,66 @@ pipeline {
       }
     }
 
-    stage('Test Docker image') {
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'docker/test', message: 'Test Docker image') {
-            echo """
-            ----------------------------------------
-            Test Docker image
-            ----------------------------------------
-            """
-            script {
-              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
-              echo "Test ${image}"
-              dockerPull(image)
-              echo 'Run image as root (0)'
-              dockerRun(image, 'nuxeoctl start')
-              echo 'Run image as an arbitrary user (800)'
-              dockerRun(image, 'nuxeoctl start', '800')
+    stage('Verify Docker image') {
+      parallel {
+        stage('Test Docker image') {
+          steps {
+            container('maven') {
+              nxWithGitHubStatus(context: 'docker/test', message: 'Test Docker image') {
+                echo """
+                ----------------------------------------
+                Test Docker image
+                ----------------------------------------
+                """
+                script {
+                  image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
+                  echo "Test ${image}"
+                  dockerPull(image)
+                  echo 'Run image as root (0)'
+                  dockerRun(image, 'nuxeoctl start')
+                  echo 'Run image as an arbitrary user (800)'
+                  dockerRun(image, 'nuxeoctl start', '800')
+                }
+              }
             }
           }
         }
-      }
-    }
 
-    stage('Scan Docker image') {
-      when {
-        anyOf {
-          expression {
-            !nxUtils.isPullRequest()
+        stage('Scan Docker image') {
+          when {
+            anyOf {
+              expression {
+                !nxUtils.isPullRequest()
+              }
+              expression {
+                pullRequest.labels.contains('docker-scan')
+              }
+              changeset "docker/**"
+            }
           }
-          expression {
-            pullRequest.labels.contains('docker-scan')
-          }
-          changeset "docker/**"
-        }
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'docker/scan', message: 'Scan Docker image') {
-            script {
-              def imageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
-              echo """
-              ----------------------------------------
-              Scan Docker image
-              ----------------------------------------
-              Image full name: ${DOCKER_REGISTRY}/${imageName}
-              """
-              nxGitHub.runAndWatchWorkflow(
-                workflowId: "${GITHUB_WORKFLOW_DOCKER_SCAN}",
-                branch: "${CHANGE_BRANCH}",
-                rawFields: [
-                  internalRegistry: true,
-                  imageName: "${imageName}",
-                ],
-                sha: "${GIT_COMMIT}",
-                exitStatus: true
-              )
+          steps {
+            container('maven') {
+              nxWithGitHubStatus(context: 'docker/scan', message: 'Scan Docker image') {
+                script {
+                  def imageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
+                  echo """
+                  ----------------------------------------
+                  Scan Docker image
+                  ----------------------------------------
+                  Image full name: ${DOCKER_REGISTRY}/${imageName}
+                  """
+                  nxGitHub.runAndWatchWorkflow(
+                    workflowId: "${GITHUB_WORKFLOW_DOCKER_SCAN}",
+                    branch: "${CHANGE_BRANCH}",
+                    rawFields: [
+                      internalRegistry: true,
+                      imageName: "${imageName}",
+                    ],
+                    sha: "${GIT_COMMIT}",
+                    exitStatus: true
+                  )
+                }
+              }
             }
           }
         }
