@@ -25,6 +25,7 @@ import java.util.Collection;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.automation.core.impl.adapters.helper.AbsoluteDocumentRef;
 import org.nuxeo.ecm.automation.core.impl.adapters.helper.TypeAdapterHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -44,6 +45,8 @@ public class CollectionToDocModelList implements TypeAdapter {
         for (Object val : list) {
             if (val instanceof String) {
                 result.add(TypeAdapterHelper.createDocumentModel(ctx, (String) val));
+            } else if (val instanceof AbsoluteDocumentRef) {
+                result.add(TypeAdapterHelper.createDocumentModel((AbsoluteDocumentRef) val));
             } else if (val instanceof DocumentRef) {
                 result.add(TypeAdapterHelper.createDocumentModel(ctx, (DocumentRef) val));
             } else if (val instanceof DocumentModel) {

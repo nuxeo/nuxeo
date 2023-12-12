@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -110,4 +111,14 @@ public class TypeAdapterHelper {
             throws TypeAdaptException {
         return ctx.getCoreSession().getDocument(docRef);
     }
+
+    /**
+     * Creates a document model from its absolute reference.
+     *
+     * @since 2023.5
+     */
+    public static DocumentModel createDocumentModel(AbsoluteDocumentRef docRef) {
+        return CoreInstance.getCoreSession(docRef.getRepositoryName()).getDocument(docRef);
+    }
+
 }

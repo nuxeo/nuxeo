@@ -433,7 +433,18 @@
       <pageSize>50</pageSize>
     </genericPageProvider>
 
-  </extension>
+    <genericPageProvider name="SEARCH_ALL_REPOSITORIES_PP"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="searchAllRepositories">true</property>
+      <pattern>SELECT * FROM Document
+        WHERE ecm:path = ?
+        AND ecm:isVersion = 0
+        AND ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:isTrashed = 0
+      </pattern>
+      <sort ascending="true" column="dc:title" />
+    </genericPageProvider>
 
+  </extension>
 
 </component>

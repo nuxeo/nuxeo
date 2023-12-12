@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.core.operations.multi.repo.test">
+
+  <extension point="operations"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <operation
+      class="org.nuxeo.elasticsearch.test.rest.MultiRepositoryDummyOperation" />
+  </extension>
+
+</component>
