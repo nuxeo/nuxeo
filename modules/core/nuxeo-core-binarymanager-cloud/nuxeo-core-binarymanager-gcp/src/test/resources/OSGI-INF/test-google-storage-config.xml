@@ -7,7 +7,7 @@
       <property name="credentials">${nuxeo.test.gcp.credentials}</property>
       <property name="bucket">${nuxeo.test.gcp.provider.test.bucket}</property>
       <property name="bucket_prefix">${nuxeo.test.gcp.provider.test.bucket_prefix}</property>
-      <property name="allowByteRange">false</property>
+      <property name="allowByteRange">true</property>
     </blobprovider>
     <blobprovider name="other">
       <class>org.nuxeo.ecm.core.storage.gcp.GoogleStorageBlobProvider</class>
@@ -15,7 +15,7 @@
       <property name="credentials">${nuxeo.test.gcp.credentials}</property>
       <property name="bucket">${nuxeo.test.gcp.provider.other.bucket}</property>
       <property name="bucket_prefix">${nuxeo.test.gcp.provider.other.bucket_prefix}</property>
-      <property name="allowByteRange">false</property>
+      <property name="allowByteRange">true</property>
     </blobprovider>
   </extension>
 

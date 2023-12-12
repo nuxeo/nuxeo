@@ -28,11 +28,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -41,10 +44,12 @@ import org.nuxeo.ecm.core.blob.AbstractBlobStore;
 import org.nuxeo.ecm.core.blob.BlobContext;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobWriteContext;
+import org.nuxeo.ecm.core.blob.ByteRange;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 
 import com.google.api.gax.paging.Page;
+import com.google.cloud.ReadChannel;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
@@ -54,6 +59,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.Storage.BlobField;
 import com.google.cloud.storage.Storage.BlobListOption;
 import com.google.cloud.storage.StorageException;
+import com.google.common.io.ByteStreams;
 
 /**
  * @since 2023.5
@@ -243,12 +249,33 @@ public class GoogleStorageBlobStore extends AbstractBlobStore {
 
     @Override
     public boolean readBlob(String key, Path dest) throws IOException {
+        ByteRange byteRange;
+        if (allowByteRange) {
+            MutableObject<String> keyHolder = new MutableObject<>(key);
+            byteRange = getByteRangeFromKey(keyHolder);
+            key = keyHolder.getValue();
+        } else {
+            byteRange = null;
+        }
         String bucketKey = bucketPrefix + key;
         Blob blob = bucket.get(bucketKey);
         if (blob == null) {
             return false;
         }
-        blob.downloadTo(dest);
+        if (byteRange != null) {
+            try (ReadChannel from = storage.reader(blob.getBlobId());
+                    FileChannel to = FileChannel.open(dest, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+                from.seek(byteRange.getStart());
+                // limit method is available from gcp client >= 2.5.0 see
+                // https://github.com/googleapis/java-storage/pull/1180
+                // Weirdly gcp client limit api takes the maximum number of bytes to be read, not an offset hence
+                // byteRange.getEnd() + 1
+                from.limit(byteRange.getEnd() + 1);
+                ByteStreams.copy(from, to);
+            }
+        } else {
+            blob.downloadTo(dest);
+        }
         return true;
     }
 
