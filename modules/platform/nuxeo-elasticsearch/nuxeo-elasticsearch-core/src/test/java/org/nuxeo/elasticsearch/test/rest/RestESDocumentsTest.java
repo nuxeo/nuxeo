@@ -42,7 +42,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -107,9 +106,6 @@ public class RestESDocumentsTest extends BaseTest {
 
     @Inject
     protected PageProviderService pageProviderService;
-
-    @Inject
-    protected AutomationService automationService;
 
     @Inject
     protected TransactionalFeature txFeature;

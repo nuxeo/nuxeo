@@ -15,6 +15,9 @@
  */
 package org.nuxeo.elasticsearch.test.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -35,10 +38,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 11.1
