@@ -538,6 +538,11 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
                     blobProvider.getClass().getName(), providerId, key);
             return false;
         }
+        BlobStoreBlobProvider blobStoreProvider = (BlobStoreBlobProvider) blobProvider;
+        if (!blobStoreProvider.isValidKey(key)) {
+            log.debug("Cannot delete invalid blob key: {} for provider: {}", key, providerId);
+            return false;
+        }
 
         boolean canBeDeleted = TransactionHelper.runInTransaction(
                 () -> CoreInstance.doPrivileged(repositoryName, (CoreSession session) -> {

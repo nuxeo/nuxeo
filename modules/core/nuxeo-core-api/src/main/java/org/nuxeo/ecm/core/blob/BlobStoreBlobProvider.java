@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import static org.nuxeo.ecm.core.blob.DigestConfiguration.DIGEST_ALGORITHM_PROPERTY;
+import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,7 +73,7 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
             String strKeyStrategy = properties.getOrDefault(KEY_STRATEGY_PROPERTY, DIGEST_KEY_STRATEGY);
             keyStrategy = new KeyStrategyDigest(getDigestAlgorithm());
             if (MANAGED_KEY_STRATEGY.equals(strKeyStrategy)) {
-               keyStrategy = new KeyStrategyManaged(keyStrategy);
+                keyStrategy = new KeyStrategyManaged(keyStrategy);
             }
         }
         return keyStrategy;
@@ -94,6 +95,19 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
     @Override
     public BinaryGarbageCollector getBinaryGarbageCollector() {
         return store.getBinaryGarbageCollector();
+    }
+
+    /**
+     * Does the given key have the expected pattern for the provider's key strategy.
+     *
+     * @since 2023.5
+     */
+    public boolean isValidKey(String key) {
+        String blobKey = stripBlobKeyPrefix(key);
+        if (getKeyStrategy() instanceof KeyStrategyDocId && this.store.hasVersioning()) {
+            return blobKey.indexOf(VER_SEP) >= 0;
+        }
+        return getKeyStrategy().isValidKey(blobKey);
     }
 
     protected String stripBlobKeyPrefix(String key) {

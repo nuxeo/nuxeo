@@ -71,4 +71,13 @@ public interface KeyStrategy {
      */
     BlobWriteContext getBlobWriteContext(BlobContext blobContext);
 
+    /**
+     * Does the given key have the expected pattern for this strategy.
+     *
+     * @since 2023.5
+     */
+    default boolean isValidKey(String key) {
+        return true;
+    }
+
 }
