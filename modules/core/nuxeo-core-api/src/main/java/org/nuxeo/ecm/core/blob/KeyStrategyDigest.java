@@ -70,7 +70,7 @@ public class KeyStrategyDigest implements KeyStrategy {
     }
 
     @Override
-    public BlobWriteContext getBlobWriteContext(BlobContext blobContext)  {
+    public BlobWriteContext getBlobWriteContext(BlobContext blobContext) {
         MutableObject<String> keyHolder = new MutableObject<>();
         WriteObserver writeObserver = new WriteObserverDigest(digestAlgorithm, keyHolder::setValue);
         Supplier<String> keyComputer = keyHolder::getValue;
@@ -124,6 +124,11 @@ public class KeyStrategyDigest implements KeyStrategy {
     @Override
     public int hashCode() {
         return digestAlgorithm.hashCode();
+    }
+
+    @Override
+    public boolean isValidKey(String key) {
+        return isValidDigest(key);
     }
 
 }

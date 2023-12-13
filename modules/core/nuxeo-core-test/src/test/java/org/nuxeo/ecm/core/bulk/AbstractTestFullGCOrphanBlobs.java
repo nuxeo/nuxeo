@@ -127,8 +127,7 @@ public abstract class AbstractTestFullGCOrphanBlobs {
         testGCBlobsAction(dryRun, getNbFiles(), sizeOfBinaries);
     }
 
-    protected void doGC(boolean dryRun, boolean success, int skipped, long deletedSize, int processed, long totalSize,
-            int errorCount, int total) {
+    protected BulkStatus triggerAndWaitGC(boolean dryRun) {
         BulkCommand command = new BulkCommand.Builder(GarbageCollectOrphanBlobsAction.ACTION_NAME,
                 session.getRepositoryName(), session.getPrincipal().getName()).repository(session.getRepositoryName())
                                                                               .useGenericScroller()
@@ -138,8 +137,13 @@ public abstract class AbstractTestFullGCOrphanBlobs {
                                                                               .build();
         String commandId = service.submit(command);
         coreFeature.waitForAsyncCompletion();
+        return service.getStatus(commandId);
+    }
 
-        BulkStatus status = service.getStatus(commandId);
+    protected void doGC(boolean dryRun, boolean success, int skipped, long deletedSize, int processed, long totalSize,
+            int errorCount, int total) {
+
+        BulkStatus status = triggerAndWaitGC(dryRun);
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(processed, status.getProcessed());
