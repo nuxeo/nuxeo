@@ -1,6 +1,9 @@
 clusterName: elasticsearch
 replicas: 1
+persistence:
+  enabled: false
 minimumMasterNodes: 1
+maxUnavailable: null
 resources:
   requests:
     cpu: "250m"

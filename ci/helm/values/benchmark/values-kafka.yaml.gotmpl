@@ -3,6 +3,8 @@
 {{- $replicaCount := add $nxReplicaCount $nxWorkerCount -}}
 broker:
   replicaCount: {{ $replicaCount }}
+  persistence:
+    enabled: true
   resources:
     requests:
       cpu: "3"
@@ -38,6 +40,8 @@ broker:
 {{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}
 zookeeper:
   replicaCount: {{ $replicaCount }}
+  persistence:
+    enabled: true
   resources:
     requests:
       cpu: "500m"

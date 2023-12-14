@@ -1,32 +1,6 @@
 broker:
-  persistence:
-    enabled: false
   podLabels:
     dev.nuxeo.com/usage: utests
-  pdb:
-    create: true
-    minAvailable: 1
-    maxUnavailable: ""
 zookeeper:
-  persistence:
-    enabled: false
   podLabels:
     dev.nuxeo.com/usage: utests
-  extraDeploy:
-  # use extra deploy for Zookeeper PDB because PDB from Zookeeper chart is only deployed when replica count > 1
-  - |
-    apiVersion: policy/v1
-    kind: PodDisruptionBudget
-    metadata:
-      name: {{"{{"}} template "common.names.fullname" . {{"}}"}}
-      labels: {{"{{-"}} include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 {{"}}"}}
-        app.kubernetes.io/component: zookeeper
-      {{"{{-"}} if .Values.commonAnnotations {{"}}"}}
-      annotations: {{"{{-"}} include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 {{"}}"}}
-      {{"{{-"}} end {{"}}"}}
-    spec:
-      minAvailable: 1
-      {{"{{-"}} $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.podLabels .Values.commonLabels ) "context" . ) {{"}}"}}
-      selector:
-        matchLabels: {{"{{-"}} include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 {{"}}"}}
-          app.kubernetes.io/component: zookeeper

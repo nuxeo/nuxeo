@@ -1,23 +1,5 @@
-persistence:
-  enabled: false
 labels:
   dev.nuxeo.com/usage: utests
 service:
   labels:
     dev.nuxeo.com/usage: utests
-extraObjects:
-  - apiVersion: policy/v1
-    kind: PodDisruptionBudget
-    metadata:
-      name: '{{"{{"}} template "opensearch.uname" . {{"}}"}}'
-      labels:
-        app.kubernetes.io/name: '{{"{{"}} include "opensearch.name" . {{"}}"}}'
-        app.kubernetes.io/instance: '{{"{{"}} .Release.Name {{"}}"}}'
-        app.kubernetes.io/managed-by: '{{"{{"}} .Release.Service {{"}}"}}'
-        app.kubernetes.io/component: '{{"{{"}} include "opensearch.uname" . {{"}}"}}'
-    spec:
-      minAvailable: 1
-      selector:
-        matchLabels:
-          app.kubernetes.io/name: '{{"{{"}} include "opensearch.name" . {{"}}"}}'
-          app.kubernetes.io/instance: '{{"{{"}} .Release.Name {{"}}"}}'
