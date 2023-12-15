@@ -671,7 +671,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
         protected final int batchSize;
 
-        protected long lastCallTimestamp;
+        protected volatile long lastCallTimestamp;
 
         CursorResult(PreparedStatement preparedStatement, ResultSet resultSet, int batchSize, int keepAliveSeconds) {
             this.preparedStatement = preparedStatement;
@@ -682,8 +682,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
 
         boolean timedOut(String scrollId) {
+            if (keepAliveSeconds <= 0) {
+                return false;
+            }
             long now = System.currentTimeMillis();
-            if (now - lastCallTimestamp > (keepAliveSeconds * 1000)) {
+            if (now - lastCallTimestamp > (keepAliveSeconds * 1000L)) {
                 if (unregisterCursor(scrollId)) {
                     log.warn("Scroll " + scrollId + " timed out");
                 }

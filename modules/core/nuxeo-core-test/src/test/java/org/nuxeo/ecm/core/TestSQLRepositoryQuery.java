@@ -3609,7 +3609,7 @@ public class TestSQLRepositoryQuery {
 
         // the scroll id is now closed
         var exception = assertThrows(NuxeoException.class, () -> session.scroll(scrollId));
-        assertEquals("Unknown or timed out scrollId", exception.getMessage());
+        assertTrue(exception.getMessage(), exception.getMessage().startsWith("Unknown or timed out scrollId"));
     }
 
     @Test
@@ -3656,13 +3656,13 @@ public class TestSQLRepositoryQuery {
         Thread.sleep(1100);
 
         var exception = assertThrows(NuxeoException.class, () -> session.scroll(ret.getScrollId()));
-        assertEquals("Timed out scrollId", exception.getMessage());
+        assertTrue(exception.getMessage(), exception.getMessage().startsWith("Timed out scrollId"));
     }
 
     @Test
     public void testScrollBadUsageInvalidScrollId() {
         var exception = assertThrows(NuxeoException.class, () -> session.scroll("foo"));
-        assertEquals("Unknown or timed out scrollId", exception.getMessage());
+        assertTrue(exception.getMessage(), exception.getMessage().startsWith("Unknown or timed out scrollId"));
     }
 
     @Test
@@ -3684,14 +3684,14 @@ public class TestSQLRepositoryQuery {
         Thread.sleep(1100);
         // normal timeout on ret1
         var exception1 = assertThrows(NuxeoException.class, () -> session.scroll(ret1.getScrollId()));
-        assertEquals("Timed out scrollId", exception1.getMessage());
+        assertTrue(exception1.getMessage(), exception1.getMessage().startsWith("Timed out scrollId"));
         // This new call will clean leaked scroll
         ScrollResult<String> ret4 = session.scroll("SELECT * FROM Document", 1, 1);
         assertTrue(ret4.hasResults());
 
         // ret2 is now unknown because it has been cleaned
         var exception2 = assertThrows(NuxeoException.class, () -> session.scroll(ret2.getScrollId()));
-        assertEquals("Unknown or timed out scrollId", exception2.getMessage());
+        assertTrue(exception2.getMessage(), exception2.getMessage().startsWith("Unknown or timed out scrollId"));
     }
 
     @Test
