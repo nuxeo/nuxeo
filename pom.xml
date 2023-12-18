@@ -155,6 +155,7 @@
     <kafka.version>3.6.1</kafka.version>
     <confluent.version>6.2.13</confluent.version>
     <metrics.version>5.0.0-rc3</metrics.version>
+    <amqp.client.version>5.20.0</amqp.client.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
     <okhttp.version>4.12.0</okhttp.version>
@@ -3683,6 +3684,12 @@
         <version>${metrics.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <!-- transitive dependency of io.dropwizard.metrics5:metrics-graphite to upgrade -->
+      <dependency>
+        <groupId>com.rabbitmq</groupId>
+        <artifactId>amqp-client</artifactId>
+        <version>${amqp.client.version}</version>
       </dependency>
 
       <dependency>
