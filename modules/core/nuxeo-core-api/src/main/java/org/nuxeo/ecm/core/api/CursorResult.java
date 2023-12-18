@@ -37,7 +37,7 @@ public class CursorResult<C, O> implements Iterator<O>, Closeable {
 
     protected final int keepAliveSeconds;
 
-    protected long lastCallTimestamp;
+    protected volatile long lastCallTimestamp;
 
     public CursorResult(C cursor, int batchSize, int keepAliveSeconds) {
         this.cursor = cursor;
@@ -59,8 +59,11 @@ public class CursorResult<C, O> implements Iterator<O>, Closeable {
     }
 
     public boolean timedOut() {
+        if (keepAliveSeconds <= 0) {
+            return false;
+        }
         long now = System.currentTimeMillis();
-        return now - lastCallTimestamp > keepAliveSeconds * 1000;
+        return now - lastCallTimestamp > keepAliveSeconds * 1000L;
     }
 
     @Override

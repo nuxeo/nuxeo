@@ -37,6 +37,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ElasticSearchScroll extends RepositoryScroll {
 
+    // elastic keep alive must be less than 1d
+    protected static final long MAX_ES_KEEP_ALIVE_SECONDS = 23 * 3600L;
+
     protected EsScrollResult esScroll;
 
     @Override
@@ -55,7 +58,7 @@ public class ElasticSearchScroll extends RepositoryScroll {
                 esScroll = ess.scroll(new NxQueryBuilder(session).nxql(request.getQuery())
                                                                  .limit(request.getSize())
                                                                  .onlyElasticsearchResponse(),
-                        request.getTimeout().toSeconds());
+                        getKeepAlive());
             } else {
                 esScroll = ess.scroll(esScroll);
             }
@@ -64,6 +67,14 @@ public class ElasticSearchScroll extends RepositoryScroll {
         }
         SearchHit[] hits = esScroll.getElasticsearchResponse().getHits().getHits();
         return hits != null && hits.length > 0;
+    }
+
+    protected long getKeepAlive() {
+        long keepAlive = request.getTimeout().toSeconds();
+        if (keepAlive <= 0 || keepAlive > MAX_ES_KEEP_ALIVE_SECONDS) {
+            return MAX_ES_KEEP_ALIVE_SECONDS;
+        }
+        return keepAlive;
     }
 
     @Override

@@ -58,7 +58,8 @@ public class CursorService<C, O, R> {
     protected boolean isScrollTimedOut(String scrollId, CursorResult<C, O> cursorResult) {
         if (cursorResult.timedOut()) {
             if (unregisterCursor(scrollId)) {
-                log.warn("Scroll '{}' timed out", scrollId);
+                log.warn("Scroll '{}' timed out, timed out, (now: {} - last: {}) > keepalive: 1000*{}", scrollId,
+                        System.currentTimeMillis(), cursorResult.lastCallTimestamp, cursorResult.keepAliveSeconds);
             }
             return true;
         }
@@ -102,6 +103,7 @@ public class CursorService<C, O, R> {
      */
     public String registerCursorResult(String scrollId, CursorResult<C, O> cursorResult) {
         cursorResults.put(scrollId, cursorResult);
+        log.debug("registerCursorResult Scroll: {}, keepalive: {}", scrollId, cursorResult.keepAliveSeconds);
         return scrollId;
     }
 
@@ -114,6 +116,7 @@ public class CursorService<C, O, R> {
     public boolean unregisterCursor(String scrollId) {
         CursorResult<C, O> cursorResult = cursorResults.remove(scrollId);
         if (cursorResult != null) {
+            log.debug("unregisterCursor Scroll: {}", scrollId);
             cursorResult.close();
             return true;
         }
@@ -127,9 +130,9 @@ public class CursorService<C, O, R> {
     public ScrollResult<R> scroll(String scrollId) {
         CursorResult<C, O> cursorResult = cursorResults.get(scrollId);
         if (cursorResult == null) {
-            throw new NuxeoException("Unknown or timed out scrollId");
+            throw new NuxeoException("Unknown or timed out scrollId: " + scrollId);
         } else if (isScrollTimedOut(scrollId, cursorResult)) {
-            throw new NuxeoException("Timed out scrollId");
+            throw new NuxeoException("Timed out scrollId: " + scrollId);
         }
         cursorResult.touch();
         List<R> results = new ArrayList<>(cursorResult.getBatchSize());
@@ -142,13 +145,14 @@ public class CursorService<C, O, R> {
                 if (!cursorResult.hasNext()) {
                     // Don't unregister cursor here because we don't want scroll API to throw an exception during next
                     // call as it's a legitimate case - but close cursor
+                    log.debug("Closing cursor for Scroll: {}", scrollId);
                     cursorResult.close();
                     break;
                 } else {
                     O obj = cursorResult.next();
                     R result = extractor.apply(obj);
                     if (result == null) {
-                        log.error("Got a document without result: {}", obj);
+                        log.error("Got a document without result: {}, Scroll: {}", obj, scrollId);
                     } else {
                         results.add(result);
                     }
