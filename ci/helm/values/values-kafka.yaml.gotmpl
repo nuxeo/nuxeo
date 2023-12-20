@@ -1,6 +1,8 @@
 image:
   tag: "2.6.0"
 replicaCount: 1
+persistence:
+  enabled: false
 serviceAccount:
   create: false
 resources:
@@ -35,6 +37,8 @@ zookeeper:
   image:
     tag: "3.6.2"
   replicaCount: 1
+  persistence:
+    enabled: false
   heapSize: "256"
   resources:
     requests:

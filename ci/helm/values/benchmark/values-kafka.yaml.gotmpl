@@ -2,6 +2,8 @@
 {{- $nxWorkerCount := env "NX_WORKER_COUNT" | default 1 -}}
 {{- $replicaCount := add $nxReplicaCount $nxWorkerCount -}}
 replicaCount: {{ $replicaCount }}
+persistence:
+  enabled: true
 resources:
   requests:
     cpu: "3"
@@ -35,8 +37,12 @@ affinity:
           - zookeeper
       topologyKey: "kubernetes.io/hostname"
 {{ readFile "values-tolerations-nodeselector.yaml" }}
+pdb:
+  create: true
 zookeeper:
   replicaCount: {{ $replicaCount }}
+  persistence:
+    enabled: true
   resources:
     requests:
       cpu: "500m"

@@ -1,0 +1,20 @@
+# use extra deploy for Kafka/Zookeeper PDB because PDB from Kafka/Zookeeper chart is only deployed when replica count > 1
+extraDeploy:
+  - |
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: {{"{{"}} template "common.names.fullname" . {{"}}"}}
+      labels: {{"{{-"}} include "common.labels.standard" . | nindent 4 {{"}}"}}
+        app.kubernetes.io/component: {{ .chartName }}
+        {{"{{-"}} if .Values.commonLabels {{"}}"}}
+        {{"{{-"}} include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 {{"}}"}}
+        {{"{{-"}} end {{"}}"}}
+      {{"{{-"}} if .Values.commonAnnotations {{"}}"}}
+      annotations: {{"{{-"}} include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 {{"}}"}}
+      {{"{{-"}} end {{"}}"}}
+    spec:
+      minAvailable: 1
+      selector:
+        matchLabels: {{"{{-"}} include "common.labels.matchLabels" . | nindent 6 {{"}}"}}
+          app.kubernetes.io/component: {{ .chartName }}
