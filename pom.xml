@@ -153,7 +153,7 @@
     <quartz.mongodb.version>2.2.0-rc2</quartz.mongodb.version>
 
     <kafka.version>3.6.1</kafka.version>
-    <confluent.version>6.2.13</confluent.version>
+    <confluent.version>6.2.14</confluent.version>
     <metrics.version>5.0.0-rc3</metrics.version>
     <amqp.client.version>5.20.0</amqp.client.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
