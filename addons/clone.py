@@ -234,9 +234,9 @@ for remote_line in remote_lines:
     if alias == remote_alias:
         break
 
-is_online = remote_url.endswith("/addons.git")
+is_online = remote_url.endswith("/nuxeo.git")
 if is_online:
-    url_pattern = re.sub("(.*)addons", r"\1module", remote_url)
+    url_pattern = re.sub("(.*)nuxeo.git", r"\1module.git", remote_url)
 else:
     url_pattern = remote_url + "/module"
 
