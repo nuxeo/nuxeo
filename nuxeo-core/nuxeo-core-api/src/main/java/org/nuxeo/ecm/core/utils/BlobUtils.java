@@ -46,6 +46,8 @@ public class BlobUtils {
 
     public static final String ZIP_ENTRY_ENCODING_PROPERTY = "zip.entry.encoding";
 
+    private static final String INVALID_CHARACTERS_REGEX = "[\\/:*?\"<>|]";
+
     protected static String escapeEntryPath(String path) {
         String zipEntryEncoding = Framework.getProperty(ZIP_ENTRY_ENCODING_PROPERTY);
         if (zipEntryEncoding != null && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString())) {
@@ -129,6 +131,7 @@ public class BlobUtils {
             if (!names.add(entry)) {
                 entry = "renamed_" + (cnt++) + "_" + entry;
             }
+            entry = entry.replaceAll(INVALID_CHARACTERS_REGEX, "_");
             InputStream in = blob.getStream();
             try {
                 ZipUtils._zip(entry, in, out);
