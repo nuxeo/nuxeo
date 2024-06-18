@@ -101,7 +101,7 @@
     <jackson1.version>1.9.11</jackson1.version>
     <jackson.version>2.12.7</jackson.version>
     <jackson.bom.version>2.12.7.20221012</jackson.bom.version>
-    <bouncycastle.version>1.69</bouncycastle.version>
+    <bouncycastle.version>1.70</bouncycastle.version>
     <avro.version>1.11.3</avro.version>
     <restlet.version>2.4.3</restlet.version>
     <jmock.version>2.13.1</jmock.version>
