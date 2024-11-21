@@ -29,8 +29,13 @@ Building the Nuxeo Platform requires the following tools:
 Get the source code:
 
 ```shell
+# If you have access to nuxeo-lts private repository (latest sources):
 git clone git@github.com:nuxeo/nuxeo-lts.git
 cd nuxeo-lts
+
+# Else:
+git clone git@github.com:nuxeo/nuxeo.git
+cd nuxeo
 ```
 
 Export the relevant options for the JVM running Maven:
@@ -48,8 +53,10 @@ mvn install -Pdistrib,docker -DskipTests -Dnuxeo.skip.enforcer=true -T6
 To take the shortest path for building the Docker image, run the following command. It starts by building the Docker image's dependencies (server modules and ZIP), then the Docker image itself.
 
 ```shell
-mvn install -Pdistrib,docker -pl docker -am -DskipTests -Dnuxeo.skip.enforcer=true -T6
+mvn install -Pdistrib,docker -pl docker/nuxeo -am -DskipTests -Dnuxeo.skip.enforcer=true -T6
 ```
+
+The Tomcat ZIP distribution is at `server/nuxeo-server-tomcat/target`. The Docker image, if you built it, is in the local images repository (`docker images`).
 
 See the [docker](docker) directory for more information on how to build, run and configure the Nuxeo Docker Image.
 
