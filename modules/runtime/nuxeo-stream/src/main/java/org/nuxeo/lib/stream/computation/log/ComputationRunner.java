@@ -79,10 +79,12 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     private static final Logger log = LogManager.getLogger(ComputationRunner.class);
 
-    public static final Duration READ_TIMEOUT = Duration.ofMillis(25);
+    // default tailer read timeout
+    public static final Duration READ_TIMEOUT = Duration.ofMillis(100);
 
     protected static final long STARVING_TIMEOUT_MS = 1000;
 
+    // @deprecated since 2025.5
     protected static final long INACTIVITY_BREAK_MS = 100;
 
     // @since 2021.14
@@ -127,6 +129,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected long lastReadTime = System.currentTimeMillis();
 
     protected long lastTimerExecution;
+
+    protected Duration readTimeout;
 
     protected String threadName;
 
@@ -309,15 +313,10 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processLoop() throws InterruptedException {
-        boolean timerActivity;
         while (continueLoop()) {
-            timerActivity = processTimer();
+            processTimer();
             recordActivity = processRecord();
             counter++;
-            if (!timerActivity && !recordActivity) {
-                // no activity take a break
-                Thread.sleep(INACTIVITY_BREAK_MS);
-            }
         }
     }
 
@@ -431,10 +430,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         if (tailer == null) {
             return false;
         }
-        Duration timeoutRead = getTimeoutDuration();
         LogRecord<Record> logRecord = null;
         try {
-            logRecord = tailer.read(timeoutRead);
+            logRecord = tailer.read(getReadTimeout());
         } catch (RebalanceException e) {
             // the revoke has done a checkpoint we can continue
         } catch (IllegalArgumentException e) {
@@ -551,12 +549,30 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         return false;
     }
 
+    // @deprecated since 2025.5, use {@link #getReadTimeout()} instead
     protected Duration getTimeoutDuration() {
-        // lastReadTime could have been updated by another thread calling onPartitionsAssigned when doing minus
-        // no need to synchronize it, we don't want an accurate value there
-        long adaptedReadTimeout = Math.max(0, System.currentTimeMillis() - lastReadTime);
-        // Adapt the duration so we are not throttling when one of the input stream is empty
-        return Duration.ofMillis(Math.min(READ_TIMEOUT.toMillis(), adaptedReadTimeout));
+        return getReadTimeout();
+    }
+
+    /**
+     * Sets tailer read duration.
+     *
+     * @since 2025.5
+     */
+    public void setReadTimeout(Duration timeout) {
+        readTimeout = timeout;
+    }
+
+    /**
+     * Gets the tailer read duration.
+     *
+     * @since 2025.5
+     */
+    public Duration getReadTimeout() {
+        if (readTimeout == null) {
+            readTimeout = READ_TIMEOUT;
+        }
+        return readTimeout;
     }
 
     protected void checkSourceLowWatermark() {

@@ -95,6 +95,8 @@ public class TestLogKafka extends TestLog {
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 400);
         // keep number low to reduce time interval between poll
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 5);
+        // enable fast consumer close mitigating KAFKA-15402
+        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 5);
         return props;
     }
 
@@ -285,8 +287,8 @@ public class TestLogKafka extends TestLog {
     public void testDeleteRecords() throws Exception {
         manager.createIfNotExists(logName, 1);
         assertTrue(manager.exists(logName));
-        Name groupA =  Name.of("test", "group-a");
-        Name groupB =  Name.of("test", "group-b");
+        Name groupA = Name.of("test", "group-a");
+        Name groupB = Name.of("test", "group-b");
 
         // new group on a new topic, no lag
         LogLag lag = manager.getLag(logName, groupA);

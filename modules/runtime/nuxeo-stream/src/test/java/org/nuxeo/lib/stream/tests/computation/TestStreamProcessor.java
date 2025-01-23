@@ -453,7 +453,7 @@ public abstract class TestStreamProcessor {
         // The computation has an unused input stream with a single partition,
         // only the computation instance affected to the partition is generating new records.
         Topology topology = Topology.builder()
-                                    .addComputation(() -> new ComputationSource("GENERATOR", 1, nbRecords, 1,
+                                    .addComputation(() -> new ComputationSource("GENERATOR", 1, nbRecords, 4,
                                             targetTimestamp, true), Collections.singletonList("o1:s1"))
                                     .build();
         Settings settings = new Settings(2, 1).setConcurrency("GENERATOR", 2).setPartitions("s1", 1);
