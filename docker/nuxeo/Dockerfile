@@ -135,9 +135,13 @@ VOLUME /var/lib/nuxeo
 VOLUME /var/log/nuxeo
 VOLUME /tmp
 
+COPY ./nuxeo-web-ui-3.1.15.zip /home/nuxeo/
+COPY ./amazon-s3-online-storage-2023.22.13.zip /home/nuxeo/
+COPY ./nuxeo-mysql-package-2023.25.10.zip /home/nuxeo/
+COPY ./init.sh /home/nuxeo/
+RUN chmod +x /home/nuxeo/init.sh
+
 EXPOSE 8080
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["nuxeoctl", "console"]
 
 # Run as a non root user with a fixed UID
 USER 900
