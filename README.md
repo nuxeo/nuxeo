@@ -13,7 +13,7 @@ The Nuxeo Platform is developed and supported by Nuxeo, with contributions from 
 
 Please follow the [Installation](https://doc.nuxeo.com/n/b1j) guide.
 
-Running the Nuxeo Platform requires JDK 11, Oracle's JDK or OpenJDK.
+Running the Nuxeo Platform requires JDK 17, Oracle's JDK or OpenJDK.
 
 Depending on the features you want to use, you may need some third-party software, such as LibreOffice and pdftohtml for document preview or ImageMagick for pictures. The list of third-party software is available in our Admin documentation: [Installing and Setting Up Related Software](https://doc.nuxeo.com/n/Yki).
 
@@ -22,7 +22,7 @@ Depending on the features you want to use, you may need some third-party softwar
 Building the Nuxeo Platform requires the following tools:
 
 - Git (obviously)
-- JDK 11 (Oracle's JDK or OpenJDK recommended)
+- JDK 17 (Oracle's JDK or OpenJDK recommended)
 - Apache Maven 3.1.1+ (3.2+ recommended)
 - Apache Ant 1.7.1+
 
