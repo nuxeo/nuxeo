@@ -19,7 +19,10 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_HTTP_PORT;
+
+import java.util.Arrays;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +50,8 @@ public class ManagementObject extends AbstractResource<ResourceTypeImpl> {
 
     protected static final String MANAGEMENT_API_USER_PROPERTY = "nuxeo.management.api.user";
 
+    protected static final String MANAGEMENT_API_GROUP_PROPERTY = "nuxeo.management.api.groups";
+
     @Context
     protected HttpServletRequest request;
 
@@ -72,13 +77,23 @@ public class ManagementObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected boolean isUserValid(HttpServletRequest request) {
-        if (!(request.getUserPrincipal() instanceof NuxeoPrincipal)) {
-            return false;
+        if (request.getUserPrincipal() instanceof NuxeoPrincipal principal) {
+            // if user is an administrator
+            if (principal.isAdministrator()) {
+                return true;
+            }
+            // if user is the configured one
+            String managementUser = Framework.getProperty(MANAGEMENT_API_USER_PROPERTY);
+            if (principal.getName().equals(managementUser)) {
+                return true;
+            }
+            // if user belongs to configured group
+            var managementGroups = Framework.getProperty(MANAGEMENT_API_GROUP_PROPERTY, EMPTY).split(",");
+            if (Arrays.stream(managementGroups).anyMatch(principal::isMemberOf)) {
+                return true;
+            }
         }
-
-        NuxeoPrincipal principal = (NuxeoPrincipal) request.getUserPrincipal();
-        String managementUser = Framework.getProperty(MANAGEMENT_API_USER_PROPERTY);
-        return principal.getName().equals(managementUser) || principal.isAdministrator();
+        return false;
     }
 
 }
