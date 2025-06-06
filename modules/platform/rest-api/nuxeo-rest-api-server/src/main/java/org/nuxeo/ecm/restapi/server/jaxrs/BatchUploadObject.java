@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_GONE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static org.nuxeo.common.utils.FileUtils.checkPathTraversal;
 
@@ -299,6 +300,10 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         BatchManager bm = Framework.getService(BatchManager.class);
         String uploadedSizeDisplay = uploadedSize > -1 ? uploadedSize + "b" : "unknown size";
         Batch batch = bm.getBatch(batchId);
+        if (batch == null) {
+            // probably canceled in the meantime
+            throw new NuxeoException(String.format("BatchId: \"%s\" not found", batchId), SC_GONE);
+        }
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
             log.debug("Uploading chunk [index: {} / total: {}] ({}) for file: {}", uploadChunkIndex, chunkCount,
                     uploadedSizeDisplay, fileName);
