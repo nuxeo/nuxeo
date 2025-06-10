@@ -67,7 +67,7 @@ RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
 # Mount nuxeo-public as secret even if it is not secret in order to not leave the file in the image
 RUN --mount=type=secret,id=nuxeo-public,target=/etc/yum.repos.d/nuxeo-public.repo \
   microdnf -y update \
-  # Required by Remi's RPM repository, also, it provides dnf
+  # Required by ImageMagick 7 libs, also, it provides dnf
   && microdnf -y install epel-release \
   && dnf -y install \
     # find is not included in the oraclelinux slim base image
@@ -90,16 +90,8 @@ RUN --mount=type=secret,id=nuxeo-public,target=/etc/yum.repos.d/nuxeo-public.rep
     wget \
     # Install Java before LibreOffice that depends on it
     zulu17-jdk \
-  # Latest ImageMagick 7 libs for Oracle Linux 9 are provided by Remi's RPM repository
-  && dnf -y install https://rpms.remirepo.net/enterprise/remi-release-${EL_VERSION}.rpm \
-  # Install ImageMagick 7
-  && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-       # For amd64, from our yum-public repository in packages.nuxeo.com
-       dnf -y --exclude=python3-setuptools install ImageMagick7-nuxeo-7.1.1.36-341.el9 ; \
-     else \
-       # For arm64, from Remi's RPM repository (not available in yum-public)
-       dnf -y --enablerepo=remi --exclude=python3-setuptools install ImageMagick7 ; \
-     fi \
+  # Install ImageMagick 7 from our yum-public repository in packages.nuxeo.com
+  && dnf -y --exclude=python3-setuptools install ImageMagick7-7.1.1.47-1.el9.remi \
   # Install LibreOffice, only for amd64 since not available for arm64
   && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
        curl -f -L https://packages.nuxeo.com/repository/document-foundation-raw/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_rpm.tar.gz | tar -C /tmp -xzv \
