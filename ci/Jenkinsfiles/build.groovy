@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.65"
+library identifier: "platform-ci-shared-library@v0.0.68"
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo-lts'
@@ -521,7 +521,7 @@ pipeline {
             Trigger benchmark tests with parameters: ${parameters}
             -----------------------------------------------------------
             """
-            build(
+            nxUtils.buildWrapped(
                 job: "nuxeo/lts/nuxeo-benchmark",
                 parameters: parameters,
                 wait: false
@@ -672,11 +672,7 @@ pipeline {
           def parameters = [
             string(name: 'NUXEO_VERSION', value: "${VERSION}"),
           ]
-          if (nxUtils.isPullRequest()) {
-            parameters.add(string(name: 'NUXEO_REPOSITORY', value: "${repositoryUrl}"))
-            parameters.add(string(name: 'NUXEO_SHA', value: "${GIT_COMMIT}"))
-          }
-          build(
+          nxUtils.buildWrapped(
             job: 'nuxeo/rest-api-compatibility-tests/master',
             parameters: parameters,
             wait: false
@@ -792,7 +788,7 @@ pipeline {
           Trigger hotfix package build with parameters: ${parameters}
           -----------------------------------------------------------
           """
-          build(
+          nxUtils.buildWrapped(
             job: "nuxeo/lts/nuxeo-hf",
             parameters: parameters,
             wait: false

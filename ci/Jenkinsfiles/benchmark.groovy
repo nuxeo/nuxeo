@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.65"
+library identifier: "platform-ci-shared-library@v0.0.68"
 
 boolean isTriggeredByCron() {
   return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
@@ -71,7 +71,7 @@ pipeline {
   }
   environment {
     CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
-    SCM_REF = nxDocker.getLabel(image: params.NUXEO_DOCKER_IMAGE, label: 'org.nuxeo.scm-ref')
+    SCM_REF = "${params.GITHUB_STATUS_COMMIT_SHA ?: nxDocker.getLabel(image: params.NUXEO_DOCKER_IMAGE, label: 'org.nuxeo.scm-ref')}"
 
     BRANCH_NAME = "${params.NUXEO_BRANCH.replaceAll('/', '-')}"
     NUXEO_DOCKER_IMAGE_WITH_VERSION = resolveDockerImageVersion("${params.NUXEO_DOCKER_IMAGE}")
