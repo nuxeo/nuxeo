@@ -69,7 +69,9 @@
 
     <streamProcessor name="streamIntrospection" enabled="${metrics.streams.enabled:=false}"
       class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionProcessor" defaultCodec="avro"
-      defaultConcurrency="1" defaultPartitions="1" />
+      defaultConcurrency="1" defaultPartitions="1">
+      <policy name="default" maxRetries="1" delay="100ms" continueOnFailure="true" />
+    </streamProcessor>
 
   </extension>
 
