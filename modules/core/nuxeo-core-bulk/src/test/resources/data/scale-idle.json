@@ -11,8 +11,8 @@
       "cpuCores": "16",
       "created": "2023-03-10T08:55:56Z",
       "ip": "172.27.0.8",
-      "jvmHeapSize": "2147483648",
       "nodeId": "nuxeo2",
+      "jvmHeapSize": "2147483648",
       "alive": "2023-03-10T09:04:58Z",
       "type": "worker"
     },
@@ -21,8 +21,8 @@
       "cpuCores": "16",
       "created": "2023-03-10T08:55:46Z",
       "ip": "172.27.0.7",
-      "jvmHeapSize": "2147483648",
       "nodeId": "nuxeo1",
+      "jvmHeapSize": "2147483648",
       "alive": "2023-03-10T09:04:46Z",
       "type": "front"
     }
@@ -30,15 +30,7 @@
   "computations": [
     {
       "computation": "bulk-csvExport",
-      "streams": {
-        "bulk-csvExport": {
-          "stream": "bulk-csvExport",
-          "partitions": 12,
-          "lag": 0,
-          "end": 2079,
-          "latency": 95844
-        }
-      },
+      "streams": {},
       "nodes": [
         {
           "nodeId": "nuxeo2",

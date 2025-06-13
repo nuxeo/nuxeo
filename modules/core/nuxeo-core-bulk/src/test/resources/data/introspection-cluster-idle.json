@@ -1707,12 +1707,6 @@
         },
         {
           "k": "nuxeo.streams.global.stream.group.lag",
-          "group": "bulk-csvExport",
-          "stream": "bulk-csvExport",
-          "v": 0
-        },
-        {
-          "k": "nuxeo.streams.global.stream.group.lag",
           "group": "bulk-exposeBlob",
           "stream": "bulk-exposeBlob",
           "v": 0

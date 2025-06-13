@@ -361,8 +361,7 @@ public class StreamIntrospectionConverter {
     }
 
     public String getActivity(long atTimestamp) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode ret = mapper.getNodeFactory().objectNode();
+        ObjectNode ret = OBJECT_MAPPER.createObjectNode();
         JsonNode nodes = getClusterNodes(atTimestamp);
         int workerCount = 0;
         for (JsonNode node : nodes) {
@@ -395,7 +394,7 @@ public class StreamIntrospectionConverter {
                 }
             }
         }
-        ObjectNode ret = new ObjectMapper().getNodeFactory().objectNode();
+        ObjectNode ret = new ObjectMapper().createObjectNode();
         ret.put("currentNodes", current);
         ret.put("bestNodes", bestNodes);
         ret.put("optimalNodes", optimalNodes);
@@ -404,8 +403,7 @@ public class StreamIntrospectionConverter {
     }
 
     protected JsonNode getActiveComputations(long atTimestamp) {
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode ret = mapper.getNodeFactory().arrayNode();
+        ArrayNode ret = OBJECT_MAPPER.createArrayNode();
         Map<JsonNode, ObjectNode> computations = new HashMap<>();
         JsonNode metrics = root.get("metrics");
         if (metrics == null || !metrics.isArray() || metrics.isEmpty()) {
@@ -431,53 +429,50 @@ public class StreamIntrospectionConverter {
                 threads.put(name, comp.get("threads").asInt());
             }
         }
-        // find active computations with significant rate
+        // find active computations
         for (JsonNode node : metrics) {
             long ts = node.get("timestamp").asLong();
             if (atTimestamp - ts > ACTIVE_THRESHOLD_SECONDS) {
                 continue;
             }
+            // select computations with a significant rate
             for (JsonNode metric : node.at("/metrics")) {
                 if ("nuxeo.streams.computation.processRecord".equals(metric.get("k").asText())
                         && (metric.get("count").asInt() > 0)) {
+                    // ex: { "k": "nuxeo.streams.computation.processRecord",
+                    // "computation": "audit-writer", "count": 32, "rate1m": 0.07875646231106845, "mean": ...}
                     ObjectNode comp = computations.get(metric.get("computation"));
-                    if (comp == null) {
+                    if (comp == null && metric.get("mean").asDouble() > 0) {
                         double rate1m = metric.get("rate1m").asDouble();
                         double mean = metric.get("mean").asDouble();
                         double maxRateByThread = 1 / mean;
-                        // rate is significant when there is more than one thread busy at 50%
-                        if (rate1m > 0 && mean > 0 && rate1m > (maxRateByThread / 2)) {
-                            comp = mapper.getNodeFactory().objectNode();
-                            comp.set("computation", metric.get("computation"));
-                            comp.set("streams", mapper.getNodeFactory().objectNode());
-                            computations.put(metric.get("computation"), comp);
+                        // assume a rate is significant if one thread is busy at 50%
+                        if (rate1m > maxRateByThread / 2) {
+                            computations.put(metric.get("computation"), initComputation(metric.get("computation")));
                         }
                     }
                 }
             }
-            // add lag information and any computation with lag
+            // select computation with lag, populate lag
             for (JsonNode metric : node.at("/metrics")) {
                 if ("nuxeo.streams.global.stream.group.lag".equals(metric.get("k").asText())) {
+                    // ex: { "k": "nuxeo.streams.global.stream.group.lag",
+                    // "group": "bulk-csvExport", "stream": "bulk-csvExport", "v": 46 }
                     ObjectNode comp = computations.get(metric.get("group"));
                     if (comp != null || metric.get("v").asInt() > 0) {
-                        if (comp == null) {
-                            comp = mapper.getNodeFactory().objectNode();
-                            comp.set("computation", metric.get("group"));
-                            comp.set("streams", mapper.getNodeFactory().objectNode());
-                        }
+                        comp = computations.computeIfAbsent(metric.get("group"), this::initComputation);
+                        // populate computation lag for its streams
                         ObjectNode streams = (ObjectNode) comp.get("streams");
-                        ObjectNode stream = mapper.getNodeFactory().objectNode();
+                        ObjectNode stream = OBJECT_MAPPER.createObjectNode();
                         stream.set("stream", metric.get("stream"));
                         stream.put("partitions", partitions.get(metric.get("stream").asText()));
                         stream.set("lag", metric.get("v"));
                         streams.set(metric.get("stream").asText(), stream);
-                        comp.set("nodes", mapper.getNodeFactory().arrayNode());
-                        computations.put(metric.get("group"), comp);
                     }
                 }
             }
         }
-        // get latency, end
+        // populate latency, end
         for (JsonNode node : metrics) {
             long ts = node.get("timestamp").asLong();
             if (atTimestamp - ts > ACTIVE_THRESHOLD_SECONDS) {
@@ -486,6 +481,8 @@ public class StreamIntrospectionConverter {
             for (JsonNode metric : node.at("/metrics")) {
                 if ("nuxeo.streams.global.stream.group.latency".equals(metric.get("k").asText())
                         && (metric.get("v").asInt() > 0)) {
+                    // ex {"k": "nuxeo.streams.global.stream.group.latency",
+                    // "group": "bulk-exposeBlob", "stream": "bulk-exposeBlob", "v": 123}
                     ObjectNode comp = computations.get(metric.get("group"));
                     if (comp != null) {
                         ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
@@ -495,6 +492,8 @@ public class StreamIntrospectionConverter {
                     }
                 } else if ("nuxeo.streams.global.stream.group.end".equals(metric.get("k").asText())) {
                     ObjectNode comp = computations.get(metric.get("group"));
+                    // ex {"k": "nuxeo.streams.global.stream.group.end",
+                    // "group": "StreamImporter-runDocumentConsumers", "stream": "import-doc", "v": 10000}
                     if (comp != null) {
                         ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
                         if (stream != null) {
@@ -504,7 +503,7 @@ public class StreamIntrospectionConverter {
                 }
             }
         }
-        // then metrics per node
+        // populate metrics per node for active computations
         for (JsonNode node : metrics) {
             JsonNode ts = node.get("timestamp");
             if (atTimestamp - ts.asLong() > ACTIVE_THRESHOLD_SECONDS) {
@@ -516,7 +515,7 @@ public class StreamIntrospectionConverter {
                         && (metric.get("count").asInt() > 0)) {
                     ObjectNode comp = computations.get(metric.get("computation"));
                     if (comp != null) {
-                        ObjectNode compInstance = mapper.getNodeFactory().objectNode();
+                        ObjectNode compInstance = OBJECT_MAPPER.createObjectNode();
                         compInstance.set("nodeId", nodeId);
                         compInstance.put("threads", threads.getOrDefault(metric.get("computation").asText(), 1));
                         compInstance.set("timestamp", ts);
@@ -560,12 +559,12 @@ public class StreamIntrospectionConverter {
                 continue;
             }
             int eta = (int) (lag / rate1m);
-            ObjectNode current = mapper.getNodeFactory().objectNode();
+            ObjectNode current = OBJECT_MAPPER.createObjectNode();
             current.put("nodes", count);
             current.put("threads", threadsCount);
             current.put("rate1m", rate1m);
             current.put("eta", eta);
-            ObjectNode best = mapper.getNodeFactory().objectNode();
+            ObjectNode best = OBJECT_MAPPER.createObjectNode();
             if (lag == 0) {
                 // active computation that copes with the load, stay conservative best = current
                 best.set("nodes", current.get("nodes"));
@@ -593,10 +592,17 @@ public class StreamIntrospectionConverter {
         return ret;
     }
 
+    protected ObjectNode initComputation(JsonNode key) {
+        var active = OBJECT_MAPPER.createObjectNode();
+        active.set("computation", key);
+        active.set("streams", OBJECT_MAPPER.createObjectNode());
+        active.set("nodes", OBJECT_MAPPER.createArrayNode());
+        return active;
+    }
+
     protected JsonNode getClusterNodes(long atTimestamp) {
         Map<String, ObjectNode> nodes = new HashMap<>();
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode ret = mapper.getNodeFactory().arrayNode();
+        ArrayNode ret = OBJECT_MAPPER.createArrayNode();
         JsonNode processors = root.get("processors");
         if (processors != null && processors.isArray()) {
             for (JsonNode item : processors) {
