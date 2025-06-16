@@ -32,14 +32,12 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -250,9 +248,7 @@ public class MongoDBTransientStore implements TransientStoreProvider {
             log.debug("Marking blobs from Transient storage");
             Bson filter = gt(BLOB_COUNT_KEY, 0);
             StreamSupport.stream(getColl().find(filter).projection(include(BLOBS_KEY)).spliterator(), false)
-                         .flatMap(d -> d.getList(BLOBS_KEY, Document.class)
-                                        .stream()
-                                        .map(b -> b.getString(KEY)))
+                         .flatMap(d -> d.getList(BLOBS_KEY, Document.class).stream().map(b -> b.getString(KEY)))
                          .forEach(gc::mark);
             delete = true;
         } finally {
