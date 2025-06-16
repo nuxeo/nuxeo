@@ -91,9 +91,9 @@ public class TestMongoDBSpecificTransientStore {
 
         String key = "key1";
         assertFalse(ts.exists(key));
-        // setCompleted is not creating an entry
-        ts.setCompleted(key, true);
-        assertFalse(ts.exists(key));
+        // setCompleted(false) is creating an entry
+        ts.setCompleted(key, false);
+        assertTrue(ts.exists(key));
         assertFalse(ts.isCompleted(key));
 
         ts.putParameter(key, "foo", "bar");

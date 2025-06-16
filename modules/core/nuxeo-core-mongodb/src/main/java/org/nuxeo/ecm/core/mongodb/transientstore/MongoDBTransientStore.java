@@ -515,7 +515,7 @@ public class MongoDBTransientStore implements TransientStoreProvider {
         Document entry = new Document();
         entry.put("$set", update);
         FindOneAndUpdateOptions opts = new FindOneAndUpdateOptions();
-        opts.upsert(false).returnDocument(ReturnDocument.AFTER).projection(include(COMPLETED_KEY));
+        opts.upsert(true).returnDocument(ReturnDocument.AFTER).projection(include(COMPLETED_KEY));
         Document ret = getColl().findOneAndUpdate(filter, entry, opts);
         log.trace("{} setCompleted({}, {}) -> {}", config::getName, () -> key, () -> completed, () -> ret);
     }
