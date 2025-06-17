@@ -137,7 +137,7 @@ public class StreamMetricsReporter extends ScheduledReporter {
             metric.put("count", value.getCount());
             metric.put("rate1m", value.getOneMinuteRate());
             metric.put("rate5m", value.getFiveMinuteRate());
-            metric.put("sum", value.getSum());
+            metric.put("sum", convertDuration(value.getSum()));
             Snapshot snapshot = value.getSnapshot();
             metric.put("max", convertDuration(snapshot.getMax()));
             metric.put("mean", convertDuration(snapshot.getMean()));
