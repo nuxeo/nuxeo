@@ -113,6 +113,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
      */
     protected static final Duration MAX_TIME_DEFAULT = Duration.ofHours(1);
 
+    /**
+     * Default maximum execution time for a count document query.
+     *
+     * @since 2023.32
+     */
+    protected static final Duration COUNT_MAX_TIME_DEFAULT = Duration.ofMinutes(4);
+
     protected static final String SETTING_VALUE = "value";
 
     /**
@@ -156,6 +163,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
      */
     protected final long maxTimeMS;
 
+    // @since 2023.32 max execution time for count document query
+    protected final long countMaxTimeMS;
+
     protected boolean supportsDenormalizedBlobKeys;
 
     // @since 2021.16
@@ -178,6 +188,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
             maxTime = MAX_TIME_DEFAULT;
         }
         maxTimeMS = maxTime.toMillis();
+        Duration countMaxTime = mongoService.getConfig(connectionId).countMaxTime;
+        if (countMaxTime == null) {
+            countMaxTime = COUNT_MAX_TIME_DEFAULT;
+        }
+        countMaxTimeMS = countMaxTime.toMillis();
 
         if (Boolean.TRUE.equals(descriptor.nativeId)) {
             idKey = MONGODB_ID;

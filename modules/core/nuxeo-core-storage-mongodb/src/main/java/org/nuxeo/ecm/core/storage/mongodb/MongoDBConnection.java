@@ -1091,12 +1091,16 @@ public class MongoDBConnection extends DBSConnectionBase {
         return Math.max((ttl * 1000) - 100, 100);
     }
 
+    protected long getCountMaxTimeMs() {
+        return Math.min(mongoDBRepository.countMaxTimeMS, getMaxTimeMs());
+    }
+
     protected long countDocuments(Bson filter) {
         return countDocuments(filter, new CountOptions());
     }
 
     protected long countDocuments(Bson filter, CountOptions options) {
-        long maxTime = getMaxTimeMs();
+        long maxTime = getCountMaxTimeMs();
         options.maxTime(maxTime, MILLISECONDS);
         try {
             if (transactionStarted) {

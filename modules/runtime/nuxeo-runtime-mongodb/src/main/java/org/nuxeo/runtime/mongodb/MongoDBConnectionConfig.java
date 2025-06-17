@@ -78,6 +78,10 @@ public class MongoDBConnectionConfig implements Descriptor {
     @XNode("maxTime")
     public Duration maxTime;
 
+    /** @since 2023.32 maxTime used to count documents */
+    @XNode("countMaxTime")
+    public Duration countMaxTime;
+
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties = new HashMap<>();
 
@@ -101,6 +105,7 @@ public class MongoDBConnectionConfig implements Descriptor {
         merged.keyStoreType = defaultString(other.keyStoreType, keyStoreType);
         merged.dbname = defaultString(other.dbname, dbname);
         merged.maxTime = other.maxTime != null ? other.maxTime : maxTime;
+        merged.countMaxTime = other.countMaxTime != null ? other.countMaxTime : countMaxTime;
         merged.properties.putAll(properties);
         merged.properties.putAll(other.properties);
         return merged;
