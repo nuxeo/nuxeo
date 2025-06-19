@@ -5,7 +5,6 @@ Bundle-Name: Nuxeo OAuth1
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
  OSGI-INF/oauthserverkey-framework.xml,
- OSGI-INF/oauthserverkey-contrib.xml,
  OSGI-INF/oauthconsumer-framework.xml,
  OSGI-INF/oauthtoken-framework.xml,
  OSGI-INF/oauthserviceprovider-framework.xml,
