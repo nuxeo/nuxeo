@@ -546,7 +546,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED, eventInfo, comment,
+                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED, eventInfo,
+                        String.format("Task reassigned by '%s' to '%s'", currentUser, StringUtils.join(actorIds, ","))
+                                + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
                         session.getPrincipal(), actorIds);
 
             }

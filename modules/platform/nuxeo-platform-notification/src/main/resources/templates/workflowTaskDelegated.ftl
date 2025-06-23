@@ -19,6 +19,9 @@
                         <p style="margin:0;font-size:14px;">
                         A task on the document <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}">${htmlEscape(docTitle)}</a> was <strong>delegated to you</strong> or to a group you belong to.
                         </p><br/>
+                        <p style="margin:0;font-size:14px;">
+                          ${htmlEscape(comment)}
+                        </p><br/>
                         <p style="margin:0;font-size:13px;">
                           <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}">&#187; View task on ${htmlEscape(docTitle)}</a>
                         </p><br/>
