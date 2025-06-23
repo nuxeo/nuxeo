@@ -118,6 +118,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
@@ -167,6 +168,9 @@ public class MongoDBConnection extends DBSConnectionBase {
     protected ClientSession clientSession;
 
     protected boolean transactionStarted;
+
+    // @since 2023.32 keep track of last maxTime
+    protected long lastMaxTime = 0;
 
     public MongoDBConnection(MongoDBRepository repository) {
         super(repository);
@@ -573,12 +577,16 @@ public class MongoDBConnection extends DBSConnectionBase {
     }
 
     protected NuxeoException newQueryTimeout(MongoException cause, Bson filter) {
-        return newQueryException("Query timed out as a result of the maximum operation time being exceeded", cause,
+        return newQueryException("MongoDB timed out on processing query, maxTime: %sms.".formatted(lastMaxTime), cause,
                 filter);
     }
 
     protected NuxeoException newQueryTimeoutClient(MongoException cause, Bson filter) {
-        return newQueryException("Query timed out on client side after socketTimeout exceeded", cause, filter);
+        var socketSettings = ((MongoClientImpl) mongoDBRepository.getClient()).getSettings().getSocketSettings();
+        return newQueryException(
+                "MongoDB timed out on socket, connectionTimeout: %d ms, socketTimeout: %dms.".formatted(
+                        socketSettings.getConnectTimeout(MILLISECONDS), socketSettings.getReadTimeout(MILLISECONDS)),
+                cause, filter);
     }
 
     protected NuxeoException newQueryFailure(MongoException cause, Bson filter) {
@@ -1074,7 +1082,8 @@ public class MongoDBConnection extends DBSConnectionBase {
         } else {
             it = coll.find(filter);
         }
-        it.maxTime(getMaxTimeMs(), MILLISECONDS);
+        lastMaxTime = getMaxTimeMs();
+        it.maxTime(lastMaxTime, MILLISECONDS);
         return it;
     }
 
@@ -1110,8 +1119,8 @@ public class MongoDBConnection extends DBSConnectionBase {
             }
 
         } catch (MongoExecutionTimeoutException | MongoSocketReadTimeoutException e) {
-            log.warn("MongoDB timed out, maxTime={}ms, when computing total count with filters {}", () -> maxTime,
-                    filter::toString);
+            log.warn("MongoDB timed out on countDocuments returning -2, maxTime: {}ms, filters: {}", () -> maxTime,
+                    filter::toString, () -> e);
             return -2;
         }
     }
