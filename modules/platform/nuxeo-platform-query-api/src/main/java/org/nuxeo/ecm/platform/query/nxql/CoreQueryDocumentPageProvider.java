@@ -184,7 +184,8 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
             } catch (NuxeoException e) {
                 error = e;
                 errorMessage = e.getMessage();
-                log.warn(e.getMessage(), e);
+                log.warn("Exception in PP: {}, getCurrentPage returns nothing because: {}", getName(), e.getMessage(),
+                        e);
             }
         }
 
