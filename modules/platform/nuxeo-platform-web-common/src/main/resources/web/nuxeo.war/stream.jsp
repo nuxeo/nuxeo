@@ -23,7 +23,7 @@
         const xmlhttp2 = new XMLHttpRequest();
         xmlhttp2.onreadystatechange = function () {
           if (this.readyState == 4 && this.status == 200) {
-            const myArr = JSON.parse(this.responseText);
+            const myArr = validateInput(JSON.parse(this.responseText));
             parseConsumerList(myArr);
           }
         };
@@ -34,7 +34,7 @@
       const xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-          let myArr = JSON.parse(this.responseText);
+          let myArr = validateInput(JSON.parse(this.responseText));
           myArr = myArr.sort((a, b) => a.name.localeCompare(b.name));
           parseStreamList(myArr);
         }
@@ -43,28 +43,53 @@
       xmlhttp.send();
     }
 
-    function parseStreamList(arr) {
-      let out = "";
-      let i;
-
-      for (i = 0; i < arr.length; i++) {
-        out += '<option value="' + arr[i].name + '">' + arr[i].name + ' (' + arr[i].partitions + ' partitions)</option>\n';
+    function validateInput(arr) {
+      if (!Array.isArray(arr)) {
+        throw new Error("Invalid input: " + JSON.stringify(arr));
       }
+      arr.forEach((element) => {
+        Object.entries(element).forEach(([key, value]) => {
+          if (!isValidInput(key) || !isValidInput(value)) {
+            throw new Error("Invalid input: " + JSON.stringify(arr));
+          }
+        });
+      });
+      return arr;
+    }
+
+    function isValidInput(input) {
+      return /^[a-z0-9/]+$/i.test(input)
+    }
+
+    function parseStreamList(arr) {
+      const select = document.getElementById("streams");
+      arr.forEach((element) => {
+        const streamName = element.name;
+        const streamPartitions = element.partitions;
+        const option = document.createElement("option");
+        option.setAttribute("value", streamName);
+        option.textContent = streamName + " (" + streamPartitions + " partitions)";
+        select.add(option);
+      });
       // Explicitly add log4j stream, because it is not part of a stream processor
-      out += '<option value="source/log4j">source/log4j</option>\n';
-      let select = document.getElementById("streams");
-      select.innerHTML = out;
+      const option = document.createElement("option");
+      option.setAttribute("value", "source/log4j");
+      option.textContent = "source/log4j";
+      select.add(option);
       select.value = arr[0].name;
       select.dispatchEvent(new Event('change'));
     }
 
     function parseConsumerList(arr) {
-      let out = "";
-      let i;
-      for (i = 0; i < arr.length; i++) {
-        out += '<option value="' + arr[i].consumer + '">' + arr[i].consumer + '</option>\n';
-      }
-      document.getElementById("consumers").innerHTML = out;
+      const select = document.getElementById("consumers");
+      select.options.length = 0;
+      arr.forEach((element) => {
+        const consumer = element.consumer;
+        const option = document.createElement("option");
+        option.setAttribute("value", consumer);
+        option.textContent = consumer;
+        select.add(option);
+      });
     }
 
     var es;
