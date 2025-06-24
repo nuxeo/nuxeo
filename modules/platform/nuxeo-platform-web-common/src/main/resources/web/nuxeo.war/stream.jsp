@@ -15,6 +15,7 @@
     let currentConsumer = "";
     let recordCounter = 0;
     let disconnect = false;
+    const validConsumerURLs = {}
 
     window.onload = function () {
       const streamSelect = document.getElementById("streams");
@@ -27,7 +28,7 @@
             parseConsumerList(myArr);
           }
         };
-        xmlhttp2.open("GET", CONSUMERS_URL + "?stream=" + currentStream, true);
+        xmlhttp2.open("GET", validConsumerURLs[currentStream], true);
         xmlhttp2.send();
       }
 
@@ -70,6 +71,7 @@
         option.setAttribute("value", streamName);
         option.textContent = streamName + " (" + streamPartitions + " partitions)";
         select.add(option);
+        validConsumerURLs[streamName] = CONSUMERS_URL + "?stream=" + streamName
       });
       // Explicitly add log4j stream, because it is not part of a stream processor
       const option = document.createElement("option");
