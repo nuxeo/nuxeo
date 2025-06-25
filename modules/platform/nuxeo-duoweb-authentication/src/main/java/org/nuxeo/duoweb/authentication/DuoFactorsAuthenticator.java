@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,14 @@
 
 package org.nuxeo.duoweb.authentication;
 
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,8 +35,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.utils.URIUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -47,9 +48,9 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-import com.duosecurity.DuoWeb;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.duosecurity.Client;
+import com.duosecurity.exception.DuoException;
+import com.duosecurity.model.Token;
 
 /**
  * Authentication filter handles two factors authentication via Duo
@@ -58,80 +59,41 @@ import com.google.common.cache.CacheBuilder;
  */
 public class DuoFactorsAuthenticator extends FormAuthenticator {
 
-    private static final Logger log = LogManager.getLogger(DuoFactorsAuthenticator.class);
+    protected static final Logger log = LogManager.getLogger(DuoFactorsAuthenticator.class);
+
+    protected static final String STATE_CACHE_NAME = "duo-state-cache";
 
     protected static final Random RANDOM = new SecureRandom();
 
-    private static final String DUO_FACTOR_PAGE = "duofactors.jsp";
+    protected static final String NX_USER_FIRST_FACTOR_CHECKED = "nxFirstFactorChecked";
 
-    private static final String SIG_REQUEST = "sig_request";
+    protected Boolean skipHealthCheck;
 
-    private static final String SIG_RESPONSE = "sig_response";
+    protected Client duoClient;
 
-    private static final String HOST_REQUEST = "host";
-
-    private static final String POST_ACTION = "post_action";
-
-    private static final String ONE_FACTOR_CHECK = "oneFactorCheck";
-
-    private static final String TWO_FACTORS_CHECK = "twoFactorsCheck";
-
-    private static final String HASHCODE = "hash";
-
-    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
-
-    protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
-
-    // DuoWeb timeout is 1 minute => taking 4 minutes in case
-    protected static final Integer CACHE_TIMEOUT = 4;
-
-    private UserIdentificationInfo userIdent;
-
-    private String IKEY;
-
-    private String SKEY;
-
-    private String AKEY;
-
-    private String HOST;
-
-    private Cache<String, UserIdentificationInfo> credentials = CacheBuilder.newBuilder()
-                                                                            .concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
-                                                                            .maximumSize(CACHE_MAXIMUM_SIZE)
-                                                                            .expireAfterWrite(CACHE_TIMEOUT,
-                                                                                    TimeUnit.MINUTES)
-                                                                            .build();
+    protected Cache getStateCache() {
+        return Framework.getService(CacheService.class).getCache(STATE_CACHE_NAME);
+    }
 
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         HttpSession session = httpRequest.getSession(false);
-        if (session == null || session.getAttribute(ONE_FACTOR_CHECK) == null
-                || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
-            if (session != null)
+        if (session == null || session.getAttribute(NX_USER_FIRST_FACTOR_CHECKED) == null) {
+            if (session != null) {
                 session.setAttribute(START_PAGE_SAVE_KEY, getRequestedUrl(httpRequest));
-            super.handleLoginPrompt(httpRequest, httpResponse, baseURL);
-            return Boolean.TRUE;
-        } else if ((Boolean) session.getAttribute(ONE_FACTOR_CHECK) && (session.getAttribute(TWO_FACTORS_CHECK) == null
-                || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK))) {
-            String redirectUrl = baseURL + DUO_FACTOR_PAGE;
-            String postUrl = baseURL + LoginScreenHelper.getStartupPagePath();
-            Map<String, String> parameters = new HashMap<>();
+            }
+            return super.handleLoginPrompt(httpRequest, httpResponse, baseURL);
+        } else if (session.getAttribute(NX_USER_FIRST_FACTOR_CHECKED) != null
+                && Strings.isBlank(httpRequest.getParameter("state"))) {
             try {
-                String userName = httpRequest.getParameter(usernameKey);
-                if (userName == null) {
-                    session.setAttribute(ONE_FACTOR_CHECK, Boolean.FALSE);
-                    return Boolean.FALSE;
-                }
-                String request_sig = DuoWeb.signRequest(IKEY, SKEY, AKEY, userName);
-                parameters.put(SIG_REQUEST, request_sig);
-                parameters.put(HOST_REQUEST, HOST);
-                // Handle callback context
-                String key = Integer.toHexString(userIdent.hashCode());
-                credentials.put(key, userIdent);
-                parameters.put(POST_ACTION, postUrl + "?" + HASHCODE + "=" + key);
-                parameters.put(REQUESTED_URL, httpRequest.getParameter(REQUESTED_URL));
-                redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
-                httpResponse.sendRedirect(redirectUrl);
+                var username = String.valueOf(session.getAttribute(NX_USER_FIRST_FACTOR_CHECKED));
+                session.removeAttribute(NX_USER_FIRST_FACTOR_CHECKED);
+                var state = getClient().generateState();
+                getStateCache().put(state, username);
+                var authUrl = getClient().createAuthUrl(username, state);
+                httpResponse.sendRedirect(authUrl);
+            } catch (DuoException e) {
+                throw new NuxeoException(e);
             } catch (IOException e) {
                 log.error(e, e);
                 return Boolean.FALSE;
@@ -147,40 +109,47 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         if (session == null) {
             return null;
         }
-        if (session.getAttribute(ONE_FACTOR_CHECK) == null || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
-            userIdent = super.handleRetrieveIdentity(httpRequest, httpResponse);
-            session = httpRequest.getSession(true);
-            if (userIdent != null) {
+        var state = httpRequest.getParameter("state");
+        if (Strings.isBlank(state)) {
+            UserIdentificationInfo userIdentity = super.handleRetrieveIdentity(httpRequest, httpResponse);
+            if (userIdentity != null) {
                 try {
-                    NuxeoPrincipal principal = validateUserIdentity();
+                    NuxeoPrincipal principal = validateUserIdentity(userIdentity);
                     if (principal != null) {
-                        session.setAttribute(ONE_FACTOR_CHECK, Boolean.TRUE);
-                        return null;
+                        session.setAttribute(NX_USER_FIRST_FACTOR_CHECKED, userIdentity.getUserName());
                     } else {
                         httpRequest.setAttribute(NXAuthConstants.LOGIN_ERROR, NXAuthConstants.LOGIN_FAILED);
-                        return null;
                     }
                 } catch (LoginException e) {
                     log.error(e, e);
-                    return null;
                 }
-            } else {
-                session.setAttribute(ONE_FACTOR_CHECK, Boolean.FALSE);
-                return null;
             }
-        } else if (session.getAttribute(TWO_FACTORS_CHECK) == null
-                || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK)) {
-            String sigResponse = httpRequest.getParameter(SIG_RESPONSE);
-            String hashResponse = httpRequest.getParameter(HASHCODE);
-            String response = DuoWeb.verifyResponse(IKEY, SKEY, AKEY, sigResponse);
-            userIdent = credentials.getIfPresent(hashResponse);
-            session.setAttribute(TWO_FACTORS_CHECK, response != null ? Boolean.TRUE : Boolean.FALSE);
-            if (response == null) {
+            return null;
+        } else {
+            String username = (String) getStateCache().get(state);
+            try {
+                if (username != null) {
+                    var duoCode = httpRequest.getParameter("duo_code");
+                    Token token = getClient().exchangeAuthorizationCodeFor2FAResult(duoCode, username);
+                    if (authWasSuccessful(token)) {
+                        return new UserIdentificationInfo(username);
+                    }
+                }
                 return null;
+            } catch (DuoException e) {
+                log.error("Duo 2FA check failed", e);
+                return null;
+            } finally {
+                getStateCache().invalidate(state);
             }
-            return userIdent;
         }
-        return userIdent;
+    }
+
+    private boolean authWasSuccessful(Token token) {
+        if (token != null && token.getAuth_result() != null) {
+            return "ALLOW".equalsIgnoreCase(token.getAuth_result().getStatus());
+        }
+        return false;
     }
 
     @Override
@@ -190,18 +159,47 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     @Override
     public void initPlugin(Map<String, String> parameters) {
-        if (parameters.get("IKEY") != null) {
-            IKEY = parameters.get("IKEY");
+        var clientId = Objects.requireNonNull(parameters.get("IKEY"), "Missing clientId");
+        var clientSecret = Objects.requireNonNull(parameters.get("SKEY"), "Missing secretKey");
+        var apiHost = Objects.requireNonNull(parameters.get("HOST"), "Missing host");
+        var appUrl = Objects.requireNonNull(parameters.get("appUrl"), "Missing app url");
+        String proxyHost = parameters.get("proxyHost");
+        skipHealthCheck = Boolean.parseBoolean(parameters.get("skipHealthCheck"));
+        try {
+            Client.Builder builder;
+            int proxyPort;
+            if (Strings.isNotBlank(proxyHost)) {
+                proxyPort = Integer.parseInt(Objects.requireNonNull(parameters.get("proxyPort"), "Missing proxy port"));
+                builder = new Client.Builder(clientId, clientSecret, proxyHost, proxyPort, apiHost,
+                        appUrl + "/" + LoginScreenHelper.getStartupPagePath());
+            } else {
+                builder = new Client.Builder(clientId, clientSecret, apiHost,
+                        appUrl + "/" + LoginScreenHelper.getStartupPagePath());
+            }
+            var userAgentInfo = parameters.get("userAgentInfo");
+            if (Strings.isNotBlank(userAgentInfo)) {
+                builder.appendUserAgentInfo(userAgentInfo);
+            }
+            var caCerts = parameters.get("caCerts");
+            if (Strings.isNotBlank(caCerts)) {
+                builder.setCACerts(caCerts.split(", "));
+            }
+            duoClient = builder.build();
+        } catch (DuoException e) {
+            throw new NuxeoException(e);
         }
-        if (parameters.get("SKEY") != null) {
-            SKEY = parameters.get("SKEY");
+        if (!Boolean.TRUE.equals(skipHealthCheck)) {
+            try {
+                getClient().healthCheck();
+            } catch (DuoException e) {
+                throw new NuxeoException("Cannot reach Duo", e);
+            }
         }
-        if (parameters.get("AKEY") != null) {
-            AKEY = parameters.get("AKEY");
-        }
-        if (parameters.get("HOST") != null) {
-            HOST = parameters.get("HOST");
-        }
+
+    }
+
+    protected Client getClient() {
+        return duoClient;
     }
 
     @Override
@@ -233,10 +231,10 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         }
     }
 
-    protected NuxeoPrincipal validateUserIdentity() throws LoginException {
+    protected NuxeoPrincipal validateUserIdentity(UserIdentificationInfo userIdentity) throws LoginException {
         UserManager manager = Framework.getService(UserManager.class);
-        if (manager.checkUsernamePassword(userIdent.getUserName(), userIdent.getPassword())) {
-            return createIdentity(userIdent.getUserName());
+        if (manager.checkUsernamePassword(userIdentity.getUserName(), userIdentity.getPassword())) {
+            return createIdentity(userIdentity.getUserName());
         } else {
             return null;
         }
@@ -247,11 +245,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         String qs = httpRequest.getQueryString();
         String context = httpRequest.getContextPath() + '/';
         String requestPage = completeURI.substring(context.length());
-        if (qs != null && qs.length() > 0) {
-            // remove conversationId if present
-            if (qs.contains("conversationId")) {
-                qs = qs.replace("conversationId", "old_conversationId");
-            }
+        if (qs != null && !qs.isEmpty()) {
             requestPage = requestPage + '?' + qs;
         }
         return requestPage;

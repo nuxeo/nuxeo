@@ -13,12 +13,18 @@
     <authenticationPlugin name="DUO_TWO_FACTORS_AUTH"
                           enabled="true"
                           class="org.nuxeo.duoweb.authentication.DuoFactorsAuthenticator">
+      <needStartingURLSaving>true</needStartingURLSaving>
       <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <parameters>
-        <parameter name="IKEY">YOUR_INTEGRATION_KEY</parameter>
-        <parameter name="SKEY">YOUR_SECRET_KEY</parameter>
-        <parameter name="AKEY">YOUR_APPLICATION_KEY</parameter>
-        <parameter name="HOST">YOUR_API_HOSTNAME</parameter>
+        <parameter name="IKEY">${nuxeo.duoweb.clientId}</parameter>
+        <parameter name="SKEY">${nuxeo.duoweb.clientSecret}</parameter>
+        <parameter name="HOST">${nuxeo.duoweb.host}</parameter>
+        <parameter name="appUrl">${nuxeo.url}</parameter>
+        <parameter name="skipHealthCheck">${nuxeo.duoweb.skipHealthCheck}</parameter>
+        <parameter name="proxyHost">${nuxeo.duoweb.proxyHost}</parameter>
+        <parameter name="proxyPort">${nuxeo.duoweb.proxyPort}</parameter>
+        <parameter name="userAgentInfo">${nuxeo.duoweb.userAgentInfo}</parameter>
+        <parameter name="caCerts">${nuxeo.duoweb.caCerts}</parameter>
       </parameters>
     </authenticationPlugin>
   </extension>
@@ -33,17 +39,10 @@
         <plugin>OAUTH2_AUTH</plugin>
         <plugin>JWT_AUTH</plugin>
         <plugin>DUO_TWO_FACTORS_AUTH</plugin>
-        <plugin>FORM_AUTH</plugin>
         <plugin>WEBENGINE_FORM_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH</plugin>
       </plugins>
     </authenticationChain>
-  </extension>
-
-  <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
-    <openUrl name="duoFactorsPattern">
-      <grantPattern>/nuxeo/duofactors.jsp</grantPattern>
-    </openUrl>
   </extension>
 
 </component>

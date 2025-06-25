@@ -15,7 +15,6 @@
      (EPL 1.0) WikiEventModel (org.wikimodel:wem:2.0.2 - http://code.google.com/p/wikimodel/)
      (AL 2.0) ant-launcher (org.apache.ant:ant-launcher:1.7.0 - http://ant.apache.org/ant-launcher/)
      (LGPL 2.1) carol (org.objectweb.carol:carol:2.0.5 - no url defined)
-     (BSD 3) com-duosecurity-java-client (com.duosecurity:com-duosecurity-java-client:1.0.0 - no url defined)
      (CDDL 1.0) connector-api (javax.resource:connector-api:1.5 - no url defined)
      (CDDL 1.0 + GPL 2) core (com.sun.jdmk:core:1.0-b02 - http://maven.apache.org)
      (EPL 1.0) core (org.eclipse.jdt:core:3.1.1-NXP-4284 - no url defined)

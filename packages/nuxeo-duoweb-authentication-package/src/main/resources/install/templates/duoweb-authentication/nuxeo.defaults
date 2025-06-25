@@ -1,1 +1,19 @@
 nuxeo.template.includes=common
+duoweb-authentication.target=.
+
+# mandatory
+nuxeo.duoweb.clientId=
+nuxeo.duoweb.secretId=
+nuxeo.duoweb.host=
+
+# optional
+## Do not check Duo is reachable at startup
+nuxeo.duoweb.skipHealthCheck=
+## The port number of the proxy server
+nuxeo.duoweb.proxyHost=
+## The hostname of the proxy server
+nuxeo.duoweb.proxyPort=
+## Additional info that will be added to the end of the user agent string
+nuxeo.duoweb.userAgentInfo=
+## List of CA Certificates used to validate connections to Duo
+nuxeo.duoweb.caCerts=

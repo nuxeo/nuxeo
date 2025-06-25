@@ -21,8 +21,8 @@
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.duosecurity</groupId>
-      <artifactId>com-duosecurity-java-client</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-cache</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -31,6 +31,10 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.duosecurity</groupId>
+      <artifactId>duo-universal-sdk</artifactId>
     </dependency>
   </dependencies>
 
