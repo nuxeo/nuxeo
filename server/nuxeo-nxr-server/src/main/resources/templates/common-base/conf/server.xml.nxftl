@@ -83,7 +83,9 @@
                compressibleMimeType="text/css,application/javascript,text/xml,text/html"
                connectionTimeout="20000"
                disableUploadTimeout="false"
-               connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}" />
+               connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}"
+               maxPartCount="${nuxeo.server.http.maxPartCount}"
+               maxPartHeaderSize="${nuxeo.server.http.maxPartHeaderSize}" />
 
     <!-- A "Connector" using the shared thread pool-->
     <!--
@@ -111,6 +113,8 @@
                compression="on"
                compressionMinSize="512"
                compressibleMimeType="text/css,application/javascript,text/xml,text/html"
+               maxPartCount="${nuxeo.server.http.maxPartCount}"
+               maxPartHeaderSize="${nuxeo.server.http.maxPartHeaderSize}"
                scheme="https" secure="true"
                SSLEnabled="true">
         <SSLHostConfig certificateVerification="none">
@@ -135,7 +139,9 @@
                compressibleMimeType="text/css,application/javascript,text/xml,text/html"
                connectionTimeout="20000"
                disableUploadTimeout="false"
-               connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}" />
+               connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}"
+               maxPartCount="${nuxeo.server.http.maxPartCount}"
+               maxPartHeaderSize="${nuxeo.server.http.maxPartHeaderSize}" />
 </#if>
 
 <#if nuxeo.server.http.drivePort??>
@@ -152,7 +158,9 @@
                compressibleMimeType="text/css,application/javascript,text/xml,text/html"
                connectionTimeout="20000"
                disableUploadTimeout="false"
-               connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}" />
+               connectionUploadTimeout="${nuxeo.server.http.connectionUploadTimeout}"
+               maxPartCount="${nuxeo.server.http.maxPartCount}"
+               maxPartHeaderSize="${nuxeo.server.http.maxPartHeaderSize}" />
 </#if>
 
 
