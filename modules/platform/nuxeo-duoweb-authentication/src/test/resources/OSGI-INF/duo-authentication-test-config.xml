@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.duo.factors.login.contrib.test">
+
+  <documentation>
+    This authentication plugin processes DuoWeb Two Factors Authentication
+  </documentation>
+
+  <extension
+          target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+          point="authenticators">
+    <authenticationPlugin name="test_duo"
+                          enabled="true"
+                          class="org.nuxeo.duoweb.authentication.DuoFactorsAuthenticator">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <!-- value respecting com.duosecurity.Validator -->
+        <parameter name="IKEY">DIXXXXXXXXXXXXXXXXXX</parameter>
+        <!-- value respecting com.duosecurity.Validator -->
+        <parameter name="SKEY">YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY</parameter>
+        <parameter name="HOST">dummy-duo.nuxeo.com</parameter>
+        <parameter name="skipHealthCheck">true</parameter>
+        <parameter name="appUrl">http://localhost:8080/nuxeo</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+</component>

@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-duoweb-authentication-test
+Bundle-SymbolicName: org.nuxeo.duoweb.authentication.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-ManifestVersion: 2
