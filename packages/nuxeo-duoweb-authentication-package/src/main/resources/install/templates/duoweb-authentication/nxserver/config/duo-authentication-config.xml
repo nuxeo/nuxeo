@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.duo.factors.login.contrib">
 
-  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
 
   <documentation>
     This authentication plugin processes DuoWeb Two Factors Authentication
@@ -10,7 +10,7 @@
   <extension
           target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
           point="authenticators">
-    <authenticationPlugin name="DUO_TWO_FACTORS_AUTH"
+    <authenticationPlugin name="FORM_AUTH"
                           enabled="true"
                           class="org.nuxeo.duoweb.authentication.DuoFactorsAuthenticator">
       <needStartingURLSaving>true</needStartingURLSaving>
@@ -27,22 +27,6 @@
         <parameter name="caCerts">${nuxeo.duoweb.caCerts}</parameter>
       </parameters>
     </authenticationPlugin>
-  </extension>
-
-  <extension
-          target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-          point="chain">
-    <authenticationChain>
-      <plugins>
-        <plugin>BASIC_AUTH</plugin>
-        <plugin>TOKEN_AUTH</plugin>
-        <plugin>OAUTH2_AUTH</plugin>
-        <plugin>JWT_AUTH</plugin>
-        <plugin>DUO_TWO_FACTORS_AUTH</plugin>
-        <plugin>WEBENGINE_FORM_AUTH</plugin>
-        <plugin>ANONYMOUS_AUTH</plugin>
-      </plugins>
-    </authenticationChain>
   </extension>
 
 </component>

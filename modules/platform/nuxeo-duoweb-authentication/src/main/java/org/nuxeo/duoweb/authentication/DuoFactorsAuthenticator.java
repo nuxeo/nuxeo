@@ -67,12 +67,47 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     protected static final String NX_USER_FIRST_FACTOR_CHECKED = "nxFirstFactorChecked";
 
-    protected Boolean skipHealthCheck;
-
     protected Client duoClient;
 
-    protected Cache getStateCache() {
-        return Framework.getService(CacheService.class).getCache(STATE_CACHE_NAME);
+    @Override
+    public void initPlugin(Map<String, String> parameters) {
+        var clientId = Objects.requireNonNull(parameters.get("IKEY"), "Missing clientId");
+        var clientSecret = Objects.requireNonNull(parameters.get("SKEY"), "Missing secretKey");
+        var apiHost = Objects.requireNonNull(parameters.get("HOST"), "Missing host");
+        var appUrl = Objects.requireNonNull(parameters.get("appUrl"), "Missing app url");
+        var proxyHost = parameters.get("proxyHost");
+        var skipHealthCheck = Boolean.parseBoolean(parameters.get("skipHealthCheck"));
+        try {
+            Client.Builder builder;
+            int proxyPort;
+            if (Strings.isNotBlank(proxyHost)) {
+                proxyPort = Integer.parseInt(Objects.requireNonNull(parameters.get("proxyPort"), "Missing proxy port"));
+                builder = new Client.Builder(clientId, clientSecret, proxyHost, proxyPort, apiHost,
+                        appUrl + "/" + LoginScreenHelper.getStartupPagePath());
+            } else {
+                builder = new Client.Builder(clientId, clientSecret, apiHost,
+                        appUrl + "/" + LoginScreenHelper.getStartupPagePath());
+            }
+            var userAgentInfo = parameters.get("userAgentInfo");
+            if (Strings.isNotBlank(userAgentInfo)) {
+                builder.appendUserAgentInfo(userAgentInfo);
+            }
+            var caCerts = parameters.get("caCerts");
+            if (Strings.isNotBlank(caCerts)) {
+                builder.setCACerts(caCerts.split(","));
+            }
+            duoClient = builder.build();
+        } catch (DuoException e) {
+            throw new NuxeoException(e);
+        }
+        if (!Boolean.TRUE.equals(skipHealthCheck)) {
+            try {
+                getClient().healthCheck();
+            } catch (DuoException e) {
+                throw new NuxeoException("Cannot reach Duo", e);
+            }
+        }
+
     }
 
     @Override
@@ -145,61 +180,9 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         }
     }
 
-    private boolean authWasSuccessful(Token token) {
-        if (token != null && token.getAuth_result() != null) {
-            return "ALLOW".equalsIgnoreCase(token.getAuth_result().getStatus());
-        }
-        return false;
-    }
-
     @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return true;
-    }
-
-    @Override
-    public void initPlugin(Map<String, String> parameters) {
-        var clientId = Objects.requireNonNull(parameters.get("IKEY"), "Missing clientId");
-        var clientSecret = Objects.requireNonNull(parameters.get("SKEY"), "Missing secretKey");
-        var apiHost = Objects.requireNonNull(parameters.get("HOST"), "Missing host");
-        var appUrl = Objects.requireNonNull(parameters.get("appUrl"), "Missing app url");
-        String proxyHost = parameters.get("proxyHost");
-        skipHealthCheck = Boolean.parseBoolean(parameters.get("skipHealthCheck"));
-        try {
-            Client.Builder builder;
-            int proxyPort;
-            if (Strings.isNotBlank(proxyHost)) {
-                proxyPort = Integer.parseInt(Objects.requireNonNull(parameters.get("proxyPort"), "Missing proxy port"));
-                builder = new Client.Builder(clientId, clientSecret, proxyHost, proxyPort, apiHost,
-                        appUrl + "/" + LoginScreenHelper.getStartupPagePath());
-            } else {
-                builder = new Client.Builder(clientId, clientSecret, apiHost,
-                        appUrl + "/" + LoginScreenHelper.getStartupPagePath());
-            }
-            var userAgentInfo = parameters.get("userAgentInfo");
-            if (Strings.isNotBlank(userAgentInfo)) {
-                builder.appendUserAgentInfo(userAgentInfo);
-            }
-            var caCerts = parameters.get("caCerts");
-            if (Strings.isNotBlank(caCerts)) {
-                builder.setCACerts(caCerts.split(", "));
-            }
-            duoClient = builder.build();
-        } catch (DuoException e) {
-            throw new NuxeoException(e);
-        }
-        if (!Boolean.TRUE.equals(skipHealthCheck)) {
-            try {
-                getClient().healthCheck();
-            } catch (DuoException e) {
-                throw new NuxeoException("Cannot reach Duo", e);
-            }
-        }
-
-    }
-
-    protected Client getClient() {
-        return duoClient;
     }
 
     @Override
@@ -229,6 +212,21 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             le.initCause(e);
             throw le;
         }
+    }
+
+    protected boolean authWasSuccessful(Token token) {
+        if (token != null && token.getAuth_result() != null) {
+            return "ALLOW".equalsIgnoreCase(token.getAuth_result().getStatus());
+        }
+        return false;
+    }
+
+    protected Client getClient() {
+        return duoClient;
+    }
+
+    protected Cache getStateCache() {
+        return Framework.getService(CacheService.class).getCache(STATE_CACHE_NAME);
     }
 
     protected NuxeoPrincipal validateUserIdentity(UserIdentificationInfo userIdentity) throws LoginException {

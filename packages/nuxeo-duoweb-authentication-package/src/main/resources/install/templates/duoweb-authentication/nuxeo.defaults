@@ -3,7 +3,7 @@ duoweb-authentication.target=.
 
 # mandatory
 nuxeo.duoweb.clientId=
-nuxeo.duoweb.secretId=
+nuxeo.duoweb.clientSecret=
 nuxeo.duoweb.host=
 
 # optional
