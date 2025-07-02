@@ -549,7 +549,10 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         return false;
     }
 
-    // @deprecated since 2025.5, use {@link #getReadTimeout()} instead
+    /**
+     * @deprecated since 2025.5, use {@link #getReadTimeout()} instead
+     */
+    @Deprecated(since = "2025.5", forRemoval = true)
     protected Duration getTimeoutDuration() {
         return getReadTimeout();
     }

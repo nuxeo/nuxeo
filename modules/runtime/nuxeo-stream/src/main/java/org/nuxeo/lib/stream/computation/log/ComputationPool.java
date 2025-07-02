@@ -121,7 +121,7 @@ public class ComputationPool {
             return true;
         }
         log.info("{}: Draining", metadata::name);
-        runners.forEach(ComputationRunner::drain);
+        runners.parallelStream().forEach(ComputationRunner::drain);
         boolean ret = awaitPoolTermination(timeout);
         stop(Duration.ofSeconds(1));
         return ret;
@@ -132,7 +132,7 @@ public class ComputationPool {
             return true;
         }
         log.info("{}: Stopping", metadata::name);
-        runners.forEach(ComputationRunner::stop);
+        runners.parallelStream().forEach(ComputationRunner::stop);
         boolean ret = awaitPoolTermination(timeout);
         shutdown();
         return ret;

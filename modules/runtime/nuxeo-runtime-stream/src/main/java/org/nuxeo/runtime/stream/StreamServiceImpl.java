@@ -230,7 +230,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public void stopProcessors() {
         log.debug("Stop processors");
-        getDescriptors(XP_STREAM_PROCESSOR).forEach(d -> {
+        getDescriptors(XP_STREAM_PROCESSOR).parallelStream().forEach(d -> {
             StreamProcessor processor = streamManager.getProcessor(d.getId());
             if (processor != null) {
                 processor.stop(Duration.ofSeconds(1));
