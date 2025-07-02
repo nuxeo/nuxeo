@@ -4552,6 +4552,7 @@
           <argLine>${it.memory.argLine} -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow ${it.failsafe.argLine} ${it.modules.argLine}</argLine>
           <skipTests>${skip.surefire.tests}</skipTests>
           <systemPropertyVariables>
+            <nashorn.persistent.code.cache>${project.build.directory}/nashorn_code_cache</nashorn.persistent.code.cache>
             <net.sourceforge.cobertura.datafile>
               ${project.build.directory}/cobertura/cobertura.ser
             </net.sourceforge.cobertura.datafile>
