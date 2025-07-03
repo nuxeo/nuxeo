@@ -178,7 +178,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                     log.debug("Rebalance happens during poll, raising exception");
                     isRebalanced = false;
                 } else {
-                    log.warn("Incomplete rebalance during poll, raising exception, revoked: {}, lost: {}", isRevoked,
+                    log.info("Incomplete rebalance during poll, raising exception, revoked: {}, lost: {}", isRevoked,
                             isLost);
                     isRevoked = isLost = false;
                 }
