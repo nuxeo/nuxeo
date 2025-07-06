@@ -36,8 +36,9 @@ import java.util.stream.Collectors;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.CreateTopicsOptions;
 import org.apache.kafka.clients.admin.DeleteRecordsResult;
+import org.apache.kafka.clients.admin.DeleteTopicsOptions;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -47,6 +48,7 @@ import org.apache.kafka.clients.consumer.ConsumerPartitionAssignor;
 import org.apache.kafka.clients.consumer.RangeAssignor;
 import org.apache.kafka.clients.consumer.RoundRobinAssignor;
 import org.apache.kafka.common.Cluster;
+import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
@@ -71,6 +73,12 @@ public class KafkaUtils implements AutoCloseable {
     public static final String BOOTSTRAP_SERVERS_PROP = "kafka.bootstrap.servers";
 
     public static final String DEFAULT_BOOTSTRAP_SERVERS = "localhost:9092";
+
+    // @since 2025.5
+    public static final int CREATE_TOPIC_TIMEOUT_MS = Math.toIntExact(Duration.ofMinutes(5).toMillis());
+
+    // @since 2025.5
+    public static final int DELETE_TOPIC_TIMEOUT_MS = Math.toIntExact(Duration.ofMinutes(3).toMillis());
 
     protected final AdminClient adminClient;
 
@@ -193,34 +201,37 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     /**
-     * Creates a topic with the given partitions and replication.
-     * Since 2021.33 partitions (or replications) below 1 defaults to broker configuration.
+     * Creates a topic with the given partitions and replication. Since 2021.33 partitions (or replications) below 1
+     * defaults to broker configuration.
      */
     public void createTopic(String topic, int partitions, short replicationFactor) {
         Optional<Integer> parts = (partitions < 1) ? Optional.empty() : Optional.of(partitions);
         Optional<Short> factor = (replicationFactor < 1) ? Optional.empty() : Optional.of(replicationFactor);
         log.info("Creating topic: {}, partitions: {}, replications: {}", topic, parts, factor);
-        CreateTopicsResult ret = adminClient.createTopics(Collections.singletonList(new NewTopic(topic, parts, factor)));
+        KafkaFuture<Void> future = adminClient.createTopics(
+                Collections.singletonList(new NewTopic(topic, parts, factor)),
+                new CreateTopicsOptions().timeoutMs(CREATE_TOPIC_TIMEOUT_MS)).all();
         try {
-            ret.all().get(5, TimeUnit.MINUTES);
+            future.get(CREATE_TOPIC_TIMEOUT_MS + 1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TopicExistsException) {
-                log.warn("Cannot create topic, it already exists: {}", topic);
+                log.warn("Cannot create topic: {}, it already exists.", topic);
             } else if (e.getCause() instanceof org.apache.kafka.common.errors.TimeoutException) {
-                throw new StreamRuntimeException("Unable to create topic " + topic + " within the request timeout", e);
+                throw new StreamRuntimeException("Unable to create topic: " + topic + ", within the request timeout.",
+                        e);
             } else if (e.getCause() instanceof UnsupportedVersionException) {
                 throw new StreamRuntimeException(
                         "Using default replication factor (or partitions) is only supported with Kafka broker >= 2.4. "
                                 + "Update your Kafka cluster or use kafka.default.replication.factor >= 1",
                         e);
             } else {
-                throw new StreamRuntimeException(e);
+                throw new StreamRuntimeException("Fail to create topic: " + topic, e);
             }
         } catch (TimeoutException e) {
-            throw new StreamRuntimeException("Unable to create topic " + topic + " within the 5m code timeout", e);
+            throw new StreamRuntimeException("Unable to create topic: " + topic + " within the timeout.", e);
         }
         if (!topicReady(topic)) {
             waitForTopicCreation(topic, Duration.ofMinutes(3));
@@ -288,7 +299,7 @@ public class KafkaUtils implements AutoCloseable {
                                                .values()
                                                .get(topic)
                                                .get();
-            log.debug("Topic {} exists: {}", topic, desc);
+            log.debug("Topic: {} exists: {}", topic, desc);
             return desc.partitions().size();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -366,7 +377,7 @@ public class KafkaUtils implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            throw new StreamRuntimeException(e);
+            throw new StreamRuntimeException("Fail to describe topic: " + topic, e);
         }
     }
 
@@ -378,13 +389,23 @@ public class KafkaUtils implements AutoCloseable {
 
     public boolean delete(String topic) {
         log.info("Deleting topic: {}", topic);
-        DeleteTopicsResult result = adminClient.deleteTopics(Collections.singleton(topic));
+        DeleteTopicsResult result = adminClient.deleteTopics(Collections.singleton(topic),
+                new DeleteTopicsOptions().timeoutMs(DELETE_TOPIC_TIMEOUT_MS));
         try {
-            result.all().get();
-            boolean done = result.values().get(topic).isDone();
-            log.debug("Deleted topic: {}, done: {}", topic, done);
+            result.all().get(DELETE_TOPIC_TIMEOUT_MS + 1000, TimeUnit.MILLISECONDS);
+            boolean done = result.topicNameValues().get(topic).isDone();
+            log.debug("Deleted topic: {}, done: {}", topic, result);
+            if (!done) {
+                log.error("Cannot delete topic: {}, response: {}", topic, result.topicNameValues().get(topic));
+            }
             return done;
-        } catch (InterruptedException|ExecutionException e) {
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            if (e instanceof ExecutionException ee) {
+                if (ee.getCause() instanceof UnknownTopicOrPartitionException) {
+                    log.warn("Unknown topic: {}, cannot be deleted.", topic);
+                    return false;
+                }
+            }
             log.error("Fail to delete topic: {}", topic, e);
             return false;
         }
@@ -418,8 +439,7 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     /**
-     * Remove all existing consumers and their committed positions.
-     * For testing purpose.
+     * Remove all existing consumers and their committed positions. For testing purpose.
      *
      * @since 2021.43
      */

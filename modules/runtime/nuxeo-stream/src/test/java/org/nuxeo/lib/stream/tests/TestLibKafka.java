@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.CreateTopicsOptions;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerPartitionAssignor;
@@ -54,6 +54,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.Cluster;
+import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
@@ -101,9 +102,11 @@ public class TestLibKafka {
     }
 
     @Test
-    public void testSendMessageInBatch() {
+    public void testSendMessageInBatch() throws InterruptedException {
         String topic = getPrefixedTopic("test-message-topic");
         createTopic(topic, 5);
+        // Wait a bit so all partition can find a leader
+        Thread.sleep(1000);
         sendMessageInBatch(topic);
         deleteTopic(topic);
     }
@@ -124,7 +127,7 @@ public class TestLibKafka {
                 Thread.currentThread().interrupt();
                 fail(e.getMessage());
             } catch (ExecutionException e) {
-                fail(e.getMessage());
+                fail(e.getCause().getMessage());
             }
         }
         producer.close();
@@ -239,16 +242,17 @@ public class TestLibKafka {
             return;
         }
         try (AdminClient adminClient = AdminClient.create(getAdminProperties())) {
-            CreateTopicsResult ret = adminClient.createTopics(
-                    Collections.singletonList(new NewTopic(topic, partitions, DEFAULT_REPLICATION)));
-            ret.all().get(2, TimeUnit.MINUTES);
+            KafkaFuture<Void> future = adminClient.createTopics(
+                    Collections.singletonList(new NewTopic(topic, partitions, DEFAULT_REPLICATION)),
+                    new CreateTopicsOptions().timeoutMs(10000)).all();
+            future.get(5, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            throw new RuntimeException("Unable to create topics " + topic + " within the timeout", e);
+            throw new RuntimeException("Unable to create topic " + topic + " within the timeout", e);
         }
     }
 
@@ -265,8 +269,8 @@ public class TestLibKafka {
                 System.out.println("Error while producing message to topic :" + recordMetadata);
                 e.printStackTrace();
             } else {
-                String.format("sent message to topic:%s partition:%s  offset:%s",
-                        recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
+                String.format("sent message to topic:%s partition:%s  offset:%s", recordMetadata.topic(),
+                        recordMetadata.partition(), recordMetadata.offset());
             }
         }
     }
