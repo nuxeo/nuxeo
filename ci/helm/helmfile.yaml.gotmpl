@@ -141,7 +141,7 @@ releases:
 {{ end }}
 - name: kafka
   chart: oci://registry-1.docker.io/bitnamicharts/kafka
-  version: 26.4.3
+  version: 31.0.0
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: kafka.enabled
   values:

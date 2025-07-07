@@ -1,24 +1,21 @@
 image:
   tag: "3.6.0"
-kraft:
-  enabled: false
-controller:
-  # required to allow Zookeeper mode
-  replicaCount: 0
 listeners:
   client:
     protocol: PLAINTEXT
   interbroker:
     protocol: PLAINTEXT
-broker:
+  controller:
+    protocol: PLAINTEXT
+  external:
+    protocol: PLAINTEXT
+controller:
   replicaCount: 1
+  # we want controller+broker process
+  controllerOnly: false
+  heapOpts: -XX:InitialRAMPercentage=75 -XX:MaxRAMPercentage=75
   persistence:
     enabled: false
-  initContainers:
-  - name: init-zookeeper
-    image: busybox
-    imagePullPolicy: IfNotPresent
-    command: ['sh', '-c', 'until nc -w1 {{"{{"}} printf "%s%s" (include "kafka.zookeeper.fullname" .) (tpl .Values.zookeeperChrootPath .) | quote {{"}}"}} {{"{{"}} .Values.zookeeper.service.ports.client {{"}}"}}; do echo "waiting for zookeeper"; sleep 2; done;']
   resources:
     requests:
       cpu: "1"
@@ -26,17 +23,16 @@ broker:
     limits:
       cpu: "1"
       memory: "1024Mi"
-  extraConfig: |
-    auto.create.topics.enable=false
-    delete.topic.enable=true
-    group.initial.rebalance.delay.ms=100
-    log.retention.minutes=24
-    offsets.retention.minutes=240
-    offsets.topic.num.partitions=5
-    offsets.topic.replication.factor=1
-    transaction.state.log.min.isr=1
-    transaction.state.log.replication.factor=1
-  heapOpts: "-Xmx512m -Xms512m"
+  extraConfigYaml:
+    auto.create.topics.enable: false
+    delete.topic.enable: true
+    group.initial.rebalance.delay.ms: 100
+    log.retention.minutes: 24
+    offsets.retention.minutes: 240
+    offsets.topic.num.partitions: 5
+    offsets.topic.replication.factor: 1
+    transaction.state.log.min.isr: 1
+    transaction.state.log.replication.factor: 1
   podLabels:
     {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
     dev.nuxeo.com/app: kafka
@@ -46,43 +42,7 @@ broker:
     minAvailable: 1
     maxUnavailable: ""
 {{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}
+broker:
+  replicaCount: 0
 serviceAccount:
   create: false
-zookeeper:
-  enabled: true
-  image:
-    tag: "3.6.2"
-  replicaCount: 1
-  persistence:
-    enabled: false
-  heapSize: "256"
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "512Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
-  podLabels:
-    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
-    dev.nuxeo.com/app: zookeeper
-    dev.nuxeo.com/resource: pod
-  extraDeploy:
-  # use extra deploy for Zookeeper PDB because PDB from Zookeeper chart is only deployed when replica count > 1
-  - |
-    apiVersion: policy/v1
-    kind: PodDisruptionBudget
-    metadata:
-      name: {{"{{"}} template "common.names.fullname" . {{"}}"}}
-      labels: {{"{{-"}} include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 {{"}}"}}
-        app.kubernetes.io/component: zookeeper
-      {{"{{-"}} if .Values.commonAnnotations {{"}}"}}
-      annotations: {{"{{-"}} include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 {{"}}"}}
-      {{"{{-"}} end {{"}}"}}
-    spec:
-      minAvailable: 1
-      {{"{{-"}} $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.podLabels .Values.commonLabels ) "context" . ) {{"}}"}}
-      selector:
-        matchLabels: {{"{{-"}} include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 {{"}}"}}
-          app.kubernetes.io/component: zookeeper
-{{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}

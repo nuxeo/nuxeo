@@ -1,7 +1,7 @@
 {{- $nxReplicaCount := env "NX_REPLICA_COUNT" | default 1 -}}
 {{- $nxWorkerCount := env "NX_WORKER_COUNT" | default 1 -}}
 {{- $replicaCount := add $nxReplicaCount $nxWorkerCount -}}
-broker:
+controller:
   replicaCount: {{ $replicaCount }}
   persistence:
     enabled: true
@@ -25,43 +25,6 @@ broker:
             operator: In
             values:
             - kafka
-            - opensearch
-            - mongodb
-        topologyKey: "kubernetes.io/hostname"
-    podAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: dev.nuxeo.com/app
-            operator: In
-            values:
-            - zookeeper
-        topologyKey: "kubernetes.io/hostname"
-{{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}
-zookeeper:
-  replicaCount: {{ $replicaCount }}
-  persistence:
-    enabled: true
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
-    limits:
-      cpu: "500m"
-      memory: "1Gi"
-  podLabels:
-    dev.nuxeo.com/usage: benchmark
-  podAnnotations:
-    ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: dev.nuxeo.com/app
-            operator: In
-            values:
-            - zookeeper
             - opensearch
             - mongodb
         topologyKey: "kubernetes.io/hostname"
