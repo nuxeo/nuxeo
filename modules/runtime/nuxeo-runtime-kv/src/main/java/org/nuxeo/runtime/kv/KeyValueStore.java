@@ -136,7 +136,7 @@ public interface KeyValueStore {
     Map<String, byte[]> get(Collection<String> keys);
 
     /**
-     * Retrieves the key/value map associated with the  keys.
+     * Retrieves the key/value map associated with the keys.
      *
      * @param keys the keys
      * @return the key/value map
@@ -146,7 +146,7 @@ public interface KeyValueStore {
     Map<String, String> getStrings(Collection<String> keys);
 
     /**
-     * Retrieves the key/value map associated with the  keys.
+     * Retrieves the key/value map associated with the keys.
      *
      * @param keys the keys
      * @return the key/value map
