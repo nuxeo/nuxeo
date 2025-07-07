@@ -238,6 +238,57 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     @Override
+    public byte[] remove(String key) {
+        Object value = removeObject(key);
+        if (value == null) {
+            return null;
+        }
+        byte[] bytes = toBytes(value);
+        if (bytes != null) {
+            return bytes;
+        }
+        throw new UnsupportedOperationException(value.getClass().getName());
+    }
+
+    @Override
+    public String removeString(String key) {
+        Object value = removeObject(key);
+        if (value == null) {
+            return null;
+        }
+        String stringValue = toString(value);
+        if (stringValue != null) {
+            return stringValue;
+        }
+        throw new IllegalArgumentException("Value is not a String for key: " + key);
+    }
+
+    @Override
+    public Long removeLong(String key) throws NumberFormatException {
+        Object value = removeObject(key);
+        if (value == null) {
+            return null;
+        }
+        Long longValue = toLong(value);
+        if (longValue != null) {
+            return longValue;
+        }
+        throw new NumberFormatException("Value is not a Long for key: " + key);
+    }
+
+    protected Object removeObject(String key) {
+        Bson filter = eq(ID_KEY, key);
+        Document doc = coll.findOneAndDelete(filter);
+        if (doc == null) {
+            log.trace("MongoDB: GET AND DELETE {} = null", key);
+            return null;
+        }
+        Object value = doc.get(VALUE_KEY);
+        log.trace("MongoDB: GET AND DELETE {} = {}", key, value);
+        return value;
+    }
+
+    @Override
     public Map<String, byte[]> get(Collection<String> keys) {
         Map<String, byte[]> map = new HashMap<>(keys.size());
         Consumer<Document> block = doc -> {

@@ -18,7 +18,11 @@
  */
 package org.nuxeo.ecm.core.mongodb.kv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
 
 import org.junit.Test;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreTest;
@@ -49,5 +53,26 @@ public class TestMongoDBKeyValueStore extends AbstractKeyValueStoreTest {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void testRemove() {
+        String key = "foo";
+        assertEquals(Collections.emptySet(), storeKeys());
+
+        store.put(key, BAR_B);
+        assertEquals(BAR, new String(store.remove(key)));
+        assertNull(store.remove(key));
+        assertNull(store.get(key));
+
+        store.put(key, BAR);
+        assertEquals(BAR, store.removeString(key));
+        assertNull(store.removeString(key));
+        assertNull(store.get(key));
+
+        store.put(key, Long.valueOf(123));
+        assertEquals(Long.valueOf(123), store.removeLong(key));
+        assertNull(store.removeLong(key));
+        assertNull(store.get(key));
     }
 }

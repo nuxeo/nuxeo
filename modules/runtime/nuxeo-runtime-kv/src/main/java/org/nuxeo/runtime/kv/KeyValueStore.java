@@ -127,6 +127,47 @@ public interface KeyValueStore {
     Long getLong(String key) throws NumberFormatException; // NOSONAR
 
     /**
+     * Retrieves and removes the value associated to the key.
+     *
+     * @param key the key
+     * @return the value, or {@code null} if there is no value
+     * @since 2025.5
+     */
+    default byte[] remove(String key) {
+        var result = get(key);
+        setTTL(key, 1);
+        return result;
+    }
+
+    /**
+     * Retrieves and removes the value associated to the key.
+     *
+     * @param key the key
+     * @return the value, or {@code null} if there is no value
+     * @throws IllegalArgumentException if the value cannot be returned as a {@link String}
+     * @since 2025.5
+     */
+    default String removeString(String key) {
+        var result = getString(key);
+        setTTL(key, 1);
+        return result;
+    }
+
+    /**
+     * Retrieves and removes the value associated to the key.
+     *
+     * @param key the key
+     * @return the value, or {@code null} if there is no value
+     * @throws NumberFormatException if the value cannot be returned as a {@link Long}
+     * @since 2025.5
+     */
+    default Long removeLong(String key) throws NumberFormatException {
+        var result = getLong(key);
+        setTTL(key, 1);
+        return result;
+    }
+
+    /**
      * Retrieves the key/value map associated with the keys.
      *
      * @param keys the keys
