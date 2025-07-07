@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,8 +39,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -47,6 +46,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.plugins.FormAuthenticator;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 
 import com.duosecurity.Client;
 import com.duosecurity.exception.DuoException;
@@ -61,7 +62,9 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     protected static final Logger log = LogManager.getLogger(DuoFactorsAuthenticator.class);
 
-    protected static final String STATE_CACHE_NAME = "duo-state-cache";
+    protected static final long STATE_TTL_SECONDS = Duration.ofMinutes(4).toSeconds();
+
+    protected static final String KV_NAME = "duo-state";
 
     protected static final Random RANDOM = new SecureRandom();
 
@@ -124,7 +127,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                 var username = String.valueOf(session.getAttribute(NX_USER_FIRST_FACTOR_CHECKED));
                 session.removeAttribute(NX_USER_FIRST_FACTOR_CHECKED);
                 var state = getClient().generateState();
-                getStateCache().put(state, username);
+                getKeyValueStore().put(state, username, STATE_TTL_SECONDS);
                 var authUrl = getClient().createAuthUrl(username, state);
                 httpResponse.sendRedirect(authUrl);
             } catch (DuoException e) {
@@ -161,7 +164,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             }
             return null;
         } else {
-            String username = (String) getStateCache().get(state);
+            String username = getKeyValueStore().removeString(state);
             try {
                 if (username != null) {
                     var duoCode = httpRequest.getParameter("duo_code");
@@ -174,8 +177,6 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             } catch (DuoException e) {
                 log.error("Duo 2FA check failed", e);
                 return null;
-            } finally {
-                getStateCache().invalidate(state);
             }
         }
     }
@@ -225,8 +226,8 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         return duoClient;
     }
 
-    protected Cache getStateCache() {
-        return Framework.getService(CacheService.class).getCache(STATE_CACHE_NAME);
+    protected KeyValueStoreProvider getKeyValueStore() {
+        return (KeyValueStoreProvider) Framework.getService(KeyValueService.class).getKeyValueStore(KV_NAME);
     }
 
     protected NuxeoPrincipal validateUserIdentity(UserIdentificationInfo userIdentity) throws LoginException {
