@@ -82,6 +82,18 @@ public class ProbesObject extends AbstractResource<ResourceTypeImpl> {
         return checkProbe(probeName, probeInfo);
     }
 
+    /**
+     * Launches all probes.
+     *
+     * @return a list of result of all {@link ProbeInfo}
+     * @since 2025.5
+     */
+    @POST
+    public List<ProbeInfo> launchAll() {
+        var probeManager = Framework.getService(ProbeManager.class);
+        return probeManager.getAllProbeInfos().stream().map(probeManager::runProbe).toList();
+    }
+
     protected ProbeInfo checkProbe(String probeName, ProbeInfo probeInfo) {
         if (probeInfo == null) {
             throw new NuxeoException("No such probe: " + probeName, SC_NOT_FOUND);

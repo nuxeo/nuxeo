@@ -75,6 +75,19 @@ public class TestProbesObject extends ManagementBaseTest {
     }
 
     @Test
+    public void testLaunchAllProbes() {
+        httpClient.buildPostRequest("/management/probes")
+                  .executeAndConsume(new JsonNodeHandler(), ThrowableConsumer.asConsumer(node -> {
+                      JsonAssert jAssert = JsonAssert.on(node.toString());
+                      jAssert.get("entity-type").isEquals("probes");
+                      JsonAssert jProbeArray = jAssert.get("entries");
+
+                      JsonAssert jProbe = jProbeArray.get(0);
+                      testProbeInfo(jProbe);
+                  }));
+    }
+
+    @Test
     public void testGetWrongProbe() {
         httpClient.buildGetRequest("/management/probes/fake")
                   .executeAndConsume(new HttpStatusCodeHandler(),
