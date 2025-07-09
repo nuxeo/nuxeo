@@ -64,24 +64,7 @@ public class ConnectStatusHolder {
     }
 
     public SubscriptionStatusWrapper getStatus() {
-
-        // get status (possibility from cache)
-        SubscriptionStatusWrapper lastStatus = getStatus(false);
-
-        // check freshness
-        Calendar oldestStatusDate = Calendar.getInstance();
-        oldestStatusDate.add(Calendar.MINUTE, -REFRESH_PERIOD_MINUTES);
-        if (lastStatus == null || lastStatus.refreshDate.before(oldestStatusDate)) {
-            // try to refresh
-            SubscriptionStatusWrapper refreshStatus = getStatus(true);
-            // keep last success status in case of error
-            if ((refreshStatus == null || refreshStatus.isError()) && lastStatus != null && !lastStatus.isError()) {
-                instanceStatus = lastStatus;
-                instanceStatus.refreshDate = Calendar.getInstance();
-            }
-        }
-
-        return instanceStatus;
+        return getStatus(false);
     }
 
     public void flush() {
@@ -89,7 +72,8 @@ public class ConnectStatusHolder {
     }
 
     public SubscriptionStatusWrapper getStatus(boolean forceRefresh) {
-        if (instanceStatus == null || forceRefresh) {
+        if (isStatusExpired() || forceRefresh) {
+            SubscriptionStatusWrapper lastStatus = instanceStatus;
             if (isRegistered()) {
                 try {
                     instanceStatus = new SubscriptionStatusWrapper(getService().getConnector().getConnectStatus());
@@ -113,8 +97,23 @@ public class ConnectStatusHolder {
             } else {
                 instanceStatus = new UnresgistedSubscriptionStatusWrapper();
             }
+            if (instanceStatus.isError() && lastStatus != null && !lastStatus.isError()) {
+                // keep previous valid status
+                instanceStatus = lastStatus;
+                instanceStatus.refreshDate = Calendar.getInstance();
+            }
         }
         return instanceStatus;
+    }
+
+    protected boolean isStatusExpired() {
+        if (instanceStatus == null) {
+            return true;
+        }
+        // check freshness
+        Calendar oldestStatusDate = Calendar.getInstance();
+        oldestStatusDate.add(Calendar.MINUTE, -REFRESH_PERIOD_MINUTES);
+        return instanceStatus.refreshDate.before(oldestStatusDate);
     }
 
     /**

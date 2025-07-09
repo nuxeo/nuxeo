@@ -5,6 +5,7 @@
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.capabilities.CapabilitiesJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.BinaryManagerStatusJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.ConfigurationPropertiesJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.ConnectStatusJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.MigrationJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.MigrationListJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.ProbeInfoJsonWriter" enable="true" />
