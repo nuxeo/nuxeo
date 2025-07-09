@@ -247,11 +247,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         } catch (InterruptedException e) {
             returnCode = ReturnCode.INTERRUPTED;
         } finally {
+            // clearing the interrupt flag is wanted as closeTailer method needs a non-interrupted thread
+            boolean isInterrupted = Thread.interrupted();
             try {
                 computation.destroy();
                 closeTailer();
             } finally {
-                if (ReturnCode.INTERRUPTED.equals(returnCode)) {
+                if (isInterrupted || ReturnCode.INTERRUPTED.equals(returnCode)) {
                     Thread.currentThread().interrupt();
                 }
             }
