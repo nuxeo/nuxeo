@@ -89,7 +89,7 @@ if (selectedLanguage != null) { %>
 <script type="text/javascript" src="<%=context%>/scripts/detect_timezone.js"></script>
 <script type="text/javascript" src="<%=context%>/scripts/nxtimezone.js"></script>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=2.0">
 
   <style type="text/css">
   @font-face {
@@ -443,34 +443,41 @@ if (selectedLanguage != null) { %>
           </div>
         <%} %>
         <c:if test="${param.nxtimeout}">
-          <div class="feedbackMessage">
+          <div class="feedbackMessage"
+            aria-label="<fmt:message bundle='${messages}' key='label.login.error' />">
             <fmt:message bundle="${messages}" key="label.login.timeout" />
           </div>
         </c:if>
         <c:if test="${param.connectionFailed}">
-          <div class="feedbackMessage errorMessage">
+          <div class="feedbackMessage errorMessage"
+            aria-label="<fmt:message bundle='${messages}' key='label.login.error' />">
            <fmt:message bundle="${messages}" key="label.login.connectionFailed" />
           </div>
         </c:if>
         <c:if test="${param.loginFailed == 'true' and param.connectionFailed != 'true'}">
-         <div class="feedbackMessage errorMessage">
+         <div class="feedbackMessage errorMessage"
+           aria-label="<fmt:message bundle='${messages}' key='label.login.error' />">
            <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
          </div>
         </c:if>
         <c:if test="${param.loginMissing}">
-         <div class="feedbackMessage errorMessage">
+         <div class="feedbackMessage errorMessage"
+           aria-label="<fmt:message bundle='${messages}' key='label.login.error' />">
            <fmt:message bundle="${messages}" key="label.login.missingUsername" />
          </div>
         </c:if>
         <c:if test="${param.securityError}">
-         <div class="feedbackMessage errorMessage">
+         <div class="feedbackMessage errorMessage"
+           aria-label="<fmt:message bundle='${messages}' key='label.login.error' />">
            <fmt:message bundle="${messages}" key="label.login.securityError" />
          </div>
         </c:if>
-        <input class="login_input" type="text" name="user_name" id="username" autocomplete="off"
-          placeholder="<fmt:message bundle="${messages}" key="label.login.username" />"/>
-        <input class="login_input" type="password" name="user_password" id="password" autocomplete="off"
-          placeholder="<fmt:message bundle="${messages}" key="label.login.password" />">
+        <input class="login_input" type="text" name="user_name" id="username" autocomplete="off" aria-required="true"
+          aria-label="<fmt:message bundle='${messages}' key='label.login.username' />"
+          placeholder="<fmt:message bundle='${messages}' key='label.login.username' />"/>
+        <input class="login_input" type="password" name="user_password" id="password" autocomplete="off" aria-required="true"
+          aria-label="<fmt:message bundle='${messages}' key='label.login.password' />"
+          placeholder="<fmt:message bundle='${messages}' key='label.login.password' />"/>
         <% if (selectedLanguage != null) { %>
         <input type="hidden" name="language" id="language" value="<%= selectedLanguage %>" />
         <% } %>
@@ -478,7 +485,7 @@ if (selectedLanguage != null) { %>
         <input type="hidden" name="forceAnonymousLogin" id="true" />
         <input type="hidden" name="form_submitted_marker" id="form_submitted_marker" />
         <input class="login_button" type="submit" name="Submit"
-          value="<fmt:message bundle="${messages}" key="label.login.logIn" />" />
+          value="<fmt:message bundle='${messages}' key='label.login.logIn' />" />
         <% if (useExternalProviders) {%>
         <div class="loginOptions">
           <p><fmt:message bundle="${messages}" key="label.login.loginWithAnotherId" /></p>
@@ -497,8 +504,8 @@ if (selectedLanguage != null) { %>
     </div>
     <% if (showNews && !isTesting) { %>
     <div class="news">
-      <iframe id="news" class="news-container" style="visibility: hidden"
-        data-src="<%=iframeUrl%>"></iframe>
+      <iframe id="news" name="news" title="news" class="news-container" style="visibility: hidden" data-src="<%=iframeUrl%>">
+      </iframe>
     </div>
 
     <% } %>
