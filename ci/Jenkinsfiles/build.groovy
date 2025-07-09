@@ -337,10 +337,6 @@ pipeline {
             // if current version is higher than default branch (aka: version in maintenance) run formatting check
             expression { nxGitHub.getDefaultBranch().toInteger() < env.REFERENCE_BRANCH.toInteger() }
           }
-          environment {
-            // env variable defined to workaround https://github.com/diffplug/spotless/pull/2238
-            MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} --settings /root/.m2/settings.xml -Duser.home=/home/jenkins"
-          }
           steps {
             container('maven-mongodb') {
               warnError(message: 'Formatting check has failed') {
