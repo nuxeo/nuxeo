@@ -69,7 +69,7 @@ jobs:
 
       - name: Slack notification
         if: failure() && (github.event_name == 'push' || github.event_name == 'schedule')
-        uses: slackapi/slack-github-action@v2.1.0
+        uses: slackapi/slack-github-action@v2.1.1
         env:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
