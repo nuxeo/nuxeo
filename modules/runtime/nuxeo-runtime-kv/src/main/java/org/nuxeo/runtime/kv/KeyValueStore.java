@@ -135,7 +135,7 @@ public interface KeyValueStore {
      */
     default byte[] remove(String key) {
         var result = get(key);
-        setTTL(key, 1);
+        put(key, (byte[]) null);
         return result;
     }
 
@@ -149,7 +149,7 @@ public interface KeyValueStore {
      */
     default String removeString(String key) {
         var result = getString(key);
-        setTTL(key, 1);
+        put(key, (String) null);
         return result;
     }
 
@@ -163,7 +163,7 @@ public interface KeyValueStore {
      */
     default Long removeLong(String key) throws NumberFormatException {
         var result = getLong(key);
-        setTTL(key, 1);
+        put(key, (Long) null);
         return result;
     }
 
