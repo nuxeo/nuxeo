@@ -7,6 +7,9 @@ updates:
       interval: "daily"
     # Disable version updates on 2023, we only want security updates on this maintenance branch
     open-pull-requests-limit: 0
+    ignore:
+      # ignore all Tomcat updates as it is handled externally
+      - dependency-name: "org.apache.tomcat:tomcat*"
 
   # Ignore pip dependencies
   - package-ecosystem: "pip"
@@ -36,6 +39,9 @@ updates:
       # Major version updates (doesn't work for security updates, need to list them explicitly, see below)
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+
+      # ignore all Tomcat updates as it is handled externally
+      - dependency-name: "org.apache.tomcat:tomcat*"
 
       # Spurious major version updates
       - dependency-name: "com.google.apis:google-api-services-drive"
