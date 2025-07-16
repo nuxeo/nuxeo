@@ -37,12 +37,6 @@
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <classifier>jdk15</classifier>
-    </dependency>
-
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

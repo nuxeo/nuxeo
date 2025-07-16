@@ -21,16 +21,19 @@
 
 package org.nuxeo.ecm.webengine.ui.tree;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class JSonTree {
+
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     protected TreeModelImpl tree;
 
@@ -55,7 +58,8 @@ public abstract class JSonTree {
     /**
      * root=ID - enter node ID toggle=ID - toggle expanded state for node ID
      */
-    public synchronized String updateSelection(WebContext ctx, ContentProvider provider, JSonTreeSerializer serializer) {
+    public synchronized String updateSelection(WebContext ctx, ContentProvider provider,
+            JSonTreeSerializer serializer) {
         try {
             tree.setContentProvider(provider);
             if (!tree.hasInput()) {
@@ -89,8 +93,8 @@ public abstract class JSonTree {
 
     public String getTreeAsJSONArray(WebContext ctx) {
         JSonTreeSerializer serializer = getSerializer(ctx);
-        JSONObject o = serializer.toJSON(tree.root);
-        JSONArray array = new JSONArray();
+        ObjectNode o = serializer.toJSON(tree.root);
+        ArrayNode array = MAPPER.createArrayNode();
         array.add(o);
         return array.toString();
     }
@@ -99,7 +103,7 @@ public abstract class JSonTree {
         TreeItem item = tree.findAndReveal(path);
         if (item != null) {
             item.expand();
-            JSONArray result = new JSONArray();
+            ArrayNode result = MAPPER.createArrayNode();
             if (item.isContainer()) {
                 result = serializer.toJSON(item.getChildren());
             }

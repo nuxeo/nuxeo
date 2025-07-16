@@ -23,13 +23,16 @@ package org.nuxeo.ecm.webengine.ui.tree;
 
 import java.util.Collection;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JSonTreeSerializer implements TreeItemVisitor {
+
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
      * Must be overridden to provide real URLs
@@ -38,35 +41,35 @@ public class JSonTreeSerializer implements TreeItemVisitor {
         return item.getPath().toString();
     }
 
-    public JSONArray toJSON(Collection<TreeItem> items) {
-        JSONArray ar = new JSONArray();
+    public ArrayNode toJSON(Collection<TreeItem> items) {
+        ArrayNode ar = MAPPER.createArrayNode();
         for (TreeItem item : items) {
             ar.add(toJSON(item));
         }
         return ar;
     }
 
-    public JSONArray toJSON(TreeItem[] items) {
-        JSONArray ar = new JSONArray();
+    public ArrayNode toJSON(TreeItem[] items) {
+        ArrayNode ar = MAPPER.createArrayNode();
         for (TreeItem item : items) {
             ar.add(toJSON(item));
         }
         return ar;
     }
 
-    public JSONObject toJSON(TreeItem root) {
-        return (JSONObject) root.accept(this);
+    public ObjectNode toJSON(TreeItem root) {
+        return (ObjectNode) root.accept(this);
     }
 
     @Override
     public Object visit(TreeItem item) {
-        JSONArray jsons = null;
+        ArrayNode jsons = null;
         if (item.isExpanded()) {
             TreeItem[] children = item.getChildren();
             if (children != null && children.length > 0) {
-                jsons = new JSONArray();
+                jsons = MAPPER.createArrayNode();
                 for (TreeItem child : children) {
-                    JSONObject childJson = (JSONObject) visit(child);
+                    ObjectNode childJson = (ObjectNode) visit(child);
                     jsons.add(childJson);
                 }
             }
@@ -77,19 +80,19 @@ public class JSonTreeSerializer implements TreeItemVisitor {
     /**
      * You may override this method to change the output JSON.
      */
-    protected JSONObject item2JSON(TreeItem item, JSONArray children) {
-        JSONObject json = new JSONObject();
-        json.element("text", item.getLabel()).element("id", item.getPath().toString()).element("href", getUrl(item));
-        json.element("expanded", item.isExpanded());
+    protected ObjectNode item2JSON(TreeItem item, ArrayNode children) {
+        ObjectNode json = MAPPER.createObjectNode();
+        json.put("text", item.getLabel()).put("id", item.getPath().toString()).put("href", getUrl(item));
+        json.put("expanded", item.isExpanded());
         if (item.isContainer()) {
             if (item.isContainer()) {
                 if (item.hasChildren()) {
-                    json.element("children", children);
+                    json.set("children", children);
                 } else {
-                    json.element("hasChildren", true);
+                    json.put("hasChildren", true);
                 }
             } else {
-                json.element("hasChildren", false);
+                json.put("hasChildren", false);
             }
         }
         return json;
