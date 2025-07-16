@@ -2278,11 +2278,6 @@
       </dependency>
       <!-- Keep the dependency for external libraries -->
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
-      <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.11.0</version>
@@ -2497,6 +2492,12 @@
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-ldap</artifactId>
         <version>${apachedshared.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
@@ -3557,7 +3558,7 @@
       <dependency>
         <groupId>org.wso2.scim2.testsuite</groupId>
         <artifactId>org.wso2.scim2.testsuite.core</artifactId>
-        <version>1.1-NX01</version>
+        <version>1.1-NX02</version>
         <scope>test</scope>
         <exclusions>
           <!-- banned -->
