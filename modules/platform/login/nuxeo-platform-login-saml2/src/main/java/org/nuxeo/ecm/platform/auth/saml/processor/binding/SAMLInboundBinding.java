@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.auth.saml.processor.binding;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opensaml.messaging.decoder.servlet.HttpServletRequestMessageDecoder;
@@ -73,7 +74,7 @@ public enum SAMLInboundBinding implements SAMLBinding {
         return decoderFactory.get();
     }
 
-    protected static boolean iSAMLObjectPresent(HttpServletRequest request) {
+    public static boolean iSAMLObjectPresent(ServletRequest request) {
         return request.getParameter(SAML_REQUEST) != null || request.getParameter(SAML_RESPONSE) != null;
     }
 }

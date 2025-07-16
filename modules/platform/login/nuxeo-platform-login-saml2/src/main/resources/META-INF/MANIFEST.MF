@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.login.saml2;singleton:=true
 Require-Bundle: org.nuxeo.ecm.platform.login,
  org.nuxeo.ecm.platform.web.common
 Nuxeo-Component: OSGI-INF/key-manager-service.xml,
- OSGI-INF/saml-csrf-config.xml
+ OSGI-INF/saml-csrf-config.xml,
+ OSGI-INF/saml-session-manager-config.xml
