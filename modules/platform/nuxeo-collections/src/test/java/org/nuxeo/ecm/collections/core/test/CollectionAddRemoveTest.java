@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 public class CollectionAddRemoveTest extends CollectionTestCase {
 
     @Test
-    public void testAddOneDocToNewCollectionAndRemove() throws Exception {
+    public void testAddOneDocToNewCollectionAndRemove() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
@@ -106,10 +106,6 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
     @Test
     public void testAddManyDocsToNewCollectionAndRemove() {
-        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
-                "Workspace");
-        testWorkspace = session.createDocument(testWorkspace);
-
         List<DocumentModel> files = createTestFiles(session, 3);
 
         collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, files, session);
@@ -224,6 +220,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         assertTrue(session.exists(newCollectionRef));
 
     }
+
     /**
      * Check that a copied document does not belong to the collections of the original documents.
      *
@@ -266,7 +263,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
      * @since 8.4
      */
     @Test
-    public void testAddVersionToNewCollectionAndRemove() throws Exception {
+    public void testAddVersionToNewCollectionAndRemove() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
@@ -310,7 +307,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
      * @since 8.4
      */
     @Test
-    public void testAddVProxyToNewCollectionAndRemove() throws Exception {
+    public void testAddVProxyToNewCollectionAndRemove() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
@@ -319,8 +316,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
         PathRef sectionsRootRef = new PathRef("/default-domain/sections");
         assertTrue(session.exists(sectionsRootRef));
-        DocumentModel sectionDoc = session.getDocument(sectionsRootRef);
-        sectionDoc = session.createDocumentModel("Section");
+        DocumentModel sectionDoc = session.createDocumentModel("Section");
         sectionDoc.setPathInfo(sectionDoc.getPathAsString(), "section1");
         sectionDoc = session.createDocument(sectionDoc);
 
@@ -361,7 +357,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
      * NXP-22085
      */
     @Test
-    public void testAddOneDocToNewCollectionAndRemoveDontTriggerAutomaticVersioning() throws Exception {
+    public void testAddOneDocToNewCollectionAndRemoveDontTriggerAutomaticVersioning() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);

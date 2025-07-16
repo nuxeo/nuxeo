@@ -87,8 +87,6 @@ public class Collection {
         if (StringUtils.isBlank(member2Id)) {
             documentIds.remove(member1IdIndex);
             documentIds.add(0, member1Id);
-            setDocumentIds(documentIds);
-            return true;
         } else {
             int member2IdIndex = documentIds.indexOf(member2Id);
             if (member2IdIndex < 0) {
@@ -106,9 +104,9 @@ public class Collection {
                 int newMember1IdIndex = documentIds.indexOf(member1Id);
                 documentIds.add(newMember1IdIndex + 1, member2Id);
             }
-            setDocumentIds(documentIds);
-            return true;
         }
+        setDocumentIds(documentIds);
+        return true;
     }
 
     /**

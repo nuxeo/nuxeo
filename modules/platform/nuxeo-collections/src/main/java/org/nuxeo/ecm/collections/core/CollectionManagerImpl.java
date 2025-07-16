@@ -125,7 +125,8 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     @Override
     public void addToNewCollection(final String newTitle, final String newDescription,
             final List<DocumentModel> documentListToBeAdded, CoreSession session) {
-        DocumentModel newCollection = createCollection(newTitle, newDescription, documentListToBeAdded.get(0), session);
+        DocumentModel newCollection = createCollection(newTitle, newDescription, documentListToBeAdded.get(0),
+                session);
         for (DocumentModel documentToBeAdded : documentListToBeAdded) {
             addToCollection(newCollection, documentToBeAdded, session);
         }
