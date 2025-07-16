@@ -112,6 +112,10 @@ nuxeo.picture.views.transaction.timeout.seconds=300
 nuxeo.video.transaction.timeout.seconds=600
 
 ###
+# Collections
+nuxeo.collection.max.size=100000
+
+###
 # Elasticsearch
 elasticsearch.enabled=true
 # Name of the Elasticsearch index for the default document repository

@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.collections.core.adapter;
 
+import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_MAX_SIZE_PROP;
+import static org.nuxeo.ecm.collections.api.CollectionConstants.DEFAULT_COLLECTION_MAX_SIZE;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -26,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.9.3
@@ -49,6 +53,12 @@ public class Collection {
 
     public void addDocument(final String documentId) {
         List<String> documentIds = getCollectedDocumentIds();
+        var maxSize = Integer.parseInt(Framework.getProperty(COLLECTION_MAX_SIZE_PROP, DEFAULT_COLLECTION_MAX_SIZE));
+        if (maxSize > 0 && documentIds.size() >= maxSize) {
+            throw new IllegalStateException(
+                    "Collection max size exceeded. Limit is set by the '%s' conf property at %d".formatted(
+                            COLLECTION_MAX_SIZE_PROP, maxSize));
+        }
         if (!documentIds.contains(documentId)) {
             documentIds.add(documentId);
         }

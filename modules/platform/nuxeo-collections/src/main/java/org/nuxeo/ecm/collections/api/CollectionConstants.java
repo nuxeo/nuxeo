@@ -25,6 +25,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public class CollectionConstants {
 
+    /**
+     * @since 2025.6
+     */
+    public static final String COLLECTION_MAX_SIZE_PROP = "nuxeo.collection.max.size";
+
+    /**
+     * @since 2025.6
+     */
+    public static final String DEFAULT_COLLECTION_MAX_SIZE = "100000";
+
     public static final String DISABLE_NOTIFICATION_SERVICE = "disableNotificationService";
 
     /**

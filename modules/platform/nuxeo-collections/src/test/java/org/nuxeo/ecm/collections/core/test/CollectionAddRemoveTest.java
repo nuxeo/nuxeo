@@ -20,23 +20,37 @@ package org.nuxeo.ecm.collections.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
 
 import org.junit.Test;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @since 5.9.3
  */
 public class CollectionAddRemoveTest extends CollectionTestCase {
+
+    @Test
+    @WithFrameworkProperty(name = CollectionConstants.COLLECTION_MAX_SIZE_PROP, value = "1")
+    public void testCollectionMaxSize() {
+        List<DocumentModel> files = createTestFiles(session, 2);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, files.get(0), session);
+        DocumentRef newCollectionRef = new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME);
+        assertThrows(IllegalStateException.class,
+                () -> collectionManager.addToCollection(session.getDocument(newCollectionRef), files.get(1),
+                        session));
+    }
 
     @Test
     public void testAddOneDocToNewCollectionAndRemove() {
