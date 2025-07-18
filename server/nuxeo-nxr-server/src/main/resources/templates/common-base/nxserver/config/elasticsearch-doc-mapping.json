@@ -94,6 +94,14 @@
     "ecm:hasLegalHold": {
       "type": "boolean"
     },
+    "collection:documentIds" : {
+      "type" : "keyword",
+      "ignore_above" : 256
+    },
+    "collectionMember:collectionIds" : {
+      "type" : "keyword",
+      "ignore_above" : 256
+    },
     "common:icon": {
       "index": false,
       "type": "keyword"
