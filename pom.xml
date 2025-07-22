@@ -4598,14 +4598,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <format>{0,date,yyyyMMdd-HHmmss}</format>
           <items>
@@ -4717,7 +4709,6 @@
             <archive>
               <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
               <manifestEntries>
-                <Bundle-Version>${project.version}-t${buildNumber}</Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
               </manifestEntries>
             </archive>
