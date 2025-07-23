@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.io.registry.reflect;
 
+import static org.nuxeo.ecm.core.io.registry.reflect.MarshallerInspectorComparators.MARSHALLER_INSPECTOR_COMPARATOR;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -34,11 +36,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.registry.Marshaller;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
@@ -421,6 +419,10 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
         }
     }
 
+    protected Class<?> getMarshallerClass() {
+        return clazz;
+    }
+
     public Instantiations getInstantiations() {
         return instantiation;
     }
@@ -441,6 +443,11 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
         return genericType;
     }
 
+    /**
+     * @deprecated since 2025.6, the inspector constructor checks that the {@link #clazz} is a {@link Reader} or a
+     *             {@link Writer}, this method is then not useful as it always returns true
+     */
+    @Deprecated(since = "2025.6", forRemoval = true)
     public boolean isMarshaller() {
         return Marshaller.class.isAssignableFrom(clazz);
     }
@@ -455,67 +462,7 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
 
     @Override
     public int compareTo(MarshallerInspector inspector) {
-        if (inspector != null) {
-            // compare priorities
-            int result = getPriority().compareTo(inspector.getPriority());
-            if (result != 0) {
-                return -result;
-            }
-            // then, compare instantiation mode: singleton > thread > each
-            result = getInstantiations().compareTo(inspector.getInstantiations());
-            if (result != 0) {
-                return -result;
-            }
-            // specialize marshaller are preferred: managed class IntegerProperty > AbstractProperty > Property
-            if (isMarshaller() && inspector.isMarshaller()) {
-                if (!getMarshalledType().equals(inspector.getMarshalledType())) {
-                    if (getMarshalledType().isAssignableFrom(inspector.getMarshalledType())) {
-                        return 1;
-                    } else if (inspector.getMarshalledType().isAssignableFrom(getMarshalledType())) {
-                        return -1;
-                    }
-                }
-            }
-            // force sub classes to manage their priorities: StandardWriter > CustomWriter extends StandardWriter
-            // let the reference implementations priority
-            if (!clazz.equals(inspector.clazz)) {
-                if (clazz.isAssignableFrom(inspector.clazz)) {
-                    return -1;
-                } else if (inspector.clazz.isAssignableFrom(clazz)) {
-                    return 1;
-                }
-            }
-            // This is just optimization :
-            // priorise DocumentModel, Property
-            // then NuxeoPrincipal, NuxeoGroup and List<DocumentModel>
-            if ((isWriter() && inspector.isWriter()) || (isReader() && inspector.isReader())) {
-                boolean mineIsTop = isTopPriority(genericType);
-                boolean thatIsTop = isTopPriority(inspector.genericType);
-                if (mineIsTop && !thatIsTop) {
-                    return -1;
-                } else if (!mineIsTop && thatIsTop) {
-                    return 1;
-                }
-                boolean mineIsBig = isBigPriority(genericType);
-                boolean thatIsBig = isBigPriority(inspector.genericType);
-                if (mineIsBig && !thatIsBig) {
-                    return -1;
-                } else if (!mineIsBig && thatIsBig) {
-                    return 1;
-                }
-            }
-            return -clazz.getName().compareTo(inspector.clazz.getName());
-        }
-        return 1;
-    }
-
-    private static boolean isTopPriority(Type type) {
-        return TypeUtils.isAssignable(type, DocumentModel.class) || TypeUtils.isAssignable(type, Property.class);
-    }
-
-    private static boolean isBigPriority(Type type) {
-        return TypeUtils.isAssignable(type, NuxeoPrincipal.class) || TypeUtils.isAssignable(type, NuxeoGroup.class)
-                || TypeUtils.isAssignable(type, TypeUtils.parameterize(List.class, DocumentModel.class));
+        return MARSHALLER_INSPECTOR_COMPARATOR.compare(this, inspector);
     }
 
     @Override

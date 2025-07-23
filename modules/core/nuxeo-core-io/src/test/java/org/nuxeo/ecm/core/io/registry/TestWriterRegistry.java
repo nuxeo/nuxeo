@@ -33,7 +33,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.DERIVATIVE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.OVERRIDE_REFERENCE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +40,18 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.io.CoreIOFeature;
+import org.nuxeo.ecm.core.io.pojo.Child;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ChildListWriter;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ChildWriter;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.DefaultWriter;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ParentListWriter;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ParentWriter;
+import org.nuxeo.ecm.core.io.pojo.Parent;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
@@ -209,18 +216,78 @@ public class TestWriterRegistry {
         assertEquals(writer.getClass(), MapWriter.class);
     }
 
+    // NXP-33227
+    @Test
+    public void childAndChildListClassesShouldBeChosen() {
+        Writer<?> writer;
+        Type parentListType = TypeUtils.parameterize(List.class, Parent.class);
+        Type childListType = TypeUtils.parameterize(List.class, Child.class);
+
+        registry.register(ParentWriter.class);
+        registry.register(ParentListWriter.class);
+        registry.register(ChildWriter.class);
+        registry.register(ChildListWriter.class);
+
+        writer = registry.getWriter(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListWriter.class, writer.getClass());
+
+        registry.clear();
+
+        registry.register(ParentListWriter.class);
+        registry.register(ParentWriter.class);
+        registry.register(ChildListWriter.class);
+        registry.register(ChildWriter.class);
+
+        writer = registry.getWriter(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListWriter.class, writer.getClass());
+
+        registry.clear();
+
+        registry.register(ChildWriter.class);
+        registry.register(ChildListWriter.class);
+        registry.register(ParentWriter.class);
+        registry.register(ParentListWriter.class);
+
+        writer = registry.getWriter(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListWriter.class, writer.getClass());
+
+        registry.clear();
+
+        registry.register(ChildListWriter.class);
+        registry.register(ChildWriter.class);
+        registry.register(ParentListWriter.class);
+        registry.register(ParentWriter.class);
+
+        writer = registry.getWriter(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildWriter.class, writer.getClass());
+        writer = registry.getWriter(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListWriter.class, writer.getClass());
+    }
+
     // no @Setup annotation
-    public static class InvalidWriter implements Writer<Object> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public void write(Object entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out) {
-        }
-
+    public static class InvalidWriter implements DefaultWriter<Object> {
     }
 
     @Setup(mode = SINGLETON, priority = REFERENCE)
@@ -230,17 +297,7 @@ public class TestWriterRegistry {
 
     @Setup(mode = SINGLETON, priority = REFERENCE)
     @Supports(APPLICATION_JSON)
-    public static class DefaultNumberWriter implements Writer<Number> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public void write(Number entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out) {
-        }
-
+    public static class DefaultNumberWriter implements DefaultWriter<Number> {
     }
 
     @Setup(mode = SINGLETON, priority = OVERRIDE_REFERENCE)
@@ -288,49 +345,16 @@ public class TestWriterRegistry {
 
     @Setup(mode = SINGLETON)
     @Supports(APPLICATION_JSON)
-    public static class ListIntegerMapWriter implements Writer<Map<String, List<Integer>>> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public void write(Map<String, List<Integer>> entity, Class<?> clazz, Type genericType, MediaType mediatype,
-                OutputStream out) {
-        }
-
+    public static class ListIntegerMapWriter implements DefaultWriter<Map<String, List<Integer>>> {
     }
 
     @Setup(mode = SINGLETON)
     @Supports(APPLICATION_JSON)
-    public static class ListMapWriter implements Writer<Map<?, List<?>>> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public void write(Map<?, List<?>> entity, Class<?> clazz, Type genericType, MediaType mediatype,
-                OutputStream out) {
-        }
-
+    public static class ListMapWriter implements DefaultWriter<Map<?, List<?>>> {
     }
 
     @Setup(mode = SINGLETON)
     @Supports(APPLICATION_JSON)
-    public static class MapWriter implements Writer<Map<?, ?>> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public void write(Map<?, ?> entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out) {
-        }
-
+    public static class MapWriter implements DefaultWriter<Map<?, ?>> {
     }
-
 }

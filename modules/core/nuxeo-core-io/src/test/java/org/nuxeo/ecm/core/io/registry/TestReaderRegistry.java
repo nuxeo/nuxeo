@@ -33,7 +33,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.DERIVATIVE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.OVERRIDE_REFERENCE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
-import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +40,18 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.io.CoreIOFeature;
+import org.nuxeo.ecm.core.io.pojo.Child;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ChildListReader;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ChildReader;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.DefaultReader;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ParentListReader;
+import org.nuxeo.ecm.core.io.pojo.Marshallers.ParentReader;
+import org.nuxeo.ecm.core.io.pojo.Parent;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
@@ -209,19 +216,78 @@ public class TestReaderRegistry {
         assertEquals(Reader.getClass(), MapReader.class);
     }
 
+    // NXP-33226
+    @Test
+    public void childAndChildListClassesShouldBeChosen() {
+        Reader<?> writer;
+        Type parentListType = TypeUtils.parameterize(List.class, Parent.class);
+        Type childListType = TypeUtils.parameterize(List.class, Child.class);
+
+        registry.register(ParentReader.class);
+        registry.register(ParentListReader.class);
+        registry.register(ChildReader.class);
+        registry.register(ChildListReader.class);
+
+        writer = registry.getReader(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListReader.class, writer.getClass());
+        writer = registry.getReader(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListReader.class, writer.getClass());
+
+        registry.clear();
+
+        registry.register(ParentListReader.class);
+        registry.register(ParentReader.class);
+        registry.register(ChildListReader.class);
+        registry.register(ChildReader.class);
+
+        writer = registry.getReader(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListReader.class, writer.getClass());
+        writer = registry.getReader(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListReader.class, writer.getClass());
+
+        registry.clear();
+
+        registry.register(ChildReader.class);
+        registry.register(ChildListReader.class);
+        registry.register(ParentReader.class);
+        registry.register(ParentListReader.class);
+
+        writer = registry.getReader(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListReader.class, writer.getClass());
+        writer = registry.getReader(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListReader.class, writer.getClass());
+
+        registry.clear();
+
+        registry.register(ChildListReader.class);
+        registry.register(ChildReader.class);
+        registry.register(ParentListReader.class);
+        registry.register(ParentReader.class);
+
+        writer = registry.getReader(ctx, Parent.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ParentReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, parentListType, APPLICATION_JSON_TYPE);
+        assertEquals(ParentListReader.class, writer.getClass());
+        writer = registry.getReader(ctx, Child.class, null, APPLICATION_JSON_TYPE);
+        assertEquals(ChildReader.class, writer.getClass());
+        writer = registry.getReader(ctx, List.class, childListType, APPLICATION_JSON_TYPE);
+        assertEquals(ChildListReader.class, writer.getClass());
+    }
+
     // no @Setup annotation
-    public static class InvalidReader implements Reader<Object> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public Object read(Class<?> clazz, Type genericType, MediaType mediatype, InputStream in) {
-            return null;
-        }
-
+    public static class InvalidReader implements DefaultReader<Object> {
     }
 
     @Setup(mode = SINGLETON, priority = REFERENCE)
@@ -231,18 +297,7 @@ public class TestReaderRegistry {
 
     @Setup(mode = SINGLETON, priority = REFERENCE)
     @Supports(APPLICATION_JSON)
-    public static class DefaultNumberReader implements Reader<Number> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public Number read(Class<?> clazz, Type genericType, MediaType mediatype, InputStream in) {
-            return null;
-        }
-
+    public static class DefaultNumberReader implements DefaultReader<Number> {
     }
 
     @Setup(mode = SINGLETON, priority = OVERRIDE_REFERENCE)
@@ -290,50 +345,17 @@ public class TestReaderRegistry {
 
     @Setup(mode = SINGLETON)
     @Supports(APPLICATION_JSON)
-    public static class ListIntegerMapReader implements Reader<Map<String, List<Integer>>> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public Map<String, List<Integer>> read(Class<?> clazz, Type genericType, MediaType mediatype, InputStream in) {
-            return null;
-        }
-
+    public static class ListIntegerMapReader implements DefaultReader<Map<String, List<Integer>>> {
     }
 
     @Setup(mode = SINGLETON)
     @Supports(APPLICATION_JSON)
-    public static class ListMapReader implements Reader<Map<?, List<?>>> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public Map<?, List<?>> read(Class<?> clazz, Type genericType, MediaType mediatype, InputStream in) {
-            return null;
-        }
-
+    public static class ListMapReader implements DefaultReader<Map<?, List<?>>> {
     }
 
     @Setup(mode = SINGLETON)
     @Supports(APPLICATION_JSON)
-    public static class MapReader implements Reader<Map<?, ?>> {
-
-        @Override
-        public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
-            return true;
-        }
-
-        @Override
-        public Map<?, ?> read(Class<?> clazz, Type genericType, MediaType mediatype, InputStream in) {
-            return null;
-        }
-
+    public static class MapReader implements DefaultReader<Map<?, ?>> {
     }
 
 }
