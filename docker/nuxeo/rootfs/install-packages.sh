@@ -19,12 +19,13 @@ if [[ -f $NUXEO_HOME/configured ]]; then
 fi
 
 # default arguments for mp-install command
-mpInstallArgs="--accept yes --relax no"
+mpInstallArgs="--accept yes"
 
 while [ $# -ne 0 ]; do
   case $1 in
     --clid) clid=$2; shift 2 ;;
     --connect-url) connect_url=$2; shift 2 ;;
+    --relax) relax=$2; shift 2 ;;
     --offline) offline=true; shift 1 ;;
     -*) echo "Unknown option: $1" >&2; usage ;;
     *) packages=$@; break ;;
@@ -45,6 +46,12 @@ if [ -n "$connect_url" ]; then
   echo "Setting Connect URL: $connect_url"
   printf "org.nuxeo.connect.url=%b\n" "$connect_url" >> $NUXEO_HOME/bin/nuxeo.conf
 fi
+
+if [ -z "$relax" ]; then
+  # provide the default if not set
+  relax="no"
+fi
+mpInstallArgs="$mpInstallArgs --relax $relax"
 
 if [ -n "$offline" ]; then
   # Prevent nuxeoctl from reaching Connect
