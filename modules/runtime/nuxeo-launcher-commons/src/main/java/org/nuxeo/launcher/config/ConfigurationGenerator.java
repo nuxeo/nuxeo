@@ -301,7 +301,7 @@ public class ConfigurationGenerator {
             }
         }
         if (configHolder.getPropertyAsBoolean(PARAM_NUXEO_DEV)) {
-            log.warn("Nuxeo Dev mode is enabled");
+            log.info("Nuxeo Dev mode is enabled");
         }
     }
 

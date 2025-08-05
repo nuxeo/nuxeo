@@ -578,6 +578,15 @@ public class NuxeoLauncher {
 
     private StatusServletClient statusServletClient;
 
+    /**
+     * Quiet parameter which mainly represents presence of {@code -q} option on command line.
+     * <p>
+     * The decision to log or not to the console is mainly handled by Log4j and its log level. INFO messages, or higher,
+     * are printed to the console in non-quiet mode, see {@code log4j2-launcher.xml} file. When {@code quiet} option is
+     * turned on, WARN messages, or higher, are printed to the console.
+     *
+     * @see #setQuiet()
+     */
     private static boolean quiet = false;
 
     private static boolean debug = false;
@@ -962,21 +971,19 @@ public class NuxeoLauncher {
             log.info("Restarting launcher...");
             System.exit(EXIT_CODE_LAUNCHER_CHANGED);
         } catch (ParseException e) {
-            log.error("Invalid command line: {}", e::getMessage);
-            log.debug(e, e);
+            log.atError().withThrowable(log.isDebugEnabled() ? e : null).log("Invalid command line: {}", e::getMessage);
             printShortHelp();
             System.exit(EXIT_CODE_INVALID);
         } catch (IOException | PackageException | ConfigurationException | GeneralSecurityException e) {
-            log.error(e.getMessage());
-            log.debug(e, e);
+            log.atError().withThrowable(log.isDebugEnabled() ? e : null).log(e.getMessage());
             System.exit(EXIT_CODE_INVALID);
         } catch (NuxeoLauncherException e) {
-            log.error(e.getMessage());
-            log.debug(e, e);
+            log.atError().withThrowable(log.isDebugEnabled() ? e : null).log(e.getMessage());
             System.exit(e.getExitCode());
         } catch (Exception e) {
-            log.error("Cannot execute command. {}", e.getMessage(), e);
-            log.debug(e, e);
+            log.atError()
+               .withThrowable(log.isDebugEnabled() ? e : null)
+               .log("Cannot execute command. {}", e::getMessage);
             System.exit(EXIT_CODE_ERROR);
         }
     }
@@ -997,12 +1004,10 @@ public class NuxeoLauncher {
             printLongHelp();
         } else if (launcher.commandIs("status")) {
             String statusMsg = launcher.status();
-            if (!quiet) {
-                log.warn(statusMsg);
-                if (launcher.isStarted()) {
-                    log.info("Go to {}", launcher::getURL);
-                    log.info(launcher.getStartupSummary());
-                }
+            log.info(statusMsg);
+            if (launcher.isStarted()) {
+                log.info("Go to {}", launcher::getURL);
+                log.info(launcher.getStartupSummary());
             }
             // only case where exit status is not for error
             System.exit(launcher.getStatus());
@@ -1140,9 +1145,7 @@ public class NuxeoLauncher {
                 value = console.readLine(message);
             }
         } else { // try reading from stdin
-            if (!quiet) {
-                log.info(NO_NEW_LINE, message);
-            }
+            log.info(NO_NEW_LINE, message);
             value = STDIN.next();
             if (value == null || doRegexMatch && !predicate.test(value)) {
                 throw new ConfigurationException(error);
@@ -1160,9 +1163,7 @@ public class NuxeoLauncher {
         if (console != null) {
             return console.readPassword(message);
         } else { // try reading from stdin
-            if (!quiet) {
-                log.info(NO_NEW_LINE, message);
-            }
+            log.info(NO_NEW_LINE, message);
             return STDIN.next().toCharArray();
         }
     }
@@ -1183,9 +1184,7 @@ public class NuxeoLauncher {
         Console console = System.console();
         String message = "Instance type (dev|preprod|prod): [dev] ";
         if (console == null) {
-            if (!quiet) {
-                log.info(NO_NEW_LINE, message);
-            }
+            log.info(NO_NEW_LINE, message);
             String typeStr = STDIN.next();
             type = NuxeoClientInstanceType.fromString(typeStr);
             if (type == null) {
@@ -1423,16 +1422,14 @@ public class NuxeoLauncher {
             if (console != null) {
                 encryptedString = crypto.encrypt(algorithm, Crypto.getBytes(console.readPassword(message)));
             } else { // try reading from stdin
-                if (!quiet) {
-                    log.info(NO_NEW_LINE, message);
-                }
+                log.info(NO_NEW_LINE, message);
                 encryptedString = crypto.encrypt(algorithm, STDIN.next().getBytes());
             }
-            log.info(encryptedString);
+            log.warn(encryptedString);
         } else {
             for (String strToEncrypt : params) {
                 String encryptedString = crypto.encrypt(algorithm, strToEncrypt.getBytes());
-                log.info(encryptedString);
+                log.warn(encryptedString);
             }
         }
     }
@@ -1442,7 +1439,7 @@ public class NuxeoLauncher {
      */
     protected void decrypt() {
         Crypto crypto = configurationGenerator.getCrypto();
-        askCryptoKeyAndDecrypt(crypto, params).forEach(log::info);
+        askCryptoKeyAndDecrypt(crypto, params).forEach(log::warn);
     }
 
     protected List<String> askCryptoKeyAndDecrypt(Crypto crypto, String... values) {
@@ -1452,9 +1449,7 @@ public class NuxeoLauncher {
         if (console != null) {
             validKey = crypto.verifyKey(console.readPassword(message));
         } else { // try reading from stdin
-            if (!quiet) {
-                log.info(NO_NEW_LINE, message);
-            }
+            log.info(NO_NEW_LINE, message);
             validKey = crypto.verifyKey(STDIN.next().getBytes());
         }
         if (!validKey) {
@@ -1523,7 +1518,7 @@ public class NuxeoLauncher {
                 sb.append(value).append(newLine);
             }
         }
-        log.info(NO_NEW_LINE, sb.toString());
+        log.warn(NO_NEW_LINE, sb.toString());
     }
 
     /**
@@ -1557,9 +1552,7 @@ public class NuxeoLauncher {
                         value = console.readLine(fmt, key);
                     }
                 } else { // try reading from stdin
-                    if (!quiet) {
-                        log.info(NO_NEW_LINE, String.format(fmt, key));
-                    }
+                    log.info(NO_NEW_LINE, String.format(fmt, key));
                     if (doEncrypt) {
                         value = crypto.encrypt(algorithm, STDIN.next().getBytes());
                     } else if (isCryptKey) {
@@ -1589,9 +1582,7 @@ public class NuxeoLauncher {
      */
     public boolean doStart() {
         if (doStart(false).isAlive()) {
-            if (!quiet) {
-                log.info("Go to {}", this::getURL);
-            }
+            log.info("Go to {}", this::getURL);
             return true;
         }
         return false;
@@ -1609,9 +1600,7 @@ public class NuxeoLauncher {
             // noinspection unused
             try (var hook = new ShutdownHook(this)) {
                 waitForEffectiveStart(nuxeoProcess);
-                if (!quiet) {
-                    log.info("Go to {}", this::getURL);
-                }
+                log.info("Go to {}", this::getURL);
                 return true;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -1637,9 +1626,7 @@ public class NuxeoLauncher {
             hook.close();
             throw e;
         }
-        if (!quiet) {
-            log.info("Go to {}", this::getURL);
-        }
+        log.info("Go to {}", this::getURL);
     }
 
     /**
@@ -1769,18 +1756,14 @@ public class NuxeoLauncher {
                 // delay will be 1s 10 times, then 2s 10 times... until reaching maximum of 1min
                 Thread.sleep(Math.min((++n / 10 + 1) * 1000, 60_000));
                 if (servletAvailable && statusServletClient.isStarted()) {
-                    if (!quiet) {
-                        log.info(".");
-                    }
+                    log.info(".");
                     break;
                 } else if (statusServletClient.init()) {
                     servletAvailable = true;
                     n = 0;
                 }
             } catch (SocketTimeoutException e) {
-                if (!quiet) {
-                    log.info(NO_NEW_LINE, ".");
-                }
+                log.info(NO_NEW_LINE, ".");
             }
         }
 
@@ -1803,9 +1786,7 @@ public class NuxeoLauncher {
         var duration = Duration.between(startTime, Instant.now());
         startSummary.append(String.format("Started in %dmin%02ds", duration.toMinutes(), duration.toSeconds() % 60));
         if (wasStartupFine()) {
-            if (!quiet) {
-                log.info(startSummary);
-            }
+            log.info(startSummary);
         } else {
             log.error(startSummary);
             if (strict) {
@@ -1923,9 +1904,7 @@ public class NuxeoLauncher {
                 log.warn("Server is not running.");
                 return;
             }
-            if (!quiet) {
-                log.info(NO_NEW_LINE, "Stopping server...");
-            }
+            log.info(NO_NEW_LINE, "Stopping server...");
             int stopMaxWait = Integer.parseInt(
                     configurationGenerator.getUserConfig().getProperty(STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT));
             var startTime = Instant.now();
@@ -1935,15 +1914,11 @@ public class NuxeoLauncher {
                 Process stopProcess = stop();
                 stopProcess.waitFor();
                 // at this point Tomcat has received and acknowledged the stop command
-                if (!quiet) {
-                    log.info(NO_NEW_LINE, ".");
-                }
+                log.info(NO_NEW_LINE, ".");
                 // don't send too many requests to Tomcat - we're going to re-try
                 Thread.sleep(1000);
             }
-            if (!quiet) {
-                log.info(".");
-            }
+            log.info(".");
             if (!isAliveAndNotZombie(nuxeoProcess)) {
                 Duration duration = Duration.between(startTime, Instant.now());
                 log.info(String.format("Stopped in %dmin%02ds", duration.toMinutes(), duration.toSecondsPart()));
