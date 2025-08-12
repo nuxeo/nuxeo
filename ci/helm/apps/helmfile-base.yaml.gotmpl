@@ -1,26 +1,3 @@
-environments:
-  runtimeUnitTests:
-    values:
-    - environments/unit-tests-runtime.yaml
-  mongodbUnitTests:
-    values:
-    - environments/unit-tests-mongodb.yaml
-  postgresqlUnitTests:
-    values:
-    - environments/unit-tests-postgresql.yaml
-  elasticsearch7UnitTests:
-    values:
-    - environments/unit-tests-elasticsearch-7.yaml
-  elasticsearch8UnitTests:
-    values:
-    - environments/unit-tests-elasticsearch-8.yaml
-  upgradeTest:
-    values:
-    - environments/upgrade-test.yaml
-  benchmark:
-    values:
-    - environments/benchmark.yaml
----
 {{- $valuesDir := ternary "unittests" .Environment.Name (regexMatch "^.*UnitTests$" .Environment.Name) -}}
 repositories:
 - name: bitnami
@@ -60,41 +37,41 @@ releases:
   - kafka
   {{ end }}
   values:
-  - values/values-nuxeo.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-nuxeo.yaml.gotmpl
+  - ../values/values-nuxeo.yaml.gotmpl
+  - ../values/{{ $valuesDir }}/values-nuxeo.yaml.gotmpl
 - name: mongodb
   chart: oci://registry-1.docker.io/bitnamicharts/mongodb
   version: 13.3.1
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: mongodb.enabled
   values:
-  - values/values-mongodb.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-mongodb.yaml.gotmpl
+  - ../values/values-mongodb.yaml.gotmpl
+  - ../values/{{ $valuesDir }}/values-mongodb.yaml.gotmpl
 - name: postgresql
   chart: bitnami/postgresql
   version: 10.16.2 # latest chart version for app version 13
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: postgresql.enabled
   values:
-  - values/values-postgresql.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-postgresql.yaml
+  - ../values/values-postgresql.yaml.gotmpl
+  - ../values/{{ $valuesDir }}/values-postgresql.yaml
 - name: opensearch
   chart: opensearch/opensearch
   version: 1.16.0
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: opensearch.enabled
   values:
-  - values/values-opensearch.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-opensearch.yaml.gotmpl
+  - ../values/values-opensearch.yaml.gotmpl
+  - ../values/{{ $valuesDir }}/values-opensearch.yaml.gotmpl
 {{ if eq .Environment.Name "elasticsearch7UnitTests" }}
 - name: elasticsearch7
   chart: elastic/elasticsearch
   version: 7.17.3
   namespace: {{ requiredEnv "NAMESPACE" }}
   values:
-  - values/values-elasticsearch.yaml.gotmpl
-  - values/values-elasticsearch-7.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
+  - ../values/values-elasticsearch.yaml.gotmpl
+  - ../values/values-elasticsearch-7.yaml.gotmpl
+  - ../values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
   # Suppress some environment variables that can't be removed through values files that crash application startup
   strategicMergePatches:
   - apiVersion: apps/v1
@@ -120,9 +97,9 @@ releases:
   version: 8.5.1
   namespace: {{ requiredEnv "NAMESPACE" }}
   values:
-  - values/values-elasticsearch.yaml.gotmpl
-  - values/values-elasticsearch-8.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
+  - ../values/values-elasticsearch.yaml.gotmpl
+  - ../values/values-elasticsearch-8.yaml.gotmpl
+  - ../values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
   # Suppress warning about node discovery in a single-node cluster.
   # The discovery.seed_hosts env var is set when ES version is < 7, unfortunately it cannot be customized through chart values.
   strategicMergePatches:
@@ -145,5 +122,5 @@ releases:
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: kafka.enabled
   values:
-  - values/values-kafka.yaml.gotmpl
-  - values/{{ $valuesDir }}/values-kafka.yaml.gotmpl
+  - ../values/values-kafka.yaml.gotmpl
+  - ../values/{{ $valuesDir }}/values-kafka.yaml.gotmpl

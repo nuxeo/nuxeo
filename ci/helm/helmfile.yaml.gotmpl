@@ -1,0 +1,27 @@
+environments:
+  runtimeUnitTests:
+    values:
+    - apps/base/environments/unit-tests-runtime.yaml
+  mongodbUnitTests:
+    values:
+    - apps/base/environments/unit-tests-mongodb.yaml
+  postgresqlUnitTests:
+    values:
+    - apps/base/environments/unit-tests-postgresql.yaml
+  elasticsearch7UnitTests:
+    values:
+    - apps/base/environments/unit-tests-elasticsearch-7.yaml
+  elasticsearch8UnitTests:
+    values:
+    - apps/base/environments/unit-tests-elasticsearch-8.yaml
+  upgradeTest:
+    values:
+    - apps/base/environments/upgrade-test.yaml
+  benchmark:
+    values:
+    - apps/base/environments/benchmark.yaml
+---
+helmfiles:
+- path: apps/helmfile-base.yaml.gotmpl
+  values:
+  - {{ toYaml .Values | nindent 4 }}
