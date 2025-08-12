@@ -1,0 +1,18 @@
+# these values are required by helmfile-base.yaml.gotmpl releases
+extra-deploy:
+  enabled: true
+nuxeo:
+  enabled: false
+mongodb:
+  enabled: true
+postgresql:
+  enabled: false
+opensearch:
+  enabled: false
+kafka:
+  enabled: true
+# these values are required by helmfile-elasticsearch.yaml.gotmpl releases
+elasticsearch7:
+  enabled: false
+elasticsearch8:
+  enabled: true

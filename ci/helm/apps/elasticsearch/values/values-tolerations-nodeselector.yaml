@@ -1,0 +1,7 @@
+tolerations:
+  - key: team
+    operator: Equal
+    value: platform
+    effect: NoSchedule
+nodeSelector:
+  team: platform

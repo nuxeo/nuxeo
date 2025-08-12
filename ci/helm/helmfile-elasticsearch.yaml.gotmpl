@@ -1,0 +1,15 @@
+environments:
+  elasticsearch7UnitTests:
+    values:
+    - apps/elasticsearch/environments/unit-tests-elasticsearch-7.yaml
+  elasticsearch8UnitTests:
+    values:
+    - apps/elasticsearch/environments/unit-tests-elasticsearch-8.yaml
+---
+helmfiles:
+- path: apps/helmfile-elasticsearch.yaml.gotmpl
+  values:
+  - {{ toYaml .Values | nindent 4 }}
+- path: apps/helmfile-base.yaml.gotmpl
+  values:
+  - {{ toYaml .Values | nindent 4 }}

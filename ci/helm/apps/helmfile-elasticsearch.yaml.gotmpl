@@ -1,0 +1,62 @@
+{{- $valuesDir := ternary "unittests" .Environment.Name (regexMatch "^.*UnitTests$" .Environment.Name) -}}
+repositories:
+- name: elastic
+  url: https://helm.elastic.co/
+
+releases:
+- name: extra-deploy
+  chart: elasticsearch/extra-deploy
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  values:
+  - elasticsearch/values/{{ $valuesDir }}/values-extra-deploy.yaml.gotmpl
+- name: elasticsearch7
+  chart: elastic/elasticsearch
+  version: 7.17.3
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: elasticsearch7.enabled
+  values:
+  - elasticsearch/values/values-elasticsearch.yaml.gotmpl
+  - elasticsearch/values/values-elasticsearch-7.yaml.gotmpl
+  - elasticsearch/values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
+  # Suppress some environment variables that can't be removed through values files that crash application startup
+  strategicMergePatches:
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: elasticsearch-master
+    spec:
+      template:
+        spec:
+          containers:
+          - name: elasticsearch
+            env:
+            # The cluster.deprecation_indexing.enabled env var is set since ES 7.16 chart version, not working on our application version
+            - name: cluster.deprecation_indexing.enabled
+              $patch: delete
+            # The node.ml env var is set since ES 7.12 chart version, and it is not available in the oss version
+            - name: node.ml
+              $patch: delete
+- name: elasticsearch8
+  chart: elastic/elasticsearch
+  version: 8.5.1
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  condition: elasticsearch8.enabled
+  values:
+  - elasticsearch/values/values-elasticsearch.yaml.gotmpl
+  - elasticsearch/values/values-elasticsearch-8.yaml.gotmpl
+  - elasticsearch/values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
+  # Suppress warning about node discovery in a single-node cluster.
+  # The discovery.seed_hosts env var is set when ES version is < 7, unfortunately it cannot be customized through chart values.
+  strategicMergePatches:
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: elasticsearch-master
+    spec:
+      template:
+        spec:
+          containers:
+          - name: elasticsearch
+            env:
+            - name: discovery.seed_hosts
+              $patch: delete

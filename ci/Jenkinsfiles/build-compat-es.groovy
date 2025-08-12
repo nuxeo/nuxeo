@@ -116,7 +116,7 @@ pipeline {
               echo "${REPOSITORY_BACKEND} unit tests: install external services"
               def environment = "elasticsearch${nxUtils.getMajorVersion(version: ELASTICSEARCH_IMAGE_TAG)}UnitTests"
               echo "Helmfile environment = ${environment}"
-              nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE}", environment: environment) {
+              nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE}", environment: environment, file: 'ci/helm/helmfile-elasticsearch.yaml.gotmpl') {
                 try {
                   echo "${REPOSITORY_BACKEND} unit tests: prepare env variables for Maven tests"
                   sh """
