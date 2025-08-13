@@ -14,6 +14,9 @@ environments:
   benchmark:
     values:
     - apps/base/environments/benchmark.yaml
+    - apps/base/values/env-values-nuxeo-ingress.yaml.gotmpl
+values: # values for all environments and helmfiles
+- apps/base/values/env-values-global.yaml.gotmpl
 ---
 helmfiles:
 - path: apps/helmfile-base.yaml.gotmpl

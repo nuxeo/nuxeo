@@ -8,3 +8,21 @@ opensearch:
   enabled: true
 kafka:
   enabled: true
+
+# values definition
+global:
+  labels:
+    dev.nuxeo.com/usage: benchmark
+  selectors:
+    tolerations:
+    - key: team
+      operator: Equal
+      value: platform
+      effect: NoSchedule
+    - key: usage
+      operator: Equal
+      value: benchmark
+      effect: NoSchedule
+    nodeSelector:
+      team: platform
+      usage: benchmark

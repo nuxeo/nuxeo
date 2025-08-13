@@ -21,9 +21,3 @@ podAnnotations:
       }
     }
   ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
-labels:
-  dev.nuxeo.com/usage: benchmark
-service:
-  labels:
-    dev.nuxeo.com/usage: benchmark
-{{ readFile "values-tolerations-nodeselector.yaml" }}

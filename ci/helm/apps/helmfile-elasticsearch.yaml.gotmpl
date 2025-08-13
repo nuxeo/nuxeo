@@ -1,4 +1,3 @@
-{{- $valuesDir := ternary "unittests" .Environment.Name (regexMatch "^.*UnitTests$" .Environment.Name) -}}
 repositories:
 - name: elastic
   url: https://helm.elastic.co/
@@ -8,7 +7,7 @@ releases:
   chart: elasticsearch/extra-deploy
   namespace: {{ requiredEnv "NAMESPACE" }}
   values:
-  - elasticsearch/values/{{ $valuesDir }}/values-extra-deploy.yaml.gotmpl
+  - elasticsearch/values/values-extra-deploy.yaml.gotmpl
 - name: elasticsearch7
   chart: elastic/elasticsearch
   version: 7.17.3
@@ -17,7 +16,6 @@ releases:
   values:
   - elasticsearch/values/values-elasticsearch.yaml.gotmpl
   - elasticsearch/values/values-elasticsearch-7.yaml.gotmpl
-  - elasticsearch/values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
   # Suppress some environment variables that can't be removed through values files that crash application startup
   strategicMergePatches:
   - apiVersion: apps/v1
@@ -44,7 +42,6 @@ releases:
   values:
   - elasticsearch/values/values-elasticsearch.yaml.gotmpl
   - elasticsearch/values/values-elasticsearch-8.yaml.gotmpl
-  - elasticsearch/values/{{ $valuesDir }}/values-elasticsearch.yaml.gotmpl
   # Suppress warning about node discovery in a single-node cluster.
   # The discovery.seed_hosts env var is set when ES version is < 7, unfortunately it cannot be customized through chart values.
   strategicMergePatches:

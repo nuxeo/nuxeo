@@ -8,3 +8,8 @@ opensearch:
   enabled: true
 kafka:
   enabled: true
+
+# values definition
+global:
+  labels:
+    dev.nuxeo.com/usage: upgradeTest

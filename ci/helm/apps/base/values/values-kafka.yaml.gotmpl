@@ -1,6 +1,8 @@
 image:
   repository: bitnamilegacy/kafka
   tag: "3.6.0"
+commonLabels: {{- toYaml .Values.global.labels | nindent 2 }}
+  dev.nuxeo.com/app: kafka
 listeners:
   client:
     protocol: PLAINTEXT
@@ -35,14 +37,12 @@ controller:
     transaction.state.log.min.isr: 1
     transaction.state.log.replication.factor: 1
   podLabels:
-    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
-    dev.nuxeo.com/app: kafka
     dev.nuxeo.com/resource: pod
   pdb:
     create: true
     minAvailable: 1
     maxUnavailable: ""
-{{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}
+  {{- toYaml .Values.global.selectors | nindent 2 }}
 broker:
   replicaCount: 0
 serviceAccount:

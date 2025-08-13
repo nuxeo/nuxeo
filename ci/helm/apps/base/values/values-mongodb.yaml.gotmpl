@@ -1,6 +1,8 @@
 image:
   repository: bitnamilegacy/mongodb
   tag: "6.0.2"
+commonLabels: {{- toYaml .Values.global.labels | nindent 2 }}
+  dev.nuxeo.com/app: mongodb
 persistence:
   enabled: false
 useStatefulSet: false
@@ -16,12 +18,8 @@ resources:
     cpu: "2"
     memory: "2Gi"
 labels:
-  {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 2 }}
-  dev.nuxeo.com/app: mongodb
   dev.nuxeo.com/resource: statefulset
 podLabels:
-  {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 2 }}
-  dev.nuxeo.com/app: mongodb
   dev.nuxeo.com/resource: pod
 extraDeploy:
   # use extra deploy because MongoDB doesn't have a PDB for the standalone deployment
@@ -40,4 +38,4 @@ extraDeploy:
       selector:
         matchLabels: {{"{{-"}} include "common.labels.matchLabels" . | nindent 6 {{"}}"}}
           app.kubernetes.io/component: mongodb
-{{ readFile "values-tolerations-nodeselector.yaml" }}
+{{- toYaml .Values.global.selectors | nindent 0 }}

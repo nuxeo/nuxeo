@@ -12,6 +12,8 @@ resources:
     cpu: "2"
     memory: "4Gi"
   tag: "16.4.0-debian-12-r7"
+commonLabels: {{- toYaml .Values.global.labels | nindent 2 }}
+  dev.nuxeo.com/app: postgresql
 persistence:
   enabled: false
 postgresqlExtendedConf:
@@ -26,14 +28,10 @@ postgresqlExtendedConf:
   work_mem: "12MB"
 primary:
   labels:
-    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
-    dev.nuxeo.com/app: postgresql
     dev.nuxeo.com/resource: statefulset
   podLabels:
-    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
-    dev.nuxeo.com/app: postgresql
     dev.nuxeo.com/resource: pod
-  {{ readFile "values-tolerations-nodeselector.yaml" | indent 2 }}
+  {{- toYaml .Values.global.selectors | nindent 2 }}
 extraDeploy:
   # use extra deploy because PostgreSQL chart doesn't have a PDB
   - |

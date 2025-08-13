@@ -12,13 +12,11 @@ resources:
     cpu: "500m"
     memory: "1024Mi"
 esJavaOpts: "-Xmx380m -Xms380m"
-labels:
-  {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 2 }}
+labels: {{- toYaml .Values.global.labels | nindent 2 }}
   dev.nuxeo.com/app: elasticsearch
   dev.nuxeo.com/resource: pod
 service:
-  labels:
-    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
+  labels: {{- toYaml .Values.global.labels | nindent 4 }}
     dev.nuxeo.com/app: elasticsearch
     dev.nuxeo.com/resource: service
-{{ readFile "values-tolerations-nodeselector.yaml" }}
+{{- toYaml .Values.global.selectors | nindent 0 }}

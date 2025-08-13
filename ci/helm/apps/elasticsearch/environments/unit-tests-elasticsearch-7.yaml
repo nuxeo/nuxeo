@@ -16,3 +16,8 @@ elasticsearch7:
   enabled: true
 elasticsearch8:
   enabled: false
+
+# values definition
+global:
+  labels:
+    dev.nuxeo.com/usage: utests

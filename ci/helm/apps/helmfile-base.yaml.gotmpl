@@ -1,4 +1,3 @@
-{{- $valuesDir := ternary "unittests" .Environment.Name (regexMatch "^.*UnitTests$" .Environment.Name) -}}
 repositories:
 - name: bitnami
   # Unfortunately, the version of the postgresql Bitnami chart we're using is too old to be available as an OCI package
@@ -22,44 +21,79 @@ releases:
   version: ~3.1.0
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: nuxeo.enabled
-  {{ if eq .Environment.Name "benchmark" }}
+  {{- if or (or .Values.mongodb.enabled .Values.opensearch.enabled) .Values.kafka.enabled }}
   needs:
+  {{- if .Values.mongodb.enabled }}
   - mongodb
+  {{- end }}
+  {{- if .Values.opensearch.enabled }}
   - opensearch
+  {{- end }}
+  {{- if .Values.kafka.enabled }}
   - kafka
-  {{ end }}
+  {{- end }}
+  {{- end }}
   values:
-  - ../values/values-nuxeo.yaml.gotmpl
-  - ../values/{{ $valuesDir }}/values-nuxeo.yaml.gotmpl
+  - base/values/values-nuxeo.yaml.gotmpl
+  {{- if eq .Environment.Name "benchmark" }}
+  - base/values/benchmark/values-nuxeo.yaml.gotmpl
+  {{- else if eq .Environment.Name "upgradeTest" }}
+  - base/values/upgradeTest/values-nuxeo.yaml.gotmpl
+  {{- end }}
+  # allows environment values override
+  {{- with .Values.nuxeo }}
+  - {{ toYaml . | nindent 4 }}
+  {{- end }}
 - name: mongodb
   chart: oci://registry-1.docker.io/bitnamicharts/mongodb
   version: 13.3.1
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: mongodb.enabled
   values:
-  - ../values/values-mongodb.yaml.gotmpl
-  - ../values/{{ $valuesDir }}/values-mongodb.yaml.gotmpl
+  - base/values/values-mongodb.yaml.gotmpl
+  {{- if eq .Environment.Name "benchmark" }}
+  - base/values/benchmark/values-mongodb.yaml.gotmpl
+  {{- end }}
+  # allows environment values override
+  {{- with .Values.mongodb }}
+  - {{ toYaml . | nindent 4 }}
+  {{- end }}
 - name: postgresql
   chart: bitnami/postgresql
   version: 10.16.2 # latest chart version for app version 13
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: postgresql.enabled
   values:
-  - ../values/values-postgresql.yaml.gotmpl
-  - ../values/{{ $valuesDir }}/values-postgresql.yaml
+  - base/values/values-postgresql.yaml.gotmpl
+  # allows environment values override
+  {{- with .Values.postgresql }}
+  - {{ toYaml . | nindent 4 }}
+  {{- end }}
 - name: opensearch
   chart: opensearch/opensearch
   version: 1.16.0
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: opensearch.enabled
   values:
-  - ../values/values-opensearch.yaml.gotmpl
-  - ../values/{{ $valuesDir }}/values-opensearch.yaml.gotmpl
+  - base/values/values-opensearch.yaml.gotmpl
+  {{- if eq .Environment.Name "benchmark" }}
+  - base/values/benchmark/values-opensearch.yaml.gotmpl
+  {{- end }}
+  # allows environment values override
+  {{- with .Values.opensearch }}
+  - {{ toYaml . | nindent 4 }}
+  {{- end }}
 - name: kafka
   chart: oci://registry-1.docker.io/bitnamicharts/kafka
   version: 31.0.0
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: kafka.enabled
   values:
-  - ../values/values-kafka.yaml.gotmpl
-  - ../values/{{ $valuesDir }}/values-kafka.yaml.gotmpl
+  - base/values/values-kafka.yaml.gotmpl
+  {{- if eq .Environment.Name "benchmark" }}
+  - base/values/benchmark/values-kafka.yaml.gotmpl
+  {{- end }}
+  # allows environment values override
+  {{- with .Values.kafka }}
+  - {{ toYaml . | nindent 4 }}
+  {{- end }}

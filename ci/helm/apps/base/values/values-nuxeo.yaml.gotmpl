@@ -1,36 +1,29 @@
 {{- $localDomain := printf "%s.svc.cluster.local" (requiredEnv "NAMESPACE") -}}
-{{- $publicDomain := printf "%s.platform.dev.nuxeo.com" (requiredEnv "NAMESPACE") -}}
 image:
   repository: {{ printf "%s/nuxeo/nuxeo" (requiredEnv "DOCKER_REGISTRY") }}
   tag: {{ requiredEnv "VERSION" | quote }}
   pullSecrets:
   - name: kubernetes-docker-cfg
-podLabels:
-  {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 2 }}
+podLabels: {{- toYaml .Values.global.labels | nindent 2 }}
   dev.nuxeo.com/app: nuxeo
   dev.nuxeo.com/resource: pod
 service:
-  labels:
-    {{ tpl (readFile "labels.yaml.gotmpl") . | nindent 4 }}
+  labels: {{- toYaml .Values.global.labels | nindent 4 }}
     dev.nuxeo.com/app: nuxeo
     dev.nuxeo.com/resource: service
+{{- if .Values.mongodb.enabled }}
 mongodb:
   enabled: true
   host: {{ printf "mongodb.%s" $localDomain }}
+{{- end }}
+{{- if .Values.opensearch.enabled }}
 elasticsearch:
   enabled: true
   host: {{ printf "opensearch-cluster-master.%s" $localDomain }}
+{{- end }}
+{{- if .Values.kafka.enabled }}
 kafka:
   enabled: true
   host: {{ printf "kafka.%s" $localDomain }}
-ingress:
-  enabled: true
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
-  hostname: {{ $publicDomain }}
-  tls:
-  - hosts:
-    - {{ $publicDomain }}
-    secretName: platform-tls
-{{ readFile "values-tolerations-nodeselector.yaml" }}
+{{- end }}
+{{- toYaml .Values.global.selectors | nindent 0 }}

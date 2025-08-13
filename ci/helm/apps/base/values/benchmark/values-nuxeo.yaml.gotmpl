@@ -11,14 +11,9 @@ resources:
   limits:
     cpu: "12"
     memory: "48Gi"
-podLabels:
-  dev.nuxeo.com/usage: benchmark
 podAnnotations:
   ad.datadoghq.com/nuxeo.logs: '[{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}]'
   ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
-service:
-  labels:
-    dev.nuxeo.com/usage: benchmark
 amazonS3:
   enabled: true
   auth:
@@ -130,4 +125,3 @@ ingress:
   annotations:
     # set a timeout of 4 hours as we have a long running import
     nginx.ingress.kubernetes.io/proxy-read-timeout: "14400"
-{{ readFile "values-tolerations-nodeselector.yaml" }}

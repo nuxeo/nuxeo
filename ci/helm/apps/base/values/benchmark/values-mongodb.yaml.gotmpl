@@ -8,10 +8,6 @@ resources:
   limits:
     cpu: "15"
     memory: "56Gi"
-labels:
-  dev.nuxeo.com/usage: benchmark
-podLabels:
-  dev.nuxeo.com/usage: benchmark
 podAnnotations:
   ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 affinity:
@@ -26,4 +22,3 @@ affinity:
           - opensearch
           - mongodb
       topologyKey: "kubernetes.io/hostname"
-{{ readFile "values-tolerations-nodeselector.yaml" }}

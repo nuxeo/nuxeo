@@ -5,6 +5,8 @@ environments:
   elasticsearch8UnitTests:
     values:
     - apps/elasticsearch/environments/unit-tests-elasticsearch-8.yaml
+values: # values for all environments and helmfiles
+- apps/base/values/env-values-global.yaml.gotmpl
 ---
 helmfiles:
 - path: apps/helmfile-elasticsearch.yaml.gotmpl

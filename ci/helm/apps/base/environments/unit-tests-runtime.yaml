@@ -8,3 +8,8 @@ opensearch:
   enabled: false
 kafka:
   enabled: true
+
+# values definition
+global:
+  labels:
+    dev.nuxeo.com/usage: utests
