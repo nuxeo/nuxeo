@@ -1,0 +1,5 @@
+primary:
+  labels:
+    dev.nuxeo.com/usage: utests
+  podLabels:
+    dev.nuxeo.com/usage: utests
