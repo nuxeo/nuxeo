@@ -11,6 +11,16 @@
       <event>beforeDocumentModification</event>
     </listener>
 
+    <listener name="subtypeRestrictionListener" async="false"
+              postCommit="false"
+              class="org.nuxeo.ecm.platform.types.listener.SubtypeRestrictionListener"
+              enabled="${nuxeo.subtype.restriction.enabled:=false}"
+              priority="50">
+      <event>aboutToCopy</event>
+      <event>aboutToCreate</event>
+      <event>aboutToMove</event>
+    </listener>
+
   </extension>
 
 </component>

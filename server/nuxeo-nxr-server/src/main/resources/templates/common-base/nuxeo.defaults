@@ -444,3 +444,6 @@ nuxeo.oauth2.garbageCollectExpiredTokens.cronExpression=0 0 2 ? * SUN
 
 # Primitive type strict validation
 nuxeo.primitive.type.strict.validation=false
+
+# Document subtype restriction
+nuxeo.subtype.restriction.enabled=false

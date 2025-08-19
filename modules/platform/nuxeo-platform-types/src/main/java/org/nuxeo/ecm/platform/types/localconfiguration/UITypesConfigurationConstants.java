@@ -18,6 +18,12 @@
 
 package org.nuxeo.ecm.platform.types.localconfiguration;
 
+import java.util.Collection;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
@@ -41,4 +47,21 @@ public class UITypesConfigurationConstants {
 
     public static final String UI_TYPES_DEFAULT_NEEDED_SCHEMA = "file";
 
+    /**
+     * Computes the allowed subtypes of a given container document.
+     *
+     * @param container the container document
+     * @return the allowed subtypes
+     * @since 2025.7
+     */
+    public static Collection<String> computeSubtypes(DocumentModel container) {
+        Collection<String> allowedSubtypes = container.getDocumentType().getAllowedSubtypes();
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+        UITypesConfiguration uiTypesConfiguration = localConfigurationService.getConfiguration(
+                UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET, container);
+        if (uiTypesConfiguration != null) {
+            allowedSubtypes = uiTypesConfiguration.filterSubTypes(allowedSubtypes);
+        }
+        return allowedSubtypes;
+    }
 }
