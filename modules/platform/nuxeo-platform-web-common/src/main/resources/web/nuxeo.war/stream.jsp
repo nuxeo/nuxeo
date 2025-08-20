@@ -59,7 +59,7 @@
     }
 
     function isValidInput(input) {
-      return /^[a-z0-9/]+$/i.test(input)
+      return /^[a-z0-9/_]+$/i.test(input)
     }
 
     function parseStreamList(arr) {
