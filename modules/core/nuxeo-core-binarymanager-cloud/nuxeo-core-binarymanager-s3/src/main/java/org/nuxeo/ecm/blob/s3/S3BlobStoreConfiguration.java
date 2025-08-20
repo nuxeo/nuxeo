@@ -42,13 +42,13 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.blob.CloudBlobStoreConfiguration;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -84,6 +84,7 @@ import com.amazonaws.services.s3.model.ObjectLockConfiguration;
 import com.amazonaws.services.s3.model.ObjectLockRetentionMode;
 import com.amazonaws.services.s3.model.ObjectLockRule;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
+import com.amazonaws.services.s3.model.StorageClass;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 
@@ -269,6 +270,13 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public static final ObjectLockRetentionMode DEFAULT_RETENTION_MODE = ObjectLockRetentionMode.GOVERNANCE;
 
+    /** @since 2025.8 */
+    public static final String STORAGE_CLASS_PROPERTY = "storageClass";
+
+    /** @since 2025.8 */
+    public static final List<StorageClass> SUPPORTED_STORAGE_CLASS = List.of(StorageClass.Standard,
+            StorageClass.IntelligentTiering);
+
     public final CloudFrontConfiguration cloudFront;
 
     public final AmazonS3 amazonS3;
@@ -295,6 +303,13 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     public final boolean s3RetentionEnabled;
 
     /**
+     * The default storage class in s3.
+     *
+     * @since 2025.8
+     */
+    public final StorageClass storageClass;
+
+    /**
      * The retention mode to use when setting the retention on an object.
      */
     public final ObjectLockRetentionMode retentionMode;
@@ -312,7 +327,6 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      * @since 2023.7
      */
     protected final boolean pathSeparatorIsBackslash;
-
 
     protected ByteSize minimumPartSize;
 
@@ -408,6 +422,16 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
             }
         }
 
+        var storageClassProperty = getProperty(STORAGE_CLASS_PROPERTY);
+        if (isNotBlank(storageClassProperty)) {
+            storageClass = StorageClass.fromValue(storageClassProperty.toUpperCase());
+            if (!SUPPORTED_STORAGE_CLASS.contains(storageClass)) {
+                throw new IllegalArgumentException("Unsupported S3 Storage Class: %s".formatted(storageClassProperty));
+            }
+        } else {
+            storageClass = StorageClass.Standard;
+        }
+        log.info("Object will be stored with S3 {} storage class", storageClass);
         transferManager = createTransferManager();
 
         abortOldUploads();

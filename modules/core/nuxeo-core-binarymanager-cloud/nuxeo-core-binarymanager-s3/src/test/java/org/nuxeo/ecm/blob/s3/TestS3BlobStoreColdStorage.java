@@ -128,7 +128,7 @@ public class TestS3BlobStoreColdStorage {
         // check it is now restored
         status = getBlobStatus(blobInfo);
         assertTrue(status.isDownloadable());
-        assertNull(status.getStorageClass());
+        assertNotInColdStorage(status);
         assertFalse(status.isOngoingRestore());
     }
 
@@ -160,7 +160,7 @@ public class TestS3BlobStoreColdStorage {
         // Check the copy in destination is now restored
         status = getBlobStatus(blobInfo);
         assertTrue(status.isDownloadable());
-        assertNull(status.getStorageClass());
+        assertNotInColdStorage(status);
         assertFalse(status.isOngoingRestore());
     }
 
@@ -180,7 +180,7 @@ public class TestS3BlobStoreColdStorage {
         TransactionHelper.commitOrRollbackTransaction();
         status = getBlobStatus(blobInfo);
         assertTrue(status.isDownloadable());
-        assertNull(status.getStorageClass());
+        assertNotInColdStorage(status);
         assertFalse(status.isOngoingRestore());
 
         // Send to cold storage
@@ -191,7 +191,7 @@ public class TestS3BlobStoreColdStorage {
         // check blob status before transaction is committed
         status = getBlobStatus(blobInfo);
         assertTrue(status.isDownloadable());
-        assertNull(status.getStorageClass());
+        assertNotInColdStorage(status);
         assertFalse(status.isOngoingRestore());
 
         // commit transaction and check status
@@ -226,6 +226,14 @@ public class TestS3BlobStoreColdStorage {
     protected BlobStatus getBlobStatus(BlobInfo blobInfo) throws IOException {
         Blob blob = bp.readBlob(blobInfo);
         return bp.getStatus((ManagedBlob) blob);
+    }
+
+    protected void assertNotInColdStorage(BlobStatus status) {
+        assertTrue(
+                S3BlobStoreConfiguration.SUPPORTED_STORAGE_CLASS.stream()
+                                                                .anyMatch(sc -> sc.toString()
+                                                                                  .equalsIgnoreCase(
+                                                                                          status.getStorageClass())));
     }
 
 }

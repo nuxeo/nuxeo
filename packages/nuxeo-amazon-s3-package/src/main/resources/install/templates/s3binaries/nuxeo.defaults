@@ -14,6 +14,7 @@ nuxeo.s3storage.awstoken=
 nuxeo.s3storage.region=
 
 # optional
+nuxeo.s3storage.storageClass=STANDARD
 nuxeo.s3storage.cacheminage=60
 nuxeo.s3storage.cachesize=100MiB
 nuxeo.s3storage.cachecount=10000

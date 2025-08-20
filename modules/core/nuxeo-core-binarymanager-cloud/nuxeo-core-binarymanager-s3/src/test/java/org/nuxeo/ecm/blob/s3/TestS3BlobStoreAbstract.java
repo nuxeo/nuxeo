@@ -18,10 +18,39 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
+import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
+
 import org.nuxeo.ecm.core.blob.TestAbstractBlobStoreWithOptimizedCopy;
 import org.nuxeo.runtime.test.runner.Features;
 
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+
 @Features(S3BlobProviderFeature.class)
 public abstract class TestS3BlobStoreAbstract extends TestAbstractBlobStoreWithOptimizedCopy {
+
+    protected void assertStorageClass(String blobKey) {
+        S3BlobStoreConfiguration config = ((S3BlobProvider) bp).config;
+        var key = config.bucketKey(blobKey);
+        String objectKey;
+        String versionId;
+        int seppos = key.indexOf(VER_SEP);
+        if (seppos < 0) {
+            objectKey = key;
+            versionId = null;
+        } else {
+            objectKey = key.substring(0, seppos);
+            versionId = key.substring(seppos + 1);
+        }
+        GetObjectMetadataRequest request = new GetObjectMetadataRequest(config.bucketName, objectKey, versionId);
+        ObjectMetadata metadata;
+        metadata = config.amazonS3.getObjectMetadata(request);
+        assertEquals(expectedStorageClass(), metadata.getStorageClass());
+    }
+
+    protected String expectedStorageClass() {
+        return null; // storage class is null for StorageClass.Standard;
+    }
 
 }

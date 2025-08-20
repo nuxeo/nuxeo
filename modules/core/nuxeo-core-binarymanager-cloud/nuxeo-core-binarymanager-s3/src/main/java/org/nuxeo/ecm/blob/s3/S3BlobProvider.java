@@ -27,6 +27,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -293,10 +294,10 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
             throw new IOException(e);
         }
         // storage class is null for STANDARD
-        String storageClass = metadata.getStorageClass();
-        if (StorageClass.Standard.toString().equals(storageClass)) {
-            storageClass = null;
-        }
+        StorageClass storageClass = Optional.ofNullable(metadata.getStorageClass())
+                                            .map(StorageClass::fromValue)
+                                            // storage class is null for STANDARD
+                                            .orElse(StorageClass.Standard);
         // the object storage class can be Standard or Glacier.
         // the Glacier Storage class can have one of these 3 states:
         // x-amz-restore absent
@@ -304,9 +305,10 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
         // x-amz-restore: ongoing-request="false", expiry-date="Fri, 23 Dec 2012 00:00:00 GMT"
         Date date = metadata.getRestoreExpirationTime();
         Instant downloadableUntil = date == null ? null : date.toInstant();
-        boolean downloadable = storageClass == null || downloadableUntil != null;
+        boolean downloadable = S3BlobStoreConfiguration.SUPPORTED_STORAGE_CLASS.contains(storageClass)
+                || downloadableUntil != null;
         boolean ongoingRestore = BooleanUtils.isTrue(metadata.getOngoingRestore());
-        return new BlobStatus().withStorageClass(storageClass)
+        return new BlobStatus().withStorageClass(storageClass.toString())
                                .withDownloadable(downloadable)
                                .withDownloadableUntil(downloadableUntil)
                                .withOngoingRestore(ongoingRestore);

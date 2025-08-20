@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,22 @@
  * limitations under the License.
  *
  * Contributors:
- *     Florent Guillaume
+ *     Guillaume Renard
  */
 package org.nuxeo.ecm.blob.s3;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
-import java.io.IOException;
+import com.amazonaws.services.s3.model.StorageClass;
 
-import org.junit.Test;
+/**
+ * @since 2025.8
+ */
+@WithFrameworkProperty(name = "nuxeo.test.s3storage.storageClass", value = "INTELLIGENT_TIERING")
+public class TestS3IntelligentTieringBlobStore extends TestS3BlobStore {
 
-public class TestS3BlobStore extends TestS3BlobStoreAbstract {
-
-    @Test
-    public void testFlags() {
-        assertFalse(bp.isTransactional());
-        assertFalse(bp.isRecordMode());
-        assertTrue(bs.getKeyStrategy().useDeDuplication());
+    @Override
+    protected String expectedStorageClass() {
+        return StorageClass.IntelligentTiering.toString();
     }
-
-    @Test
-    public void testStorageClass() throws IOException {
-        assertStorageClass(bs.writeBlob(blobContext(ID1, FOO)));
-    }
-
 }

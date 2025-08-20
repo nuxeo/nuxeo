@@ -20,6 +20,7 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.DELIMITER;
+import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.SUPPORTED_STORAGE_CLASS;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
 import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -310,6 +312,7 @@ public class S3BlobStore extends AbstractBlobStore {
         }
         setMetadata(objectMetadata, blobContext);
         putObjectRequest.setMetadata(objectMetadata);
+        putObjectRequest.withStorageClass(config.storageClass);
         logTrace(fileTraceSource, "->", null, "write " + Files.size(file) + " bytes");
         logTrace("hnote right: " + bucketKey);
         Upload upload = config.transferManager.upload(putObjectRequest);
@@ -382,14 +385,16 @@ public class S3BlobStore extends AbstractBlobStore {
         ObjectMetadata metadata;
         try {
             metadata = config.amazonS3.getObjectMetadata(request);
+            return SUPPORTED_STORAGE_CLASS.contains(Optional.ofNullable(metadata.getStorageClass())
+                                                            .map(StorageClass::fromValue)
+                                                            // storage class is null for STANDARD
+                                                            .orElse(StorageClass.Standard));
         } catch (AmazonServiceException e) {
             if (!isMissingKey(e)) {
                 log.error("Failed to get information on blob: {}", bucketKey, e);
             }
             return false;
         }
-        String storageClass = metadata.getStorageClass();
-        return storageClass == null; // null is the standard storage class for s3
     }
 
     protected boolean bucketKeyExists(String bucketKey) {
@@ -690,6 +695,7 @@ public class S3BlobStore extends AbstractBlobStore {
             S3BlobStoreConfiguration destinationConfig, String destinationKey, boolean move) {
         CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceConfig.bucketName, sourceKey, sourceVersionId,
                 destinationConfig.bucketName, destinationKey);
+        copyObjectRequest.withStorageClass(config.storageClass);
         if (destinationConfig.useServerSideEncryption) {
             // server-side encryption
             if (isNotBlank(destinationConfig.serverSideKMSKeyID)) {
@@ -834,7 +840,7 @@ public class S3BlobStore extends AbstractBlobStore {
             }
             if (blobUpdateContext.coldStorageClass != null) {
                 StorageClass storageClass = blobUpdateContext.coldStorageClass.inColdStorage ? StorageClass.Glacier
-                        : StorageClass.Standard;
+                        : config.storageClass;
                 CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucketName, bucketKey, bucketName,
                         bucketKey).withSourceVersionId(versionId).withStorageClass(storageClass);
                 logTrace("->", "updateStorageClass");
