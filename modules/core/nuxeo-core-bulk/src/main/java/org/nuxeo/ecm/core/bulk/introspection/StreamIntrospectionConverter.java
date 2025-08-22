@@ -382,6 +382,10 @@ public class StreamIntrospectionConverter {
         int bestNodes = workerCount > 0 ? 1 : -1;
         int optimalNodes = bestNodes;
         for (JsonNode computation : computations) {
+            if ("bulk-scroller".equals(computation.at("/computation").asText())) {
+                // don't take into account a computation that is also running on front nodes
+                continue;
+            }
             int nodes = computation.at("/current/nodes").asInt();
             if (nodes > current) {
                 current = nodes;
