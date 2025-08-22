@@ -56,7 +56,7 @@
       },
       "best": {
         "nodes": 1,
-        "threads": null,
+        "threads": 2,
         "rate1m": 1.0692374,
         "eta": 0,
         "relevant": true

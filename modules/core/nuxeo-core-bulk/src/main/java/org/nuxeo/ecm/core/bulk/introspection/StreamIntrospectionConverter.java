@@ -572,7 +572,7 @@ public class StreamIntrospectionConverter {
             if (lag == 0) {
                 // active computation that copes with the load, stay conservative best = current
                 best.set("nodes", current.get("nodes"));
-                best.set("threads", current.get("threadsCount"));
+                best.set("threads", current.get("threads"));
                 best.set("rate1m", current.get("rate1m"));
                 best.set("eta", current.get("eta"));
                 best.put("relevant", true);
