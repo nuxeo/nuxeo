@@ -155,9 +155,11 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
             ret.setTotalSize(totalSize);
             return ret;
         }
-        try (Context stopWatch = fetchTimer.time()) {
+        Context stopWatch = fetchTimer.time();
+        try {
             Fetcher fetcher = queryBuilder.getFetcher(response, esa.getRepositoryMap());
             ret = fetcher.fetchDocuments();
+        } finally {
             logMinDurationFetch(stopWatch.stop(), totalSize);
         }
         ret.setTotalSize(totalSize);

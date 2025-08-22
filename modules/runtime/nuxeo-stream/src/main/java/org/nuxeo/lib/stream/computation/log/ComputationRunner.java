@@ -510,15 +510,16 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void processRecordWithRetry(String from, Record record) {
         runningCount.inc();
-        try (Timer.Context ignored = processRecordTimer.time()) {
+        Timer.Context timerContext = processRecordTimer.time();
+        try {
             processWithRetry(() -> computation.processRecord(context, from, record));
-            long duration = ignored.stop();
+        } finally {
+            long duration = timerContext.stop();
             if (duration > SLOW_COMPUTATION_THRESHOLD_NS && processRecordTimer.getCount() > 100
                     && duration >= processRecordTimer.getSnapshot().getMax()) {
                 log.warn("Slow computation: {}, on {}, took: {}s, record: {}", metadata.name(), context.getLastOffset(),
                         duration / 1_000_000_000L, record.toString());
             }
-        } finally {
             runningCount.dec();
         }
     }
