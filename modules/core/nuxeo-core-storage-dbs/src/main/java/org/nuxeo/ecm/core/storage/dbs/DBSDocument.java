@@ -627,7 +627,7 @@ public class DBSDocument extends BaseDocument<State> {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_HAS_LEGAL_HOLD, hold ? TRUE : null);
         DBSDocument doc = session.getDocument(docState);
-        getDocumentBlobManager().notifySetLegalHold(doc, hold);
+        notifySetLegalHold(doc, hold);
     }
 
     @Override

@@ -172,4 +172,27 @@ public class TestS3BlobStoreRecordRetainIndeterminate {
         assertObjectLegalHold(ON);
     }
 
+    @Test
+    public void testRetainUntilIndeterminateHoldAndUnhold() {
+        session.setRetainUntil(doc.getRef(), RETAIN_UNTIL_INDETERMINATE, null);
+        txFeature.nextTransaction();
+        assertObjectLegalHold(ON);
+
+        // explicitly set legal hold (including at repository level)
+        session.setLegalHold(doc.getRef(), true, bucketKey);
+        txFeature.nextTransaction();
+        assertObjectLegalHold(ON);
+
+        // explicitly unset legal hold (including at repository level)
+        session.setLegalHold(doc.getRef(), false, bucketKey);
+        txFeature.nextTransaction();
+        assertObjectLegalHold(ON); // due to retention indeterminate
+
+        Calendar retainShortWhile = Calendar.getInstance();
+        retainShortWhile.add(MILLISECOND, 500);
+        session.setRetainUntil(doc.getRef(), retainShortWhile, null);
+        txFeature.nextTransaction();
+        assertObjectLegalHold(OFF);
+    }
+
 }

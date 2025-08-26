@@ -479,7 +479,7 @@ public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
     @Override
     public void setLegalHold(boolean hold) {
         setPropertyValue(Model.MAIN_HAS_LEGAL_HOLD_PROP, hold ? Boolean.TRUE : null);
-        getDocumentBlobManager().notifySetLegalHold(this, hold);
+        notifySetLegalHold(this, hold);
     }
 
     @Override
