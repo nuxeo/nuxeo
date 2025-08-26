@@ -3474,7 +3474,7 @@
       <dependency>
         <groupId>org.wso2.scim2.testsuite</groupId>
         <artifactId>org.wso2.scim2.testsuite.core</artifactId>
-        <version>1.1-NX01</version>
+        <version>1.1-NX02</version>
         <scope>test</scope>
         <exclusions>
           <!-- banned -->
