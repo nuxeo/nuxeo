@@ -10930,6 +10930,12 @@
         },
         {
           "k": "nuxeo.streams.global.stream.group.lag",
+          "group": "StreamImporter-runDocumentConsumers",
+          "stream": "import-doc3",
+          "v": 3460590
+        },
+        {
+          "k": "nuxeo.streams.global.stream.group.lag",
           "group": "audit-writer",
           "stream": "audit-audit",
           "v": 0

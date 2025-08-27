@@ -445,8 +445,9 @@ public class StreamIntrospectionConverter {
                         && (metric.get("count").asInt() > 0)) {
                     // ex: { "k": "nuxeo.streams.computation.processRecord",
                     // "computation": "audit-writer", "count": 32, "rate1m": 0.07875646231106845, "mean": ...}
+                    boolean knownComputation = threads.containsKey(metric.get("computation").asText());
                     ObjectNode comp = computations.get(metric.get("computation"));
-                    if (comp == null && metric.get("mean").asDouble() > 0) {
+                    if (knownComputation && comp == null && metric.get("mean").asDouble() > 0) {
                         double rate1m = metric.get("rate1m").asDouble();
                         double mean = metric.get("mean").asDouble();
                         double maxRateByThread = 1 / mean;
@@ -462,8 +463,9 @@ public class StreamIntrospectionConverter {
                 if ("nuxeo.streams.global.stream.group.lag".equals(metric.get("k").asText())) {
                     // ex: { "k": "nuxeo.streams.global.stream.group.lag",
                     // "group": "bulk-csvExport", "stream": "bulk-csvExport", "v": 46 }
+                    boolean knownComputation = threads.containsKey(metric.get("group").asText());
                     ObjectNode comp = computations.get(metric.get("group"));
-                    if (comp != null || metric.get("v").asInt() > 0) {
+                    if (knownComputation && (comp != null || metric.get("v").asInt() > 0)) {
                         comp = computations.computeIfAbsent(metric.get("group"), this::initComputation);
                         // populate computation lag for its streams
                         ObjectNode streams = (ObjectNode) comp.get("streams");
