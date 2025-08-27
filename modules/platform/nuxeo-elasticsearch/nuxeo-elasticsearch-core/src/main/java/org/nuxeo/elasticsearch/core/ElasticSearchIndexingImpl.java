@@ -389,24 +389,32 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         SearchRequest request = new SearchRequest(indexName).scroll(keepAlive).source(search);
         log.debug("Search with scroll request: curl -XGET 'http://localhost:9200/{}/_search?scroll={}' -d '{}'",
                 indexName, keepAlive, query);
-        SearchResponse response;
-        for (response = esa.getClient().search(request); //
-                response.getHits().getHits().length > 0; //
-                response = runNextScroll(response, keepAlive)) {
+        SearchResponse response = null;
+        try {
+            for (response = esa.getClient().search(request); //
+                    response.getHits().getHits().length > 0; //
+                    response = runNextScroll(response, keepAlive)) {
 
-            // Build bulk delete request
-            BulkRequest bulkRequest = new BulkRequest();
-            for (SearchHit hit : response.getHits().getHits()) {
-                bulkRequest.add(new DeleteRequest(hit.getIndex(), hit.getId()));
+                // Build bulk delete request
+                BulkRequest bulkRequest = new BulkRequest();
+                for (SearchHit hit : response.getHits().getHits()) {
+                    bulkRequest.add(new DeleteRequest(hit.getIndex(), hit.getId()));
+                }
+                log.debug("Bulk delete request on {} elements", bulkRequest.numberOfActions());
+                // Run bulk delete request
+                esa.getClient().bulk(bulkRequest);
             }
-            log.debug("Bulk delete request on {} elements", bulkRequest.numberOfActions());
-            // Run bulk delete request
-            esa.getClient().bulk(bulkRequest);
+        } finally {
+            clearScrollContext(response);
         }
-        // Close the scroll
-        ClearScrollRequest closeScrollRequest = new ClearScrollRequest();
-        closeScrollRequest.addScrollId(response.getScrollId());
-        esa.getClient().clearScroll(closeScrollRequest);
+    }
+
+    protected void clearScrollContext(SearchResponse response) {
+        if (response != null && response.getScrollId() != null) {
+            ClearScrollRequest closeScrollRequest = new ClearScrollRequest();
+            closeScrollRequest.addScrollId(response.getScrollId());
+            esa.getClient().clearScroll(closeScrollRequest);
+        }
     }
 
     SearchResponse runNextScroll(SearchResponse response, TimeValue keepAlive) {
