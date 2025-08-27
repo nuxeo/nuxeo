@@ -4159,7 +4159,7 @@
       <dependency>
         <groupId>org.openjdk.nashorn</groupId>
         <artifactId>nashorn-core</artifactId>
-        <version>15.6</version>
+        <version>15.7</version>
       </dependency>
       <!-- fix transitive dependencies of org.openjdk.nashorn:nashorn-core to avoid multiple versions in dependency graph -->
       <dependency>
