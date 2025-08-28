@@ -147,7 +147,7 @@
     <opencensus.version>0.31.1</opencensus.version>
     <prometheus.client.version>0.16.0</prometheus.client.version>
     <protobuf.java.version>4.31.0</protobuf.java.version>
-    <opensaml.version>5.1.4</opensaml.version>
+    <opensaml.version>5.1.6</opensaml.version>
     <quartz.version>2.5.0</quartz.version>
   </properties>
 
