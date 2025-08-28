@@ -74,7 +74,7 @@
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <guice.version>7.0.0</guice.version>
-    <jersey.version>3.1.10</jersey.version>
+    <jersey.version>3.1.11</jersey.version>
     <chemistry.opencmis.version>2.0.0</chemistry.opencmis.version>
     <apache.httpcore.version>4.4.16</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.14</apache.httpcomponents.version>
