@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.bulk.introspection;
 
+import static java.lang.Math.max;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -378,31 +380,30 @@ public class StreamIntrospectionConverter {
     }
 
     protected JsonNode getScaleMetrics(int workerCount, ArrayNode computations) {
-        int current = workerCount > 0 ? workerCount : -1;
+        // Worker nodes detected in the cluster
+        int currentNodes = workerCount > 0 ? workerCount : -1;
+        // Best number of nodes to get the max throughput
         int bestNodes = workerCount > 0 ? 1 : -1;
+        // Relevant best number of nodes
         int optimalNodes = bestNodes;
         for (JsonNode computation : computations) {
-            if ("bulk-scroller".equals(computation.at("/computation").asText())) {
-                // don't take into account a computation that is also running on front nodes
+            String compName = computation.at("/computation").asText();
+            if ("bulk-scroller".equals(compName) || "bulk-status".equals(compName)) {
+                // don't take into account computations that can run on front nodes
                 continue;
             }
-            int nodes = computation.at("/current/nodes").asInt();
-            if (nodes > current) {
-                current = nodes;
-            }
-            int bNodes = computation.at("/best/nodes").asInt();
-            if (bNodes > bestNodes) {
-                bestNodes = bNodes;
-                if (computation.at("/best/relevant").asBoolean()) {
-                    optimalNodes = bestNodes;
-                }
+            currentNodes = max(currentNodes, computation.at("/current/nodes").asInt());
+            int bn = computation.at("/best/nodes").asInt();
+            bestNodes = max(bestNodes, bn);
+            if (computation.at("/best/relevant").asBoolean()) {
+                optimalNodes = max(optimalNodes, bn);
             }
         }
-        ObjectNode ret = new ObjectMapper().createObjectNode();
-        ret.put("currentNodes", current);
+        ObjectNode ret = OBJECT_MAPPER.createObjectNode();
+        ret.put("currentNodes", currentNodes);
         ret.put("bestNodes", bestNodes);
         ret.put("optimalNodes", optimalNodes);
-        ret.put("metric", optimalNodes - current);
+        ret.put("metric", optimalNodes - currentNodes);
         return ret;
     }
 

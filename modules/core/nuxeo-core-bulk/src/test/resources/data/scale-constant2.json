@@ -1,0 +1,206 @@
+{
+  "scale": {
+    "currentNodes": 3,
+    "bestNodes": 4,
+    "optimalNodes": 3,
+    "metric": 0
+  },
+  "nodes": [
+    {
+      "hostname": "49a528fa8c12",
+      "cpuCores": "8",
+      "created": "2025-08-31T13:29:32Z",
+      "ip": "192.168.1.3",
+      "nodeId": "foo-bar-2023-worker-10943-10-9-8-110-euw",
+      "jvmHeapSize": "16634609664",
+      "alive": "2025-08-31T13:33:31Z",
+      "type": "worker"
+    },
+    {
+      "hostname": "70c1b356b0e5",
+      "cpuCores": "8",
+      "created": "2025-08-31T13:29:57Z",
+      "ip": "192.168.1.3",
+      "nodeId": "foo-bar-2023-worker-10943-10-9-9-208-euw",
+      "jvmHeapSize": "16634609664",
+      "alive": "2025-08-31T13:34:04Z",
+      "type": "worker"
+    },
+    {
+      "hostname": "502ddae73458",
+      "cpuCores": "8",
+      "created": "2025-08-30T09:01:36Z",
+      "ip": "192.168.1.3",
+      "nodeId": "foo-bar-2023-app-10943-10-9-9-147-euw",
+      "jvmHeapSize": "16634609664",
+      "alive": "2025-08-31T13:33:36Z",
+      "type": "front"
+    },
+    {
+      "hostname": "0faffa4163c9",
+      "cpuCores": "8",
+      "created": "2025-08-30T08:59:24Z",
+      "ip": "192.168.1.3",
+      "nodeId": "foo-bar-2023-app-10943-10-9-7-6-euw",
+      "jvmHeapSize": "16634609664",
+      "alive": "2025-08-31T13:33:24Z",
+      "type": "front"
+    },
+    {
+      "hostname": "eeb258536ece",
+      "cpuCores": "8",
+      "created": "2025-08-31T13:09:52Z",
+      "ip": "192.168.1.3",
+      "nodeId": "foo-bar-2023-worker-10943-10-9-7-219-euw",
+      "jvmHeapSize": "16634609664",
+      "alive": "2025-08-31T13:33:59Z",
+      "type": "worker"
+    }
+  ],
+  "computations": [
+    {
+      "computation": "bulk-bulkIndex",
+      "streams": {
+        "bulk-bulkIndex": {
+          "stream": "bulk-bulkIndex",
+          "partitions": 8,
+          "lag": 2,
+          "end": 419434,
+          "latency": 14706
+        }
+      },
+      "nodes": [
+        {
+          "nodeId": "foo-bar-2023-worker-10943-10-9-8-110-euw",
+          "threads": 2,
+          "timestamp": 1756647211,
+          "count": 210,
+          "sum": 13.281190279,
+          "rate1m": 0.9920563723867442,
+          "rate5m": 0.5039315713713964,
+          "min": 0.001053155,
+          "p50": 0.001318095,
+          "mean": 0.06256539640062217,
+          "p95": 0.24285614,
+          "max": 0.404920209,
+          "stddev": 0.10167879064866346
+        },
+        {
+          "nodeId": "foo-bar-2023-worker-10943-10-9-7-219-euw",
+          "threads": 2,
+          "timestamp": 1756647239,
+          "count": 1390,
+          "sum": 115.268385439,
+          "rate1m": 0.7621511041404682,
+          "rate5m": 0.7966957657705953,
+          "min": 8.44604E-4,
+          "p50": 0.001021185,
+          "mean": 0.26549340506576896,
+          "p95": 0.22149703,
+          "max": 8.265980706,
+          "stddev": 1.3318836794036386
+        },
+        {
+          "nodeId": "foo-bar-2023-worker-10943-10-9-9-208-euw",
+          "threads": 2,
+          "timestamp": 1756647244,
+          "count": 262,
+          "sum": 19.668519031,
+          "rate1m": 1.2894256270405382,
+          "rate5m": 0.6295903144252439,
+          "min": 0.001036626,
+          "p50": 0.001294696,
+          "mean": 0.06989381029695158,
+          "p95": 0.231741581,
+          "max": 0.304917182,
+          "stddev": 0.10200260052693765
+        }
+      ],
+      "current": {
+        "nodes": 3,
+        "threads": 6,
+        "rate1m": 3.043633,
+        "eta": 0
+      },
+      "best": {
+        "nodes": 4,
+        "threads": 8,
+        "rate1m": 4.0581775,
+        "eta": 0,
+        "relevant": false
+      }
+    },
+    {
+      "computation": "bulk-index",
+      "streams": {
+        "bulk-index": {
+          "stream": "bulk-index",
+          "partitions": 12,
+          "lag": 43292,
+          "end": 321549,
+          "latency": 96407722
+        }
+      },
+      "nodes": [
+        {
+          "nodeId": "foo-bar-2023-worker-10943-10-9-8-110-euw",
+          "threads": 4,
+          "timestamp": 1756647211,
+          "count": 92,
+          "sum": 1546.437108076,
+          "rate1m": 0.4642122481552855,
+          "rate5m": 0.22095773457240803,
+          "min": 11.072184398,
+          "p50": 15.475203314,
+          "mean": 15.603954013906675,
+          "p95": 19.600762131,
+          "max": 25.534164789,
+          "stddev": 2.5443456334055843
+        },
+        {
+          "nodeId": "foo-bar-2023-worker-10943-10-9-7-219-euw",
+          "threads": 4,
+          "timestamp": 1756647239,
+          "count": 672,
+          "sum": 10732.636244521,
+          "rate1m": 0.5060190945743559,
+          "rate5m": 0.4688271073952708,
+          "min": 9.042206094,
+          "p50": 15.912614042,
+          "mean": 15.983870909938373,
+          "p95": 19.643893535,
+          "max": 23.589721024,
+          "stddev": 2.0468180110894583
+        },
+        {
+          "nodeId": "foo-bar-2023-worker-10943-10-9-9-208-euw",
+          "threads": 4,
+          "timestamp": 1756647244,
+          "count": 112,
+          "sum": 1789.716854251,
+          "rate1m": 0.5183298311989906,
+          "rate5m": 0.26487848133910297,
+          "min": 10.022935787,
+          "p50": 14.359661268,
+          "mean": 14.823163446542845,
+          "p95": 19.831460945,
+          "max": 24.234626774,
+          "stddev": 2.797001739704853
+        }
+      ],
+      "current": {
+        "nodes": 3,
+        "threads": 12,
+        "rate1m": 1.4885612,
+        "eta": 29083
+      },
+      "best": {
+        "nodes": 3,
+        "threads": 12,
+        "rate1m": 1.4885612,
+        "eta": 29083,
+        "relevant": true
+      }
+    }
+  ]
+}

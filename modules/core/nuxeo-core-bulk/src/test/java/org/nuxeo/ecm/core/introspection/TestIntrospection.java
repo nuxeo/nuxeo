@@ -95,6 +95,14 @@ public class TestIntrospection {
         assertEquals(mapper.readTree(readFile("data/scale-constant.json")), mapper.readTree(out));
     }
 
+    @Test
+    public void testScaleConstantLoad2() throws Exception {
+        String json = readFile("data/introspection-cluster-constant2.json");
+        StreamIntrospectionConverter convert = new StreamIntrospectionConverter(json);
+        String out = convert.getActivity(1756647244);
+        ObjectMapper mapper = new ObjectMapper();
+        assertEquals(mapper.readTree(readFile("data/scale-constant2.json")), mapper.readTree(out));
+    }
 
     @Test
     public void testStreams() throws Exception {
