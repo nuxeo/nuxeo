@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,9 @@ public class ExtendedInfoImpl implements ExtendedInfo {
     }
 
     public static ExtendedInfoImpl createExtendedInfo(Serializable value) {
+        if (value == null) {
+            return new NullInfo();
+        }
         Class<?> clazz = value.getClass();
         if (Long.class.isAssignableFrom(clazz)) {
             return new LongInfo((Long) value);
@@ -104,6 +107,23 @@ public class ExtendedInfoImpl implements ExtendedInfo {
     @Override
     public <T> T getValue(Class<T> clazz) {
         return clazz.cast(this.getSerializableValue());
+    }
+
+    /** @since 2025.8 */
+    @Entity
+    @DiscriminatorValue(value = "NULL")
+    public static class NullInfo extends ExtendedInfoImpl {
+
+        private static final long serialVersionUID = 1L;
+
+        public NullInfo() {
+        }
+
+        @Override
+        @Transient
+        public Serializable getSerializableValue() {
+            return null;
+        }
     }
 
     @Entity

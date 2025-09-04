@@ -8,6 +8,7 @@
 	<persistence-unit name="nxaudit-logs">
 		<jta-data-source>java:/nxaudit-logs</jta-data-source>
 		<class>org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl</class>
+		<class>org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl$NullInfo</class>
 		<class>org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl$StringInfo</class>
 		<class>org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl$BooleanInfo</class>
 		<class>org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl$DoubleInfo</class>

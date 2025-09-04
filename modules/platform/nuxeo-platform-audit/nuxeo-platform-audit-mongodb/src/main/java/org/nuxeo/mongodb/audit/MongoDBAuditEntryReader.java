@@ -42,7 +42,6 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.runtime.mongodb.MongoDBSerializationHelper;
 
@@ -113,11 +112,11 @@ public class MongoDBAuditEntryReader {
         for (Entry<String, Object> entry : extInfos.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            ExtendedInfoImpl ei;
+            ExtendedInfo ei;
             if (value instanceof List || value instanceof DBObject) {
-                ei = ExtendedInfoImpl.createExtendedInfo(value.toString());
+                ei = new MongoDBExtendedInfo(value.toString());
             } else {
-                ei = ExtendedInfoImpl.createExtendedInfo((Serializable) value);
+                ei = new MongoDBExtendedInfo((Serializable) value);
             }
             info.put(key, ei);
         }

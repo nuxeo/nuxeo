@@ -23,6 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.query.sql.model.Predicates.eq;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -38,12 +41,14 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.AbstractAuditStorageTest;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
+import org.nuxeo.elasticsearch.audit.ESExtendedInfo;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -261,5 +266,24 @@ public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
     @Override
     protected void flush() throws Exception {
         LogEntryGen.flushAndSync();
+    }
+
+    // NXP-30511
+    @Test
+    public void testSupportNullExtendedInfos() throws Exception {
+        var logEntry = LogEntryGen.doCreateEntry("testSupportNullExtendedInfos", "documentModified", "cat");
+        logEntry.setExtendedInfos(Map.of("nullValue", new ESExtendedInfo(null), "other", new ESExtendedInfo(2L)));
+        auditBackend.addLogEntries(List.of(logEntry));
+
+        LogEntryGen.flushAndSync();
+
+        var logEntries = auditBackend.queryLogs(
+                new AuditQueryBuilder().predicate(eq(LOG_DOC_UUID, "testSupportNullExtendedInfos"))
+                        .and(eq(LOG_EVENT_ID, "documentModified")));
+        assertEquals(1, logEntries.size());
+        var queriedLogEntry = logEntries.get(0);
+        var nullValueExtendedInfo = queriedLogEntry.getExtendedInfos().get("nullValue");
+        assertNotNull("ExtendedInfo should exist", nullValueExtendedInfo);
+        assertNull("ExtendedInfo value should be null", nullValueExtendedInfo.getSerializableValue());
     }
 }

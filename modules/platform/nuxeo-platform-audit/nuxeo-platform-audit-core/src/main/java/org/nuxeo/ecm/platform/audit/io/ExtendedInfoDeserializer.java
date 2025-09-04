@@ -46,6 +46,11 @@ import com.sun.jersey.core.util.Base64;
 public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {
 
     @Override
+    public ExtendedInfo getNullValue(DeserializationContext ctxt) {
+        return Framework.getService(AuditLogger.class).newExtendedInfo(null);
+    }
+
+    @Override
     public ExtendedInfo deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
         ObjectMapper mapper = (ObjectMapper) jp.getCodec();

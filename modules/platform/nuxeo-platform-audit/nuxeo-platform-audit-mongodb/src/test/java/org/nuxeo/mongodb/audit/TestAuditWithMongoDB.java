@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,14 @@
  */
 package org.nuxeo.mongodb.audit;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.query.sql.model.Predicates.eq;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
 import java.io.InputStream;
 import java.util.Date;
@@ -40,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.AbstractAuditStorageTest;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
@@ -161,14 +166,14 @@ public class TestAuditWithMongoDB extends AbstractAuditStorageTest {
         String jsonQuery;
         AuditReader reader = Framework.getService(AuditReader.class);
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("query.json")) {
-            jsonQuery = IOUtils.toString(is, "UTF-8");
+            jsonQuery = IOUtils.toString(is, UTF_8);
         }
         List<?> res = reader.nativeQuery(jsonQuery, 0, 5);
 
         assertEquals(2, res.size());
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("queryWithParams.json")) {
-            jsonQuery = IOUtils.toString(is, "UTF-8");
+            jsonQuery = IOUtils.toString(is, UTF_8);
         }
 
         Map<String, Object> params = new HashMap<>();
@@ -246,4 +251,22 @@ public class TestAuditWithMongoDB extends AbstractAuditStorageTest {
         TransactionHelper.startTransaction();
     }
 
+    // NXP-30511
+    @Test
+    public void testSupportNullExtendedInfos() throws Exception {
+        var logEntry = LogEntryGen.doCreateEntry("testSupportNullExtendedInfos", "documentModified", "cat");
+        logEntry.setExtendedInfos(Map.of("nullValue", new MongoDBExtendedInfo(null)));
+        auditBackend.addLogEntries(List.of(logEntry));
+
+        LogEntryGen.flushAndSync();
+
+        var logEntries = auditBackend.queryLogs(
+                new AuditQueryBuilder().predicate(eq(LOG_DOC_UUID, "testSupportNullExtendedInfos"))
+                                       .and(eq(LOG_EVENT_ID, "documentModified")));
+        assertEquals(1, logEntries.size());
+        var queriedLogEntry = logEntries.get(0);
+        var nullValueExtendedInfo = queriedLogEntry.getExtendedInfos().get("nullValue");
+        assertNotNull("ExtendedInfo should exist", nullValueExtendedInfo);
+        assertNull("ExtendedInfo value should be null", nullValueExtendedInfo.getSerializableValue());
+    }
 }
