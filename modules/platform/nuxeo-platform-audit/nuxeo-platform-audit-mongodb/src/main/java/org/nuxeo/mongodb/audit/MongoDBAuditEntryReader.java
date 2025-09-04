@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,48 +61,48 @@ public class MongoDBAuditEntryReader {
         LogEntryImpl entry = new LogEntryImpl();
         for (String key : doc.keySet()) {
             switch (key) {
-            case MongoDBSerializationHelper.MONGODB_ID:
-                entry.setId(doc.getLong(key).longValue());
-                break;
-            case LOG_CATEGORY:
-                entry.setCategory(doc.getString(key));
-                break;
-            case LOG_PRINCIPAL_NAME:
-                entry.setPrincipalName(doc.getString(key));
-                break;
-            case LOG_COMMENT:
-                entry.setComment(doc.getString(key));
-                break;
-            case LOG_DOC_LIFE_CYCLE:
-                entry.setDocLifeCycle(doc.getString(key));
-                break;
-            case LOG_DOC_PATH:
-                entry.setDocPath(doc.getString(key));
-                break;
-            case LOG_DOC_TYPE:
-                entry.setDocType(doc.getString(key));
-                break;
-            case LOG_DOC_UUID:
-                entry.setDocUUID(doc.getString(key));
-                break;
-            case LOG_EVENT_ID:
-                entry.setEventId(doc.getString(key));
-                break;
-            case LOG_REPOSITORY_ID:
-                entry.setRepositoryId(doc.getString(key));
-                break;
-            case LOG_EVENT_DATE:
-                entry.setEventDate(doc.getDate(key));
-                break;
-            case LOG_LOG_DATE:
-                entry.setLogDate(doc.getDate(key));
-                break;
-            case LOG_EXTENDED:
-                entry.setExtendedInfos(readExtendedInfo(doc.get(key, Document.class)));
-                break;
-            default:
-                log.warn("Property with key: {} is not a known LogEntry property, skip it.", key);
-                break;
+                case MongoDBSerializationHelper.MONGODB_ID:
+                    entry.setId(doc.getLong(key).longValue());
+                    break;
+                case LOG_CATEGORY:
+                    entry.setCategory(doc.getString(key));
+                    break;
+                case LOG_PRINCIPAL_NAME:
+                    entry.setPrincipalName(doc.getString(key));
+                    break;
+                case LOG_COMMENT:
+                    entry.setComment(doc.getString(key));
+                    break;
+                case LOG_DOC_LIFE_CYCLE:
+                    entry.setDocLifeCycle(doc.getString(key));
+                    break;
+                case LOG_DOC_PATH:
+                    entry.setDocPath(doc.getString(key));
+                    break;
+                case LOG_DOC_TYPE:
+                    entry.setDocType(doc.getString(key));
+                    break;
+                case LOG_DOC_UUID:
+                    entry.setDocUUID(doc.getString(key));
+                    break;
+                case LOG_EVENT_ID:
+                    entry.setEventId(doc.getString(key));
+                    break;
+                case LOG_REPOSITORY_ID:
+                    entry.setRepositoryId(doc.getString(key));
+                    break;
+                case LOG_EVENT_DATE:
+                    entry.setEventDate(doc.getDate(key));
+                    break;
+                case LOG_LOG_DATE:
+                    entry.setLogDate(doc.getDate(key));
+                    break;
+                case LOG_EXTENDED:
+                    entry.setExtendedInfos(readExtendedInfo(doc.get(key, Document.class)));
+                    break;
+                default:
+                    log.warn("Property with key: {} is not a known LogEntry property, skip it.", key);
+                    break;
             }
         }
         return entry;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Funsho David
- *
  */
-
 package org.nuxeo.ecm.platform.audit.io;
 
 import java.io.IOException;
@@ -54,35 +52,35 @@ public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {
         JsonNode node = mapper.readTree(jp);
         Serializable value;
         switch (node.getNodeType()) {
-        case STRING:
-            value = node.textValue();
-            try {
-                value = Date.from(Instant.parse((String) value));
-            } catch (DateTimeParseException e) {
-                // ignore
-            }
-            break;
-        case BOOLEAN:
-            value = node.booleanValue();
-            break;
-        case NUMBER:
-            value = node.numberValue();
-            if (value instanceof Integer) {
-                // convert it to long, it is the original type and json can't differentiate int and long
-                value = Long.valueOf((Integer) value);
-            }
-            break;
-        case BINARY:
-            value = SerializationUtils.deserialize(Base64.decode(node.binaryValue()));
-            break;
-        case ARRAY:
-            value = (Serializable) mapper.convertValue(node, List.class);
-            break;
-        case OBJECT:
-            value = (Serializable) mapper.convertValue(node, Map.class);
-            break;
-        default:
-            throw new UnsupportedOperationException("Error when deserializing type: " + node.getNodeType());
+            case STRING:
+                value = node.textValue();
+                try {
+                    value = Date.from(Instant.parse((String) value));
+                } catch (DateTimeParseException e) {
+                    // ignore
+                }
+                break;
+            case BOOLEAN:
+                value = node.booleanValue();
+                break;
+            case NUMBER:
+                value = node.numberValue();
+                if (value instanceof Integer) {
+                    // convert it to long, it is the original type and json can't differentiate int and long
+                    value = Long.valueOf((Integer) value);
+                }
+                break;
+            case BINARY:
+                value = SerializationUtils.deserialize(Base64.decode(node.binaryValue()));
+                break;
+            case ARRAY:
+                value = (Serializable) mapper.convertValue(node, List.class);
+                break;
+            case OBJECT:
+                value = (Serializable) mapper.convertValue(node, Map.class);
+                break;
+            default:
+                throw new UnsupportedOperationException("Error when deserializing type: " + node.getNodeType());
         }
         return Framework.getService(AuditLogger.class).newExtendedInfo(value);
     }
