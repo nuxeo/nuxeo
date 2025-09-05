@@ -93,6 +93,24 @@ public class TestVideoInfo {
         assertEquals(720, videoInfo.getHeight());
     }
 
+    // NXP-33246
+    @Test
+    public void testFFmpegOutputRotationParsing() throws IOException {
+        var file = FileUtils.getResourceFileFromContext("ffmpeg/ffmpeg_output_rotation_1.txt");
+        var lines = org.apache.commons.io.FileUtils.readLines(file, "UTF-8");
+        var videoInfo = VideoInfo.fromFFmpegOutput(lines);
+        assertCommonVideoInfo(videoInfo);
+        assertEquals(720, videoInfo.getWidth());
+        assertEquals(1280, videoInfo.getHeight());
+
+        file = FileUtils.getResourceFileFromContext("ffmpeg/ffmpeg_output_rotation_2.txt");
+        lines = org.apache.commons.io.FileUtils.readLines(file, "UTF-8");
+        videoInfo = VideoInfo.fromFFmpegOutput(lines);
+        assertCommonVideoInfo(videoInfo);
+        assertEquals(1280, videoInfo.getWidth());
+        assertEquals(720, videoInfo.getHeight());
+    }
+
     protected void assertCommonVideoInfo(VideoInfo videoInfo) {
         assertNotNull(videoInfo);
 
