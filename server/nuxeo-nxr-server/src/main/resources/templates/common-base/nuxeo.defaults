@@ -148,6 +148,8 @@ elasticsearch.indexing.clearCompletedAfterSeconds=90
 elasticsearch.adminCenter.displayClusterInfo=false
 # Reindex the repository content on startup if the index is empty
 elasticsearch.reindex.onStartup=false
+# Truncate fulltext size at indexing time, -1 is no limit @since 2023.36
+elasticsearch.fulltext.size.max=-1
 # Use Elasticsearch as a backend for audit logs
 audit.elasticsearch.enabled=false
 # Name of the Elasticsearch index for audit logs

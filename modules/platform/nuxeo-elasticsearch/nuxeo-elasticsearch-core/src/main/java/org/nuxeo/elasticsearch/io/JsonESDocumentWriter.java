@@ -22,6 +22,7 @@ package org.nuxeo.elasticsearch.io;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.MAX_FULLTEXT_SIZE_FIELD;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +63,9 @@ import net.htmlparser.jericho.TextExtractor;
  * @since 5.9.3
  */
 public class JsonESDocumentWriter {
+
+    // @since 2023.36 not static so it can be overridden in tests
+    protected final int MAX_FULLTEXT_SIZE = Integer.parseInt(Framework.getProperty(MAX_FULLTEXT_SIZE_FIELD, "-1"));
 
     /**
      * @since 7.2
@@ -163,10 +167,29 @@ public class JsonESDocumentWriter {
             for (Map.Entry<String, String> item : bmap.entrySet()) {
                 String value = item.getValue();
                 if (value != null) {
-                    jg.writeStringField("ecm:" + item.getKey(), value);
+                    jg.writeStringField("ecm:" + item.getKey(), truncateFulltext(value));
                 }
             }
         }
+    }
+
+    /**
+     * @since 2023.36
+     */
+    protected String truncateFulltext(String fulltext) {
+        if (fulltext == null || MAX_FULLTEXT_SIZE <= 0 || fulltext.length() <= MAX_FULLTEXT_SIZE) {
+            return fulltext;
+        }
+        // Look backwards to find the last word boundary
+        int pos = MAX_FULLTEXT_SIZE;
+        while (pos > 0 && !Character.isWhitespace(fulltext.charAt(pos - 1))) {
+            pos--;
+        }
+        if (pos == 0) {
+            // Very long word, truncate at the limit
+            pos = MAX_FULLTEXT_SIZE;
+        }
+        return fulltext.substring(0, pos);
     }
 
     // kept separate for easy override

@@ -138,6 +138,9 @@ public final class ElasticSearchConstants {
     /** @since 10.2 */
     public static final String ES_SCORE_FIELD = "_score";
 
+    /** @since 2023.36 */
+    public static final String MAX_FULLTEXT_SIZE_FIELD = "elasticsearch.fulltext.size.max";
+
     private ElasticSearchConstants() {
     }
 
