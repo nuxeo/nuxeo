@@ -23,11 +23,12 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -50,13 +51,31 @@ public class FirstAccessibleAncestorJsonEnricher extends AbstractJsonEnricher<Do
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         try (SessionWrapper wrapper = ctx.getSession(document)) {
+            final var currentSession = wrapper.getSession();
             if (!wrapper.getSession().exists(document.getRef())) {
                 return;
             }
-            TrashService trashService = Framework.getService(TrashService.class);
-            DocumentModel above = trashService.getAboveDocument(document, wrapper.getSession().getPrincipal());
-            if (above != null) {
-                writeEntityField(NAME, above, jg);
+            if (document.getPath().isRoot()) {
+                return;
+            }
+            DocumentRef aboveRef = CoreInstance.doPrivileged(currentSession, adminSession -> {
+                // Traverse up the document hierarchy to find the first ancestor
+                // that the current user has READ permission on
+                var parentRef = document.getParentRef();
+                while (adminSession.exists(parentRef)) {
+                    if (adminSession.hasPermission(currentSession.getPrincipal(), parentRef, SecurityConstants.READ)) {
+                        // found ancestor, possibly root itself
+                        return parentRef;
+                    } else if (adminSession.getDocument(parentRef).getPath().isRoot()) {
+                        // no ancestor
+                        return null;
+                    }
+                    parentRef = adminSession.getDocument(parentRef).getParentRef();
+                }
+                return null;
+            });
+            if (aboveRef != null) {
+                writeEntityField(NAME, currentSession.getDocument(aboveRef), jg);
             }
         }
     }
