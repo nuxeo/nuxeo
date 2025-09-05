@@ -18,12 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.gcp;
 
-import java.io.IOException;
-
-import org.junit.Test;
 import org.nuxeo.ecm.core.blob.TestAbstractBlobStoreWithOptimizedCopy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * @since 2023.5
@@ -31,17 +27,4 @@ import org.nuxeo.runtime.test.runner.RandomBug;
 @Features(GoogleStorageBlobProviderFeature.class)
 public class TestGoogleStorageBlobStore extends TestAbstractBlobStoreWithOptimizedCopy {
 
-    @Test
-    @Override
-    @RandomBug.Repeat(issue = "NXP-32368")
-    public void testGC() throws IOException {
-        super.testGC();
-    }
-
-    @Test
-    @Override
-    @RandomBug.Repeat(issue = "NXP-32368")
-    public void testGCWithConcurrentCreation() throws IOException {
-        super.testGCWithConcurrentCreation();
-    }
 }
