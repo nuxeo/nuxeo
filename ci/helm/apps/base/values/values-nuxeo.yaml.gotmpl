@@ -1,4 +1,5 @@
 {{- $localDomain := printf "%s.svc.cluster.local" (requiredEnv "NAMESPACE") -}}
+{{- $publicDomain := printf "%s.platform.dev.nuxeo.com" (requiredEnv "NAMESPACE") -}}
 image:
   repository: {{ .Values.nuxeo.image.repository | default (printf "%s/nuxeo/nuxeo" .Values.global.registry) }}
   tag: {{ .Values.nuxeo.image.tag | default 2025 | quote }}
@@ -25,5 +26,17 @@ elasticsearch:
 kafka:
   enabled: true
   host: {{ printf "kafka.%s" $localDomain }}
+{{- end }}
+{{- if ( .Values | get "nuxeo.ingress.enabled" false ) }}
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
+  hostname: {{ .Values | get "nuxeo.ingress.hostname" $publicDomain }}
+  tls:
+  - hosts:
+    - {{ .Values | get "nuxeo.ingress.hostname" $publicDomain }}
+    secretName: platform-tls
 {{- end }}
 {{- toYaml .Values.global.selectors | nindent 0 }}

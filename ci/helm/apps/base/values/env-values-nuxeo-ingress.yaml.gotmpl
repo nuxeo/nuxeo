@@ -1,12 +1,3 @@
-{{- $publicDomain := printf "%s.platform.dev.nuxeo.com" (requiredEnv "NAMESPACE") -}}
 nuxeo:
   ingress:
     enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: "0"
-      nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
-    hostname: {{ .Values | get "nuxeo.ingress.hostname" $publicDomain }}
-    tls:
-    - hosts:
-      - {{ .Values | get "nuxeo.ingress.hostname" $publicDomain }}
-      secretName: platform-tls
