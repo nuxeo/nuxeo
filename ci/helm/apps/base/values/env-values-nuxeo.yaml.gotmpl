@@ -1,0 +1,4 @@
+nuxeo:
+  image:
+    repository: {{ printf "%s/nuxeo/nuxeo" (requiredEnv "DOCKER_REGISTRY") }}
+    tag: {{ requiredEnv "VERSION" | quote }}

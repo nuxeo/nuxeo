@@ -1,4 +1,5 @@
 global:
+  registry: {{ requiredEnv "DOCKER_REGISTRY" }}
   labels:
     dev.nuxeo.com/base_branch: {{ env "CHANGE_TARGET" | default (env "BRANCH_NAME") | default "local" | quote }}
     dev.nuxeo.com/branch: {{ env "BRANCH_NAME" | default "local" | quote }}

@@ -11,9 +11,11 @@ environments:
   upgradeTest:
     values:
     - apps/base/environments/upgrade-test.yaml
+    - apps/base/values/env-values-nuxeo.yaml.gotmpl
   benchmark:
     values:
     - apps/base/environments/benchmark.yaml
+    - apps/base/values/env-values-nuxeo.yaml.gotmpl
     - apps/base/values/env-values-nuxeo-ingress.yaml.gotmpl
 values: # values for all environments and helmfiles
 - apps/base/values/env-values-global.yaml.gotmpl

@@ -1,7 +1,7 @@
 {{- $localDomain := printf "%s.svc.cluster.local" (requiredEnv "NAMESPACE") -}}
 image:
-  repository: {{ printf "%s/nuxeo/nuxeo" (requiredEnv "DOCKER_REGISTRY") }}
-  tag: {{ requiredEnv "VERSION" | quote }}
+  repository: {{ .Values.nuxeo.image.repository | default (printf "%s/nuxeo/nuxeo" .Values.global.registry) }}
+  tag: {{ .Values.nuxeo.image.tag | default 2025 | quote }}
   pullSecrets:
   - name: kubernetes-docker-cfg
 podLabels: {{- toYaml .Values.global.labels | nindent 2 }}
