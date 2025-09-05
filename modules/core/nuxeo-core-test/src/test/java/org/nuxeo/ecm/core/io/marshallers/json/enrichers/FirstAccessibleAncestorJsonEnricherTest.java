@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Guillaume Renard <grenard@nuxeo.com>
+ *     Guillaume Renard
  */
 
 package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
@@ -39,9 +39,9 @@ import org.nuxeo.runtime.test.runner.Features;
  */
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
-public class AboveDocumentJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
+public class FirstAccessibleAncestorJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public AboveDocumentJsonEnricherTest() {
+    public FirstAccessibleAncestorJsonEnricherTest() {
         super(DocumentModelJsonWriter.class, DocumentModel.class);
     }
 
