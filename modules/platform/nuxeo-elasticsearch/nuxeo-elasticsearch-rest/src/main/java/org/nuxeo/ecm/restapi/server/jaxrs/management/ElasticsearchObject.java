@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -86,8 +87,9 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
      */
     @POST
     @Path("reindex")
-    public BulkStatus doIndexing(@QueryParam("query") String query) {
-        return performIndexing(query);
+    public BulkStatus doIndexing(@QueryParam("query") String query,
+            @QueryParam("queryLimit") @DefaultValue("-1") Long queryLimit) {
+        return performIndexing(query, queryLimit);
     }
 
     /**
@@ -98,12 +100,13 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
      */
     @POST
     @Path("{documentId}/reindex")
-    public BulkStatus doIndexingOnDocument(@PathParam("documentId") String documentId) {
+    public BulkStatus doIndexingOnDocument(@PathParam("documentId") String documentId,
+            @QueryParam("queryLimit") @DefaultValue("-1") Long queryLimit) {
         String query = String.format("Select * From Document where %s = '%s' or %s = '%s'", //
                 NXQL.ECM_UUID, documentId, //
                 NXQL.ECM_ANCESTORID, documentId);
 
-        return performIndexing(query);
+        return performIndexing(query, queryLimit);
     }
 
     /**
@@ -144,11 +147,11 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
         Map<String, Serializable> elasticSearch = extractResultInfo("nxql_elastic_search", nxql, pageSize);
         Map<String, Serializable> ret = new HashMap<>();
         ret.put("query", nxql);
-        ret.put( "order", repoSearch.get("order"));
+        ret.put("order", repoSearch.get("order"));
         repoSearch.remove("order");
         elasticSearch.remove("order");
-        ret.put( "repo", (Serializable) repoSearch);
-        ret.put( "elastic", (Serializable) elasticSearch);
+        ret.put("repo", (Serializable) repoSearch);
+        ret.put("elastic", (Serializable) elasticSearch);
         try {
             return MAPPER.writeValueAsString(ret);
         } catch (JsonProcessingException e) {
@@ -174,8 +177,16 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
         ret.put("resultsCount", pp.getResultsCount());
         ret.put("resultsCountLimit", pp.getResultsCountLimit());
         ret.put("order", pp.getSortInfo());
-        ret.put( "results", (Serializable) res.stream().map(DocumentModel::getId).collect(Collectors.toList()));
+        ret.put("results", (Serializable) res.stream().map(DocumentModel::getId).collect(Collectors.toList()));
         return ret;
+    }
+
+    /**
+     * @deprecated since 2023.36 use {@link #performIndexing(String, long)} instead
+     */
+    @Deprecated(since = "2023.36", forRemoval = true)
+    protected BulkStatus performIndexing(String query) {
+        return performIndexing(query, -1);
     }
 
     /**
@@ -183,19 +194,27 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
      *
      * @param query the NXQL query that documents must match to be indexed, can be {@code null} or {@code empty}, in
      *            this case all documents of the given repository will be indexed {@link #GET_ALL_DOCUMENTS_QUERY}
+     * @param queryLimit the limit of documents to index, {@code -1} for no limit, not taken into account for full
+     *            reindex
+     * @since 2023.36
      * @return the {@link BulkStatus} of the ES indexing
      */
-    protected BulkStatus performIndexing(String query) {
+    protected BulkStatus performIndexing(String query, long queryLimit) {
         boolean fullReindex = StringUtils.isBlank(query);
         String nxql = StringUtils.defaultIfBlank(query, GET_ALL_DOCUMENTS_QUERY);
         String repository = ctx.getCoreSession().getRepositoryName();
         BulkService bulkService = Framework.getService(BulkService.class);
         try {
-            String commandId = bulkService.submit(
-                    new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME).repository(repository)
-                                                                               .setExclusive(fullReindex)
-                                                                               .param(INDEX_UPDATE_ALIAS_PARAM, true)
-                                                                               .build());
+            var builder = new BulkCommand.Builder(ACTION_NAME, nxql, SYSTEM_USERNAME).repository(repository)
+                                                                                     .setExclusive(fullReindex)
+                                                                                     .param(INDEX_UPDATE_ALIAS_PARAM,
+                                                                                             true);
+            if (queryLimit <= 0 || fullReindex) {
+                builder.queryUnlimited();
+            } else {
+                builder.queryLimit(queryLimit);
+            }
+            String commandId = bulkService.submit(builder.build());
             if (fullReindex) {
                 ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
                 esa.initRepositoryIndexWithAliases(repository);

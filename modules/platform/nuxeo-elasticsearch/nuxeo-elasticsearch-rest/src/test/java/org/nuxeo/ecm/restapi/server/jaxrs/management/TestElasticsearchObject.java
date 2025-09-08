@@ -146,6 +146,22 @@ public class TestElasticsearchObject extends ManagementBaseTest {
     }
 
     @Test
+    public void shouldRunIndexingWithQueryLimit() {
+        // Init indexes and drop if any
+        esa.initIndexes(true);
+
+        // Create new documents without indexing them
+        createDocuments();
+
+        String query = "SELECT * FROM Document'";
+        // Start the ES indexing of document that match the nxql query (2 files)
+        httpClient.buildPostRequest("/management/elasticsearch/reindex")
+                  .addQueryParameter("query", query)
+                  .addQueryParameter("queryLimit", "2")
+                  .executeAndConsume(new JsonNodeHandler(), node -> verifyIndexingResponse(node, 2));
+    }
+
+    @Test
     public void shouldFailRunningIndexingWhenRepositoryNotExists() {
         // Launch the ES indexing
         httpClient.buildPostRequest("/repo/unExistingRepository/management/elasticsearch/reindex")
