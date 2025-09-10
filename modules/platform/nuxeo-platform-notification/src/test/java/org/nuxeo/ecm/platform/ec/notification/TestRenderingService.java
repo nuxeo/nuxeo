@@ -41,6 +41,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, NotificationFeature.class })
 @Deploy("org.nuxeo.ecm.platform.notification.tests:notification-contrib.xml")
+@Deprecated(since = "2025.8", forRemoval = true)
 public class TestRenderingService {
 
     private static final String MYDESCRIPTION = "mydescription";

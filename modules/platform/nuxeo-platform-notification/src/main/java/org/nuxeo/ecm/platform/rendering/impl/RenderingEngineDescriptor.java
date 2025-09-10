@@ -33,7 +33,9 @@ import org.nuxeo.ecm.platform.rendering.RenderingEngine;
  * . Also instantiate rendering engine as defined in contribution.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @deprecated since 2025.8, unused.
  */
+@Deprecated(since = "2025.8", forRemoval = true)
 public class RenderingEngineDescriptor {
 
     @XNode("format")

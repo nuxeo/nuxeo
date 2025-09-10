@@ -26,7 +26,9 @@ import java.util.Collection;
  * RenderingService core infrastructure.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @deprecated since 2025.8, unused.
  */
+@Deprecated(since = "2025.8", forRemoval = true)
 public interface RenderingService {
 
     /**

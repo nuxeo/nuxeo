@@ -39,7 +39,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Implementation of RenderingService
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @deprecated since 2025.8, unused.
  */
+@Deprecated(since = "2025.8", forRemoval = true)
 public class RenderingServiceImpl extends DefaultComponent implements RenderingService {
 
     private static final Logger log = LogManager.getLogger(RenderingServiceImpl.class);
