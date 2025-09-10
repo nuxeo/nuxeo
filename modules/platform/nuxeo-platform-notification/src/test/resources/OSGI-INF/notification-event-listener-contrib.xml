@@ -5,10 +5,18 @@
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="notifications">
 
-    <notification name="DummyNotificationToSendMail" channel="email" availableIn="*"
-                  subject="Notification on the document '${docTitle}'" autoSubscribed="false"
+    <notification name="DummyNotificationWithSubject" channel="email" availableIn="*"
+                  subject="Notification on the document '${docTitle}'"
+                  autoSubscribed="false"
                   template="dummyNotificationToSendMail">
-      <event name="dummyNotificationToSendMail" />
+      <event name="dummyNotificationWithSubject" />
+    </notification>
+
+    <notification name="DummyNotificationWithSubjectTemplate" channel="email" availableIn="*"
+                  subjectTemplate="dummySubjectTemplate"
+                  autoSubscribed="false"
+                  template="dummyNotificationToSendMail">
+      <event name="dummyNotificationWithSubjectTemplate" />
     </notification>
 
   </extension>
@@ -17,6 +25,7 @@
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="templates">
     <template name="dummyNotificationToSendMail" src="templates/dummyNotificationMail.ftl" />
+    <template name="dummySubjectTemplate" src="templates/dummySubjectTemplate.ftl" />
   </extension>
 
 </component>

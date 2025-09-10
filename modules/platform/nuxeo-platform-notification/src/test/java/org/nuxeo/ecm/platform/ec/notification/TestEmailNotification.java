@@ -64,9 +64,13 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.notification.tests:OSGI-INF/notification-event-listener-contrib.xml")
 public class TestEmailNotification {
 
-    protected static final String DUMMY_NOTIFICATION_NAME = "DummyNotificationToSendMail";
+    protected static final String EVENT_NAME_SUBJECT = "dummyNotificationWithSubject";
 
-    protected static final String DUMMY_EVENT_NAME = "dummyNotificationToSendMail";
+    protected static final String EVENT_NAME_SUBJECT_TEMPLATE = "dummyNotificationWithSubjectTemplate";
+
+    protected static final String NOTIFICATION_NAME_WITH_SUBJECT = "DummyNotificationWithSubject";
+
+    protected static final String NOTIFICATION_NAME_WITH_SUBJECT_TEMPLATE = "DummyNotificationWithSubjectTemplate";
 
     protected static final String DOCUMENT_NAME = "anyFile";
 
@@ -96,14 +100,23 @@ public class TestEmailNotification {
     }
 
     @Test
-    public void shouldReceiveNotificationMailWhenSubscribeToDocument() {
+    public void shouldReceiveNotificationMailWithSubject() {
+        shouldReceiveNotificationMail(EVENT_NAME_SUBJECT, NOTIFICATION_NAME_WITH_SUBJECT);
+    }
+
+    @Test
+    public void shouldReceiveNotificationMailWithSubjectTemplate() {
+        shouldReceiveNotificationMail(EVENT_NAME_SUBJECT_TEMPLATE, NOTIFICATION_NAME_WITH_SUBJECT_TEMPLATE);
+    }
+
+    protected void shouldReceiveNotificationMail(String eventName, String subscriptionName) {
         DocumentModel documentModel = session.createDocumentModel("/domain", DOCUMENT_NAME, "File");
         documentModel = session.createDocument(documentModel);
 
-        addDummySubscription(documentModel);
+        addDummySubscription(documentModel, subscriptionName);
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), documentModel);
-        Event event = ctx.newEvent(DUMMY_EVENT_NAME);
+        Event event = ctx.newEvent(eventName);
         eventService.fireEvent(event);
         transactionalFeature.nextTransaction();
 
@@ -115,13 +128,13 @@ public class TestEmailNotification {
         DocumentModel folder = session.createDocumentModel("/domain", "anyFolder", "Folder");
         folder = session.createDocument(folder);
 
-        addDummySubscription(folder);
+        addDummySubscription(folder, NOTIFICATION_NAME_WITH_SUBJECT);
 
         DocumentModel mainDocModel = session.createDocumentModel("/domain/anyFolder", DOCUMENT_NAME, "File");
         mainDocModel = session.createDocument(mainDocModel);
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), mainDocModel);
-        Event event = ctx.newEvent(DUMMY_EVENT_NAME);
+        Event event = ctx.newEvent(EVENT_NAME_SUBJECT);
         eventService.fireEvent(event);
         transactionalFeature.nextTransaction();
 
@@ -140,11 +153,11 @@ public class TestEmailNotification {
         assertEquals(expectedMailContent, mailMessage.getContent());
     }
 
-    protected void addDummySubscription(DocumentModel documentModel) {
+    protected void addDummySubscription(DocumentModel documentModel, String subscriptionName) {
         NuxeoPrincipal principal = session.getPrincipal();
         String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
-        notificationManager.addSubscription(subscriber, DUMMY_NOTIFICATION_NAME, documentModel, false, principal,
-                DUMMY_NOTIFICATION_NAME);
+        notificationManager.addSubscription(subscriber, subscriptionName, documentModel, false, principal,
+                subscriptionName);
     }
 
     protected String getExpectedMailContent(DocumentModel documentModel, Event event) {

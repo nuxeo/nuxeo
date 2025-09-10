@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -41,8 +40,6 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.rendering.RenderingException;
-import org.nuxeo.ecm.platform.rendering.RenderingResult;
-import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
 import org.nuxeo.mail.MailException;
 import org.nuxeo.mail.MailMessage;
@@ -118,8 +115,10 @@ public class EmailHelper {
 
         // Build the message.
         var mailMessage = new MailMessage.Builder(recipient).subject(computeSubject(mail, context))
-                                                            .content(renderHTMLBody(mail, context),
-                                                                    "text/html; charset=utf-8")
+                                                            .content(renderTemplate(
+                                                                    (String) mail.get(
+                                                                            NotificationConstants.TEMPLATE_KEY),
+                                                                    context), "text/html; charset=utf-8")
                                                             .senderName(getSenderName())
                                                             .build();
 
@@ -140,41 +139,16 @@ public class EmailHelper {
 
             return out.toString();
         } else {
-            RenderingService rs = Framework.getService(RenderingService.class);
-            rs.registerEngine(new NotificationsRenderingEngine(customSubjectTemplate));
-
-            try (NuxeoLoginContext loginContext = Framework.loginSystem()) {
-                Collection<RenderingResult> results = rs.process(context);
-                String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
-
-                for (RenderingResult result : results) {
-                    subjectMail = (String) result.getOutcome();
-                }
-                subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + subjectMail;
-                return subjectMail;
-            }
+            return NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
+                    + renderTemplate(customSubjectTemplate, context);
         }
     }
 
-    protected String renderHTMLBody(Map<String, Object> mail, DocumentRenderingContext context)
-            throws RenderingException {
-        RenderingService rs = Framework.getService(RenderingService.class);
-        String template = (String) mail.get(NotificationConstants.TEMPLATE_KEY);
-        rs.registerEngine(new NotificationsRenderingEngine(template));
-
-        String bodyMail = "<HTML><P>No parsing Succedeed !!!</P></HTML>";
-
-        Collection<RenderingResult> results;
+    protected String renderTemplate(String template, DocumentRenderingContext context) throws RenderingException {
+        var engine = new NotificationsRenderingEngine(template);
         try (NuxeoLoginContext lc = Framework.loginSystem()) {
-            results = rs.process(context);
+            return (String) engine.process(context).getOutcome();
         }
-        for (RenderingResult result : results) {
-            bodyMail = (String) result.getOutcome();
-        }
-
-        rs.unregisterEngine(template);
-
-        return bodyMail;
     }
 
     private static String getSenderName() {
