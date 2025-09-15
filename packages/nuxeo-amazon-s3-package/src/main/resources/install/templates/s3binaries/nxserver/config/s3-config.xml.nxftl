@@ -36,6 +36,7 @@
 <#if "${nuxeo.vcs.fulltext.storedInBlob}" == "true">
     <blobprovider name="fulltext">
       <property name="bucket_prefix">${nuxeo.s3storage.fulltext.storeInBlob.bucket_prefix}</property>
+      <property name="storageClass">${nuxeo.s3storage.fulltext.storeInBlob.storageClass}</property>
     </blobprovider>
 </#if>
   </extension>

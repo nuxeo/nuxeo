@@ -67,3 +67,4 @@ nuxeo.s3storage.transient.crypt.kms.key=
 
 # optional when nuxeo.vcs.fulltext.storedInBlob is true
 nuxeo.s3storage.fulltext.storeInBlob.bucket_prefix=
+nuxeo.s3storage.fulltext.storeInBlob.storageClass=
