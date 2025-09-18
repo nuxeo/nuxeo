@@ -22,9 +22,15 @@ import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_KV_STORE_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_PREFIX;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.kv.KeyValueService;
@@ -50,10 +56,36 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Features({ ClusterFeature.class, TransactionalFeature.class, RuntimeStreamFeature.class })
 public class CoreBulkFeature implements RunnerFeature {
 
+    protected List<BulkActionTriggeredByEventWaiter> bulkActionTriggeredByEventWaiters = new ArrayList<>();
+
     @Override
     public void initialize(FeaturesRunner runner) {
         runner.getFeature(TransactionalFeature.class)
               .addWaiter(duration -> Framework.getService(BulkService.class).await(duration));
+    }
+
+    @Override
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        bulkActionTriggeredByEventWaiters.forEach(BulkActionTriggeredByEventWaiter::startListening);
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        bulkActionTriggeredByEventWaiters.forEach(BulkActionTriggeredByEventWaiter::stopListening);
+    }
+
+    /**
+     * Add a waiter for bulk command submitted by event listener.
+     *
+     * @param runner the features runner
+     * @param action wait for the bulk commands that belong to this action
+     * @param event name of the event that triggers the listener submitting bulk commands
+     * @since 2025.9
+     */
+    public void addBulkCommandWaiterForListener(FeaturesRunner runner, String action, String event) {
+        var waiter = new BulkActionTriggeredByEventWaiter(action, event);
+        runner.getFeature(TransactionalFeature.class).addWaiter(waiter);
+        bulkActionTriggeredByEventWaiters.add(waiter);
     }
 
     public boolean wait(String action, Duration duration) throws InterruptedException {
@@ -80,6 +112,49 @@ public class CoreBulkFeature implements RunnerFeature {
             }
         }
         return true;
+    }
+
+    protected class BulkActionTriggeredByEventWaiter implements TransactionalFeature.Waiter {
+
+        protected final String actionName;
+
+        protected final String eventName;
+
+        protected CapturingEventListener capturingEventListener = null;
+
+        public BulkActionTriggeredByEventWaiter(String actionName, String eventName) {
+            this.actionName = actionName;
+            this.eventName = eventName;
+        }
+
+        @Override
+        public boolean await(Duration duration) throws InterruptedException {
+            if (capturingEventListener != null && !capturingEventListener.getCapturedEvents().isEmpty()) {
+                // first wait for event to be processed
+                long begin = System.currentTimeMillis();
+                if (Framework.getService(WorkManager.class)
+                             .awaitCompletion(duration.toMillis(), TimeUnit.MILLISECONDS)) {
+                    var leftDuration = duration.minusMillis(System.currentTimeMillis() - begin);
+                    // second wait for Bulk Action
+                    return CoreBulkFeature.this.wait(actionName, leftDuration);
+                }
+                // work manager consumed all the permitted duration
+                return false;
+            }
+            return true;
+        }
+
+        protected void startListening() {
+            capturingEventListener = new CapturingEventListener(eventName);
+        }
+
+        protected void stopListening() {
+            if (capturingEventListener != null) {
+                capturingEventListener.close();
+                capturingEventListener = null;
+            }
+        }
+
     }
 
 }

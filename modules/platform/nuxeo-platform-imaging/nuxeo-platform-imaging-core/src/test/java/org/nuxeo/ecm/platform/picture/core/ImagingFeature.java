@@ -18,9 +18,15 @@
  */
 package org.nuxeo.ecm.platform.picture.core;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.ACTION_NAME;
+
 import org.nuxeo.ecm.automation.core.AutomationCoreFeature;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
@@ -33,5 +39,17 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.tag")
 @Deploy("org.nuxeo.ecm.platform.picture.core.tests:OSGI-INF/empty-picture-configuration-contrib.xml")
 public class ImagingFeature implements RunnerFeature {
-
+    @Override
+    public void initialize(FeaturesRunner runner) {
+        // picture views generation is made of two dependant async processes, the generation is done as below:
+        // - sync listener org.nuxeo.ecm.platform.picture.listener.PictureChangedListener which prefill picture views
+        // if the main blob has changed
+        // - async listener org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener which checks if
+        // picture views have to be computed, and if so it triggers the recomputeViews Bulk Action
+        // - async Bulk Action org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction
+        // so we need to first wait for the work to finish and then wait for the bulk action to finish
+        var coreBulkFeature = runner.getFeature(CoreBulkFeature.class);
+        coreBulkFeature.addBulkCommandWaiterForListener(runner, ACTION_NAME, DOCUMENT_CREATED);
+        coreBulkFeature.addBulkCommandWaiterForListener(runner, ACTION_NAME, DOCUMENT_UPDATED);
+    }
 }

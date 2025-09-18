@@ -18,9 +18,14 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import static org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_EVENT_NAME;
+
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.platform.routing.core.bulk.GarbageCollectRoutesAction;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @Features(AutomationFeature.class)
@@ -38,4 +43,10 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml")
 public class WorkflowFeature implements RunnerFeature {
 
+    @Override
+    public void initialize(FeaturesRunner runner) {
+        runner.getFeature(CoreBulkFeature.class)
+              .addBulkCommandWaiterForListener(runner, GarbageCollectRoutesAction.ACTION_NAME,
+                      CLEANUP_WORKFLOW_EVENT_NAME);
+    }
 }

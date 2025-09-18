@@ -218,10 +218,9 @@ public class TestPictureConversions {
         // Use a small image so the biggest conversions will have the same result and it will be fetched from the cache
         picture.setPropertyValue("file:content", (Serializable) getCatBlob());
         picture = session.createDocument(picture);
-        txFeature.nextTransaction();
 
-        // Wait for the end of all the async works
-        eventService.waitForAsyncCompletion();
+        // wait for async listener + baf
+        txFeature.nextTransaction();
 
         // Fetch the picture views
         MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
@@ -255,7 +254,7 @@ public class TestPictureConversions {
         picture.setPropertyValue("file:content", (Serializable) getCatBlob());
         picture = session.saveDocument(picture);
 
-        // wait for baf
+        // wait for async listener + baf
         txFeature.nextTransaction();
 
         picture = session.getDocument(picture.getRef());
