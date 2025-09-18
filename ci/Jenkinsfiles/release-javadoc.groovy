@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.67"
+library identifier: "platform-ci-shared-library@v0.0.75"
 
 boolean isNuxeoReleaseTag() {
   return NUXEO_BRANCH =~ /^v\d+\.\d+$/
