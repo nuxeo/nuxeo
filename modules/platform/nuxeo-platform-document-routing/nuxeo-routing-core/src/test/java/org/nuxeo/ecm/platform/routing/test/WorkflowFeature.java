@@ -18,10 +18,12 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import static org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingEscalationListener.EXECUTE_ESCALATION_RULE_EVENT;
 import static org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_EVENT_NAME;
 
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.platform.routing.core.bulk.DocumentRoutingEscalationAction;
 import org.nuxeo.ecm.platform.routing.core.bulk.GarbageCollectRoutesAction;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -45,8 +47,10 @@ public class WorkflowFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {
-        runner.getFeature(CoreBulkFeature.class)
-              .addBulkCommandWaiterForListener(runner, GarbageCollectRoutesAction.ACTION_NAME,
-                      CLEANUP_WORKFLOW_EVENT_NAME);
+        var coreBulkFeature = runner.getFeature(CoreBulkFeature.class);
+        coreBulkFeature.addBulkCommandWaiterForListener(runner, GarbageCollectRoutesAction.ACTION_NAME,
+                CLEANUP_WORKFLOW_EVENT_NAME);
+        coreBulkFeature.addBulkCommandWaiterForListener(runner, DocumentRoutingEscalationAction.ACTION_NAME,
+                EXECUTE_ESCALATION_RULE_EVENT);
     }
 }
