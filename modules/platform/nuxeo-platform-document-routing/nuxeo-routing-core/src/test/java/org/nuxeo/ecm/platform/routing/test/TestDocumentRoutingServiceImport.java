@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -66,6 +65,7 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @Deploy("org.nuxeo.ecm.platform.filemanager")
 @Deploy("org.nuxeo.ecm.platform.query.api")
@@ -82,7 +82,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
     protected HotDeployer hotDeployer;
 
     @Inject
-    protected CoreFeature coreFeature;
+    protected TransactionalFeature txFeature;
 
     protected KeyValueStore workflowModelKV;
 
@@ -287,7 +287,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
 
     protected void importAllRouteModels() {
         service.importAllRouteModels(session);
-        coreFeature.waitForAsyncCompletion();
+        txFeature.nextTransaction();
     }
 
     protected String getMD5Digest(File file) {

@@ -49,12 +49,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
@@ -77,7 +74,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = service.validateRouteModel(route, session);
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         session.save();
-        waitForAsyncExec();
+        txFeature.nextTransaction();
         route = service.createNewInstance(route, new ArrayList<>(), session, true);
         assertNotNull(route);
         session.save();
@@ -108,7 +105,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals("validated", route.getDocument().getCurrentLifeCycleState());
         assertEquals("validated", session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
-        waitForAsyncExec();
+        txFeature.nextTransaction();
         DocumentRoute routeInstance = service.createNewInstance(routeModel, Collections.singletonList(doc1.getId()),
                 session, true);
         assertTrue(routeInstance.isDone());
@@ -209,14 +206,6 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);
         session.save();
-    }
-
-    protected void waitForAsyncExec() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-        Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
 }

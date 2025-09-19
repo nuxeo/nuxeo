@@ -377,7 +377,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         routing.cleanupRouteInstances(session.getRepositoryName());
         session.save();
-        coreFeature.waitForAsyncCompletion();
+        txFeature.nextTransaction();
         assertFalse(session.exists(routeRef));
         for (DocumentModel cancelledTask : cancelledTasks) {
             assertFalse(session.exists(cancelledTask.getRef()));
@@ -399,14 +399,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         task.setPropertyValue(TASK_PROCESS_ID_PROPERTY_NAME, route.getId());
         task = session.createDocument(task);
         session.save();
-        coreFeature.waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         assertTrue(session.exists(route.getRef()));
         assertTrue(session.exists(task.getRef()));
         session.removeDocument(ws.getRef());
-        coreFeature.waitForAsyncCompletion();
+        txFeature.nextTransaction();
         routing.cleanupRouteInstances(session.getRepositoryName());
-        coreFeature.waitForAsyncCompletion();
+        txFeature.nextTransaction();
         assertFalse(session.exists(route.getRef()));
         assertFalse(session.exists(task.getRef()));
     }
@@ -1058,7 +1058,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals(1, doneTasks.size());
         routing.cleanupRouteInstances(adminSession.getRepositoryName());
         adminSession.save();
-        coreFeature.waitForAsyncCompletion();
+        txFeature.nextTransaction();
         assertFalse(adminSession.exists(routeRef));
         for (DocumentModel doneTask : doneTasks) {
             assertFalse(adminSession.exists(doneTask.getRef()));
