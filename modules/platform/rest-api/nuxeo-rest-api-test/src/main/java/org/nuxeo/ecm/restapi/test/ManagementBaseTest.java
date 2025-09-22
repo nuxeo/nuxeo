@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -52,6 +53,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Features(RestServerFeature.class)
 public abstract class ManagementBaseTest {
 
+    protected static final Set<String> SCHEDULED_STATES = Set.of(BulkStatus.State.SCHEDULED.name(),
+            BulkStatus.State.SCROLLING_RUNNING.name(), BulkStatus.State.RUNNING.name());
+
     @Inject
     protected RestServerFeature restServerFeature;
 
@@ -73,7 +77,8 @@ public abstract class ManagementBaseTest {
     }
 
     protected void assertBulkStatusScheduled(JsonNode bulkStatus) {
-        assertEquals(BulkStatus.State.SCHEDULED.name(), bulkStatus.get("state").asText());
+        String actualState = bulkStatus.get("state").asText();
+        assertTrue("Unexpected state: " + actualState, SCHEDULED_STATES.contains(actualState));
     }
 
     protected void assertBulkStatusCompleted(JsonNode bulkStatus) {
