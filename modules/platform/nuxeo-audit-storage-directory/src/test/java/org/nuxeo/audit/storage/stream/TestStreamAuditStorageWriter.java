@@ -23,14 +23,15 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.storage.impl.DirectoryAuditStorage;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
@@ -38,20 +39,31 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 9.10
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.audit.storage.directory")
 @Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.audit.storage.directory:OSGI-INF/test-stream-audit-storage-contrib.xml")
 public class TestStreamAuditStorageWriter {
 
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected CoreSession session;
+
     @Test
     public void testWriteJsonEntriesToAudit() {
+        DocumentModel doc = session.createDocumentModel("/", "default-domain", "Domain");
+        doc.setProperty("dublincore", "title", "Domain");
+        session.createDocument(doc);
+        transactionalFeature.nextTransaction();
+
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
                                                                      .getComponent(NXAuditEventsService.NAME);
         DirectoryAuditStorage storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
