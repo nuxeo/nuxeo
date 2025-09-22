@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.quota.size;
 
+import static javax.servlet.http.HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE;
+
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -40,7 +42,8 @@ public class QuotaExceededException extends RecoverableClientException {
     protected String addedDocumentID;
 
     public QuotaExceededException(DocumentModel targetDocument, String message) {
-        super(message, "label.quotaException." + message, new String[] { targetDocument.getPathAsString() });
+        super(message, "label.quotaException." + message, new String[] { targetDocument.getPathAsString() },
+                SC_REQUEST_ENTITY_TOO_LARGE);
         this.targetPath = targetDocument.getPathAsString();
     }
 
@@ -50,7 +53,7 @@ public class QuotaExceededException extends RecoverableClientException {
 
     public QuotaExceededException(String targetDocumentPath, String addedDocumentID, long quotaValue) {
         super("QuotaExceeded", "label.quotaException.QuotaExceeded",
-                new String[] { targetDocumentPath, addedDocumentID });
+                new String[] { targetDocumentPath, addedDocumentID }, SC_REQUEST_ENTITY_TOO_LARGE);
         this.quotaValue = quotaValue;
         this.addedDocumentID = addedDocumentID;
         this.targetPath = targetDocumentPath;

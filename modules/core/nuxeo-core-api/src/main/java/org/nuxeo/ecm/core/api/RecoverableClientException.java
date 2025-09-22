@@ -43,6 +43,15 @@ public class RecoverableClientException extends NuxeoException {
         this.params = params;
     }
 
+    /**
+     * @since 2025.9
+     */
+    public RecoverableClientException(String message, String localizedMessage, String[] params, int statusCode) {
+        super(message, statusCode);
+        this.localizedMessage = localizedMessage;
+        this.params = params;
+    }
+
     public RecoverableClientException(String message, String localizedMessage, String[] params, Throwable cause) {
         super(message, cause);
         this.localizedMessage = localizedMessage;

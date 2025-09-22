@@ -66,6 +66,16 @@ public final class JsonNodeHelper {
         return node.get("message").asText();
     }
 
+    /**
+     * @since 2025.9
+     */
+    public static int getErrorStatus(JsonNode node) {
+        assertTrue(hasErrorMessage(node));
+        assertTrue("Exception status is not present in response", node.has("status"));
+        assertTrue("Exception status is not number", node.get("status").isNumber());
+        return node.get("status").asInt();
+    }
+
     public static boolean hasErrorMessage(JsonNode node) {
         return node.get("entity-type").asText().equals("exception");
     }
