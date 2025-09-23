@@ -34,6 +34,8 @@ public class KafkaHelper {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 10_000);
+        // Avoid out of order error during retry when topic is wrongly reported as ready after creation in KRaft mode
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
         return props;
     }
 

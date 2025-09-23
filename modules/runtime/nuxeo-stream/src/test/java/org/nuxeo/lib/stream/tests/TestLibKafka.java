@@ -204,6 +204,8 @@ public class TestLibKafka {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        // Avoid out of order error during retry when topic is wrongly reported as ready after creation in KRaft mode
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
         // default
         props.put(ProducerConfig.RETRIES_CONFIG, 0); // default
         props.put(ProducerConfig.ACKS_CONFIG, "1"); // default
