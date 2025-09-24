@@ -20,7 +20,10 @@
 
 package org.nuxeo.ecm.directory;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.EXTERNAL_ID_TYPE;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_ID_PROPERTY;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,14 +31,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +67,8 @@ import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.uuid.Generators;
 
 /**
  * Base session class with helper methods common to all kinds of directory sessions.
@@ -406,44 +414,42 @@ public abstract class BaseSession implements Session, EntrySource {
         return String.format(MULTI_TENANT_ID_FORMAT, tenantId, id);
     }
 
-    @Override
-    public DocumentModel getEntry(String id) {
-        return getEntry(id, true);
-    }
-
-    @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) {
+    public DocumentModel getEntry(@Nullable String idOrSysId, boolean fetchReferences) {
         if (!hasPermission(SecurityConstants.READ)) {
             return null;
         }
         if (readAllColumns) {
             // bypass cache when reading all columns
-            return getEntryFromSource(id, fetchReferences);
+            return getEntryFromSource(idOrSysId, fetchReferences);
         }
-        return directory.getCache().getEntry(id, this, fetchReferences);
+        return directory.getCache().getEntry(idOrSysId, this, fetchReferences);
     }
 
     @Override
-    public DocumentModel getEntryFromSource(@Nullable String id, boolean fetchReferences) {
-        if (StringUtils.isBlank(id)) {
+    public DocumentModel getEntryFromSource(@Nullable String idOrSysId, boolean fetchReferences) {
+        if (StringUtils.isBlank(idOrSysId)) {
             return null;
         }
-        var queryBuilder = new QueryBuilder().predicate(Predicates.eq(getIdField(), id)).limit(1);
-        DocumentModelList result = doQuery(
-                createQueryBuilderWithConfiguredFiltering(queryBuilder, true).fetchReferences(fetchReferences));
+        var queryBuilder = createQueryBuilderForIds(idOrSysId).fetchReferences(fetchReferences).limit(1);
+        DocumentModelList result = doQuery(createQueryBuilderWithConfiguredFiltering(queryBuilder, true));
         return result.isEmpty() ? null : result.get(0);
     }
 
     @Override
-    public boolean hasEntry(String id) {
-        var queryBuilder = new DirectoryQueryBuilder();
-        queryBuilder.predicate(Predicates.eq(getIdField(), id)).limit(1);
+    public boolean hasEntry(String idOrSysId) {
+        var queryBuilder = createQueryBuilderForIds(idOrSysId);
+        queryBuilder.limit(1);
         return !doQueryIds(queryBuilder).isEmpty();
     }
 
     @Override
     public DocumentModel createEntry(DocumentModel documentModel) {
-        return createEntry(documentModel.getProperties(schemaName));
+        var fieldMap = documentModel.getProperties(schemaName);
+        if (directory.getTypes().contains(EXTERNAL_ID_TYPE)) {
+            fieldMap = new LinkedHashMap<>(fieldMap);
+            fieldMap.putAll(documentModel.getProperties(SYSTEM_SCHEMA));
+        }
+        return createEntry(fieldMap);
     }
 
     @Override
@@ -486,11 +492,18 @@ public abstract class BaseSession implements Session, EntrySource {
 
         String idFieldName = getPrefixedIdField();
         String id = Objects.toString(fieldMap.get(idFieldName), null);
+        // sysId is only used for id unicity check
+        String sysId = Objects.toString(fieldMap.get(SYSTEM_ID_PROPERTY), null);
         // check if id is provided
         if (!autoincrementId && StringUtils.isBlank(id)) {
             throw new DirectoryException("Missing id");
         }
         // add system fields
+        if (directory.getTypes().contains(EXTERNAL_ID_TYPE)) {
+            // don't update sysId variable, trust UUID v7 to be unique enough
+            fieldMap.computeIfAbsent(SYSTEM_ID_PROPERTY,
+                    k -> Generators.timeBasedEpochGenerator().generate().toString());
+        }
         if (isMultiTenant()) {
             String tenantId = getCurrentTenantId();
             if (StringUtils.isNotBlank(tenantId)) {
@@ -509,11 +522,24 @@ public abstract class BaseSession implements Session, EntrySource {
                 }
             }
         }
-        // ensure id is unique
-        if (id != null && hasEntry(id)) {
-            throw new DirectoryException(
-                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()),
-                    SC_CONFLICT);
+        // ensure ids are unique
+        if (id != null || sysId != null) {
+            var queryBuilder = createQueryBuilderForIds(id, sysId);
+            queryBuilder.limit(1);
+            if (!doQueryIds(queryBuilder).isEmpty()) {
+                var message = new StringBuilder("Entry with ");
+                if (id != null) {
+                    message.append("id ").append(id).append(' ');
+                    if (sysId != null) {
+                        message.append("or ");
+                    }
+                }
+                if (sysId != null) {
+                    message.append("sys:id ").append(sysId).append(' ');
+                }
+                message.append("already exists in directory ").append(directoryName);
+                throw new DirectoryException(message.toString(), SC_CONFLICT);
+            }
         }
         return doCreateEntryWithoutReferences(fieldMap);
     }
@@ -558,6 +584,24 @@ public abstract class BaseSession implements Session, EntrySource {
      * @implNote it was abstract before 2025.9
      */
     protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+        // ensure ids are unique if sys:id is updated
+        if (directory.getTypes().contains(EXTERNAL_ID_TYPE)) {
+            var sysIdProperty = docModel.getProperty(SYSTEM_ID_PROPERTY);
+            if (sysIdProperty.isDirty()) {
+                String id = docModel.getId();
+                String sysId = sysIdProperty.getValue(String.class);
+                // check only that given sys:id is not already used as id of any kind
+                var queryBuilder = createQueryBuilderForIds(sysId);
+                queryBuilder.limit(2);
+                var entryIds = doQueryIds(queryBuilder);
+                entryIds.removeIf(id::equals); // we may have fetched the entry we're currently updating
+                if (!entryIds.isEmpty()) {
+                    throw new DirectoryException(
+                            String.format("Entry with sys:id %s already exists in directory %s", sysId, directoryName),
+                            SC_CONFLICT);
+                }
+            }
+        }
         return doUpdateEntryWithoutReferences(docModel);
     }
 
@@ -580,24 +624,32 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     @Override
-    public void deleteEntry(String id) {
+    public void deleteEntry(String idOrSysId) {
+        checkPermission(SecurityConstants.WRITE);
 
-        if (!canDeleteMultiTenantEntry(id)) {
+        // check the entry to delete
+        DocumentModel entry = getEntry(idOrSysId);
+        if (entry == null) {
+            log.debug("Trying to delete non-existent entry with id: {} from directory: {}", idOrSysId, directoryName);
+            return;
+        }
+
+        if (!canDeleteMultiTenantEntry(entry)) {
             throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
                     "label.directory.error.multi.tenant.operationNotAllowed", null);
         }
 
-        checkPermission(SecurityConstants.WRITE);
-        checkDeleteConstraints(id);
+        String entryId = String.valueOf(entry.getPropertyValue(getPrefixedIdField()));
+        checkDeleteConstraints(entryId);
 
         for (Reference reference : getDirectory().getReferences()) {
             if (reference.getClass() == referenceClass) {
-                reference.removeLinksForSource(id, this);
+                reference.removeLinksForSource(entryId, this);
             } else {
-                reference.removeLinksForSource(id);
+                reference.removeLinksForSource(entryId);
             }
         }
-        deleteEntryWithoutReferences(id);
+        deleteEntryWithoutReferences(entryId);
         getDirectory().invalidateCaches();
     }
 
@@ -607,19 +659,30 @@ public abstract class BaseSession implements Session, EntrySource {
      * @since 2025.9
      * @implNote it was abstract before 2025.9
      */
-    protected void deleteEntryWithoutReferences(String id) {
-        doDeleteEntryWithoutReferences(id);
+    protected void deleteEntryWithoutReferences(String entryId) {
+        doDeleteEntryWithoutReferences(entryId);
     }
 
+    /**
+     * @deprecated since 2025.9, unused
+     */
+    @Deprecated(since = "2025.9", forRemoval = true)
     protected boolean canDeleteMultiTenantEntry(String entryId) {
+        return canDeleteMultiTenantEntry(getEntry(entryId));
+    }
+
+    /**
+     * @since 2025.9
+     */
+    protected boolean canDeleteMultiTenantEntry(DocumentModel entry) {
         if (isMultiTenant()) {
             // can only delete entry from the current tenant
             String tenantId = getCurrentTenantId();
             if (StringUtils.isNotBlank(tenantId)) {
-                DocumentModel entry = getEntry(entryId);
                 String entryTenantId = (String) entry.getProperty(schemaName, TENANT_ID_FIELD);
                 if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
-                    log.debug("Trying to delete entry: {} not part of current tenant: {}", entryId, tenantId);
+                    log.debug("Trying to delete entry: {} not part of current tenant: {}",
+                            () -> entry.getPropertyValue(getPrefixedIdField()), () -> tenantId);
                     return false;
                 }
             }
@@ -723,6 +786,31 @@ public abstract class BaseSession implements Session, EntrySource {
     @Deprecated(since = "2021.x") // annotation to remove
     public List<String> queryIds(QueryBuilder queryBuilder) {
         return doQueryIds(createQueryBuilderWithConfiguredFiltering(queryBuilder));
+    }
+
+    /**
+     * Creates a {@link DirectoryQueryBuilder} that filter in entry having given {@code id} or {@code ids} as directory
+     * entry id of any kind.
+     * 
+     * @since 2025.9
+     */
+    protected DirectoryQueryBuilder createQueryBuilderForIds(@Nullable String id, @Nullable String... ids) {
+        var predicates = new ArrayList<Predicate>();
+        Consumer<String> addIdToPredicates = i -> predicates.add(Predicates.eq(getIdField(), i));
+        if (directory.getTypes().contains(EXTERNAL_ID_TYPE)) {
+            addIdToPredicates = addIdToPredicates.andThen(i -> predicates.add(Predicates.eq(SYSTEM_ID_PROPERTY, i)));
+        }
+        if (id != null) { // important to keep nullity check vs StringUtils.isNotBlank, our API accepts blank id
+            addIdToPredicates.accept(id);
+        }
+        for (var i : ArrayUtils.nullToEmpty(ids)) {
+            if (i != null) {
+                addIdToPredicates.accept(i);
+            }
+        }
+        var queryBuilder = new DirectoryQueryBuilder();
+        queryBuilder.filter(new MultiExpression(Operator.OR, predicates));
+        return queryBuilder;
     }
 
     /**
@@ -869,7 +957,7 @@ public abstract class BaseSession implements Session, EntrySource {
      */
     @Deprecated(since = "2021.x")
     @SuppressWarnings("DeprecatedIsStillUsed")
-    protected void doDeleteEntryWithoutReferences(String id) {
+    protected void doDeleteEntryWithoutReferences(String entryId) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

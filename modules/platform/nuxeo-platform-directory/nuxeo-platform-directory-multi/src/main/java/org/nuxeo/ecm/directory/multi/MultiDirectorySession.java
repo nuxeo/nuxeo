@@ -353,18 +353,18 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) {
+    public DocumentModel getEntry(String idOrSysId, boolean fetchReferences) {
         if (!hasPermission(SecurityConstants.READ)) {
             return null;
         }
         init();
-        String entryId = id;
+        String entryId = idOrSysId;
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             boolean isReadOnlyEntry = true;
             final Map<String, Object> map = new HashMap<>();
 
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
-                final DocumentModel entry = dirInfo.getSession().getEntry(id, fetchReferences);
+                final DocumentModel entry = dirInfo.getSession().getEntry(idOrSysId, fetchReferences);
                 boolean isOptional = dirInfo.isOptional;
                 if (entry == null && !isOptional) {
                     // not in this source
@@ -461,7 +461,7 @@ public class MultiDirectorySession extends BaseSession {
 
     @Override
     @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
-    protected void doDeleteEntryWithoutReferences(String id) {
+    protected void doDeleteEntryWithoutReferences(String entryId) {
         throw new UnsupportedOperationException();
     }
 
@@ -471,9 +471,9 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(String id) {
+    public void deleteEntry(String idOrSysId) {
         checkPermission(SecurityConstants.WRITE);
-        checkDeleteConstraints(id);
+        checkDeleteConstraints(idOrSysId);
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
@@ -484,16 +484,16 @@ public class MultiDirectorySession extends BaseSession {
                         // stop the deletion loop to other subdirectories
                         // Do not raise exception, because creation is not managed
                         // by the platform
-                        DocumentModel docModel = dirInfo.getSession().getEntry(id);
+                        DocumentModel docModel = dirInfo.getSession().getEntry(idOrSysId);
                         if (docModel == null) {
                             log.warn(
                                     "MultiDirectory: {} : The entry id: {} could not be deleted on subdirectory: {} because it does not exist",
-                                    getName(), id, dirInfo.dirName);
+                                    getName(), idOrSysId, dirInfo.dirName);
                         } else {
-                            dirInfo.getSession().deleteEntry(id);
+                            dirInfo.getSession().deleteEntry(idOrSysId);
                         }
                     } else {
-                        dirInfo.getSession().deleteEntry(id);
+                        dirInfo.getSession().deleteEntry(idOrSysId);
                     }
                 }
             }
@@ -828,12 +828,12 @@ public class MultiDirectorySession extends BaseSession {
 
     @SuppressWarnings("resource") // dirInfo session must not be closed
     @Override
-    public boolean hasEntry(String id) {
+    public boolean hasEntry(String idOrSysId) {
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
                 Session session = dirInfo.getSession();
-                if (session.hasEntry(id)) {
+                if (session.hasEntry(idOrSysId)) {
                     return true;
                 }
             }

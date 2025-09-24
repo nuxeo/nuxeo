@@ -272,7 +272,7 @@ public class UserGroupTest extends BaseUserTest {
         // When i GET on the API
         httpClient.buildGetRequest("/group/" + group.getName()).executeAndConsume(new JsonNodeHandler(), node -> {
             // Then i GET the Group
-            assertEquals(5, node.size());
+            assertEquals(6, node.size());
             assertEqualsGroup(group.getName(), group.getLabel(), node);
         });
     }
@@ -292,7 +292,7 @@ public class UserGroupTest extends BaseUserTest {
                       .addQueryParameter(FETCH_PROPERTIES + "." + NuxeoGroupJsonWriter.ENTITY_TYPE,
                               "memberUsers,memberGroups,parentGroups")
                       .executeAndConsume(new JsonNodeHandler(), node -> {
-                          assertEquals(8, node.size());
+                          assertEquals(9, node.size());
                           JsonNode memberUsers = node.get("memberUsers");
                           assertTrue(memberUsers.isArray());
                           assertEquals(2, memberUsers.size());

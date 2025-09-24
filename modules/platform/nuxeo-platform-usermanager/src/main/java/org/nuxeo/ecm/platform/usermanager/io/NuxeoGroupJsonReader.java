@@ -91,8 +91,10 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
     @Override
     protected NuxeoGroup readEntity(JsonNode jn) throws IOException {
         GroupConfig groupConfig = userManager.getGroupConfig();
+        // id could be the sys:id or the groupname
         String id = getStringField(jn, "id");
         String groupName = getStringField(jn, GROUP_NAME_COMPATIBILITY_FIELD);
+        // TODO review: it could be an issue with new behavior, what about removing this backward compatibility?
         if (StringUtils.isBlank(id) || (StringUtils.isNotBlank(groupName) && !id.equals(groupName))) {
             // backward compatibility if `id` not found or if `groupname` is different
             id = groupName;
@@ -104,7 +106,11 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
         }
         if (groupModel == null) {
             groupModel = userManager.getBareGroupModel();
-            groupModel.setProperty(groupConfig.schemaName, groupConfig.idField, id);
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.idField,
+                    // here the group doesn't exist, in almost every cases the given `id` would be the Group Name
+                    // but there's still a chance we're reading a json with an uuid in `id` and its Group Name in the
+                    // properties (or the deprecated `groupname` at root level), so prefer to set groupName first
+                    StringUtils.defaultIfBlank(groupName, id));
         }
 
         String beforeReadLabel = (String) groupModel.getProperty(groupConfig.schemaName, groupConfig.labelField);
@@ -116,7 +122,8 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
 
         // override the `groupname` that may have been in the `properties` object
         if (StringUtils.isNotBlank(id)) {
-            groupModel.setProperty(groupConfig.schemaName, groupConfig.idField, id);
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.idField,
+                    StringUtils.defaultIfBlank(groupName, id));
         }
 
         // override with the compatibility `grouplabel` if needed

@@ -20,9 +20,13 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_ID_PROPERTY;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
+
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
@@ -99,6 +103,14 @@ public class NuxeoGroupImpl implements NuxeoGroup {
             throw new IllegalArgumentException("parent groups list cannot be null");
         }
         model.setProperty(config.schemaName, config.parentGroupsField, groups);
+    }
+
+    @Override
+    public String getId() {
+        if (model.hasSchema(SYSTEM_SCHEMA)) {
+            return (String) ObjectUtils.getIfNull(model.getPropertyValue(SYSTEM_ID_PROPERTY), this::getName);
+        }
+        return getName();
     }
 
     @Override

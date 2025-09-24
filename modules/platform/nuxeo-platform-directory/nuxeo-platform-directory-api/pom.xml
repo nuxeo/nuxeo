@@ -12,6 +12,13 @@
   <description>Nuxeo Enterprise Platform: Directory Management Service API.</description>
 
   <dependencies>
+    <!-- Libraries -->
+    <dependency>
+      <groupId>com.fasterxml.uuid</groupId>
+      <artifactId>java-uuid-generator</artifactId>
+    </dependency>
+
+    <!-- Nuxeo dependencies -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>

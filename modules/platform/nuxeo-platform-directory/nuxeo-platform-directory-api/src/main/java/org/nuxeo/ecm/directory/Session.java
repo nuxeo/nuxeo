@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
@@ -68,19 +70,27 @@ public interface Session extends AutoCloseable {
      * <p>
      * TODO what happens when the entry is not found? return null if not found?
      *
-     * @param id the entry id
+     * @param idOrSysId the entry id or its system id
      * @return a DocumentModel representing the entry
+     * @apiNote This method handles a {@link org.nuxeo.ecm.directory.api.DirectoryConstants#SYSTEM_ID_PROPERTY system
+     *          id} when the directory has {@link org.nuxeo.ecm.directory.api.DirectoryConstants#EXTERNAL_ID_TYPE
+     *          external-id} type
      */
-    DocumentModel getEntry(String id);
+    default DocumentModel getEntry(@Nullable String idOrSysId) {
+        return getEntry(idOrSysId, true);
+    }
 
     /**
      * Retrieves a directory entry using its id.
      *
-     * @param id the entry id
+     * @param idOrSysId the entry id
      * @param fetchReferences boolean stating if references have to be fetched
      * @return a DocumentModel representing the entry
+     * @apiNote This method handles a {@link org.nuxeo.ecm.directory.api.DirectoryConstants#SYSTEM_ID_PROPERTY system
+     *          id} when the directory has {@link org.nuxeo.ecm.directory.api.DirectoryConstants#EXTERNAL_ID_TYPE
+     *          external-id} type
      */
-    DocumentModel getEntry(String id, boolean fetchReferences);
+    DocumentModel getEntry(@Nullable String idOrSysId, boolean fetchReferences);
 
     /**
      * Creates an entry in a directory.
@@ -112,10 +122,13 @@ public interface Session extends AutoCloseable {
     /**
      * Deletes a directory entry by id.
      *
-     * @param id the id of the entry to delete
+     * @param idOrSysId the id of the entry to delete
      * @throws UnsupportedOperationException if the directory does not support entry deleting
+     * @apiNote This method handles a {@link org.nuxeo.ecm.directory.api.DirectoryConstants#SYSTEM_ID_PROPERTY system
+     *          id} when the directory has {@link org.nuxeo.ecm.directory.api.DirectoryConstants#EXTERNAL_ID_TYPE
+     *          external-id} type
      */
-    void deleteEntry(String id);
+    void deleteEntry(String idOrSysId);
 
     /*
      * FIXME: Parses a query string and create a query object for this directory.
@@ -291,8 +304,11 @@ public interface Session extends AutoCloseable {
      * Returns true if session has an entry with given id.
      *
      * @since 5.2M4
+     * @apiNote This method handles a {@link org.nuxeo.ecm.directory.api.DirectoryConstants#SYSTEM_ID_PROPERTY system
+     *          id} when the directory has {@link org.nuxeo.ecm.directory.api.DirectoryConstants#EXTERNAL_ID_TYPE
+     *          external-id} type
      */
-    boolean hasEntry(String id);
+    boolean hasEntry(String idOrSysId);
 
     /**
      * Creates an entry in a directory.

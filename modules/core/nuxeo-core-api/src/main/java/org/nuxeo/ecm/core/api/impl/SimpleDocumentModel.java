@@ -452,7 +452,7 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public boolean hasSchema(String schema) {
-        throw new UnsupportedOperationException();
+        return schemas.contains(schema);
     }
 
     @Override

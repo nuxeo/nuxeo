@@ -34,7 +34,11 @@ import org.nuxeo.ecm.directory.Session;
  */
 public interface DirectoryService {
 
-    String SYSTEM_DIRECTORY_TYPE = "system";
+    /**
+     * @deprecated since 2025.9, use {@link DirectoryConstants#SYSTEM_DIRECTORY_TYPE} instead
+     */
+    @Deprecated(since = "2025.9", forRemoval = true)
+    String SYSTEM_DIRECTORY_TYPE = DirectoryConstants.SYSTEM_DIRECTORY_TYPE;
 
     /**
      * Gets the directory ids.

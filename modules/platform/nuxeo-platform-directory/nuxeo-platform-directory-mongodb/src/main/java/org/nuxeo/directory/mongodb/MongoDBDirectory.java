@@ -24,6 +24,8 @@ import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_SEQ;
 import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLICY_ALWAYS;
 import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLICY_ON_MISSING_COLUMNS;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.EXTERNAL_ID_TYPE;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -148,6 +150,9 @@ public class MongoDBDirectory extends AbstractDirectory {
         var schemaManager = Framework.getService(SchemaManager.class);
         var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, collection);
         mongoDBIndexCreator.createIndexes(schemaManager.getSchema(descriptor.schemaName));
+        if (types.contains(EXTERNAL_ID_TYPE)) {
+            mongoDBIndexCreator.createIndexes(schemaManager.getSchema(SYSTEM_SCHEMA));
+        }
     }
 
     @Override

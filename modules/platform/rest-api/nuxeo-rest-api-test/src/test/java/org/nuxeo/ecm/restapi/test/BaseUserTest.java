@@ -78,6 +78,7 @@ public class BaseUserTest {
     protected void assertEqualsGroup(String groupName, String groupLabel, JsonNode node) {
         assertEquals("group", node.get("entity-type").asText());
         assertEquals(groupName, node.get("id").asText());
+        assertEquals(groupName, node.get("name").asText());
         assertEquals(groupName, node.get("groupname").asText());
         assertEquals(groupLabel, node.get("grouplabel").asText());
         JsonNode properties = node.get("properties");
@@ -125,6 +126,7 @@ public class BaseUserTest {
     protected void assertEqualsUser(String username, String firstname, String lastname, String email, JsonNode node) {
         assertEquals("user", node.get("entity-type").asText());
         assertEquals(username, node.get("id").asText());
+        assertEquals(username, node.get("name").asText());
         JsonNode properties = node.get("properties");
         assertEquals(firstname, properties.get("firstName").asText());
         assertEquals(lastname, properties.get("lastName").asText());

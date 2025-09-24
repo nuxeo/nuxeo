@@ -23,6 +23,37 @@ package org.nuxeo.ecm.directory.api;
  */
 public final class DirectoryConstants {
 
+    // -------------------------------
+    // System schema related constants
+    // -------------------------------
+
+    /**
+     * The Nuxeo XPath property for the entry external id.
+     */
+    public static final String SYSTEM_ID_PROPERTY = "sys:id";
+
+    /**
+     * The Nuxeo Schema name for the external metadata.
+     */
+    public static final String SYSTEM_SCHEMA = "system";
+
+    // ---------------
+    // Directory Types
+    // ---------------
+
+    /**
+     * The {@link org.nuxeo.ecm.directory.Directory#getTypes() directory type} for directory with external id support.
+     */
+    public static final String EXTERNAL_ID_TYPE = "external-id";
+
+    /**
+     * The {@link org.nuxeo.ecm.directory.Directory#getTypes() directory type} for system directory.
+     */
+    public static final String SYSTEM_DIRECTORY_TYPE = "system";
+
+    // -----
+    // Other
+    // -----
     public static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
 
     private DirectoryConstants() {

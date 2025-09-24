@@ -76,6 +76,17 @@ public interface NuxeoGroup extends Serializable {
     void setParentGroups(List<String> groups);
 
     /**
+     * Returns a unique identifier to use to reference this group externally.
+     *
+     * @return A unique identifier
+     * @since 2025.9
+     * @see #getName()
+     */
+    default String getId() {
+        return getName();
+    }
+
+    /**
      * Gets the name of the group.
      *
      * @return the name of the group

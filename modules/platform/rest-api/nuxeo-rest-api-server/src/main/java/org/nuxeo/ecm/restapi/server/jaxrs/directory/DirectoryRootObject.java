@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.api.DirectoryConstants;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -55,7 +56,7 @@ public class DirectoryRootObject extends DefaultObject {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         List<Directory> result = new ArrayList<>();
         for (Directory dir : directoryService.getDirectories()) {
-            if (dir.getTypes().contains(DirectoryService.SYSTEM_DIRECTORY_TYPE)) {
+            if (dir.getTypes().contains(DirectoryConstants.SYSTEM_DIRECTORY_TYPE)) {
                 continue;
             } else if (types == null || types.isEmpty()) {
                 result.add(dir);

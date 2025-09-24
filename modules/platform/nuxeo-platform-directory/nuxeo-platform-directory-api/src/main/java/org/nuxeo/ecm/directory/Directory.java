@@ -20,8 +20,11 @@
 
 package org.nuxeo.ecm.directory;
 
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.EXTERNAL_ID_TYPE;
 import static org.nuxeo.ecm.directory.api.DirectoryConstants.READONLY_ENTRY_FLAG;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -206,10 +209,14 @@ public interface Directory {
      * @since 2025.9
      */
     default DocumentModel createBareDocumentModel(@Nullable String id, @Nullable Map<String, Object> values) {
-        DocumentModelImpl entry = new DocumentModelImpl(getSchema(), id, null, null, null, new String[] { getSchema() },
-                new HashSet<>(), null, false, null, null, null);
+        var schemaNames = new ArrayList<>(List.of(getSchema()));
+        if (getTypes().contains(EXTERNAL_ID_TYPE)) {
+            schemaNames.add(SYSTEM_SCHEMA);
+        }
+        DocumentModelImpl entry = new DocumentModelImpl(getSchema(), id, null, null, null,
+                schemaNames.toArray(String[]::new), new HashSet<>(), null, false, null, null, null);
         var nonNullValues = MapUtils.emptyIfNull(values);
-        entry.addDataModel(new DataModelImpl(getSchema(), nonNullValues));
+        schemaNames.forEach(name -> entry.addDataModel(new DataModelImpl(name, nonNullValues)));
         if (isReadOnly()) {
             entry.putContextData(READONLY_ENTRY_FLAG, Boolean.TRUE);
         }

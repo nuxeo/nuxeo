@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryConstants;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 
@@ -118,7 +119,11 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
         String passwordField = directory.getPasswordField();
         DocumentModel document = entry.getDocumentModel();
         jg.writeStringField("directoryName", directoryName);
-        jg.writeStringField("id", document.getId());
+        String id = document.getId();
+        if (directory.getTypes().contains(DirectoryConstants.EXTERNAL_ID_TYPE)) {
+            id = (String) document.getPropertyValue(DirectoryConstants.SYSTEM_ID_PROPERTY);
+        }
+        jg.writeStringField("id", id);
         Schema schema = schemaManager.getSchema(schemaName);
         Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
         // for each properties, fetch it

@@ -118,7 +118,7 @@ public class AutomationResource extends ModuleRoot {
             NuxeoPrincipal np = (NuxeoPrincipal) p;
             List<String> groups = np.getAllGroups();
             HashSet<String> set = new HashSet<>(groups);
-            return new LoginInfo(np.getName(), set, np.isAdministrator());
+            return new LoginInfo(np.getId(), np.getName(), set, np.isAdministrator());
         } else {
             return Response.status(401).build();
         }

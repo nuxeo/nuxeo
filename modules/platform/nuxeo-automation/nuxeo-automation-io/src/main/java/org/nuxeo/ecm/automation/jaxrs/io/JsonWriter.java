@@ -257,6 +257,8 @@ public class JsonWriter {
     public static void writeLogin(JsonGenerator jg, LoginInfo login) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "login");
+        jg.writeStringField("id", login.getId());
+        jg.writeStringField("name", login.getUsername());
         jg.writeStringField("username", login.getUsername());
         jg.writeBooleanField("isAdministrator", login.isAdministrator());
         jg.writeArrayFieldStart("groups");

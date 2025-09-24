@@ -19,6 +19,9 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.EXTERNAL_ID_TYPE;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_ID_PROPERTY;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -102,7 +105,7 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
+    public DocumentModel getEntryFromSource(String idOrSysId, boolean fetchReferences) {
         acquireConnection();
         // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
         // tableName, idField);
@@ -110,7 +113,7 @@ public class SQLSession extends BaseSession {
         select.setFrom(table.getQuotedName());
         select.setWhat(getReadColumnsSQL());
 
-        String whereClause = table.getPrimaryColumn().getQuotedName() + " = ?";
+        String whereClause = buildIdWhereClause();
         whereClause = addFilterWhereClause(whereClause);
 
         select.setWhere(whereClause);
@@ -118,14 +121,18 @@ public class SQLSession extends BaseSession {
 
         if (logger.isLogEnabled()) {
             List<Serializable> values = new ArrayList<>();
-            values.add(id);
+            values.add(idOrSysId);
             addFilterValuesForLog(values);
             logger.logSQL(sql, values);
         }
 
         try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
-            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
-            addFilterValues(ps, 2);
+            int fieldIndex = 1;
+            setFieldValue(ps, fieldIndex++, table.getPrimaryColumn(), idOrSysId);
+            if (directory.getTypes().contains(EXTERNAL_ID_TYPE)) {
+                setFieldValue(ps, fieldIndex++, table.getColumn(SYSTEM_ID_PROPERTY), idOrSysId);
+            }
+            addFilterValues(ps, fieldIndex);
 
             Map<String, Object> fieldMap = new HashMap<>();
             try (ResultSet rs = ps.executeQuery()) {
@@ -237,6 +244,15 @@ public class SQLSession extends BaseSession {
         if (dialect.isConcurrentUpdateException(e)) {
             throw new ConcurrentUpdateException(e);
         }
+    }
+
+    protected String buildIdWhereClause() {
+        String primaryColumClause = table.getPrimaryColumn().getQuotedName() + " = ?";
+        if (directory.getTypes().contains(EXTERNAL_ID_TYPE)) {
+            String sysIdColumClause = table.getColumn(SYSTEM_ID_PROPERTY).getQuotedName() + " = ?";
+            return "(%s OR %s)".formatted(primaryColumClause, sysIdColumClause);
+        }
+        return primaryColumClause;
     }
 
     protected String addFilterWhereClause(String whereClause) {
@@ -974,8 +990,9 @@ public class SQLSession extends BaseSession {
             if (fieldName.equals(getIdField())) {
                 continue;
             }
-            Property prop = docModel.getPropertyObject(schemaName, fieldName);
-            if (!prop.isDirty()) {
+            Property prop = fieldName.contains(":") ? docModel.getProperty(fieldName)
+                    : docModel.getPropertyObject(schemaName, fieldName);
+            if (prop == null || !prop.isDirty()) {
                 continue;
             }
             if (fieldName.equals(getPasswordField()) && StringUtils.isEmpty((String) prop.getValue())) {
@@ -1006,7 +1023,9 @@ public class SQLSession extends BaseSession {
             if (logger.isLogEnabled()) {
                 List<Serializable> values = new ArrayList<>(storedColumnList.size());
                 for (Column column : storedColumnList) {
-                    Object value = docModel.getProperty(schemaName, column.getKey());
+                    String columnKey = column.getKey();
+                    Object value = columnKey.contains(":") ? docModel.getPropertyValue(columnKey)
+                            : docModel.getProperty(schemaName, columnKey);
                     if (HIDE_PASSWORD_IN_LOGS && column.getKey().equals(getPasswordField())) {
                         value = "********"; // hide password in logs
                     }
@@ -1021,7 +1040,9 @@ public class SQLSession extends BaseSession {
                 int index = 1;
                 // TODO: how can I reset dirty fields?
                 for (Column column : storedColumnList) {
-                    Object value = docModel.getProperty(schemaName, column.getKey());
+                    String columnKey = column.getKey();
+                    Object value = columnKey.contains(":") ? docModel.getPropertyValue(columnKey)
+                            : docModel.getProperty(schemaName, columnKey);
                     setFieldValue(ps, index, column, value);
                     index++;
                 }
@@ -1038,17 +1059,17 @@ public class SQLSession extends BaseSession {
 
     @Override
     @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
-    public void doDeleteEntryWithoutReferences(String id) {
+    public void doDeleteEntryWithoutReferences(String entryId) {
         // second step: clean stored fields
         Delete delete = new Delete(table);
         String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
         delete.setWhere(whereString);
         String sql = delete.getStatement();
         if (logger.isLogEnabled()) {
-            logger.logSQL(sql, Collections.singleton(id));
+            logger.logSQL(sql, Collections.singleton(entryId));
         }
         try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
-            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
+            setFieldValue(ps, 1, table.getPrimaryColumn(), entryId);
             ps.execute();
         } catch (SQLException e) {
             checkConcurrentUpdate(e);
@@ -1156,20 +1177,23 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public boolean hasEntry(String id) {
+    public boolean hasEntry(String idOrSysId) {
         acquireConnection();
         Select select = new Select(table);
         select.setFrom(table.getQuotedName());
         select.setWhat("1");
-        select.setWhere(table.getPrimaryColumn().getQuotedName() + " = ?");
+        select.setWhere(buildIdWhereClause());
         String sql = select.getStatement();
 
         if (logger.isLogEnabled()) {
-            logger.logSQL(sql, Collections.singleton(id));
+            logger.logSQL(sql, Collections.singleton(idOrSysId));
         }
 
         try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
-            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
+            setFieldValue(ps, 1, table.getPrimaryColumn(), idOrSysId);
+            if (directory.getTypes().contains(EXTERNAL_ID_TYPE)) {
+                setFieldValue(ps, 2, table.getColumn(SYSTEM_ID_PROPERTY), idOrSysId);
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 boolean has = rs.next();
                 if (logger.isLogEnabled()) {

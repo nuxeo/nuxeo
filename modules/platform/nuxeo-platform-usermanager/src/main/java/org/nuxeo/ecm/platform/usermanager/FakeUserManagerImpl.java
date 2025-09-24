@@ -484,6 +484,11 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
+    public UserConfig getUserConfig() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public GroupConfig getGroupConfig() {
         throw new UnsupportedOperationException();
     }

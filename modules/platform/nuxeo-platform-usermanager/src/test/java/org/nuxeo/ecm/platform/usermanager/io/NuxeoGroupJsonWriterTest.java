@@ -19,13 +19,21 @@
 
 package org.nuxeo.ecm.platform.usermanager.io;
 
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_ID_PROPERTY;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
+
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
+import org.nuxeo.ecm.platform.usermanager.GroupConfig;
+import org.nuxeo.ecm.platform.usermanager.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -48,15 +56,37 @@ public class NuxeoGroupJsonWriterTest extends AbstractJsonWriterTest.External<Nu
         NuxeoGroup group = userManager.getGroup("administrators");
         JsonAssert json = jsonAssert(group);
         json.isObject();
-        json.properties(5);
+        json.properties(6);
         json.has("entity-type").isEquals("group");
         json.has("groupname").isEquals("administrators");
         json.has("grouplabel").isEquals("Administrators group");
         json.has("id").isEquals("administrators");
+        json.has("name").isEquals("administrators");
         JsonAssert properties = json.has("properties").properties(4);
         properties.has("groupname").isEquals("administrators");
         properties.has("grouplabel").isEquals("Administrators group");
         properties.has("description").isEquals("Group of users with adminstrative rights");
+        properties.has("tenantId").isNull();
     }
 
+    // TODO NXP-33314 copy the assertion on id to tests above and remove this method
+    @Test
+    public void testWithExternalId() throws Exception {
+        SimpleDocumentModel model = SimpleDocumentModel.ofSchemas("group", SYSTEM_SCHEMA);
+        model.setPropertyValue("groupname", "test");
+        model.setPropertyValue(SYSTEM_ID_PROPERTY, UUID.randomUUID().toString());
+        NuxeoGroup group = new NuxeoGroupImpl(model, new GroupConfig());
+        JsonAssert json = jsonAssert(group);
+        json.isObject();
+        // it has no properties
+        json.properties(6);
+        json.has("entity-type").isEquals("group");
+        json.has("id").isUUID();
+        json.has("name").isEquals("test");
+        JsonAssert properties = json.has("properties").properties(4);
+        properties.has("groupname").isEquals("test");
+        properties.has("grouplabel").isNull();
+        properties.has("description").isNull();
+        properties.has("tenantId").isNull();
+    }
 }

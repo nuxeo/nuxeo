@@ -19,15 +19,22 @@
 
 package org.nuxeo.ecm.platform.usermanager.io;
 
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_ID_PROPERTY;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
+
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -51,9 +58,10 @@ public class NuxeoPrincipalJsonWriterTest
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
         JsonAssert json = jsonAssert(principal);
         json.isObject();
-        json.properties(6);
+        json.properties(7);
         json.has("entity-type").isEquals("user");
         json.has("id").isEquals("Administrator");
+        json.has("name").isEquals("Administrator");
         json.has("isAdministrator").isTrue();
         json.has("isAnonymous").isFalse();
         JsonAssert model = json.has("properties").properties(7);
@@ -76,9 +84,10 @@ public class NuxeoPrincipalJsonWriterTest
         JsonAssert json = jsonAssert(principal);
         json.isObject();
         // it has no properties
-        json.properties(5);
+        json.properties(6);
         json.has("entity-type").isEquals("user");
         json.has("id").isEquals(SecurityConstants.SYSTEM_USERNAME);
+        json.has("name").isEquals(SecurityConstants.SYSTEM_USERNAME);
         json.has("isAdministrator").isTrue();
         json.has("isAnonymous").isFalse();
         JsonAssert exGroup = json.has("extendedGroups").length(1).has(0);
@@ -93,12 +102,13 @@ public class NuxeoPrincipalJsonWriterTest
         // Get principal without fetching references
         NuxeoPrincipal partialPrincipal = userManager.getPrincipal("Administrator", false);
         JsonAssert json = jsonAssert(partialPrincipal);
-        json.properties(7);
+        json.properties(8);
 
         // Check the 'isPartial' flag is added
         json.has("isPartial").isTrue();
         json.has("entity-type").isEquals("user");
         json.has("id").isEquals("Administrator");
+        json.has("name").isEquals("Administrator");
 
         // Check the 'isAdministrator' is false
         json.has("isAdministrator").isFalse();
@@ -114,4 +124,23 @@ public class NuxeoPrincipalJsonWriterTest
         model.has("groups").length(0);
     }
 
+    // TODO NXP-33314 copy the assertion on id to tests above and remove this method
+    @Test
+    public void testWithExternalId() throws Exception {
+        NuxeoPrincipal principal = new NuxeoPrincipalImpl("test");
+        SimpleDocumentModel model = SimpleDocumentModel.ofSchemas("user", SYSTEM_SCHEMA);
+        model.setPropertyValue("username", "test");
+        model.setPropertyValue(SYSTEM_ID_PROPERTY, UUID.randomUUID().toString());
+        principal.setModel(model);
+        JsonAssert json = jsonAssert(principal);
+        json.isObject();
+        // it has no properties
+        json.properties(7);
+        json.has("entity-type").isEquals("user");
+        json.has("id").isUUID();
+        json.has("name").isEquals("test");
+        json.has("isAdministrator").isFalse();
+        json.has("isAnonymous").isFalse();
+        json.has("extendedGroups").length(0);
+    }
 }

@@ -29,6 +29,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface EntrySource {
 
-    DocumentModel getEntryFromSource(String entryId, boolean fetchReferences);
+    /**
+     * @apiNote This method handles a {@link org.nuxeo.ecm.directory.api.DirectoryConstants#SYSTEM_ID_PROPERTY system
+     *          id} when the directory has {@link org.nuxeo.ecm.directory.api.DirectoryConstants#EXTERNAL_ID_TYPE
+     *          external-id} type
+     */
+    DocumentModel getEntryFromSource(String idOrSysId, boolean fetchReferences);
 
 }

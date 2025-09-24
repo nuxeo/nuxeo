@@ -312,23 +312,23 @@ public class LDAPSession extends BaseSession {
 
     @Override
     @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
-    public void doDeleteEntryWithoutReferences(String id) {
+    public void doDeleteEntryWithoutReferences(String entryId) {
         try {
-            SearchResult result = getLdapEntry(id, false);
+            SearchResult result = getLdapEntry(entryId, false);
 
-            log.debug("LDAPSession.deleteEntry({}): LDAP destroySubcontext dn='{}' [{}]", id,
+            log.debug("LDAPSession.deleteEntry({}): LDAP destroySubcontext dn='{}' [{}]", entryId,
                     result.getNameInNamespace(), this);
             getContext().destroySubcontext(result.getNameInNamespace());
         } catch (NamingException e) {
-            handleException(e, "deleteEntry failed for: " + id);
+            handleException(e, "deleteEntry failed for: " + entryId);
         }
     }
 
     @Override
-    public boolean hasEntry(String id) {
+    public boolean hasEntry(String idOrSysId) {
         try {
             // TODO: check directory cache first
-            return getLdapEntry(id) != null;
+            return getLdapEntry(idOrSysId) != null;
         } catch (NamingException e) {
             throw new DirectoryException("hasEntry failed: " + e.getMessage(), e);
         }
@@ -408,13 +408,13 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
+    public DocumentModel getEntryFromSource(String idOrSysId, boolean fetchReferences) {
         try {
-            SearchResult result = getLdapEntry(id, false);
+            SearchResult result = getLdapEntry(idOrSysId, false);
             if (result == null) {
                 return null;
             }
-            return ldapResultToDocumentModel(result, id, fetchReferences);
+            return ldapResultToDocumentModel(result, idOrSysId, fetchReferences);
         } catch (NamingException e) {
             throw new DirectoryException("getEntry failed: " + e.getMessage(), e);
         }

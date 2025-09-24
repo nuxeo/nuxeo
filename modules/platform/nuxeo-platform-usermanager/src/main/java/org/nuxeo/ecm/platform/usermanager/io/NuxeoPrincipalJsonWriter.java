@@ -112,7 +112,8 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
     protected void writeEntityBody(NuxeoPrincipal principal, JsonGenerator jg) throws IOException {
         var currentPrincipal = NuxeoPrincipal.getCurrent();
         var isCurrentUserAdministrator = currentPrincipal != null && currentPrincipal.isAdministrator();
-        jg.writeStringField("id", principal.getName());
+        jg.writeStringField("id", principal.getId());
+        jg.writeStringField("name", principal.getName());
         writeProperties(jg, principal, isCurrentUserAdministrator);
         if (isCurrentUserAdministrator) {
             writeExtendedGroups(jg, principal);

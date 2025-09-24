@@ -19,6 +19,9 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.EXTERNAL_ID_TYPE;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -185,6 +188,17 @@ public class SQLDirectory extends AbstractDirectory {
                         readColumns.add(column);
                     }
                 }
+            }
+            if (types.contains(EXTERNAL_ID_TYPE)) {
+                var externalColumns = schemaManager.getSchema(SYSTEM_SCHEMA)
+                                                   .getFields()
+                                                   .stream()
+                                                   .map(field -> SQLHelper.addColumn(table,
+                                                           field.getName().getPrefixedName(),
+                                                           ColumnType.fromField(field), useNativeCase()))
+                                                   .toList();
+                readColumnsAll.addAll(externalColumns);
+                readColumns.addAll(externalColumns);
             }
             readColumnsAllSQL = readColumnsAll.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
             readColumnsSQL = readColumns.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));

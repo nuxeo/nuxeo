@@ -25,6 +25,8 @@ import java.util.Set;
  */
 public class LoginInfo {
 
+    protected final String id;
+
     protected String username;
 
     protected Set<String> groups;
@@ -32,9 +34,27 @@ public class LoginInfo {
     protected boolean isAdministrator;
 
     public LoginInfo(String username, Set<String> groups, boolean isAdministrator) {
+        this(username, username, groups, isAdministrator);
+    }
+
+    /**
+     * @since 2025.9
+     */
+    public LoginInfo(String id, String username, Set<String> groups, boolean isAdministrator) {
+        this.id = id;
         this.username = username;
         this.groups = groups;
         this.isAdministrator = isAdministrator;
+    }
+
+    /**
+     * Returns a unique identifier to use to reference the original principal externally.
+     *
+     * @return A unique identifier
+     * @since 2025.9
+     */
+    public String getId() {
+        return id;
     }
 
     public boolean isAdministrator() {
@@ -48,5 +68,4 @@ public class LoginInfo {
     public Set<String> getGroups() {
         return groups;
     }
-
 }

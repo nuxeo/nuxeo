@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -40,6 +41,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @since 7.2
  */
 public class JsonAssert {
+
+    protected static final Pattern UUID_REGEX = Pattern.compile("^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$");
 
     private JsonNode jsonNode;
 
@@ -288,6 +291,18 @@ public class JsonAssert {
     public JsonAssert notEquals(String expected) {
         isText();
         Assert.assertNotEquals(notEqualsMsg(expected), expected, jsonNode.textValue());
+        return this;
+    }
+
+    /**
+     * Checks the current is an uuid.
+     *
+     * @return The current json assertion for chaining.
+     * @since 2025.9
+     */
+    public JsonAssert isUUID() {
+        isText();
+        Assert.assertTrue("not a uuid value", UUID_REGEX.matcher(jsonNode.textValue()).matches());
         return this;
     }
 

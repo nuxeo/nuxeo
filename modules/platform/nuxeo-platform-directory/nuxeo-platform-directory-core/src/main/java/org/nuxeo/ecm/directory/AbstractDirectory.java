@@ -26,6 +26,8 @@ import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLIC
 import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_NEVER_LOAD;
 import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_REJECT_DUPLICATE;
 import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_UPDATE_DUPLICATE;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.EXTERNAL_ID_TYPE;
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.SYSTEM_SCHEMA;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -371,6 +373,13 @@ public abstract class AbstractDirectory implements Directory {
         }
         schemaFieldMap = new LinkedHashMap<>();
         schema.getFields().forEach(f -> schemaFieldMap.put(f.getName().getLocalName(), f));
+        if (getTypes().contains(EXTERNAL_ID_TYPE)) {
+            schemaManager.getSchema(SYSTEM_SCHEMA)
+                         .getFields()
+                         // we put the prefix for external schema to not interfere with configured schema
+                         // in fact configured schema should probably do the same
+                         .forEach(f -> schemaFieldMap.put(f.getName().getPrefixedName(), f));
+        }
     }
 
     @Override

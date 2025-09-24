@@ -195,7 +195,8 @@ public class MongoDBSession extends BaseSession {
             if (fieldName.equals(idFieldName)) {
                 continue;
             }
-            Property prop = docModel.getPropertyObject(schemaName, fieldName);
+            Property prop = fieldName.contains(":") ? docModel.getProperty(fieldName)
+                    : docModel.getPropertyObject(schemaName, fieldName);
             if (prop == null || !prop.isDirty()
                     || (fieldName.equals(passwordFieldName) && StringUtils.isEmpty((String) prop.getValue()))) {
                 continue;
@@ -244,10 +245,10 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
-    public void doDeleteEntryWithoutReferences(String id) {
+    public void doDeleteEntryWithoutReferences(String entryId) {
         try {
             String idFieldName = getPrefixedIdField();
-            Object idFieldValue = convertToType(id, getIdFieldType());
+            Object idFieldValue = convertToType(entryId, getIdFieldType());
             DeleteResult result = getCollection().deleteOne(
                     MongoDBSerializationHelper.fieldMapToBson(idFieldName, idFieldValue));
             if (!result.wasAcknowledged()) {
@@ -573,15 +574,13 @@ public class MongoDBSession extends BaseSession {
     }
 
     @Override
-    public boolean hasEntry(String id) {
-        return hasEntry0(id);
-    }
-
-    protected boolean hasEntry0(Object id) {
-        String idFieldName = getPrefixedIdField();
-        Type idFieldType = getIdFieldType();
-        Object idFieldValue = convertToType(id, idFieldType);
-        return getCollection().countDocuments(MongoDBSerializationHelper.fieldMapToBson(idFieldName, idFieldValue)) > 0;
+    public boolean hasEntry(String idOrSysId) {
+        var queryBuilder = createQueryBuilderForIds(idOrSysId);
+        MongoDBConverter converter = new MongoDBConverter();
+        var builder = new MongoDBDirectoryQueryBuilder(converter, queryBuilder.predicate());
+        builder.walk();
+        Document filter = builder.getQuery();
+        return getCollection().countDocuments(filter) > 0;
     }
 
     /**

@@ -135,7 +135,8 @@ public class NuxeoGroupJsonWriter extends ExtensibleEntityJsonWriter<NuxeoGroup>
         jg.writeStringField(GROUP_NAME_COMPATIBILITY_FIELD, group.getName());
         jg.writeStringField(GROUP_LABEL_COMPATIBILITY_FIELD, group.getLabel());
 
-        jg.writeStringField("id", group.getName());
+        jg.writeStringField("id", group.getId());
+        jg.writeStringField("name", group.getName());
         writeProperties(group, jg);
         writeMemberUsers(group, jg);
         writeMemberGroups(group, jg);
