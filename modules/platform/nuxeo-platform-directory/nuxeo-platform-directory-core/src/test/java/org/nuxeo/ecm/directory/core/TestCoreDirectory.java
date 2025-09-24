@@ -44,7 +44,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -167,7 +166,7 @@ public class TestCoreDirectory {
     @Test
     @Ignore
     public void testCreateFromModel() {
-        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
+        DocumentModel entry = dirSession.createEntryModel();
         String id = "newId";
         entry.setPropertyValue(UID_FIELD, id);
 

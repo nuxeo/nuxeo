@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
-import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -216,7 +215,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
 
         String schemaName = getGroupSchemaName();
         String id = getGroupIdField();
-        DocumentModel groupDoc = BaseSession.createEntryModel(null, schemaName, grpName, null);
+        DocumentModel groupDoc = getGroupDirectory().createBareDocumentModel(grpName, null);
 
         groupDoc.setProperty(schemaName, getGroupMembersField(), grp.getMemberUsers());
         groupDoc.setProperty(schemaName, id, grp.getName());

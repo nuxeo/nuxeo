@@ -722,8 +722,7 @@ public class TestMultiDirectory {
 
     @Test
     public void testCreateFromModel() {
-        String schema = "schema3";
-        DocumentModel entry = BaseSession.createEntryModel(schema, null, null);
+        DocumentModel entry = dir.createEntryModel();
         entry.setProperty("schema3", "uid", "yo");
 
         assertNull(dir.getEntry("yo"));

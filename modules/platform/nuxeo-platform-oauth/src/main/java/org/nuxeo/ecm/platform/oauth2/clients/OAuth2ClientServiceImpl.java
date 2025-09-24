@@ -79,7 +79,7 @@ public class OAuth2ClientServiceImpl extends DefaultComponent implements OAuth2C
         checkUnicity(oAuth2Client.getId());
 
         return execute(session -> {
-            DocumentModel documentModel = OAuth2Client.fromOAuth2Client(oAuth2Client);
+            DocumentModel documentModel = session.createEntryModel(null, OAuth2Client.toMap(oAuth2Client));
             return OAuth2Client.fromDocumentModel(session.createEntry(documentModel));
         }, principal);
     }

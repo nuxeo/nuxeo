@@ -53,9 +53,8 @@ public class ShibbolethGroupHelper {
     protected static UserManager getUserManager() {
         return Framework.getService(UserManager.class);
     }
-
     public static DocumentModel getBareGroupModel(CoreSession core) {
-        return core.createDocumentModel(ShibbolethConstants.SHIBBOLETH_DOCTYPE);
+        return getDirectoryService().getDirectory(ShibbolethConstants.SHIBBOLETH_DIRECTORY).createBareDocumentModel();
     }
 
     public static DocumentModel createGroup(DocumentModel group) {

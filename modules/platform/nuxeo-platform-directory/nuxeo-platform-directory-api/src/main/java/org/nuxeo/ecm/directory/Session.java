@@ -42,6 +42,28 @@ import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 public interface Session extends AutoCloseable {
 
     /**
+     * Returns a bare document model suitable for directory implementations.
+     *
+     * @return the directory entry
+     * @since 2025.9
+     */
+    default DocumentModel createEntryModel() {
+        return createEntryModel(null, null);
+    }
+
+    /**
+     * Returns a bare document model suitable for directory implementations.
+     *
+     * @param id the entry id, or {@code null}
+     * @param values the entry values, or {@code null}
+     * @return the directory entry
+     * @since 2025.9
+     */
+    default DocumentModel createEntryModel(@Nullable String id, @Nullable Map<String, Object> values) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    /**
      * Retrieves a directory entry using its id.
      * <p>
      * TODO what happens when the entry is not found? return null if not found?

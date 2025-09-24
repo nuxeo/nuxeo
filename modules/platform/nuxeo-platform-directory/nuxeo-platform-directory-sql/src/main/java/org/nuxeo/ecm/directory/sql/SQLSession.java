@@ -211,8 +211,7 @@ public class SQLSession extends BaseSession {
 
         String id = String.valueOf(fieldMap.get(idFieldName));
         try {
-            DocumentModel docModel = BaseSession.createEntryModel(schemaName, id, fieldMap, isReadOnly());
-            return docModel;
+            return createEntryModel(id, fieldMap);
         } catch (PropertyException e) {
             log.error(e, e);
             return null;

@@ -515,8 +515,7 @@ public class TestMultiDirectoryOptional {
 
     @Test
     public void testCreateFromModel() throws Exception {
-        String schema = "schema3";
-        DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
+        DocumentModel entry = dir.createEntryModel();
         entry.setProperty("schema3", "uid", "yo");
 
         assertNull(dir.getEntry("yo"));

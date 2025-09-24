@@ -29,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
-import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
@@ -102,7 +101,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
         }
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
+            DocumentModel creationEntry = session.createEntryModel();
             DocumentModel entry = Framework.doPrivileged(() -> session.createEntry(creationEntry));
             entry.setProperty(SCHEMA, "serviceName", serviceName);
             entry.setProperty(SCHEMA, "description", description);

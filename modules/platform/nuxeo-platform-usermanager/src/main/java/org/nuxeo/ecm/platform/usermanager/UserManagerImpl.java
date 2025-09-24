@@ -300,6 +300,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         userIdField = dirService.getDirectoryIdField(userDirectoryName);
     }
 
+    protected Directory getUserDirectory() {
+        return dirService.getDirectory(userDirectoryName);
+    }
+
     @Override
     public String getUserDirectoryName() {
         return userDirectoryName;
@@ -334,6 +338,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         this.groupDirectoryName = groupDirectoryName;
         groupSchemaName = dirService.getDirectorySchema(groupDirectoryName);
         groupIdField = dirService.getDirectoryIdField(groupDirectoryName);
+    }
+
+    protected Directory getGroupDirectory() {
+        return dirService.getDirectory(groupDirectoryName);
     }
 
     @Override
@@ -468,7 +476,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             String schema = dirService.getDirectorySchema(digestAuthDirectory);
             DocumentModel entry = dir.getEntry(username, true);
             if (entry == null) {
-                entry = getDigestAuthModel();
+                entry = dir.createEntryModel();
                 entry.setProperty(schema, dir.getIdField(), username);
                 entry.setProperty(schema, dir.getPasswordField(), ha1);
                 dir.createEntry(entry);
@@ -486,9 +494,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
     }
 
+    /**
+     * @deprecated since 2025.9, not used anymore
+     */
+    @Deprecated(since = "2025.0", forRemoval = true)
     protected DocumentModel getDigestAuthModel() {
-        String schema = dirService.getDirectorySchema(digestAuthDirectory);
-        return BaseSession.createEntryModel(schema);
+        return dirService.getDirectory(digestAuthDirectory).createBareDocumentModel();
     }
 
     public static String encodeDigestAuthPassword(String username, String realm, String password) {
@@ -528,7 +539,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected NuxeoPrincipal makeTransientPrincipal(String username) {
-        DocumentModel userEntry = BaseSession.createEntryModel(userSchemaName, username, null);
+        DocumentModel userEntry = getUserDirectory().createBareDocumentModel(username, Map.of());
         userEntry.setProperty(userSchemaName, userIdField, username);
         NuxeoPrincipal principal = makePrincipal(userEntry, false, true, null);
         String[] parts = username.split("/");
@@ -539,7 +550,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user) {
-        final DocumentModel userEntry = BaseSession.createEntryModel(userSchemaName, id, null);
+        final DocumentModel userEntry = getUserDirectory().createBareDocumentModel(id, null);
         // at least fill id field
         userEntry.setProperty(userSchemaName, userIdField, id);
         for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
@@ -630,8 +641,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public DocumentModel getBareUserModel() {
-        String schema = dirService.getDirectorySchema(userDirectoryName);
-        return BaseSession.createEntryModel(schema);
+        return getUserDirectory().createBareDocumentModel();
     }
 
     @Override
@@ -1036,8 +1046,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public DocumentModel getBareGroupModel() {
-        String schema = dirService.getDirectorySchema(groupDirectoryName);
-        return BaseSession.createEntryModel(schema);
+        return getGroupDirectory().createBareDocumentModel();
     }
 
     @Override
@@ -1371,7 +1380,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             return;
         }
         String schema = dirService.getDirectorySchema(userDirectoryName);
-        String passwordField = dirService.getDirectory(userDirectoryName).getPasswordField();
+        String passwordField = getUserDirectory().getPasswordField();
 
         Property passwordProperty = userModel.getPropertyObject(schema, passwordField);
 

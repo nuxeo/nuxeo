@@ -47,8 +47,10 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryConstants;
 import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -114,6 +116,10 @@ public class MultiDirectorySession extends BaseSession {
             this.toSource = toSource;
             this.defaultEntry = defaultEntry;
             this.isOptional = isOptional;
+        }
+
+        Directory getDirectory() {
+            return directory;
         }
 
         /** Gets the {@link Session} associated to this subdirectory; the session MUST NOT be closed. */
@@ -403,7 +409,9 @@ public class MultiDirectorySession extends BaseSession {
             }
             // ok we have the data
             try {
-                return BaseSession.createEntryModel(schemaName, entryId, map, isReadOnlyEntry);
+                var entry = createEntryModel(entryId, map);
+                entry.putContextData(DirectoryConstants.READONLY_ENTRY_FLAG, isReadOnlyEntry);
+                return entry;
             } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }
@@ -497,17 +505,18 @@ public class MultiDirectorySession extends BaseSession {
             map.put(e.getValue(), fieldMap.get(e.getKey()));
         }
         if (map.size() > 1) {
+            var session = dirInfo.getSession();
             if (canCreateIfOptional && dirInfo.isOptional && dirEntry == null) {
                 // if entry does not exist, create it
-                dirInfo.getSession().createEntry(map);
+                session.createEntry(map);
             } else {
-                final DocumentModel entry = BaseSession.createEntryModel(dirInfo.dirSchemaName, id, null);
+                final DocumentModel entry = session.createEntryModel(id, null);
 
                 // Make sure a null string in the field map is set to an empty string in the entry property, to avoid
                 // non-dirty false detection and guarantee that setting a field to blank is actually saved.
                 // Such a null string field can be sent from the JSF UI.
                 setProperties(entry, dirInfo.dirSchemaName, map);
-                dirInfo.getSession().updateEntry(entry);
+                session.updateEntry(entry);
             }
         }
     }
@@ -664,8 +673,8 @@ public class MultiDirectorySession extends BaseSession {
                 }
                 final Map<String, Object> map = e.getValue();
                 seen.put(id, sourceInfo.source.name);
-                final DocumentModel entry = BaseSession.createEntryModel(schemaName, id, map,
-                        readOnlyEntries.contains(id));
+                final DocumentModel entry = createEntryModel(id, map);
+                entry.putContextData(DirectoryConstants.READONLY_ENTRY_FLAG, readOnlyEntries.contains(id));
                 results.add(entry);
             }
         }

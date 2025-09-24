@@ -20,11 +20,20 @@
 
 package org.nuxeo.ecm.directory;
 
+import static org.nuxeo.ecm.directory.api.DirectoryConstants.READONLY_ENTRY_FLAG;
+
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.collections4.MapUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DataModelImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
@@ -177,6 +186,35 @@ public interface Directory {
      * @since 9.2
      */
     Map<String, Field> getSchemaFieldMap();
+
+    /**
+     * Returns a bare document model suitable for directory implementations.
+     *
+     * @return the directory entry
+     * @since 2025.9
+     */
+    default DocumentModel createBareDocumentModel() {
+        return createBareDocumentModel(null, null);
+    }
+
+    /**
+     * Returns a bare document model suitable for directory implementations.
+     *
+     * @param id the entry id, or {@code null}
+     * @param values the entry values, or {@code null}
+     * @return the directory entry
+     * @since 2025.9
+     */
+    default DocumentModel createBareDocumentModel(@Nullable String id, @Nullable Map<String, Object> values) {
+        DocumentModelImpl entry = new DocumentModelImpl(getSchema(), id, null, null, null, new String[] { getSchema() },
+                new HashSet<>(), null, false, null, null, null);
+        var nonNullValues = MapUtils.emptyIfNull(values);
+        entry.addDataModel(new DataModelImpl(getSchema(), nonNullValues));
+        if (isReadOnly()) {
+            entry.putContextData(READONLY_ENTRY_FLAG, Boolean.TRUE);
+        }
+        return entry;
+    }
 
     /**
      * Get descriptor

@@ -632,7 +632,7 @@ public class LDAPSession extends BaseSession {
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
         String id = String.valueOf(fieldMap.get(getIdField()));
         try {
-            DocumentModel docModel = BaseSession.createEntryModel(schemaName, id, fieldMap, isReadOnly());
+            DocumentModel docModel = createEntryModel(id, fieldMap);
             EntryAdaptor adaptor = getDirectory().getDescriptor().getEntryAdaptor();
             if (adaptor != null) {
                 docModel = adaptor.adapt(directory, docModel);

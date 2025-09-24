@@ -32,10 +32,10 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
+import org.nuxeo.ecm.directory.api.DirectoryConstants;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -70,7 +71,11 @@ public abstract class BaseSession implements Session, EntrySource {
 
     protected static final String POWER_USERS_GROUP = "powerusers";
 
-    protected static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
+    /**
+     * @deprecated since 2025.9, use {@link DirectoryConstants#READONLY_ENTRY_FLAG} instead
+     */
+    @Deprecated(since = "2025.9", forRemoval = true)
+    protected static final String READONLY_ENTRY_FLAG = DirectoryConstants.READONLY_ENTRY_FLAG;
 
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
 
@@ -272,7 +277,9 @@ public abstract class BaseSession implements Session, EntrySource {
      * @param schema the directory schema
      * @return the directory entry
      * @since 11.1
+     * @deprecated since 2025.9, use {@link Directory#createBareDocumentModel()} instead
      */
+    @Deprecated(since = "2025.9", forRemoval = true)
     public static DocumentModel createEntryModel(String schema) {
         return createEntryModel(schema, null, null, false);
     }
@@ -285,7 +292,9 @@ public abstract class BaseSession implements Session, EntrySource {
      * @param values the entry values, or {@code null}
      * @return the directory entry
      * @since 11.1
+     * @deprecated since 2025.9, use {@link Directory#createBareDocumentModel(String, Map)} instead
      */
+    @Deprecated(since = "2025.9", forRemoval = true)
     public static DocumentModel createEntryModel(String schema, String id, Map<String, Object> values) {
         return createEntryModel(schema, id, values, false);
     }
@@ -315,21 +324,24 @@ public abstract class BaseSession implements Session, EntrySource {
      * @param readOnly the readonly flag
      * @return the directory entry
      * @since 11.1
+     * @deprecated since 2025.9, use {@link Directory#createBareDocumentModel(String, Map)} instead
      */
+    @Deprecated(since = "2025.9", forRemoval = true)
     public static DocumentModel createEntryModel(String schema, String id, Map<String, Object> values,
             boolean readOnly) {
         DocumentModelImpl entry = new DocumentModelImpl(schema, id, null, null, null, new String[] { schema },
                 new HashSet<>(), null, false, null, null, null);
-        DataModel dataModel;
-        if (values == null) {
-            values = Collections.emptyMap();
-        }
-        dataModel = new DataModelImpl(schema, values);
-        entry.addDataModel(dataModel);
+        values = MapUtils.emptyIfNull(values);
+        entry.addDataModel(new DataModelImpl(schema, values));
         if (readOnly) {
             setReadOnlyEntry(entry);
         }
         return entry;
+    }
+
+    @Override
+    public DocumentModel createEntryModel(@Nullable String id, @Nullable Map<String, Object> values) {
+        return directory.createBareDocumentModel(id, values);
     }
 
     /**
@@ -338,7 +350,7 @@ public abstract class BaseSession implements Session, EntrySource {
      * @since 5.3.1
      */
     public static boolean isReadOnlyEntry(DocumentModel entry) {
-        return Boolean.TRUE.equals(entry.getContextData(READONLY_ENTRY_FLAG));
+        return Boolean.TRUE.equals(entry.getContextData(DirectoryConstants.READONLY_ENTRY_FLAG));
     }
 
     /**
@@ -347,7 +359,7 @@ public abstract class BaseSession implements Session, EntrySource {
      * @since 5.3.2
      */
     public static void setReadOnlyEntry(DocumentModel entry) {
-        entry.putContextData(READONLY_ENTRY_FLAG, Boolean.TRUE);
+        entry.putContextData(DirectoryConstants.READONLY_ENTRY_FLAG, Boolean.TRUE);
     }
 
     /**
@@ -356,7 +368,7 @@ public abstract class BaseSession implements Session, EntrySource {
      * @since 5.3.2
      */
     public static void setReadWriteEntry(DocumentModel entry) {
-        entry.putContextData(READONLY_ENTRY_FLAG, Boolean.FALSE);
+        entry.putContextData(DirectoryConstants.READONLY_ENTRY_FLAG, Boolean.FALSE);
     }
 
     /**

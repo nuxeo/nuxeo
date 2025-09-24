@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.oauth2.clients;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
+import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_DIRECTORY_NAME;
 import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_SCHEMA;
 
 import java.util.Arrays;
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -183,9 +184,14 @@ public class OAuth2Client {
      * @param oAuth2Client the {@code OAuth2Client} to convert
      * @return the {@code DocumentModel} corresponding to the {@code OAuth2Client}
      * @since 11.1
+     * @deprecated since 2025.9, use {@link org.nuxeo.ecm.directory.Directory#createBareDocumentModel(String, Map)} with
+     *             {@link #toMap(OAuth2Client)} instead
      */
+    @Deprecated(since = "2025.9", forRemoval = true)
     public static DocumentModel fromOAuth2Client(OAuth2Client oAuth2Client) {
-        return BaseSession.createEntryModel(null, OAUTH2CLIENT_SCHEMA, null, toMap(oAuth2Client));
+        return Framework.getService(DirectoryService.class)
+                        .getDirectory(OAUTH2CLIENT_DIRECTORY_NAME)
+                        .createBareDocumentModel(null, toMap(oAuth2Client));
     }
 
     /**

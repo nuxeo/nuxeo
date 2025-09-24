@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -132,7 +131,7 @@ public class TestMemoryDirectory {
 
     @Test
     public void testCreateFromModel() {
-        entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
+        entry = dir.createEntryModel();
         entry.setProperty(SCHEMA_NAME, "i", "yo");
 
         assertNull(dir.getEntry("yo"));
@@ -193,7 +192,7 @@ public class TestMemoryDirectory {
         String id = "no-such-entry";
         Map<String, Object> map = new HashMap<>();
         map.put("i", id);
-        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, id, map);
+        DocumentModel entry = dir.createEntryModel(id, map);
         try {
             dir.updateEntry(entry);
         } catch (DirectoryException de) {
