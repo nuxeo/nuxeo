@@ -16,7 +16,7 @@ controller:
   replicaCount: 1
   # we want controller+broker process
   controllerOnly: false
-  heapOpts: -XX:InitialRAMPercentage=75 -XX:MaxRAMPercentage=75
+  heapOpts: -Xmx640m -Xms640m
   persistence:
     enabled: false
   resources:
