@@ -40,6 +40,11 @@ updates:
       version-updates:
         patterns:
         - "*"
+    # Cooldown period for patch version updates, such as AWS SDK BOM released very frequently
+    cooldown:
+      semver-patch-days: 7
+      include:
+        - "software.amazon.awssdk:bom"
     ignore:
       # Major version updates
       - dependency-name: "*"
