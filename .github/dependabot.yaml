@@ -15,7 +15,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
 
   # Branch 2025
   - package-ecosystem: "maven"
@@ -81,4 +81,4 @@ updates:
     target-branch: "2025"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
