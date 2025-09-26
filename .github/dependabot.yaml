@@ -1,6 +1,7 @@
 version: 2
 updates:
   # Default branch: 2023
+  # Maven
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
@@ -8,16 +9,17 @@ updates:
     # Disable version updates on 2023, we only want security updates on this maintenance branch
     open-pull-requests-limit: 0
     ignore:
-      # ignore all Tomcat updates as it is handled externally
+      # Tomcat security updates, handled externally
       - dependency-name: "org.apache.tomcat:tomcat*"
 
-  # GitHub actions
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
 
   # Branch 2025
+  # Maven
   - package-ecosystem: "maven"
     target-branch: "2025"
     directory: "/"
@@ -25,15 +27,12 @@ updates:
         interval: "daily"
         time: "01:00"
         timezone: "Europe/Paris"
-      # Enable version updates along with security updates on 2025, limit to 10 to prevent CI overload
+    # Enable version updates on 2025, limit to 10 to prevent CI overload
     open-pull-requests-limit: 10
     ignore:
-      # Major version updates (doesn't work for security updates, need to list them explicitly, see below)
+      # Major version updates
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-
-      # ignore all Tomcat updates as it is handled externally
-      - dependency-name: "org.apache.tomcat:tomcat*"
 
       # Spurious major version updates
       - dependency-name: "com.google.apis:google-api-services-drive"
@@ -41,14 +40,18 @@ updates:
       - dependency-name: "net.oauth.core:oauth"
         versions: [">20090531"] # 20100527 is detected as more recent but is actually older
 
-      # Ignore Jakarta EE minor update
+      # Tomcat version updates, handled externally
+      - dependency-name: "org.apache.tomcat:tomcat*"
+
+      # Jakarta EE minor updates
       - dependency-name: "jakarta.*:*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: ["version-update:semver-minor"]
+
       # Pre-release version that is taking precedence over the regular one
       - dependency-name: "jakarta.inject:jakarta.inject-api"
         versions: ["2.0.1.MR"]
 
-      # Minor version update breaking compilation
+      # Minor version updates breaking compilation
       - dependency-name: "org.osgi:org.osgi.core"
         versions: ["[4.4,)"]
       - dependency-name: "io.gatling*:*"
@@ -58,7 +61,7 @@ updates:
       - dependency-name: "org.hibernate.orm:hibernate-core"
         versions: [">=6.6.0.Final"] # with this minor update, audit can't append entity with manually set id
 
-      # Patch version update breaking compilation
+      # Patch version updates breaking compilation
       - dependency-name: "org.apache.directory.server:*"
         versions: [">1.5.1"]
       - dependency-name: "org.apache.directory.shared:*"
@@ -76,7 +79,7 @@ updates:
       - dependency-name: "org.codehaus.mojo:license-maven-plugin"
         versions: ["[1.20, 1.21)"] # no update to 1.20.jbossorg-3
 
-  # GitHub actions
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     target-branch: "2025"
     directory: "/"
