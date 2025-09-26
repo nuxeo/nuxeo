@@ -17,6 +17,12 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    # Group all version updates (major, minor and patch)
+    groups:
+      version-updates:
+        applies-to: "version-updates"
+        patterns:
+        - "*"
 
   # Branch 2025
   # Maven
@@ -29,6 +35,11 @@ updates:
         timezone: "Europe/Paris"
     # Enable version updates on 2025, limit to 10 to prevent CI overload
     open-pull-requests-limit: 10
+    # Group all version updates (minor and patch)
+    groups:
+      version-updates:
+        patterns:
+        - "*"
     ignore:
       # Major version updates
       - dependency-name: "*"
@@ -85,3 +96,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    # Group all version updates (major, minor and patch)
+    groups:
+      version-updates:
+        patterns:
+        - "*"
