@@ -11,14 +11,6 @@ updates:
       # ignore all Tomcat updates as it is handled externally
       - dependency-name: "org.apache.tomcat:tomcat*"
 
-  # Ignore pip dependencies
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    ignore:
-      - dependency-name: "*"
-
   # GitHub actions
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -83,15 +75,6 @@ updates:
         versions: [ ">3.0.1" ] # no update to 3.0.1-jbossorg-1
       - dependency-name: "org.codehaus.mojo:license-maven-plugin"
         versions: ["[1.20, 1.21)"] # no update to 1.20.jbossorg-3
-
-  # Ignore pip dependencies
-  - package-ecosystem: "pip"
-    target-branch: "2025"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    ignore:
-      - dependency-name: "*"
 
   # GitHub actions
   - package-ecosystem: "github-actions"
