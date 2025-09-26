@@ -85,6 +85,8 @@ public class TestVideosObject extends ManagementBaseTest {
         doc = session.createDocument(doc);
         session.save();
         docRef = doc.getRef();
+        // Required so doc is visible in another tx (management endpoint)
+        txFeature.nextTransaction();
     }
 
     @Test
