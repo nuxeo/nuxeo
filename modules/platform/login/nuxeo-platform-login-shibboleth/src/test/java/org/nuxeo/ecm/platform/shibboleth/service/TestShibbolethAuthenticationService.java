@@ -22,6 +22,7 @@
 
 package org.nuxeo.ecm.platform.shibboleth.service;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -61,7 +62,7 @@ public class TestShibbolethAuthenticationService {
         String redirectURL = "https://test.nuxeo.org";
         String loginURL = service.getLoginURL(redirectURL);
 
-        String encodedRedirectUrl = URLEncoder.encode(redirectURL, "UTF-8");
+        String encodedRedirectUrl = URLEncoder.encode(redirectURL, UTF_8);
         assertEquals("https://host/Shibboleth.sso/WAYF?target=" + encodedRedirectUrl, loginURL);
     }
 
@@ -70,7 +71,14 @@ public class TestShibbolethAuthenticationService {
         String redirectURL = "https://test.nuxeo.org";
         String logoutURL = service.getLogoutURL(redirectURL);
 
-        String encodedRedirectUrl = URLEncoder.encode(redirectURL, "UTF-8");
+        String encodedRedirectUrl = URLEncoder.encode(redirectURL, UTF_8);
+        assertEquals("https://host/Shibboleth.sso/Logout?return=" + encodedRedirectUrl, logoutURL);
+
+        // NXP-33228
+        var request = MockHttpServletRequest.init();
+        logoutURL = service.getLogoutURL(request.mock());
+
+        encodedRedirectUrl = URLEncoder.encode("http://localhost:8080/nuxeo/home.html", UTF_8);
         assertEquals("https://host/Shibboleth.sso/Logout?return=" + encodedRedirectUrl, logoutURL);
     }
 

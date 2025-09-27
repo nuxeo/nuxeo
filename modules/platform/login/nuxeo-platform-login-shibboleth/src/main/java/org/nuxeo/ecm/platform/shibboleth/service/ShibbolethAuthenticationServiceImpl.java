@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.shibboleth.service;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -28,7 +27,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -37,6 +39,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implements ShibbolethAuthenticationService {
+
+    private static final Logger log = LogManager.getLogger(ShibbolethAuthenticationServiceImpl.class);
 
     public static final String CONFIG_EP = "config";
 
@@ -78,13 +82,14 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
     @Override
     public String getLoginURL(HttpServletRequest request) {
         String redirectUrl = VirtualHostHelper.getRedirectUrl(request);
-        request.getSession().setAttribute(REDIRECT_URL, redirectUrl);
         return getLoginURL(redirectUrl);
     }
 
     @Override
     public String getLogoutURL(HttpServletRequest request) {
-        return getLogoutURL((String) request.getSession().getAttribute(REDIRECT_URL));
+        var redirectURL = VirtualHostHelper.getBaseURL(request) + LoginScreenHelper.getStartupPagePath();
+        log.debug("Logout redirect URL: {}", redirectURL);
+        return getLogoutURL(redirectURL);
     }
 
     @Override
