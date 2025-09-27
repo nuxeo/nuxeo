@@ -253,6 +253,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         // while the user was not authenticated (at the login page for instance)
         HttpSession session = httpRequest.getSession(false);
         if (session != null) {
+            log.debug("doAuthenticate: invalidating HTTP session");
             service.invalidateSession(httpRequest);
             createSession = true; // we had a session, re-create one
         }
@@ -406,6 +407,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                         cachableUserIdent = null;
                         // We are going to ignore anonymous session to login
                         // we don't need any more our anonymous session
+                        log.debug("{} request parameter true and anonymous user cached, invalidating HTTP session",
+                                FORCE_ANONYMOUS_LOGIN);
                         service.invalidateSession(request);
                     }
 
@@ -417,6 +420,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                         }
                         // invalidate Session !
                         // XXX does this need an authenticated user?
+                        log.debug(
+                                "PluggableAuthenticationService#needResetLogin(ServletRequest) true, invalidating HTTP session");
                         service.invalidateSession(request);
                         // TODO perform logout?
                         cachableUserIdent = null;
@@ -795,6 +800,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             parameters.put(REQUESTED_URL, requestedUrl);
         }
         // Reset JSESSIONID Cookie
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Cookie cookie = new Cookie("JSESSIONID", null);
         cookie.setMaxAge(0);
@@ -808,14 +814,13 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
         boolean redirected = false;
         if (logoutPlugin != null) {
-            redirected = Boolean.TRUE.equals(
-                    logoutPlugin.handleLogout((HttpServletRequest) request, (HttpServletResponse) response));
+            redirected = Boolean.TRUE.equals(logoutPlugin.handleLogout(httpRequest, httpResponse));
         }
 
         // invalidate Session !
+        log.debug("handleLogout: invalidating HTTP session");
         service.invalidateSession(request);
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
         if (!redirected && !XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
             String baseURL = service.getBaseURL(request);
             String callbackURL = request.getParameter(CALLBACK_URL_PARAMETER);
