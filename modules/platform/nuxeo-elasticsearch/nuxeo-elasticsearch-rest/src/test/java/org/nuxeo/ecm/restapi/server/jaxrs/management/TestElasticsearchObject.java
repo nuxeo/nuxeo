@@ -22,13 +22,12 @@ package org.nuxeo.ecm.restapi.server.jaxrs.management;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.restapi.server.jaxrs.management.ElasticsearchObject.GET_ALL_DOCUMENTS_QUERY;
 
-import java.util.Arrays;
+import java.time.Duration;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -38,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -73,6 +73,9 @@ public class TestElasticsearchObject extends ManagementBaseTest {
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected BulkService bulkService;
 
     @Test
     public void shouldRunIndexing() {
@@ -204,13 +207,19 @@ public class TestElasticsearchObject extends ManagementBaseTest {
 
         // Check the indexing status: at this step the indexing is launched but we are not sure about the exactly
         // value of its progress status
-        assertFalse(Arrays.asList("UNKNOWN", "ABORTED").contains(jsonNode.get("state").asText()));
+        assertBulkStatusScheduled(jsonNode);
 
         // Wait until the end of the ES indexing and then assert our expected indexed documents
-        txFeature.nextTransaction();
+        var commandId = jsonNode.get("commandId").asText();
+        try {
+            assertTrue("Bulk action didn't finish", bulkService.await(commandId, Duration.ofMinutes(1)));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+        esa.refresh();
         assertEquals(expectedIndexedDocuments,
                 ess.query(new NxQueryBuilder(coreSession).nxql(GET_ALL_DOCUMENTS_QUERY)).totalSize());
-
     }
 
     /**
