@@ -69,7 +69,7 @@ public class ProxySubscriptionPropagationListener implements EventListener {
         }
 
         List<String> replacedProxyIds = (List<String>) ctx.getProperties().get(CoreEventConstants.REPLACED_PROXY_IDS);
-        if (replacedProxyIds == null) {
+        if (replacedProxyIds == null || replacedProxyIds.isEmpty()) {
             return;
         }
 
