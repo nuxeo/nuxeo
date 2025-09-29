@@ -1606,6 +1606,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
+    public UserConfig getUserConfig() {
+        return userConfig;
+    }
+
+    @Override
     public GroupConfig getGroupConfig() {
         return groupConfig;
     }

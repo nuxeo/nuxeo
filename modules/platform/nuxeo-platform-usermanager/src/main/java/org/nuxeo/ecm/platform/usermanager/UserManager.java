@@ -65,7 +65,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      *
      * @param username is the name of the entry in the user directory
      * @param fetchReferences controls if the references (groups) of the user will be fetched
-     *
      * @since 11.1
      */
     NuxeoPrincipal getPrincipal(String username, boolean fetchReferences);
@@ -422,6 +421,15 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 11.4
      */
     List<String> getDescendantGroups(String groupId);
+
+    /**
+     * Returns the contributed {@link UserConfig}.
+     *
+     * @since 2025.9
+     */
+    default UserConfig getUserConfig() {
+        return new UserConfig();
+    }
 
     /**
      * Returns the contributed {@link GroupConfig}.

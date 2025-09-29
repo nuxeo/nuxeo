@@ -104,7 +104,12 @@ public class UserGroupTest extends BaseUserTest {
         httpClient.buildGetRequest("/user/user1")
                   .executeAndConsume(new JsonNodeHandler(),
                           // Then it returns the Json
-                          node -> assertEqualsUser("user1", "John", "Lennon", node));
+                          node -> {
+                              assertEqualsUser("user1", "John", "Lennon", node);
+                              assertFalse(node.get("isAdministrator").asBoolean());
+                              assertNotNull(node.get("properties"));
+                              assertNotNull(node.get("properties").get("groups"));
+                          });
     }
 
     @Test
@@ -753,6 +758,33 @@ public class UserGroupTest extends BaseUserTest {
                   .entity(getPrincipalAsJson(user))
                   .executeAndConsume(new JsonNodeHandler(SC_FORBIDDEN),
                           node -> assertEquals("group does not exist: unknownGroup", node.get("message").textValue()));
+    }
+
+    // NXP-22771
+    @Test
+    public void itReturnsAdminStatusAndGroupsForAdminOnly() {
+        // When I GET the administrator user
+        nonAdminHttpClient.buildGetRequest("/user/Administrator")
+                          .executeAndConsume(new JsonNodeHandler(),
+                                  // Then it does not tell the user is administrator
+                                  // And it does not show its groups
+                                  node -> {
+                                      assertEqualsUser("Administrator", "", "", node);
+                                      assertNull(node.get("isAdministrator"));
+                                      assertNotNull(node.get("properties"));
+                                      assertNull(node.get("properties").get("groups"));
+                                  });
+        // When I GET the user2
+        nonAdminHttpClient.buildGetRequest("/user/user2")
+                          .executeAndConsume(new JsonNodeHandler(),
+                                  // Then it does not tell the user is not administrator
+                                  // But it does show its groups
+                                  node -> {
+                                      assertEqualsUser("user2", "Georges", "Harrisson", node);
+                                      assertNull(node.get("isAdministrator"));
+                                      assertNotNull(node.get("properties"));
+                                      assertNotNull(node.get("properties").get("groups"));
+                                  });
     }
 
     // NXP-33128
