@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -112,23 +114,32 @@ public class MemoryDirectorySession extends BaseSession {
         throw new RuntimeException("Not implemented");
     }
 
+    /**
+     * @implNote Memory directory does not support prefixed schema like MongoDB or SQL directories, so do not leverage
+     *           generic code
+     */
     @Override
-    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+    protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        return doCreateEntryWithoutReferences(fieldMap);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    public DocumentModel doCreateEntryWithoutReferences(Map<String, Object> fieldMap) {
         checkClose();
-        // find id
-        Object rawId = fieldMap.get(getIdField());
-        if (rawId == null) {
+        String idFieldName = getIdField();
+        String id = Objects.toString(fieldMap.get(idFieldName), null);
+        if (StringUtils.isBlank(id)) {
             throw new DirectoryException("Missing id");
         }
-        String id = String.valueOf(rawId);
-        Map<String, Object> map = data.get(id);
-        if (map != null) {
+        Map<String, Object> map = data.compute(id, (key, previous) -> {
+            if (previous == null) {
+                return new HashMap<>();
+            }
             throw new DirectoryException(
                     String.format("Entry with id %s already exists in directory %s", id, directory.getName()),
                     SC_CONFLICT);
-        }
-        map = new HashMap<>();
-        data.put(id, map);
+        });
         // put fields in map
         for (Entry<String, Object> e : fieldMap.entrySet()) {
             String fieldName = e.getKey();
@@ -141,7 +152,8 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+    @SuppressWarnings("deprecation") // for DataModel
+    protected List<String> doUpdateEntryWithoutReferences(DocumentModel docModel) {
         checkClose();
         String id = docModel.getId();
         DataModel dataModel = docModel.getDataModel(directory.getSchema());
@@ -167,7 +179,8 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
-    protected void deleteEntryWithoutReferences(String id) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected void doDeleteEntryWithoutReferences(String id) {
         checkClose();
         checkDeleteConstraints(id);
         data.remove(id);

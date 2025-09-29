@@ -85,7 +85,7 @@ public interface Session extends AutoCloseable {
     /**
      * Creates an entry in a directory.
      *
-     * @param fieldMap A map with keys and values that should be stored in a directory
+     * @param fieldMap A map with (prefixed) keys and values that should be stored in a directory
      *            <p>
      *            Note: The values in the map should be of type String
      * @return The new entry created in the directory

@@ -120,7 +120,8 @@ public class CoreDirectorySession extends BaseSession {
         return null;
     }
 
-    private String getPrefixedFieldName(String fieldName) {
+    @Override
+    protected String getPrefixedFieldName(String fieldName) {
         if (UUID_FIELD.equals(fieldName)) {
             return fieldName;
         }
@@ -129,19 +130,22 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    public DocumentModel doCreateEntryWithoutReferences(Map<String, Object> fieldMap) {
         // TODO once references are implemented
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected List<String> doUpdateEntryWithoutReferences(DocumentModel docModel) {
         // TODO once references are implemented
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void deleteEntryWithoutReferences(String id) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected void doDeleteEntryWithoutReferences(String id) {
         // TODO once references are implemented
         throw new UnsupportedOperationException();
     }

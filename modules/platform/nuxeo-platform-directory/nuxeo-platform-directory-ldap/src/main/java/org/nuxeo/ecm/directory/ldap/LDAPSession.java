@@ -138,8 +138,18 @@ public class LDAPSession extends BaseSession {
         return dirContext;
     }
 
+    /**
+     * @implNote Do not execute generic code because LDAP directory does not handle in the same way the id, and it does
+     *           not seem to support multi tenancy
+     */
     @Override
     protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        return doCreateEntryWithoutReferences(fieldMap);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected DocumentModel doCreateEntryWithoutReferences(Map<String, Object> fieldMap) {
         // Make a copy of fieldMap to avoid modifying it
         fieldMap = new HashMap<>(fieldMap);
 
@@ -228,7 +238,8 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected List<String> doUpdateEntryWithoutReferences(DocumentModel docModel) {
         List<String> updateList = new ArrayList<>();
         List<String> referenceFieldList = new LinkedList<>();
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
@@ -300,7 +311,8 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public void deleteEntryWithoutReferences(String id) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    public void doDeleteEntryWithoutReferences(String id) {
         try {
             SearchResult result = getLdapEntry(id, false);
 

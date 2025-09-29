@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.directory;
 
+import static jakarta.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -129,6 +132,14 @@ public abstract class BaseSession implements Session, EntrySource {
         return directory.getIdField();
     }
 
+    protected String getPrefixedIdField() {
+        String prefixedIdFieldName = getPrefixedFieldName(getIdField());
+        if (prefixedIdFieldName == null) {
+            throw new IllegalStateException("The directory id is not found");
+        }
+        return prefixedIdFieldName;
+    }
+
     @Override
     public String getPasswordField() {
         return directory.getPasswordField();
@@ -142,6 +153,20 @@ public abstract class BaseSession implements Session, EntrySource {
     @Override
     public boolean isReadOnly() {
         return directory.isReadOnly();
+    }
+
+    /**
+     * Get the prefixed version of the given fieldName.
+     *
+     * @since 2025.9
+     */
+    protected String getPrefixedFieldName(String fieldName) {
+        Field field = directory.getSchemaFieldMap().get(fieldName);
+        if (field == null) {
+            log.info("No schema field found for field: {}", fieldName);
+            return null;
+        }
+        return field.getName().getPrefixedName();
     }
 
     /**
@@ -428,15 +453,13 @@ public abstract class BaseSession implements Session, EntrySource {
 
         // Add references fields
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
-        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
-        Object entry = fieldMap.get(idFieldName);
         String sourceId = docModel.getId();
         for (Reference reference : getDirectory().getReferences()) {
             String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
             if (getDirectory().getReferences(reference.getFieldName()).size() > 1) {
                 log.warn(
                         "Directory: {} cannot create field: {} for entry: {}: this field is associated with more than one reference",
-                        directory, reference.getFieldName(), entry);
+                        directory, reference.getFieldName(), docModel.getPropertyValue(getPrefixedIdField()));
                 continue;
             }
 
@@ -450,6 +473,49 @@ public abstract class BaseSession implements Session, EntrySource {
 
         getDirectory().invalidateCaches();
         return docModel;
+    }
+
+    /**
+     * Creates an entry to the directory without creating its references.
+     *
+     * @since 2025.9
+     * @implNote it was abstract before 2025.9
+     */
+    protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        fieldMap = new HashMap<>(fieldMap); // be sure it is modifiable
+
+        String idFieldName = getPrefixedIdField();
+        String id = Objects.toString(fieldMap.get(idFieldName), null);
+        // check if id is provided
+        if (!autoincrementId && StringUtils.isBlank(id)) {
+            throw new DirectoryException("Missing id");
+        }
+        // add system fields
+        if (isMultiTenant()) {
+            String tenantId = getCurrentTenantId();
+            if (StringUtils.isNotBlank(tenantId)) {
+                String tenantFieldName = getPrefixedFieldName(TENANT_ID_FIELD);
+                fieldMap.put(tenantFieldName, tenantId);
+                // compute the entry id based on tenantId
+                if (computeMultiTenantId) {
+                    if (id == null) {
+                        log.warn(
+                                "Directory: {} cannot compute multi-tenant id because id is null. Please check if your directory configuration is accurate.",
+                                directory);
+                    } else {
+                        id = computeMultiTenantDirectoryId(tenantId, id);
+                        fieldMap.put(idFieldName, id);
+                    }
+                }
+            }
+        }
+        // ensure id is unique
+        if (id != null && hasEntry(id)) {
+            throw new DirectoryException(
+                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()),
+                    SC_CONFLICT);
+        }
+        return doCreateEntryWithoutReferences(fieldMap);
     }
 
     @Override
@@ -483,6 +549,16 @@ public abstract class BaseSession implements Session, EntrySource {
             }
         }
         getDirectory().invalidateCaches();
+    }
+
+    /**
+     * Updates an entry to the directory without updating its references.
+     *
+     * @since 2025.9
+     * @implNote it was abstract before 2025.9
+     */
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+        return doUpdateEntryWithoutReferences(docModel);
     }
 
     @SuppressWarnings("unchecked")
@@ -523,6 +599,16 @@ public abstract class BaseSession implements Session, EntrySource {
         }
         deleteEntryWithoutReferences(id);
         getDirectory().invalidateCaches();
+    }
+
+    /**
+     * Deletes an entry from the directory without deleting its references.
+     *
+     * @since 2025.9
+     * @implNote it was abstract before 2025.9
+     */
+    protected void deleteEntryWithoutReferences(String id) {
+        doDeleteEntryWithoutReferences(id);
     }
 
     protected boolean canDeleteMultiTenantEntry(String entryId) {
@@ -754,14 +840,38 @@ public abstract class BaseSession implements Session, EntrySource {
         return principal != null ? principal.getTenantId() : null;
     }
 
-    /** To be implemented for specific creation. */
-    protected abstract DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap);
+    /**
+     * To be implemented for specific creation.
+     * 
+     * @deprecated since 2021.x, the method remains for use, but it will be turned abstract
+     */
+    @Deprecated(since = "2021.x")
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    protected DocumentModel doCreateEntryWithoutReferences(Map<String, Object> fieldMap) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-    /** To be implemented for specific update. */
-    protected abstract List<String> updateEntryWithoutReferences(DocumentModel docModel);
+    /**
+     * To be implemented for specific update.
+     * 
+     * @deprecated since 2021.x, the method remains for use, but it will be turned abstract
+     */
+    @Deprecated(since = "2021.x")
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    protected List<String> doUpdateEntryWithoutReferences(DocumentModel docModel) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-    /** To be implemented for specific deletion. */
-    protected abstract void deleteEntryWithoutReferences(String id);
+    /**
+     * To be implemented for specific deletion.
+     *
+     * @deprecated since 2021.x, the method remains for use, but it will be turned abstract
+     */
+    @Deprecated(since = "2021.x")
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    protected void doDeleteEntryWithoutReferences(String id) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
     /**
      * To be implemented for specific querying.

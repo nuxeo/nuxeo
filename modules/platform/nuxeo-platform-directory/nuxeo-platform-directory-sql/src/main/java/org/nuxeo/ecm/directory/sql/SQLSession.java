@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
-
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -202,7 +200,7 @@ public class SQLSession extends BaseSession {
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        String idFieldName = getPrefixedIdField();
         // If the prefixed id is not here, try to get without prefix
         // It may happen when we gentry from sql
         if (!fieldMap.containsKey(idFieldName)) {
@@ -352,16 +350,6 @@ public class SQLSession extends BaseSession {
         } catch (SQLException e) {
             throw new DirectoryException("getPassword failed", e);
         }
-    }
-
-    @Override
-    public void deleteEntry(String id) {
-        acquireConnection();
-        if (!canDeleteMultiTenantEntry(id)) {
-            throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
-                    "label.directory.error.multi.tenant.operationNotAllowed", null);
-        }
-        super.deleteEntry(id);
     }
 
     @Override
@@ -838,47 +826,23 @@ public class SQLSession extends BaseSession {
         }
     }
 
-    @Override
     protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        fieldMap = new HashMap<>(fieldMap);
+        if (autoincrementId) {
+            fieldMap.remove(getPrefixedIdField()); // ensure id is computed by DB
+        }
+        return super.createEntryWithoutReferences(fieldMap);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected DocumentModel doCreateEntryWithoutReferences(Map<String, Object> fieldMap) {
         // Make a copy of fieldMap to avoid modifying it
         fieldMap = new HashMap<>(fieldMap);
 
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
-        Field schemaIdField = schemaFieldMap.get(getIdField());
-
-        String idFieldName = schemaIdField.getName().getPrefixedName();
 
         acquireConnection();
-        if (autoincrementId) {
-            fieldMap.remove(idFieldName);
-        } else {
-            // check id that was given
-            Object rawId = fieldMap.get(idFieldName);
-            if (rawId == null) {
-                throw new DirectoryException("Missing id");
-            }
-
-            String id = String.valueOf(rawId);
-            if (StringUtils.isBlank(id)) {
-                throw new DirectoryException("Missing id");
-            }
-            if (isMultiTenant()) {
-                String tenantId = getCurrentTenantId();
-                if (!StringUtils.isBlank(tenantId)) {
-                    fieldMap.put(TENANT_ID_FIELD, tenantId);
-                    if (computeMultiTenantId) {
-                        id = computeMultiTenantDirectoryId(tenantId, id);
-                        fieldMap.put(idFieldName, id);
-                    }
-                }
-            }
-
-            if (hasEntry(id)) {
-                throw new DirectoryException(
-                        String.format("Entry with id %s already exists in directory %s", id, directory.getName()),
-                        SC_CONFLICT);
-            }
-        }
 
         List<Column> columnList = new ArrayList<>(table.getColumns());
         Column idColumn = null;
@@ -887,7 +851,7 @@ public class SQLSession extends BaseSession {
             if (column.isIdentity()) {
                 idColumn = column;
             }
-            String prefixedName = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
+            String prefixedName = getPrefixedFieldName(column.getKey());
 
             if (!fieldMap.containsKey(prefixedName)) {
                 Field prefixedField = schemaFieldMap.get(prefixedName);
@@ -934,6 +898,7 @@ public class SQLSession extends BaseSession {
             }
             ps.execute();
             if (autoincrementId) {
+                String idFieldName = getPrefixedIdField();
                 Column column = table.getColumn(getIdField());
                 if (dialect.hasIdentityGeneratedKey()) {
                     try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -985,7 +950,8 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected List<String> doUpdateEntryWithoutReferences(DocumentModel docModel) {
         acquireConnection();
         List<Column> storedColumnList = new LinkedList<>();
         List<String> referenceFieldList = new LinkedList<>();
@@ -1071,7 +1037,8 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public void deleteEntryWithoutReferences(String id) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    public void doDeleteEntryWithoutReferences(String id) {
         // second step: clean stored fields
         Delete delete = new Delete(table);
         String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";

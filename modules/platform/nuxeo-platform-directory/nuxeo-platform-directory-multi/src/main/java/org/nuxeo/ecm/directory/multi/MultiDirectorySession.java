@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -419,14 +420,22 @@ public class MultiDirectorySession extends BaseSession {
         return null;
     }
 
+    /**
+     * @implNote Do not execute generic code because multi directory is a bridge to directories which will execute it
+     */
     @Override
-    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+    protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        return doCreateEntryWithoutReferences(fieldMap);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    public DocumentModel doCreateEntryWithoutReferences(Map<String, Object> fieldMap) {
         init();
-        final Object rawid = fieldMap.get(schemaIdField);
-        if (rawid == null) {
+        final String id = Objects.toString(fieldMap.get(schemaIdField), null); // XXX allow longs too
+        if (StringUtils.isBlank(id)) {
             throw new DirectoryException(String.format("Entry is missing id field '%s'", schemaIdField));
         }
-        final String id = String.valueOf(rawid); // XXX allow longs too
         for (SourceInfo sourceInfo : sourceInfos) {
             if (!sourceInfo.source.creation) {
                 continue;
@@ -445,12 +454,14 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected List<String> doUpdateEntryWithoutReferences(DocumentModel docModel) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void deleteEntryWithoutReferences(String id) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected void doDeleteEntryWithoutReferences(String id) {
         throw new UnsupportedOperationException();
     }
 
