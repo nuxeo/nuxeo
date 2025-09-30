@@ -65,7 +65,6 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
-import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -75,6 +74,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.PasswordHelper;
+import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 
 /**
  * This class represents a session against an LDAPDirectory.
@@ -511,14 +511,14 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences) {
+    @SuppressWarnings("deprecation") // annotation to remove
+    protected DocumentModelList doQuery(DirectoryQueryBuilder queryBuilder) {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
         if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
             throw new DirectoryException("Cannot filter on password");
         }
-        queryBuilder = addTenantId(queryBuilder);
 
         // build filter from query
         LDAPFilterBuilder builder = new LDAPFilterBuilder(getDirectory());
@@ -540,7 +540,7 @@ public class LDAPSession extends BaseSession {
         try {
             NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filter, filterParams.toArray(),
                     scts);
-            DocumentModelList entries = ldapResultsToDocumentModels(results, fetchReferences);
+            DocumentModelList entries = ldapResultsToDocumentModels(results, queryBuilder.fetchReferences());
             if (!orderBy.isEmpty()) {
                 getDirectory().orderEntries(entries, orderBy);
             }
@@ -566,14 +566,14 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public List<String> queryIds(QueryBuilder queryBuilder) {
+    @SuppressWarnings("deprecation") // annotation to remove
+    protected List<String> doQueryIds(DirectoryQueryBuilder queryBuilder) {
         if (!hasPermission(SecurityConstants.READ)) {
             return Collections.emptyList();
         }
         if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
             throw new DirectoryException("Cannot filter on password");
         }
-        queryBuilder = addTenantId(queryBuilder);
 
         // build filter from query
         LDAPFilterBuilder builder = new LDAPFilterBuilder(getDirectory());

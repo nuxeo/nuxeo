@@ -18,22 +18,21 @@
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -64,11 +63,10 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
                 log.warn("Can not find provider without a serviceName!");
                 return null;
             }
-
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put("serviceName", serviceName);
-
-            List<DocumentModel> providers = queryProviders(filter, 1);
+            List<DocumentModel> providers = queryProviders(
+                    new DirectoryQueryBuilder().fetchReferences(true)
+                                               .predicate(Predicates.eq("serviceName", serviceName))
+                                               .limit(1));
             return providers.isEmpty() ? null : providers.get(0);
         } catch (DirectoryException e) {
             log.error("Unable to read provider from Directory backend", e);
@@ -84,7 +82,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
 
     @Override
     public List<OAuth2ServiceProvider> getProviders() {
-        List<DocumentModel> providers = queryProviders(Collections.emptyMap(), 0);
+        List<DocumentModel> providers = queryProviders(new DirectoryQueryBuilder().fetchReferences(true).limit(0));
         return providers.stream().map(this::buildProvider).collect(Collectors.toList());
     }
 
@@ -158,13 +156,12 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
         }
     }
 
-    protected List<DocumentModel> queryProviders(Map<String, Serializable> filter, int limit) {
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    protected List<DocumentModel> queryProviders(QueryBuilder query) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
-                Set<String> fulltext = Collections.emptySet();
-                Map<String, String> orderBy = Collections.emptyMap();
-                return session.query(filter, fulltext, orderBy, true, limit, 0);
+                return session.query(query);
             } catch (DirectoryException e) {
                 log.error("Error while fetching provider directory", e);
                 return Collections.emptyList();

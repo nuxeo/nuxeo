@@ -225,10 +225,11 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public List<DocumentModel> getTenants() {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            return session.query(new QueryBuilder(), false);
+            return session.query(new QueryBuilder());
         }
     }
 

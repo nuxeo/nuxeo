@@ -178,7 +178,7 @@ public class TestMultiDirectoryOptional {
         MultiDirectory multiDir = (MultiDirectory) directoryService.getDirectory("multiOptionalInvalid");
         try (MultiDirectorySession dir = multiDir.getSession()) {
             // invalid config => will throw an exception
-            dir.query(null);
+            dir.query((Map<String, Serializable>) null);
             fail("Should have raised an DirectoryException");
         } catch (DirectoryException e) {
         }
@@ -309,12 +309,13 @@ public class TestMultiDirectoryOptional {
     }
 
     @Test
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, annotation to remove
     public void testDeleteEntry() throws Exception {
         try (Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
             dir.deleteEntry("no-such-entry");
-            assertEquals(4, dir.query(new QueryBuilder(), false).size());
+            assertEquals(4, dir.query(new QueryBuilder()).size());
             assertEquals(2, dir1.queryIds(new QueryBuilder()).size());
             assertEquals(2, dir2.queryIds(new QueryBuilder()).size());
             assertEquals(2, dir3.queryIds(new QueryBuilder()).size());

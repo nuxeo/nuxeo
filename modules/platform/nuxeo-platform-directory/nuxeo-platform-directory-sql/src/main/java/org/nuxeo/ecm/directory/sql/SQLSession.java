@@ -52,7 +52,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
-import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
@@ -67,6 +66,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
+import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 import org.nuxeo.ecm.directory.sql.SQLQueryBuilder.ColumnAndValue;
 import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
 
@@ -614,14 +614,14 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences) {
+    @SuppressWarnings("deprecation") // annotation to remove
+    protected DocumentModelList doQuery(DirectoryQueryBuilder queryBuilder) {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
         if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
             throw new DirectoryException("Cannot filter on password");
         }
-        queryBuilder = addTenantId(queryBuilder);
 
         // build where clause from query
         SQLQueryBuilder builder = new SQLQueryBuilder(getDirectory());
@@ -691,7 +691,7 @@ public class SQLSession extends BaseSession {
                         }
                         DocumentModel docModel = fieldMapToDocumentModel(map);
                         // fetch the reference fields
-                        if (fetchReferences) {
+                        if (queryBuilder.fetchReferences()) {
                             Map<String, List<String>> targetIdsMap = new HashMap<>();
                             for (org.nuxeo.ecm.directory.Reference reference : directory.getReferences()) {
                                 List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
@@ -754,14 +754,14 @@ public class SQLSession extends BaseSession {
     }
 
     @Override
-    public List<String> queryIds(QueryBuilder queryBuilder) {
+    @SuppressWarnings("deprecation") // annotation to remove
+    protected List<String> doQueryIds(DirectoryQueryBuilder queryBuilder) {
         if (!hasPermission(SecurityConstants.READ)) {
             return Collections.emptyList();
         }
         if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
             throw new DirectoryException("Cannot filter on password");
         }
-        queryBuilder = addTenantId(queryBuilder);
 
         // build where clause from query
         SQLQueryBuilder builder = new SQLQueryBuilder(getDirectory());

@@ -107,9 +107,10 @@ public class ShibbolethGroupHelper {
                                     .collect(Collectors.toList());
     }
 
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public static DocumentModelList getGroups() {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
-            return session.query(new QueryBuilder(), false);
+            return session.query(new QueryBuilder());
         }
     }
 

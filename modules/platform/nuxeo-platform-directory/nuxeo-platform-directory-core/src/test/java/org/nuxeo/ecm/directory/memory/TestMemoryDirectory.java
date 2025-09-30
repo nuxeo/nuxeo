@@ -174,7 +174,8 @@ public class TestMemoryDirectory {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         entry = dir.createEntry(e2);
-        DocumentModelList l = dir.query(new QueryBuilder(), false);
+        @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+        DocumentModelList l = dir.query(new QueryBuilder());
         assertEquals(2, l.size());
         assertEquals("1", l.get(0).getId());
         assertEquals("2", l.get(1).getId());
@@ -317,6 +318,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public void testQueryWithBuilder() {
         Map<String, Object> map;
         map = new HashMap<>();
@@ -362,7 +364,7 @@ public class TestMemoryDirectory {
             // cannot filter on password
             queryBuilder = new QueryBuilder().predicate(Predicates.eq("pw", "secreet"));
             try {
-                session.query(queryBuilder, false);
+                session.query(queryBuilder);
                 fail("should throw");
             } catch (DirectoryException e) {
                 assertEquals("Cannot filter on password", e.getMessage());
@@ -377,7 +379,7 @@ public class TestMemoryDirectory {
             // no such column
             queryBuilder = new QueryBuilder().predicate(Predicates.eq("notAProperty", "foo"));
             try {
-                session.query(queryBuilder, false);
+                session.query(queryBuilder);
                 fail("should throw");
             } catch (QueryParseException e) {
                 assertEquals("No column: notAProperty for directory: mydir", e.getMessage());
@@ -397,7 +399,8 @@ public class TestMemoryDirectory {
 
     protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, int expectedTotalSize,
             String... expected) {
-        DocumentModelList list = session.query(queryBuilder, false);
+        @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+        DocumentModelList list = session.query(queryBuilder);
         List<String> ids = session.queryIds(queryBuilder);
         assertIds(list, ids, expected);
         if (queryBuilder.countTotal()) {

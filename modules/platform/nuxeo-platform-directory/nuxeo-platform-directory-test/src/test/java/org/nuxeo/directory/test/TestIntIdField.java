@@ -79,6 +79,7 @@ public class TestIntIdField {
      * @since 11.1
      */
     @Test
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public void testQueryBuilderOnIntId() {
         try (Session session = directoryService.open(INT_ID_DIRECTORY)) {
             String key = "label";
@@ -90,7 +91,7 @@ public class TestIntIdField {
             List<String> ids = session.queryIds(queryBuilder);
             assertEquals(1, ids.size());
             assertEquals("1", ids.get(0));
-            DocumentModelList entries = session.query(queryBuilder, false);
+            DocumentModelList entries = session.query(queryBuilder);
             assertEquals(1, entries.size());
             assertEquals("toto", entries.get(0).getPropertyValue("label"));
 
@@ -99,7 +100,7 @@ public class TestIntIdField {
             ids = session.queryIds(queryBuilder);
             assertEquals(1, ids.size());
             assertEquals("1", ids.get(0));
-            entries = session.query(queryBuilder, false);
+            entries = session.query(queryBuilder);
             assertEquals(1, entries.size());
             assertEquals("toto", entries.get(0).getPropertyValue("label"));
 
@@ -108,7 +109,7 @@ public class TestIntIdField {
             ids = session.queryIds(queryBuilder);
             assertEquals(1, ids.size());
             assertEquals("1", ids.get(0));
-            entries = session.query(queryBuilder, false);
+            entries = session.query(queryBuilder);
             assertEquals(1, entries.size());
             assertEquals("toto", entries.get(0).getPropertyValue("label"));
         }

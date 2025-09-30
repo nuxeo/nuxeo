@@ -927,6 +927,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public void testQueryWithBuilder() throws Exception {
         try (Session session = userDir.getSession()) {
             // everything (empty predicates)
@@ -970,7 +971,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             // cannot filter on password
             queryBuilder = new QueryBuilder().predicate(Predicates.eq("password", "pw"));
             try {
-                session.query(queryBuilder, false);
+                session.query(queryBuilder);
                 fail("should throw");
             } catch (DirectoryException e) {
                 assertEquals("Cannot filter on password", e.getMessage());
@@ -985,7 +986,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             // no such column
             queryBuilder = new QueryBuilder().predicate(Predicates.eq("notAProperty", "foo"));
             try {
-                session.query(queryBuilder, false);
+                session.query(queryBuilder);
                 fail("should throw");
             } catch (QueryParseException e) {
                 assertEquals("No column: notAProperty for directory: userDirectory", e.getMessage());
@@ -1005,7 +1006,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, int expectedTotalSize,
             String... expected) {
-        DocumentModelList list = session.query(queryBuilder, false);
+        @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+        DocumentModelList list = session.query(queryBuilder);
         List<String> ids = session.queryIds(queryBuilder);
         assertIds(list, ids, expected);
         if (queryBuilder.countTotal()) {

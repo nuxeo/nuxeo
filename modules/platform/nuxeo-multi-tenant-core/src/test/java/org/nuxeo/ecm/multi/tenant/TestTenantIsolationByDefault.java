@@ -85,7 +85,8 @@ public class TestTenantIsolationByDefault {
         assertNotNull(acl);
 
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            DocumentModelList docs = session.query(new QueryBuilder(), false);
+            @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+            DocumentModelList docs = session.query(new QueryBuilder());
             assertEquals(1, docs.size());
             DocumentModel doc = docs.get(0);
             assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));

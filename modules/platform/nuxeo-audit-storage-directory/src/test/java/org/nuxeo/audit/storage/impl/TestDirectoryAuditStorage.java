@@ -138,7 +138,8 @@ public class TestDirectoryAuditStorage {
         Directory directory = storage.getAuditDirectory();
         String schemaName = directory.getSchema();
         try (Session session = directory.getSession()) {
-            DocumentModelList auditEntries = session.query(new QueryBuilder(), false);
+            @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+            DocumentModelList auditEntries = session.query(new QueryBuilder());
             assertEquals(2, auditEntries.size());
 
             String jsonEntry1 = jsonEntries.get(0);

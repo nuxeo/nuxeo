@@ -506,6 +506,7 @@ public class TestMultiDirectory {
     }
 
     @Test
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public void testQueryWithBuilder() {
 
         // everything (empty predicates)
@@ -572,7 +573,7 @@ public class TestMultiDirectory {
         // cannot filter on password (thepass is the password field)
         queryBuilder = new QueryBuilder().predicate(Predicates.eq("thepass", "pw"));
         try {
-            dir.query(queryBuilder, false);
+            dir.query(queryBuilder);
             fail("should throw");
         } catch (DirectoryException e) {
             assertEquals("Cannot filter on password", e.getMessage());
@@ -587,7 +588,7 @@ public class TestMultiDirectory {
         // no such column
         queryBuilder = new QueryBuilder().predicate(Predicates.eq("notAProperty", "xyz"));
         try {
-            dir.query(queryBuilder, false);
+            dir.query(queryBuilder);
             fail("should throw");
         } catch (QueryParseException e) {
             assertEquals("No column: notAProperty for directory: multi", e.getMessage());
@@ -606,7 +607,8 @@ public class TestMultiDirectory {
 
     protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, int expectedTotalSize,
             String... expected) {
-        DocumentModelList list = session.query(queryBuilder, false);
+        @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+        DocumentModelList list = session.query(queryBuilder);
         List<String> ids = session.queryIds(queryBuilder);
         assertIds(list, ids, expected);
         if (queryBuilder.countTotal()) {

@@ -99,10 +99,11 @@ public class LockHelper {
     /**
      * Checks if a WOPI lock is stored for the given repository and doc id, no matter the xpath.
      */
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public static boolean isLocked(String repository, String docId) {
         QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(LOCK_DIRECTORY_REPOSITORY, repository))
                                                       .and(Predicates.eq(LOCK_DIRECTORY_DOC_ID, docId));
-        return doPrivilegedOnLockDirectory(session -> !session.query(queryBuilder, false).isEmpty());
+        return doPrivilegedOnLockDirectory(session -> !session.query(queryBuilder).isEmpty());
     }
 
     /**
@@ -148,13 +149,13 @@ public class LockHelper {
     /**
      * Removes all the WOPI locks stored for the given repository and doc id.
      */
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public static void removeLocks(String repository, String docId) {
         log.debug("Locking - repository: {} docId: {} - Document was unlocked in Nuxeo, removing related WOPI locks",
                 repository, docId);
         QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(LOCK_DIRECTORY_REPOSITORY, repository))
                                                       .and(Predicates.eq(LOCK_DIRECTORY_DOC_ID, docId));
-        doPrivilegedOnLockDirectory(
-                (Session session) -> session.query(queryBuilder, false).forEach(session::deleteEntry));
+        doPrivilegedOnLockDirectory((Session session) -> session.query(queryBuilder).forEach(session::deleteEntry));
     }
 
     /**
@@ -220,7 +221,8 @@ public class LockHelper {
         long expirationTime = System.currentTimeMillis() - LOCK_TTL;
         QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(LOCK_DIRECTORY_REPOSITORY, repository))
                                                       .and(Predicates.lt(LOCK_DIRECTORY_TIMESTAMP, expirationTime));
-        List<DocumentModel> expiredLocks = session.query(queryBuilder, false);
+        @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+        List<DocumentModel> expiredLocks = session.query(queryBuilder);
         return Collections.singletonMap(repository, expiredLocks);
     }
 

@@ -28,6 +28,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.directory.api.DirectoryQueryBuilder;
 
 /**
  * A session used to access entries in a directory.
@@ -180,8 +181,27 @@ public interface Session extends AutoCloseable {
      * @param fetchReferences boolean stating if references have to be fetched
      * @return the list of documents, where the total size may be present if countTotal was true
      * @since 10.3
+     * @deprecated since 2025.9, use {@link #query(QueryBuilder)} with
+     *             {@link org.nuxeo.ecm.directory.api.DirectoryQueryBuilder} to fetch references if wanted
      */
+    @Deprecated(since = "2025.9", forRemoval = true)
     DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences);
+
+    /**
+     * Executes a query with the possibility to fetch a subset of the results.
+     * <p>
+     * You can use this API with {@link org.nuxeo.ecm.directory.api.DirectoryQueryBuilder} to fetch references.
+     *
+     * @param queryBuilder the query to use, including limit, offset, ordering and countTotal
+     * @return the list of documents, where the total size may be present if countTotal was true
+     * @since 2025.9
+     * @deprecated since 2021.x, remove default implementation for this method, and put one for
+     *             {@link #query(QueryBuilder, boolean)}
+     */
+    @Deprecated(since = "2021.x")
+    default DocumentModelList query(QueryBuilder queryBuilder) {
+        return query(queryBuilder, new DirectoryQueryBuilder(queryBuilder).fetchReferences());
+    }
 
     /**
      * Executes a query with the possibility to fetch a subset of the results. Returns the matching ids.

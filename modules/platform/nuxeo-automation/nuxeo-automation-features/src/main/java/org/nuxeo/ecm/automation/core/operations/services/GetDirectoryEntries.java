@@ -78,7 +78,8 @@ public class GetDirectoryEntries {
     public Blob run(DocumentModel doc) throws IOException {
         Directory directory = directoryService.getDirectory(directoryName, doc);
         try (Session session = directory.getSession()) {
-            DocumentModelList entries = session.query(new QueryBuilder(), false);
+            @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+            DocumentModelList entries = session.query(new QueryBuilder());
             String schemaName = directory.getSchema();
             Schema schema = schemaManager.getSchema(schemaName);
             List<Map<String, Object>> rows = new ArrayList<>();

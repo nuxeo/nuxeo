@@ -88,9 +88,10 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
     /**
      * List all Shibboleth Group in a DocumentModelList
      */
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     private DocumentModelList getAllGroups() {
         try (Session shibGroupDirectory = getDS().open(getDirectoryName())) {
-            return shibGroupDirectory.query(new QueryBuilder(), false);
+            return shibGroupDirectory.query(new QueryBuilder());
         }
     }
 }

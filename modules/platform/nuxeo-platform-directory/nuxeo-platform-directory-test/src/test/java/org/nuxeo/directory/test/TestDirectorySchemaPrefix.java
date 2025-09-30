@@ -22,8 +22,8 @@ package org.nuxeo.directory.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.nuxeo.directory.test.AbstractDirectoryTest.checkQueryResult;
 
 import java.io.Serializable;
@@ -137,25 +137,37 @@ public class TestDirectorySchemaPrefix {
     @Test
     public void testQueryWithBuilder() throws Exception {
         try (Session session = getSession()) {
-            // everything (empty predicates)
-            QueryBuilder queryBuilder = new QueryBuilder();
-            checkQueryResult(session, queryBuilder, "Administrator", "user_1", "user_3");
-
-            // cannot filter on password
-            queryBuilder = new QueryBuilder().predicate(Predicates.eq("password", "pw"));
-            try {
-                session.query(queryBuilder, false);
-                fail("should throw");
-            } catch (DirectoryException e) {
-                assertEquals("Cannot filter on password", e.getMessage());
-            }
-            try {
-                session.queryIds(queryBuilder);
-                fail("should throw");
-            } catch (DirectoryException e) {
-                assertEquals("Cannot filter on password", e.getMessage());
-            }
+            QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq("username", "user_1"))
+                                                          .and(Predicates.eq("firstName", "f"))
+                                                          .limit(1);
+            @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+            DocumentModelList list = session.query(queryBuilder);
+            DocumentModel docModel = list.get(0);
+            assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
+            assertEquals("f", docModel.getProperty(SCHEMA, "firstName"));
         }
     }
 
+    @Test
+    public void testQueryWithBuilderMatchAll() throws Exception {
+        try (Session session = getSession()) {
+            // everything (empty predicates)
+            QueryBuilder queryBuilder = new QueryBuilder();
+            checkQueryResult(session, queryBuilder, "Administrator", "user_1", "user_3");
+        }
+    }
+
+    @Test
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
+    public void testQueryFailOnPassword() throws Exception {
+        try (Session session = getSession()) {
+            // cannot filter on password
+            DirectoryException e;
+            var queryBuilder = new QueryBuilder().predicate(Predicates.eq("password", "pw"));
+            e = assertThrows(DirectoryException.class, () -> session.query(queryBuilder));
+            assertEquals("Cannot filter on password", e.getMessage());
+            e = assertThrows(DirectoryException.class, () -> session.queryIds(queryBuilder));
+            assertEquals("Cannot filter on password", e.getMessage());
+        }
+    }
 }

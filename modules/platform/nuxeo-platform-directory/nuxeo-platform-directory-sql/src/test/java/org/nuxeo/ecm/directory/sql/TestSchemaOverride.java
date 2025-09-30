@@ -48,13 +48,14 @@ public class TestSchemaOverride {
     protected DirectoryService directoryService;
 
     @Test
+    @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
     public void testSchemaOverrideWhenPolicyIsOnMissingColumn() throws Exception {
         var descriptor = directoryService.getDirectoryDescriptor("userDirectory");
         assertEquals(CREATE_TABLE_POLICY_ON_MISSING_COLUMNS, descriptor.getCreateTablePolicy());
 
         // check that the directory is correctly initialized
         var directory = directoryService.getDirectory("userDirectory");
-        var entries = directory.getSession().query(new QueryBuilder(), false);
+        var entries = directory.getSession().query(new QueryBuilder());
         assertEquals(3, entries.size());
 
         // deploy the user schema override
@@ -62,7 +63,7 @@ public class TestSchemaOverride {
 
         // check that we can still query the directory
         directory = directoryService.getDirectory("userDirectory");
-        entries = directory.getSession().query(new QueryBuilder(), false);
+        entries = directory.getSession().query(new QueryBuilder());
         assertEquals(3, entries.size());
     }
 }

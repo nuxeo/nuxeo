@@ -56,11 +56,11 @@ public class DirectoryEntryPageProvider extends AbstractPageProvider<DirectoryEn
 
         try (Session session = directory.getSession()) {
             var orders = getSortInfos().stream().map(this::toOrderExp).collect(Collectors.toList());
+            @SuppressWarnings("deprecation") // deprecated since 2021.x, remove the annotation
             DocumentModelList result = session.query(new QueryBuilder().orders(orders)
                                                                        .limit(getPageSize())
                                                                        .offset(getCurrentPageOffset())
-                                                                       .countTotal(true),
-                    false);
+                                                                       .countTotal(true));
             setResultsCount(result.totalSize());
             return result.stream()
                          .map(dir -> new DirectoryEntry(directory.getName(), dir))
