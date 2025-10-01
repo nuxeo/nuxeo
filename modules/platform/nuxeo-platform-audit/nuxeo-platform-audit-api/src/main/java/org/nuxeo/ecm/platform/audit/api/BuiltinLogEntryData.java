@@ -52,6 +52,13 @@ public final class BuiltinLogEntryData {
 
     public static final String LOG_PRINCIPAL_NAME = "principalName";
 
+    /**
+     * Fields for principal when corresponding fetcher is given.
+     * 
+     * @since 2025.9
+     */
+    public static final String LOG_PRINCIPAL = "principal";
+
     public static final String LOG_REPOSITORY_ID = "repositoryId";
 
     private BuiltinLogEntryData() {

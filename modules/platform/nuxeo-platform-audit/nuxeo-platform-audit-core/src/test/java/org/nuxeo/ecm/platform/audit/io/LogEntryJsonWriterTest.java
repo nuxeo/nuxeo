@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -221,4 +222,19 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
         params.hasNot("Blob");
     }
 
+    @Test
+    public void testWhenPrincipalFetcherIsProvided() throws IOException {
+        LogEntry logEntry = new LogEntryImpl();
+        logEntry.setEventId("eventIdForTests");
+        logEntry.setEventDate(new Date());
+        logEntry.setPrincipalName("Administrator");
+        RenderingContext ctx = RenderingContext.CtxBuilder.fetch("logEntry", "principal").get();
+        JsonAssert json = jsonAssert(logEntry, ctx);
+        json.has("entity-type").isEquals("logEntry");
+        json.has("principalName").isEquals("Administrator");
+        var principalJson = json.has("principal").isObject();
+        principalJson.has("entity-type").isEquals("user");
+        principalJson.has("id").isText();
+        principalJson.has("properties").isObject().has("username").isEquals("Administrator");
+    }
 }

@@ -34,6 +34,7 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EXTENDED;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_LOG_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
@@ -45,11 +46,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -92,6 +96,9 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
 
     public static final String ENTITY_TYPE = "logEntry";
 
+    /** @since 2025.9 */
+    public static final String FETCH_PRINCIPAL = "principal";
+
     public LogEntryJsonWriter() {
         super(ENTITY_TYPE, LogEntry.class);
     }
@@ -101,6 +108,12 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
         jg.writeNumberField(LOG_ID, logEntry.getId());
         jg.writeStringField(LOG_CATEGORY, logEntry.getCategory());
         jg.writeStringField(LOG_PRINCIPAL_NAME, logEntry.getPrincipalName());
+        if (ctx.getFetched(ENTITY_TYPE).contains(FETCH_PRINCIPAL)) {
+            var principal = getPrincipal(logEntry.getPrincipalName());
+            if (principal != null) {
+                writeEntityField(LOG_PRINCIPAL, getPrincipal(logEntry.getPrincipalName()), jg);
+            }
+        }
         jg.writeStringField(LOG_COMMENT, logEntry.getComment());
         jg.writeStringField(LOG_DOC_LIFE_CYCLE, logEntry.getDocLifeCycle());
         jg.writeStringField(LOG_DOC_PATH, logEntry.getDocPath());
@@ -111,6 +124,15 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
         jg.writeStringField(LOG_EVENT_DATE, formatISODateTime(nowIfNull(logEntry.getEventDate())));
         jg.writeStringField(LOG_LOG_DATE, formatISODateTime(nowIfNull(logEntry.getLogDate())));
         writeExtendedInfos(jg, logEntry);
+    }
+
+    protected NuxeoPrincipal getPrincipal(String principalName) {
+        var userManager = Framework.getService(UserManager.class);
+        // allows tests to not deploy userManager to use this writer
+        if (Framework.isTestModeSet() && userManager == null) {
+            return null;
+        }
+        return userManager.getPrincipal(principalName);
     }
 
     protected void writeExtendedInfos(JsonGenerator jg, LogEntry logEntry) throws IOException {
