@@ -121,6 +121,20 @@ public abstract class AbstractCommentJsonWriterTest
     }
 
     @Test
+    public void shouldWriteCompletePrincipalWhenAuthorFetcherIsProvided() throws IOException {
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(session).fetch("comment", "author").get();
+        JsonAssert json = jsonAssert(comment, ctx);
+        json.isObject();
+        assertThat(json.getNode().size(), greaterThanOrEqualTo(11));
+        json.has("entity-type").isEquals("comment");
+        json.has("id").isText();
+        var authorJson = json.has("author").isObject();
+        authorJson.has("entity-type").isEquals("user");
+        authorJson.has("id").isText();
+        authorJson.has("properties").isObject().has("username").isEquals("Administrator");
+    }
+
+    @Test
     public void shouldWriteCompleteRepliesSummaryWhenRepliesFetcherIsProvided() throws IOException {
         RenderingContext ctx = RenderingContext.CtxBuilder.session(session).fetch("comment", "repliesSummary").get();
         JsonAssert json = jsonAssert(comment, ctx);

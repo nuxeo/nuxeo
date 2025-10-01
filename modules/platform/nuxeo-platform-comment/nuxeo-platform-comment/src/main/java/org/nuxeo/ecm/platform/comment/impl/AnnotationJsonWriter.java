@@ -61,7 +61,7 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
 
     @Override
     protected void writeEntityBody(Annotation entity, JsonGenerator jg) throws IOException {
-        writeCommentEntity(entity, jg);
+        writeCommentEntity(entity, jg, ctx);
         jg.writeStringField(ANNOTATION_XPATH_FIELD, entity.getXpath());
         // Write permissions of current user on the annotation,
         // which are the ones granted on the annotated document
