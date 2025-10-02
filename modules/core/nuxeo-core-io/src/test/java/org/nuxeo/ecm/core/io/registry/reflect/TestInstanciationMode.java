@@ -39,11 +39,11 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 public class TestInstanciationMode {
 
@@ -113,7 +113,6 @@ public class TestInstanciationMode {
     }
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-28713: randomly failing in postgresql mode", onFailure = 10, onSuccess = 30)
     public void perThreadInstance() throws Exception {
         final MarshallerInspector inspector = new MarshallerInspector(PerThreadMarshaller.class);
         PerThreadMarshaller instance1 = inspector.getInstance(ctx);
@@ -121,23 +120,9 @@ public class TestInstanciationMode {
         final PerThreadMarshaller instance2 = inspector.getInstance(ctx);
         assertNotNull(instance2);
         assertSame(instance1, instance2);
-        Thread subThread = new Thread() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    // in a different thread, it should be a different instance
-                    final PerThreadMarshaller instance3 = inspector.getInstance(ctx);
-                    assertNotNull(instance3);
-                    assertNotSame(instance2, instance3);
-                    notify();
-                }
-            }
-
-        };
-        subThread.start();
-        synchronized (subThread) {
-            subThread.wait();
-        }
+        final PerThreadMarshaller instance3 = getInstanceFromAnotherThread(inspector);
+        assertNotNull(instance3);
+        assertNotSame(instance2, instance3);
     }
 
     @Test
@@ -148,22 +133,29 @@ public class TestInstanciationMode {
         final SingletonMarshaller instance2 = inspector.getInstance(ctx);
         assertNotNull(instance2);
         assertSame(instance1, instance2);
-        Thread subThread = new Thread() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    final SingletonMarshaller instance3 = inspector.getInstance(ctx);
-                    assertNotNull(instance3);
-                    assertSame(instance2, instance3);
-                    notify();
-                }
-            }
+        final SingletonMarshaller instance3 = getInstanceFromAnotherThread(inspector);
+        assertNotNull(instance3);
+        assertSame(instance2, instance3);
+    }
 
-        };
+    protected <M extends Writer<Object>> M getInstanceFromAnotherThread(MarshallerInspector inspector)
+            throws Exception {
+        var result = new MutableObject<M>();
+        var err = new MutableObject<RuntimeException>();
+        Thread subThread = new Thread(() -> {
+            try {
+                final M instance3 = inspector.getInstance(ctx);
+                result.setValue(instance3);
+            } catch (RuntimeException e) {
+                err.setValue(e);
+            }
+        });
         subThread.start();
-        synchronized (subThread) {
-            subThread.wait();
+        subThread.join();
+        if (err.get() != null) {
+            throw err.get();
         }
+        return result.get();
     }
 
     @Setup(mode = SINGLETON)
