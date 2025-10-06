@@ -35,14 +35,15 @@ releases:
   {{- end }}
   values:
   - base/values/values-nuxeo.yaml.gotmpl
+  # allows environment values override
+  {{- with .Values.nuxeo }}
+  - {{ toYaml . | nindent 4 }}
+  {{- end }}
+  # specific overrides
   {{- if eq .Environment.Name "benchmark" }}
   - base/values/benchmark/values-nuxeo.yaml.gotmpl
   {{- else if eq .Environment.Name "upgradeTest" }}
   - base/values/upgradeTest/values-nuxeo.yaml.gotmpl
-  {{- end }}
-  # allows environment values override
-  {{- with .Values.nuxeo }}
-  - {{ toYaml . | nindent 4 }}
   {{- end }}
 - name: mongodb
   chart: oci://registry-1.docker.io/bitnamicharts/mongodb
@@ -51,12 +52,13 @@ releases:
   condition: mongodb.enabled
   values:
   - base/values/values-mongodb.yaml.gotmpl
-  {{- if eq .Environment.Name "benchmark" }}
-  - base/values/benchmark/values-mongodb.yaml.gotmpl
-  {{- end }}
   # allows environment values override
   {{- with .Values.mongodb }}
   - {{ toYaml . | nindent 4 }}
+  {{- end }}
+  # specific overrides
+  {{- if eq .Environment.Name "benchmark" }}
+  - base/values/benchmark/values-mongodb.yaml.gotmpl
   {{- end }}
 - name: postgresql
   chart: bitnami/postgresql
@@ -76,12 +78,13 @@ releases:
   condition: opensearch.enabled
   values:
   - base/values/values-opensearch.yaml.gotmpl
-  {{- if eq .Environment.Name "benchmark" }}
-  - base/values/benchmark/values-opensearch.yaml.gotmpl
-  {{- end }}
   # allows environment values override
   {{- with .Values.opensearch }}
   - {{ toYaml . | nindent 4 }}
+  {{- end }}
+  # specific overrides
+  {{- if eq .Environment.Name "benchmark" }}
+  - base/values/benchmark/values-opensearch.yaml.gotmpl
   {{- end }}
 - name: kafka
   chart: oci://registry-1.docker.io/bitnamicharts/kafka
@@ -90,10 +93,11 @@ releases:
   condition: kafka.enabled
   values:
   - base/values/values-kafka.yaml.gotmpl
-  {{- if eq .Environment.Name "benchmark" }}
-  - base/values/benchmark/values-kafka.yaml.gotmpl
-  {{- end }}
   # allows environment values override
   {{- with .Values.kafka }}
   - {{ toYaml . | nindent 4 }}
+  {{- end }}
+  # specific overrides
+  {{- if eq .Environment.Name "benchmark" }}
+  - base/values/benchmark/values-kafka.yaml.gotmpl
   {{- end }}
