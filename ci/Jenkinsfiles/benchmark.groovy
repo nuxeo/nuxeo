@@ -18,12 +18,12 @@
  */
 library identifier: "platform-ci-shared-library@v0.0.75"
 
-boolean isTriggeredByCron() {
-  return currentBuild.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
+boolean isTriggeredByCron(def build = currentBuild) {
+  return build.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
 }
 
-boolean isTriggeredByNuxeoPromotion() {
-  return "${params.NUXEO_BRANCH}".matches('^v(\\d){4}\\.(\\d)+$')
+boolean isTriggeredByNuxeoPromotion(def build = currentBuild) {
+  return nxBuildWrapper(build).getParameterValue("NUXEO_BRANCH").matches('^v(\\d){4}\\.(\\d)+$')
 }
 
 String resolveDockerImageVersion(String dockerImage) {
@@ -88,8 +88,8 @@ pipeline {
     BENCHMARK_BUILD_NUMBER = "${CURRENT_NAMESPACE}-${BUILD_NUMBER}"
     BENCHMARK_CATEGORY = getBenchmarkCategory()
     BENCHMARK_NAMESPACE = "${CURRENT_NAMESPACE}-benchmark"
-    SERVICE_TAG = "benchmark-${BUILD_NUMBER}"
     BENCHMARK_NB_DOCS = '100000'
+    BENCHMARK_RESULT_URL = "https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html"
     MAVEN_CLI_ARGS = '-B -nsu -P-nexus,nexus-private,bench -Dnuxeo.bench.itests=false'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     NUXEO_DOCKER_IMAGE = "${NUXEO_DOCKER_IMAGE_WITH_VERSION.replaceAll(':.*', '')}"
@@ -101,6 +101,7 @@ pipeline {
     DATA_ARTIFACT_FULL_NAME = "${DATA_ARTIFACT_GROUP}:${DATA_ARTIFACT_ID}:${DATA_ARTIFACT_VERSION}:${DATA_ARTIFACT_TYPE}"
     GATLING_TESTS_PATH = "${WORKSPACE}/ftests/nuxeo-server-gatling-tests"
     REPORT_PATH = "${GATLING_TESTS_PATH}/target/reports"
+    SERVICE_TAG = "benchmark-${BUILD_NUMBER}"
     VERSION = "${NUXEO_DOCKER_IMAGE_WITH_VERSION.replaceAll('.*:', '')}"
   }
 
@@ -340,25 +341,52 @@ pipeline {
         always {
           archiveArtifacts allowEmptyArchive: true, artifacts: "nuxeo-bench-site/**/${BENCHMARK_BUILD_NUMBER}.*"
         }
-        success {
-          script {
-            currentBuild.description = "Benchmark URL: https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html"
-          }
-        }
       }
     }
   }
 
   post {
-    success {
+    always {
       script {
-        nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', state: 'SUCCESS', commitSha: env.SCM_REF)
-        nxGitHub.commentPullRequest(branch: params.NUXEO_BRANCH, body: "The Benchmark tests has succeeded to run on ${SCM_REF}.\nThe results are located there: https://benchmarks.nuxeo.com/${BENCHMARK_CATEGORY}/${BENCHMARK_BUILD_NUMBER}/index.html")
+        nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', commitSha: env.SCM_REF)
+        nxUtils.setDescription(default: "Benchmark URL: ${BENCHMARK_RESULT_URL}")
+        if (isTriggeredByCron() || isTriggeredByNuxeoPromotion()) {
+          nxUtils.callIfBuildRecoverOrFail(
+              success: {
+                nxTeams.success(
+                    message: "Successfully built ${currentBuild.fullProjectName}",
+                    changes: true,
+                )
+              },
+              error: {
+                nxTeams.error(
+                    message: "Failed to build ${currentBuild.fullProjectName}",
+                    changes: true,
+                )
+              },
+              buildGroupComputer: { build ->
+                def type
+                if (isTriggeredByCron(build)) {
+                  type = 'cron'
+                } else if (isTriggeredByNuxeoPromotion(build)) {
+                  type = 'promotion'
+                } else {
+                  type = 'other'
+                }
+                def majorVersion = nxBuildWrapper(build).getParameterValue('NUXEO_DOCKER_IMAGE')
+                                                        // remove image name
+                                                        .replaceAll('.*:', '')
+                                                        // keep major version
+                                                        .replaceAll('^(\\d{4})(\\..+)?$', '$1')
+                return type + '-' + majorVersion
+              }
+          )
+        }
       }
     }
-    unsuccessful {
+    success {
       script {
-        nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', state: 'FAILURE', commitSha: env.SCM_REF)
+        nxGitHub.commentPullRequest(branch: params.NUXEO_BRANCH, body: "The Benchmark tests has succeeded to run on ${SCM_REF}.\nThe results are located there: ${BENCHMARK_RESULT_URL}")
       }
     }
   }
