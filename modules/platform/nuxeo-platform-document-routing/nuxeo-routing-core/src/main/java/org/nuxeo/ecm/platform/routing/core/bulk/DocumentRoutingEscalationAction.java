@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.routing.core.bulk;
 
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ROUTE_NODE_DOCUMENT_TYPE;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
@@ -30,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEscalationService;
@@ -76,8 +78,14 @@ public class DocumentRoutingEscalationAction implements StreamProcessorTopology 
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             var escalationService = Framework.getService(DocumentRoutingEscalationService.class);
             for (DocumentModel doc : loadDocuments(session, ids)) {
-                GraphNode node = doc.getAdapter(GraphNode.class);
+                if (!ROUTE_NODE_DOCUMENT_TYPE.equals(doc.getType())) {
+                    log.debug("Not a RouteNode document: {}, type: {}, skip it", doc.getId(), doc.getType());
+                    delta.incrementSkipCount();
+                    continue;
+                }
+                GraphNode node = null;
                 try {
+                    node = doc.getAdapter(GraphNode.class);
                     for (EscalationRule rule : escalationService.computeEscalationRulesToExecute(node, false)) {
                         escalationService.executeEscalationRule(rule, false);
                     }
@@ -86,6 +94,9 @@ public class DocumentRoutingEscalationAction implements StreamProcessorTopology 
                     log.error("Unable to execute escalation rules on node: {}, skip it", node, e);
                     delta.inError(
                             String.format("Cannot execute escalation rules on node: %s, %s", node, e.getMessage()));
+                } catch (DocumentNotFoundException e) {
+                    log.error("Unable to get route document, skip it", e);
+                    delta.inError(String.format("Unable to get route for doc: %s, %s", doc.getId(), e.getMessage()));
                 }
             }
         }

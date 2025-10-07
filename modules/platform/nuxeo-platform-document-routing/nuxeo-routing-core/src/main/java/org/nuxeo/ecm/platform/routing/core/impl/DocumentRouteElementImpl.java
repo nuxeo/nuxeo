@@ -26,6 +26,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -92,6 +93,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
                 break;
             }
             parent = session.getParentDocument(parent.getRef());
+            if (parent == null) {
+                throw new DocumentNotFoundException(
+                        "Document without route ancestor: %s, path: %s".format(document.getId(), document.getPath()));
+            }
         }
         return parent.getAdapter(DocumentRoute.class);
     }

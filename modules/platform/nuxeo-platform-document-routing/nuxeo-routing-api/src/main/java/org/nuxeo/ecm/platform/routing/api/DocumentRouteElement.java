@@ -58,6 +58,7 @@ public interface DocumentRouteElement extends Serializable {
      * Return the DocumentRoute this element is part of.
      *
      * @param session The session use to fetch the route.
+     * @throws org.nuxeo.ecm.core.api.DocumentNotFoundException if route cannot be found (@since 2025.10)
      */
     DocumentRoute getDocumentRoute(CoreSession session);
 
