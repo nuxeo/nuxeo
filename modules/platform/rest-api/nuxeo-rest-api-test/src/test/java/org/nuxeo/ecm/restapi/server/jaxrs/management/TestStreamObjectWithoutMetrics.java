@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2023 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,42 +18,41 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
-import org.nuxeo.http.test.handler.JsonNodeHandler;
+import org.nuxeo.http.test.handler.HttpStatusCodeHandler;
 import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
- * @since 2021.35
+ * Checks that API is forbidden when stream metrics are disabled.
+ * 
+ * @since 2025.10
  */
-@WithFrameworkProperty(name = StreamObject.ENABLED_OPTION, value = "true")
-public class TestStreamObject extends ManagementBaseTest {
+@WithFrameworkProperty(name = StreamObject.ENABLED_OPTION, value = "false")
+public class TestStreamObjectWithoutMetrics extends ManagementBaseTest {
 
     @Test
     public void testListStreams() {
-        httpClient.buildGetRequest("/management/stream/streams").executeAndConsume(new JsonNodeHandler(), result -> {
-            assertTrue(result.isArray());
-            assertFalse(result.isEmpty());
-            assertEquals("avro", result.get(0).get("codec").asText());
-        });
+        httpClient.buildGetRequest("/management/stream/streams")
+                  .executeAndConsume(new HttpStatusCodeHandler(),
+                          status -> assertEquals(SC_FORBIDDEN, status.intValue()));
     }
 
     @Test
     public void testStreamIntrospection() {
         httpClient.buildGetRequest("/management/stream")
-                  .executeAndConsume(new JsonNodeHandler(), result -> assertTrue(result.isObject()));
+                  .executeAndConsume(new HttpStatusCodeHandler(),
+                          status -> assertEquals(SC_FORBIDDEN, status.intValue()));
     }
 
     @Test
     public void testScale() {
-        httpClient.buildGetRequest("/management/stream/scale").executeAndConsume(new JsonNodeHandler(), result -> {
-            assertTrue(result.isObject());
-            assertTrue(result.at("/scale").isObject());
-        });
+        httpClient.buildGetRequest("/management/stream/scale")
+                  .executeAndConsume(new HttpStatusCodeHandler(),
+                          status -> assertEquals(SC_FORBIDDEN, status.intValue()));
     }
 
 }
