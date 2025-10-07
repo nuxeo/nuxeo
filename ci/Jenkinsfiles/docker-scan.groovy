@@ -35,6 +35,15 @@ pipeline {
     timeout(time: 1, unit: 'HOURS')
   }
   stages {
+    stage('Set labels') {
+      steps {
+        container('base') {
+          script {
+            nxK8s.setPodLabels()
+          }
+        }
+      }
+    }
     stage('Scan Docker image') {
       steps {
         container('base') {
