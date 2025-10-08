@@ -918,14 +918,16 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         // remove prefix if it exists
         // replace any '/0/' by '/*/'
         // remove any simple list index e.g. '/0'
-        String cleanedXp = LIST_INDEX_PATTERN.matcher(SchemaManager.normalizePath(xp)).replaceFirst("");
+        String unPrefixedCleanedXp = LIST_INDEX_PATTERN.matcher(SchemaManager.normalizePath(xp)).replaceFirst("");
+        String cleanedXp = LIST_INDEX_PATTERN.matcher(SchemaManager.normalizePath(xp, false)).replaceFirst("");
         // if `files/*/file` is a retainable property
         // so is `files` because we cannot allow to nullify it
-        return Arrays.stream(rprops)
-                     .anyMatch(p -> Stream
-                                          .iterate(p, StringUtils::isNotBlank,
-                                                  key -> key.substring(0, Math.max(key.lastIndexOf('/'), 0)))
-                                          .anyMatch(sp -> sp.equals(cleanedXp)));
+        return Arrays.stream(rprops).anyMatch(p -> {
+            boolean prefixed = p.indexOf(":") > 0;
+            return Stream.iterate(p, StringUtils::isNotBlank,
+                    key -> key.substring(0, Math.max(key.lastIndexOf('/'), 0)))
+                         .anyMatch(sp -> sp.equals(prefixed ? cleanedXp : unPrefixedCleanedXp));
+        });
     }
 
     @Override

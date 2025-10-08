@@ -73,7 +73,7 @@ public interface PropertyCharacteristicHandler {
     Set<String> getRemovedProperties(String schema);
 
     /**
-     * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
+     * The returned paths are Nuxeo xpath and start with the schema prefix if any.
      *
      * @return a {@link Set} holding the retainable property path
      * @since 2023
@@ -81,7 +81,7 @@ public interface PropertyCharacteristicHandler {
     Set<String> getRetainableProperties();
 
     /**
-     * The returned paths are not Nuxeo xpath as they don't have the schema prefix.
+     * The returned paths are Nuxeo xpath and start with the schema prefix if any.
      *
      * @param schema the schema name (not the prefix)
      * @return a {@link Set} holding the retainable property path

@@ -469,12 +469,12 @@ public class TestSchemaManager {
         assertEquals(3, rprops.size());
         // main content must be always retainable
         assertTrue(rprops.contains("content"));
-        assertTrue(rprops.contains("complexList/*/dataList/*/file"));
-        assertTrue(rprops.contains("files/*/file"));
+        assertTrue(rprops.contains("cf:complexList/*/dataList/*/file"));
+        assertTrue(rprops.contains("cf:files/*/file"));
         rprops = schemaManager.getRetainableProperties("complexFiles");
         assertEquals(2, schemaManager.getRetainableProperties("complexFiles").size());
-        assertTrue(rprops.contains("complexList/*/dataList/*/file"));
-        assertTrue(rprops.contains("files/*/file"));
+        assertTrue(rprops.contains("cf:complexList/*/dataList/*/file"));
+        assertTrue(rprops.contains("cf:files/*/file"));
     }
 
 }

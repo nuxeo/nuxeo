@@ -89,6 +89,21 @@ public class TestRetainedProperties {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-retain-duplicate-property.xml")
+    public void iDontMixUpRetainedPropertiesWithSame() throws Exception {
+        DocumentModel record = createFileDocument("record");
+        assertNotNull(record.getRetainedProperties());
+        assertTrue(record.getRetainedProperties().isEmpty());
+        session.makeRecord(record.getRef());
+        record.refresh();
+        assertNotNull(record.getRetainedProperties());
+        assertEquals(2, record.getRetainedProperties().size());
+        assertTrue(record.getRetainedProperties().contains("content"));
+        assertTrue(record.getRetainedProperties().contains("tr1:aProp"));
+        assertEquals(session.getRetainedProperties(record.getRef()), record.getRetainedProperties());
+    }
+
+    @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:test-retain-files-property.xml")
     public void iCannotRetainUnexistingProperties() throws Exception {
         // Create a folder that does not have file nor files schema

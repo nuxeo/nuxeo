@@ -33,17 +33,21 @@ public interface SchemaManager extends TypeProvider, PropertyCharacteristicHandl
     static final Pattern PATH_INDEX_PATTERN = Pattern.compile("/-?\\d+/");
 
     /**
-     * Remove prefix if any and replace the index of complex properties of the given path.
+     * Replace the index of complex properties of the given path.
      * <p>
-     * i.e. files:files/1/file -&gt; files\/*\/file
+     * i.e. files:files/1/file -&gt; files:files\/*\/file
      *
      * @param path the path
+     * @param removePrefix remove any prefix if true
      * @return a normalize path
-     * @since 2021.32
+     * @since 2025.10
      */
-    static String normalizePath(String path) {
+    static String normalizePath(String path, boolean removePrefix) {
+        String ret = path;
         // remove prefix if it exists
-        String ret = path.substring(path.lastIndexOf(':') + 1);
+        if (removePrefix) {
+            ret = path.substring(path.lastIndexOf(':') + 1);
+        }
         // remove /item used in list property item
         if (ret.endsWith("/item")) {
             ret = ret.substring(0, ret.length() - 5);
@@ -53,6 +57,19 @@ public interface SchemaManager extends TypeProvider, PropertyCharacteristicHandl
             ret = PATH_INDEX_PATTERN.matcher(ret).replaceAll("/*/");
         }
         return ret;
+    }
+
+    /**
+     * Remove prefix if any and replace the index of complex properties of the given path.
+     * <p>
+     * i.e. files:files/1/file -&gt; files\/*\/file
+     *
+     * @param path the path
+     * @return a normalize path
+     * @since 2021.32
+     */
+    static String normalizePath(String path) {
+        return normalizePath(path, true);
     }
 
     /**

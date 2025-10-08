@@ -1092,6 +1092,24 @@ public class SchemaManagerImpl implements SchemaManager {
         return getPropertyCharacteristics(schema, PropertyDescriptor::isDeprecated, PropertyDescriptor::getName);
     }
 
+    /**
+     * Returns the property name prefixed by the schema prefix if any.
+     */
+    protected String getPrefixedName(PropertyDescriptor desc) {
+        var schema = getSchema(desc.getSchema());
+        if (schema == null) {
+            throw new IllegalStateException(
+                    "Unknown schema %s in property descriptor %s".formatted(desc.getSchema(), desc));
+        }
+        Namespace ns = schema.getNamespace();
+        if (StringUtils.isNotBlank(ns.prefix)) {
+            return ns.prefix + ":" + desc.getName();
+        } else {
+            log.info("Schema: {} is unprefixed, prefix the schemas to avoid inconsistent behaviors.", desc::getSchema);
+            return desc.getName();
+        }
+    }
+
     @Override
     public Set<String> getRemovedProperties(String schema) {
         return getPropertyCharacteristics(schema, PropertyDescriptor::isRemoved, PropertyDescriptor::getName);
@@ -1109,7 +1127,7 @@ public class SchemaManagerImpl implements SchemaManager {
                                        .map(Map::values)
                                        .flatMap(Collection::stream)
                                        .filter(PropertyDescriptor::isRetainable)
-                                       .map(PropertyDescriptor::getName))
+                                       .map(this::getPrefixedName))
                      .collect(Collectors.toSet());
 
     }
@@ -1119,7 +1137,7 @@ public class SchemaManagerImpl implements SchemaManager {
      */
     @Override
     public Set<String> getRetainableProperties(String schema) {
-        return getPropertyCharacteristics(schema, PropertyDescriptor::isRetainable, PropertyDescriptor::getName);
+        return getPropertyCharacteristics(schema, PropertyDescriptor::isRetainable, this::getPrefixedName);
     }
 
     protected <R> Set<R> getPropertyCharacteristics(String schema, Predicate<PropertyDescriptor> predicate,
