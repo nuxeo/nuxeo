@@ -18,6 +18,11 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.processor.binding;
 
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_PARAMETER_SAML_REQUEST;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_PARAMETER_SAML_RESPONSE;
+import static org.opensaml.saml.common.xml.SAMLConstants.SAML2_POST_BINDING_URI;
+import static org.opensaml.saml.common.xml.SAMLConstants.SAML2_REDIRECT_BINDING_URI;
+
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -25,7 +30,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opensaml.messaging.decoder.servlet.HttpServletRequestMessageDecoder;
-import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.binding.decoding.impl.HTTPPostDecoder;
 import org.opensaml.saml.saml2.binding.decoding.impl.HTTPRedirectDeflateDecoder;
 
@@ -34,16 +38,26 @@ import org.opensaml.saml.saml2.binding.decoding.impl.HTTPRedirectDeflateDecoder;
  */
 public enum SAMLInboundBinding implements SAMLBinding {
 
-    HTTP_POST(SAMLConstants.SAML2_POST_BINDING_URI,
+    HTTP_POST(SAML2_POST_BINDING_URI,
             request -> "POST".equalsIgnoreCase(request.getMethod()) && iSAMLObjectPresent(request),
             HTTPPostDecoder::new), //
-    HTTP_REDIRECT(SAMLConstants.SAML2_REDIRECT_BINDING_URI,
+    HTTP_REDIRECT(SAML2_REDIRECT_BINDING_URI,
             request -> "GET".equalsIgnoreCase(request.getMethod()) && iSAMLObjectPresent(request),
             HTTPRedirectDeflateDecoder::new);
 
-    public static final String SAML_REQUEST = "SAMLRequest";
+    /**
+     * @deprecated since 2025.10, use {@link org.nuxeo.ecm.platform.auth.saml.SAMLConstants#HTTP_PARAMETER_SAML_REQUEST}
+     *             instead.
+     */
+    @Deprecated(since = "2025.10", forRemoval = true)
+    public static final String SAML_REQUEST = HTTP_PARAMETER_SAML_REQUEST;
 
-    public static final String SAML_RESPONSE = "SAMLResponse";
+    /**
+     * @deprecated since 2025.10, use
+     *             {@link org.nuxeo.ecm.platform.auth.saml.SAMLConstants#HTTP_PARAMETER_SAML_RESPONSE} instead.
+     */
+    @Deprecated(since = "2025.10", forRemoval = true)
+    public static final String SAML_RESPONSE = HTTP_PARAMETER_SAML_RESPONSE;
 
     protected final String bindingURI;
 
@@ -75,6 +89,7 @@ public enum SAMLInboundBinding implements SAMLBinding {
     }
 
     public static boolean iSAMLObjectPresent(ServletRequest request) {
-        return request.getParameter(SAML_REQUEST) != null || request.getParameter(SAML_RESPONSE) != null;
+        return request.getParameter(HTTP_PARAMETER_SAML_REQUEST) != null
+                || request.getParameter(HTTP_PARAMETER_SAML_RESPONSE) != null;
     }
 }

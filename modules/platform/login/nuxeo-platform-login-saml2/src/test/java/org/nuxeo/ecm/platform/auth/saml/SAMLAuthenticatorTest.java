@@ -25,13 +25,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration.SKEW_TIME_MS;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_PARAMETER_SAML_REQUEST;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_PARAMETER_SAML_RESPONSE;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_SESSION_SAML_SESSION;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.assertSAMLMessage;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.encodeSAMLMessage;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.extractQueryParam;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.format;
-import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.SAML_SESSION_KEY;
-import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding.SAML_REQUEST;
-import static org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding.SAML_RESPONSE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 
 import java.time.Instant;
@@ -102,7 +102,7 @@ public class SAMLAuthenticatorTest {
                         </saml2p:AuthnRequest>
                         """,
                 AuthnRequest::getID, format(AuthnRequest::getIssueInstant));
-        var actual = extractQueryParam(redirectURL, SAML_REQUEST);
+        var actual = extractQueryParam(redirectURL, HTTP_PARAMETER_SAML_REQUEST);
         assertSAMLMessage(expected, actual);
     }
 
@@ -121,7 +121,7 @@ public class SAMLAuthenticatorTest {
                         </saml2p:AuthnRequest>
                         """,
                 AuthnRequest::getID, format(AuthnRequest::getIssueInstant));
-        var actual = extractQueryParam(loginURL, SAML_REQUEST);
+        var actual = extractQueryParam(loginURL, HTTP_PARAMETER_SAML_REQUEST);
         assertSAMLMessage(expected, actual);
     }
 
@@ -182,7 +182,7 @@ public class SAMLAuthenticatorTest {
                 </samlp:Response>
                 """.formatted("_" + UUID.randomUUID(), now, "_" + UUID.randomUUID(), now, now, now);
         var encodedSamlResponse = encodeSAMLMessage(samlResponse);
-        requestHandler.whenGetParameterThenReturn(SAML_RESPONSE, encodedSamlResponse);
+        requestHandler.whenGetParameterThenReturn(HTTP_PARAMETER_SAML_RESPONSE, encodedSamlResponse);
 
         var responseHandler = MockHttpServletResponse.init();
 
@@ -194,7 +194,7 @@ public class SAMLAuthenticatorTest {
         var redirectUri = requestHandler.getSessionAttributeValue(NXAuthConstants.START_PAGE_SAVE_KEY);
         assertEquals("/relay", redirectUri);
 
-        Cookie cookie = responseHandler.getCookie(SAML_SESSION_KEY);
+        Cookie cookie = responseHandler.getCookie(HTTP_SESSION_SAML_SESSION);
         assertNotNull(cookie);
         assertTrue(cookie.isHttpOnly());
     }
@@ -215,8 +215,9 @@ public class SAMLAuthenticatorTest {
         var encodedSamlRequest = encodeSAMLMessage(samlRequest);
 
         var requestHandler = MockHttpServletRequest.init("POST", "http://localhost:8080/login")
-                                                   .whenGetParameterThenReturn(SAML_REQUEST, encodedSamlRequest)
-                                                   .whenGetCookieThenReturn(SAML_SESSION_KEY,
+                                                   .whenGetParameterThenReturn(HTTP_PARAMETER_SAML_REQUEST,
+                                                           encodedSamlRequest)
+                                                   .whenGetCookieThenReturn(HTTP_SESSION_SAML_SESSION,
                                                            "sessionId|user@dummy|format");
         var responseHandler = MockHttpServletResponse.init();
 
@@ -254,7 +255,7 @@ public class SAMLAuthenticatorTest {
     @Test
     public void testLogoutRequest() {
         var requestHandler = MockHttpServletRequest.init()
-                                                   .whenGetCookieThenReturn(SAML_SESSION_KEY,
+                                                   .whenGetCookieThenReturn(HTTP_SESSION_SAML_SESSION,
                                                            "sessionId|user@dummy|format");
         var responseHandler = MockHttpServletResponse.init();
 
@@ -270,7 +271,7 @@ public class SAMLAuthenticatorTest {
                         </saml2p:LogoutRequest>
                         """,
                 LogoutRequest::getID, format(LogoutRequest::getIssueInstant));
-        var actual = extractQueryParam(logoutURL, SAML_REQUEST);
+        var actual = extractQueryParam(logoutURL, HTTP_PARAMETER_SAML_REQUEST);
         assertSAMLMessage(expected, actual);
     }
 
@@ -324,7 +325,8 @@ public class SAMLAuthenticatorTest {
         var encodedSamlResponse = encodeSAMLMessage(samlResponse);
 
         var requestHandler = MockHttpServletRequest.init("POST", "http://localhost:8080/login")
-                                                   .whenGetParameterThenReturn(SAML_RESPONSE, encodedSamlResponse)
+                                                   .whenGetParameterThenReturn(HTTP_PARAMETER_SAML_RESPONSE,
+                                                           encodedSamlResponse)
                                                    .whenGetParameterThenReturn("RelayState", "/relay");
         var responseHandler = MockHttpServletResponse.init();
 
@@ -382,7 +384,8 @@ public class SAMLAuthenticatorTest {
         var encodedSamlResponse = encodeSAMLMessage(samlResponse);
 
         var requestHandler = MockHttpServletRequest.init("POST", "http://localhost:8080/login")
-                                                   .whenGetParameterThenReturn(SAML_RESPONSE, encodedSamlResponse)
+                                                   .whenGetParameterThenReturn(HTTP_PARAMETER_SAML_RESPONSE,
+                                                           encodedSamlResponse)
                                                    .whenGetParameterThenReturn("RelayState", "/relay");
         var responseHandler = MockHttpServletResponse.init();
 

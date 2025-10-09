@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.auth.saml;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_SESSION_SAML_SESSION;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 
 import java.util.Optional;
@@ -44,7 +45,12 @@ import org.opensaml.saml.saml2.core.NameIDType;
  */
 public final class SAMLUtils {
 
-    public static final String SAML_SESSION_KEY = "SAML_SESSION";
+    /**
+     * @deprecated since 2025.10, use {@link org.nuxeo.ecm.platform.auth.saml.SAMLConstants#HTTP_SESSION_SAML_SESSION}
+     *             instead.
+     */
+    @Deprecated(since = "2025.10", forRemoval = true)
+    public static final String SAML_SESSION_KEY = HTTP_SESSION_SAML_SESSION;
 
     private SAMLUtils() {
         // utility class
@@ -79,7 +85,7 @@ public final class SAMLUtils {
     public static Optional<Cookie> getSAMLHttpCookie(HttpServletRequest request) {
         return Stream.ofNullable(request.getCookies())
                      .flatMap(Stream::of)
-                     .filter(c -> SAML_SESSION_KEY.equals(c.getName()))
+                     .filter(c -> HTTP_SESSION_SAML_SESSION.equals(c.getName()))
                      .findFirst();
     }
 
@@ -100,7 +106,7 @@ public final class SAMLUtils {
     public record SAMLSessionCookie(String sessionId, String nameValue, String nameFormat) {
 
         public Cookie toCookie(HttpServletRequest request) {
-            return CookieHelper.createCookie(request, SAML_SESSION_KEY,
+            return CookieHelper.createCookie(request, HTTP_SESSION_SAML_SESSION,
                     String.join("|", sessionId, nameValue, nameFormat));
         }
 

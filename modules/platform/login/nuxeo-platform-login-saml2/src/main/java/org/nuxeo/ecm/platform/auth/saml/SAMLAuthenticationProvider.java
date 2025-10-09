@@ -19,10 +19,13 @@
 package org.nuxeo.ecm.platform.auth.saml;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_ATTRIBUTE_SAML_CREDENTIAL;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_ATTRIBUTE_SAML_LOGOUT;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.getSAMLHttpCookie;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.getSAMLSessionCookie;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.setLoginError;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_MISSING;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,6 +41,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.auth.saml.processor.SAMLProcessorFactory;
@@ -173,11 +177,25 @@ public class SAMLAuthenticationProvider
             }
         }
 
-        String loginURL = computeUrl(request, null);
+        // handle logout case - SAML SSO and SLO are exposed on the same path resulting to
+        // - handleRetrieveIdentity returns null as the user is logged out
+        // - NuxeoAuthenticationFilter will handle the login flow as identity was not retrieved
+        // - regular case would forward to SAML Idp, but in the logout case we want to redirect to login page to start
+        // a new authentication flow
+        String redirectURL;
+        if (Boolean.TRUE.equals(request.getAttribute(HTTP_ATTRIBUTE_SAML_LOGOUT))) {
+            redirectURL = URIUtils.addParametersToURIQuery(LoginScreenHelper.getStartupPageURL(request),
+                    // parameter to avoid saving the current location containing the SAML LogoutResponse parameter
+                    Map.of(LOGIN_MISSING, ""));
+        } else {
+            redirectURL = computeUrl(request, null);
+        }
+
         try {
-            response.sendRedirect(loginURL);
+            log.debug("Logout redirect URL: {}", redirectURL);
+            response.sendRedirect(redirectURL);
         } catch (IOException e) {
-            log.error("Unable to send redirect on {}", loginURL, e);
+            log.error("Unable to send redirect to: {}", redirectURL, e);
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
@@ -202,9 +220,10 @@ public class SAMLAuthenticationProvider
         }
 
         // handle SLO
-        var credential = (SAMLCredential) request.getAttribute("SAMLCredential");
+        var credential = (SAMLCredential) request.getAttribute(HTTP_ATTRIBUTE_SAML_CREDENTIAL);
         if (credential == null) {
             // credential may be null in case of SLO
+            request.setAttribute(HTTP_ATTRIBUTE_SAML_LOGOUT, Boolean.TRUE);
             return null;
         }
 
