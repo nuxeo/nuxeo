@@ -81,7 +81,7 @@ public class StreamOrphanBlobGC implements StreamProcessorTopology {
                 RepositoryService rs = Framework.getService(RepositoryService.class);
                 boolean allReposWithBlobKeys = rs.getRepositoryNames().stream().allMatch(repo -> {
                     if (!rs.getRepository(repo).hasCapability(Repository.CAPABILITY_QUERY_BLOB_KEYS)) {
-                        log.warn("Cannot delete blobs because ecm:blobKeys capabilty is missing on repository: {}",
+                        log.warn("Cannot delete blobs because ecm:blobKeys capability is missing on repository: {}",
                                 repo);
                         return false;
                     }
