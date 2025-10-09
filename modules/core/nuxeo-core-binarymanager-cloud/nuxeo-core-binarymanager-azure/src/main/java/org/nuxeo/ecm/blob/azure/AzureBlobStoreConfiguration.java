@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.blob.azure;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,13 +58,64 @@ public class AzureBlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public static final String DELIMITER = "/";
 
+    // Upload properties
+
+    /**
+     * @since 2025.10
+     */
+    public static final long BLOCK_SIZE_DEFAULT = (long) (4 * 1024 * 1024); // 4 MiB
+
+    /**
+     * @since 2025.10
+     */
+    public static final String BLOCK_SIZE_PROPERTY = "upload.blockSize";
+
+    /**
+     * @since 2025.10
+     */
+    public static final int MAX_CONCURRENCY_DEFAULT = 2;
+
+    /**
+     * @since 2025.10
+     */
+    public static final String MAX_CONCURRENCY_PROPERTY = "upload.maxConcurrency";
+
+    /**
+     * @since 2025.10
+     */
+    public static final long MAX_SINGLE_UPLOAD_SIZE_DEFAULT = (long) 8 * 1024 * 1024; // 8 MiB
+
+    /**
+     * @since 2025.10
+     */
+    public static final String MAX_SINGLE_UPLOAD_SIZE_PROPERTY = "upload.maxSingleUploadSize";
+
+    /**
+     * @since 2025.10
+     */
+    public static final Duration UPLOAD_TIMEOUT_DEFAULT = Duration.ofHours(2);
+
+    /**
+     * @since 2025.10
+     */
+    public static final String UPLOAD_TIMEOUT_PROPERTY = "upload.timeout";
+
+    protected final long blockSize;
+
+    protected final int maxConcurrency;
+
+    protected final long maxSingleUploadSize;
+
+    protected final Duration uploadTimeout;
+    // End upload properties
+
     protected final String cdnHost;
 
     protected final String containerName;
 
     protected String prefix;
 
-    protected BlobContainerClient client;
+    protected final BlobContainerClient client;
 
     public AzureBlobStoreConfiguration(Map<String, String> properties) throws IOException {
         super(SYSTEM_PROPERTY_PREFIX, properties);
@@ -95,6 +147,11 @@ public class AzureBlobStoreConfiguration extends CloudBlobStoreConfiguration {
                 prefix += delimiter;
             }
         }
+        blockSize = getOptionalLongProperty(BLOCK_SIZE_PROPERTY).orElse(BLOCK_SIZE_DEFAULT);
+        maxConcurrency = getOptionalIntegerProperty(MAX_CONCURRENCY_PROPERTY).orElse(MAX_CONCURRENCY_DEFAULT);
+        maxSingleUploadSize = getOptionalLongProperty(MAX_SINGLE_UPLOAD_SIZE_PROPERTY).orElse(
+                MAX_SINGLE_UPLOAD_SIZE_DEFAULT);
+        uploadTimeout = getOptionalDurationProperty(UPLOAD_TIMEOUT_PROPERTY).orElse(UPLOAD_TIMEOUT_DEFAULT);
     }
 
 }

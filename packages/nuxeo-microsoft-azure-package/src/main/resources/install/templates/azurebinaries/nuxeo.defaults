@@ -13,6 +13,12 @@ nuxeo.storage.azure.endpointProtocol=https
 #nuxeo.storage.azure.directdownload=
 #nuxeo.storage.azure.directdownload.expire=
 
+# Upload settings
+nuxeo.storage.azure.upload.blockSize=
+nuxeo.storage.azure.upload.maxConcurrency=
+nuxeo.storage.azure.upload.maxSingleUploadSize=
+nuxeo.storage.azure.upload.timeout=
+
 nuxeo.core.binarymanager=org.nuxeo.ecm.blob.azure.AzureBlobProvider
 
 # Enable CDN

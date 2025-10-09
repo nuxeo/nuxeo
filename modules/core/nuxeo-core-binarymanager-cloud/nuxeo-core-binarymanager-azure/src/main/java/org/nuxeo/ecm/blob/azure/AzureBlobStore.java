@@ -21,11 +21,11 @@ package org.nuxeo.ecm.blob.azure;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -50,6 +50,8 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobRange;
 import com.azure.storage.blob.models.ListBlobsOptions;
+import com.azure.storage.blob.models.ParallelTransferOptions;
+import com.azure.storage.blob.options.BlobUploadFromFileOptions;
 
 /**
  * @since 2023.6
@@ -140,7 +142,8 @@ public class AzureBlobStore extends AbstractBlobStore {
     public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean move) throws IOException {
         BlobStore unwrappedSourceStore = sourceStore.unwrap();
         if (unwrappedSourceStore instanceof AzureBlobStore sourceAzureBlobStore) {
-            BlobClient sourceBlobClient = sourceAzureBlobStore.client.getBlobClient(sourceAzureBlobStore.prefix + key);
+            BlobClient sourceBlobClient = sourceAzureBlobStore.client.getBlobClient(
+                    sourceAzureBlobStore.prefix + sourceKey);
             if (!sourceBlobClient.exists()) {
                 return null;
             }
@@ -149,7 +152,7 @@ public class AzureBlobStore extends AbstractBlobStore {
             BlobClient destBlobClient = client.getBlobClient(prefix + key);
             // if the digest is not already known then save to Azure
             if (!destBlobClient.exists()) {
-                destBlobClient.copyFromUrl(sourceBlobSasURL);
+                destBlobClient.getBlockBlobClient().uploadFromUrl(sourceBlobSasURL);
             }
             if (move) {
                 sourceStore.deleteBlob(sourceKey);
@@ -176,14 +179,7 @@ public class AzureBlobStore extends AbstractBlobStore {
                 }
                 file = tmp;
             }
-            BlobClient blobClient = client.getBlobClient(prefix + key);
-            // if the digest is not already known then save to Azure
-            if (!blobClient.exists()) {
-                File pathFile = file.toFile();
-                try (InputStream is = new FileInputStream(pathFile)) {
-                    blobClient.upload(is, pathFile.length());
-                }
-            }
+            writeFile(key, file);
             if (atomicMove) {
                 sourceStore.deleteBlob(sourceKey);
             }
@@ -196,6 +192,24 @@ public class AzureBlobStore extends AbstractBlobStore {
                     log.warn(e, e);
                 }
             }
+        }
+    }
+
+    protected void writeFile(String key, Path file) {
+        BlobClient blobClient = client.getBlobClient(prefix + key);
+        if (blobClient.exists()) {
+            return;
+        }
+        ParallelTransferOptions parallelTransferOptions = new ParallelTransferOptions();
+        parallelTransferOptions.setBlockSizeLong(config.blockSize)
+                               .setMaxConcurrency(config.maxConcurrency)
+                               .setMaxSingleUploadSizeLong(config.maxSingleUploadSize);
+        BlobUploadFromFileOptions options = new BlobUploadFromFileOptions(file.toString());
+        options.setParallelTransferOptions(parallelTransferOptions);
+        try {
+            blobClient.uploadFromFileWithResponse(options, config.uploadTimeout, null);
+        } catch (UncheckedIOException e) {
+            throw new NuxeoException("Failed to write blob: " + key, e);
         }
     }
 
@@ -284,13 +298,7 @@ public class AzureBlobStore extends AbstractBlobStore {
             }
             // if the digest is not already known then save to Azure
             log.debug("Storing blob with digest: {} to Azure", key);
-            BlobClient blobClient = client.getBlobClient(prefix + key);
-            if (!blobClient.exists()) {
-                File pathFile = file.toFile();
-                try (InputStream is = new FileInputStream(pathFile)) {
-                    blobClient.upload(is, pathFile.length());
-                }
-            }
+            writeFile(key, file);
             return key;
         } finally {
             if (tmp != null) {
