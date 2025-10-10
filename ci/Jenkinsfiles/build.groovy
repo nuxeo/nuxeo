@@ -365,6 +365,9 @@ pipeline {
     }
 
     stage('Build Docker image') {
+      options {
+        timeout(time: 45, unit: 'MINUTES')
+      }
       steps {
         container('maven') {
           nxWithGitHubStatus(context: 'docker/build', message: 'Build Docker images') {
