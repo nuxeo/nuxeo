@@ -86,6 +86,12 @@ public class UserGroupTest extends BaseUserTest {
             () -> restServerFeature.getRestApiUrl());
 
     @Rule
+    public final HttpClientTestRule powerUserHttpClient = HttpClientTestRule.builder()
+                                                                            .url(() -> restServerFeature.getRestApiUrl())
+                                                                            .credentials("user0", "user0")
+                                                                            .build();
+
+    @Rule
     public final HttpClientTestRule nonAdminHttpClient = HttpClientTestRule.builder()
                                                                            .url(() -> restServerFeature.getRestApiUrl())
                                                                            .credentials("user1", "user1")
@@ -762,7 +768,7 @@ public class UserGroupTest extends BaseUserTest {
 
     // NXP-22771
     @Test
-    public void itReturnsAdminStatusAndGroupsForAdminOnly() {
+    public void itDoesNotReturnAdminStatusAndGroupsForNonAdmin() {
         // When I GET the administrator user
         nonAdminHttpClient.buildGetRequest("/user/Administrator")
                           .executeAndConsume(new JsonNodeHandler(),
@@ -785,6 +791,32 @@ public class UserGroupTest extends BaseUserTest {
                                       assertNotNull(node.get("properties"));
                                       assertNotNull(node.get("properties").get("groups"));
                                   });
+    }
+
+    @Test
+    public void itReturnsPowerUserGroupsForPowerUser() {
+        // As a power user, when I GET myself
+        powerUserHttpClient.buildGetRequest("/user/user0")
+                           .executeAndConsume(new JsonNodeHandler(),
+                                   // Then it does not tell I am not an administrator
+                                   // But it does show my groups
+                                   node -> {
+                                       assertEqualsUser("user0", "Steve", "Jobs", node);
+                                       assertNull(node.get("isAdministrator"));
+                                       assertNotNull(node.get("properties"));
+                                       assertNotNull(node.get("properties").get("groups"));
+                                   });
+        // As a power user, When I GET the administrator user
+        powerUserHttpClient.buildGetRequest("/user/Administrator")
+                           .executeAndConsume(new JsonNodeHandler(),
+                                   // Then it does not tell the user is administrator
+                                   // And it does not show its groups
+                                   node -> {
+                                       assertEqualsUser("Administrator", "", "", node);
+                                       assertNull(node.get("isAdministrator"));
+                                       assertNotNull(node.get("properties"));
+                                       assertNull(node.get("properties").get("groups"));
+                                   });
     }
 
     // NXP-33128

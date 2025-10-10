@@ -112,10 +112,11 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
     protected void writeEntityBody(NuxeoPrincipal principal, JsonGenerator jg) throws IOException {
         var currentPrincipal = NuxeoPrincipal.getCurrent();
         var isCurrentUserAdministrator = currentPrincipal != null && currentPrincipal.isAdministrator();
+        var showGroups = isCurrentUserAdministrator || !principal.isAdministrator();
         jg.writeStringField("id", principal.getId());
         jg.writeStringField("name", principal.getName());
-        writeProperties(jg, principal, isCurrentUserAdministrator);
-        if (isCurrentUserAdministrator) {
+        writeProperties(jg, principal, showGroups);
+        if (showGroups) {
             writeExtendedGroups(jg, principal);
         }
         DocumentModel model = principal.getModel();
@@ -128,8 +129,7 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
         jg.writeBooleanField("isAnonymous", principal.isAnonymous());
     }
 
-    private void writeProperties(JsonGenerator jg, NuxeoPrincipal principal, boolean isCurrentUserAdministrator)
-            throws IOException {
+    private void writeProperties(JsonGenerator jg, NuxeoPrincipal principal, boolean showGroups) throws IOException {
         DocumentModel doc = principal.getModel();
         if (doc == null) {
             return;
@@ -144,8 +144,7 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
         for (Property property : properties) {
             String localName = property.getField().getName().getLocalName();
             boolean isPasswordField = localName.equals(getPasswordField());
-            boolean isGroupFieldAndHidden = !isCurrentUserAdministrator && principal.isAdministrator()
-                    && localName.equals(userManager.getUserConfig().groupsKey);
+            boolean isGroupFieldAndHidden = !showGroups && localName.equals(userManager.getUserConfig().groupsKey);
             if (!isPasswordField && !isGroupFieldAndHidden) {
                 jg.writeFieldName(localName);
                 OutputStream out = new OutputStreamWithJsonWriter(jg);
