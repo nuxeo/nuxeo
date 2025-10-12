@@ -4066,7 +4066,7 @@
       <dependency>
         <groupId>com.squareup.okio</groupId>
         <artifactId>okio-jvm</artifactId>
-        <version>3.11.0</version>
+        <version>3.16.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.thrift</groupId>
