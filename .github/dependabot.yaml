@@ -6,11 +6,26 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    # Disable version updates on 2023, we only want security updates on this maintenance branch
-    open-pull-requests-limit: 0
+      time: "00:00"
+      timezone: "Europe/Paris"
+    # Limit version updates to 10 to prevent CI overload
+    open-pull-requests-limit: 10
+    # Group all version updates (patch only)
+    groups:
+      version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
     ignore:
-      # Tomcat security updates, handled externally
+      # Tomcat security and version updates, handled externally
       - dependency-name: "org.apache.tomcat:tomcat*"
+
+      # Major and minor version updates
+      - dependency-name: "*"
+        update-types: [
+          "version-update:semver-major",
+          "version-update:semver-minor"
+        ]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -22,7 +37,7 @@ updates:
       version-updates:
         applies-to: "version-updates"
         patterns:
-        - "*"
+          - "*"
 
   # Branch 2025
   # Maven
@@ -33,13 +48,13 @@ updates:
         interval: "daily"
         time: "01:00"
         timezone: "Europe/Paris"
-    # Enable version updates on 2025, limit to 10 to prevent CI overload
+    # Limit version updates to 10 to prevent CI overload
     open-pull-requests-limit: 10
     # Group all version updates (minor and patch)
     groups:
       version-updates:
         patterns:
-        - "*"
+          - "*"
     # Cooldown period for patch version updates, such as AWS SDK BOM released very frequently
     cooldown:
       semver-patch-days: 7
@@ -105,4 +120,4 @@ updates:
     groups:
       version-updates:
         patterns:
-        - "*"
+          - "*"
