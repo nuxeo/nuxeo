@@ -92,6 +92,8 @@ public abstract class AbstractChangeFinderTestCase {
 
     protected static final String FOLDER_3 = "folder3";
 
+    protected static final String FOLDER_3_PATH = "/folder3";
+
     protected static final String FOLDER_TYPE = "Folder";
 
     protected static final String FOLDERISH_COLLECTION = "FolderishCollection";

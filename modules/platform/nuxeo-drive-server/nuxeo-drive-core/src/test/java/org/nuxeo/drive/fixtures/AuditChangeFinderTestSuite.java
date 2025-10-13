@@ -1629,4 +1629,64 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         }
     }
 
+    // NXP-33356
+    @Test
+    public void testTrashUntrashDocumentDeniedAccess() {
+        DocumentModel doc;
+        List<FileSystemItemChange> changes;
+        try {
+            log.trace("Register a sync root for Administrator");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder3, session);
+            log.trace("Create a doc in this sync root");
+            doc = session.createDocumentModel(FOLDER_3_PATH, "doc", "File");
+            doc.setPropertyValue(FILE_CONTENT, new StringBlob("The file content."));
+            doc = session.createDocument(doc);
+            log.trace("Trash a folder whose access is denied for user1");
+            trashService.trashDocument(doc);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+        try {
+            // Get changes for user1
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(0, changes.size());
+
+            log.trace("Restore a folder whose access is denied for user1");
+            // Re-fetch document to make sure its name is up-to-date
+            doc = session.getDocument(doc.getRef());
+            trashService.untrashDocument(doc);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+        try {
+            // Get changes for user1
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(0, changes.size());
+
+            log.trace("Trash a sync root whose access is denied for user1");
+            trashService.trashDocument(folder3);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+        try {
+            // Get changes for user1
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(0, changes.size());
+
+            log.trace("Restore a sync root whose access is denied for user1");
+            // Re-fetch document to make sure its name is up-to-date
+            folder3 = session.getDocument(folder3.getRef());
+            trashService.untrashDocument(folder3);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+        try {
+            // Get changes for user1
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(0, changes.size());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
 }

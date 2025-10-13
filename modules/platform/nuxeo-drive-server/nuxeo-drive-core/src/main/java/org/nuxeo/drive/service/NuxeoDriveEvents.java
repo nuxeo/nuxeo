@@ -20,6 +20,8 @@
  */
 package org.nuxeo.drive.service;
 
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+
 /**
  * Core event related constants for Nuxeo Drive.
  *
@@ -56,5 +58,8 @@ public final class NuxeoDriveEvents {
     public static final String SECURITY_UPDATED_EVENT = "securityUpdated";
 
     public static final String MOVED_EVENT = "moved";
+
+    /** @since 2025.10 */
+    public static final String ABOUT_TO_REMOVE_EVENT = DocumentEventTypes.ABOUT_TO_REMOVE;
 
 }

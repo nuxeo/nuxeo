@@ -130,6 +130,13 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 log.debug("Found extended info in audit log entry: document has been deleted, moved,"
                         + " is an unregistered synchronization root or its security has been updated,"
                         + " we just know the FileSystemItem id and name.");
+                // Ignore trashed documents to which the current user doesn't have access
+                if ("deleted".equals(entry.getEventId()) && !session.exists(docRef)) {
+                    log.debug(
+                            "Document {} ({}) doesn't exist, it has been removed or the current user doesn't have access to it, not adding entry to the change summary.",
+                            entry::getDocPath, () -> docRef);
+                    continue;
+                }
                 boolean isChangeSet = false;
                 // First try to adapt the document as a FileSystemItem to provide it to the FileSystemItemChange entry,
                 // only in the case of a move or a security update.
@@ -159,8 +166,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                             entry::getDocPath, () -> docRef);
                     String fsId = fsIdInfo.getValue(String.class);
                     String eventId;
-                    if (NuxeoDriveEvents.MOVED_EVENT.equals(entry.getEventId())) {
-                        // Move to a non synchronization root
+                    if (NuxeoDriveEvents.MOVED_EVENT.equals(entry.getEventId())
+                            || NuxeoDriveEvents.ABOUT_TO_REMOVE_EVENT.equals(entry.getEventId())) {
+                        // Move to a non synchronization root or an unauthorized folder, or permanent removal
                         eventId = NuxeoDriveEvents.DELETED_EVENT;
                     } else {
                         // Deletion, unregistration or security update
