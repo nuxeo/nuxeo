@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -107,6 +108,9 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(eventName) && !handleAboutToRemove(doc)) {
             return;
         }
+        if (DocumentEventTypes.ABOUT_TO_MOVE.equals(eventName) && !handleAboutToMove(doc, ctx)) {
+            return;
+        }
         log.debug("NuxeoDriveFileSystemDeletionListener handling {} event for {}", event::getName, () -> doc);
         // Virtual event name
         String virtualEventName;
@@ -158,6 +162,18 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         // Document deletion of document that are already in the trash should not be marked as FS deletion to avoid
         // duplicates
         return !doc.isTrashed();
+    }
+
+    protected boolean handleAboutToMove(DocumentModel doc, DocumentEventContext ctx) {
+        // Move of document ready to be trashed or untrashed should not be marked as FS deletion to avoid duplicates
+        // This happens when adding or removing the "_.trashed" suffix to a document's name before actually trashing
+        // or untrashing it
+        TrashService trashService = Framework.getService(TrashService.class);
+        if (trashService.isMangledName(doc.getName())) {
+            return false;
+        }
+        String newName = (String) ctx.getProperty(CoreEventConstants.DESTINATION_NAME);
+        return newName == null || !trashService.isMangledName(newName);
     }
 
     protected void fireVirtualEventLogEntries(DocumentModel doc, String eventName, NuxeoPrincipal principal,

@@ -187,11 +187,13 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
         try {
             changes = getChanges();
-            assertEquals(2, changes.size());
+            assertEquals(1, changes.size());
             assertEquals(new SimpleFileSystemItemChange(doc1.getId(), DELETED_EVENT, TEST_REPOSITORY,
                     FILE_SYSTEM_ITEM_ID_PREFIX + doc1.getId()), toSimpleFileSystemItemChange(changes.get(0)));
 
             log.trace("Restore a deleted document and move a document in a newly synchronized root");
+            // Re-fetch document to make sure its name is up-to-date
+            doc1 = session.getDocument(doc1.getRef());
             trashService.untrashDocument(doc1);
             session.move(doc3.getRef(), folder2.getRef(), null);
             nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder2, session);
@@ -201,7 +203,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
         try {
             changes = getChanges();
-            assertEquals(3, changes.size());
+            assertEquals(4, changes.size());
             Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), ROOT_REGISTERED, TEST_REPOSITORY,
                     DEFAULT_SYNC_ROOT_FOLDER_ITEM_FACTORY_PREFIX + folder2.getId()));
@@ -212,6 +214,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             } else {
                 expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentUntrashed", TEST_REPOSITORY));
             }
+            expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentMoved", TEST_REPOSITORY));
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 
             log.trace("Physical deletion without triggering the delete transition first");
@@ -750,10 +753,10 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             assertTrue(activeRootRefs.isEmpty());
 
             // The deletion of the root itself is mapped as filesystem
-            // deletion event + trash service event
+            // deletion event
             changeSummary = getChangeSummary(admin);
             changes = changeSummary.getFileSystemChanges();
-            assertEquals(2, changes.size());
+            assertEquals(1, changes.size());
             assertEquals(
                     new SimpleFileSystemItemChange(folder1.getId(), DELETED_EVENT, TEST_REPOSITORY,
                             FILE_SYSTEM_ITEM_ID_PREFIX + folder1.getId()),
