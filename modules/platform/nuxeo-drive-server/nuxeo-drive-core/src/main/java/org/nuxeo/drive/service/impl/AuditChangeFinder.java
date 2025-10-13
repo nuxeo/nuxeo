@@ -196,13 +196,13 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                             entry::getDocPath, () -> docRef);
                 } else {
                     if (DocumentEventTypes.BLOB_DIGEST_UPDATED.equals(entry.getEventId())) {
-                        ExtendedInfo oldDigestInfo = extendedInfos.get(CoreEventConstants.BLOB_DIGEST_UPDATED_OLD_DIGEST);
+                        ExtendedInfo oldDigestInfo = extendedInfos.get(
+                                CoreEventConstants.BLOB_DIGEST_UPDATED_OLD_DIGEST);
                         if (oldDigestInfo != null) {
                             String oldDigest = oldDigestInfo.getValue(String.class);
                             if (oldDigest != null) {
                                 FileSystemItem fsItem = change.getFileSystemItem();
-                                if (fsItem instanceof DocumentBackedFileItem) {
-                                    DocumentBackedFileItem dbfi = (DocumentBackedFileItem) fsItem;
+                                if (fsItem instanceof DocumentBackedFileItem dbfi) {
                                     dbfi.setOldDigest(oldDigest);
                                 }
                             }
@@ -316,7 +316,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         for (String rootPath : rootPaths) {
             rootPathCount++;
             String rootPathParam = "rootPath" + rootPathCount;
-            if (rootPathClause.length() > 0) {
+            if (!rootPathClause.isEmpty()) {
                 rootPathClause.append(" or ");
             }
             rootPathClause.append(String.format("log.docPath like :%s", rootPathParam));
@@ -350,8 +350,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         FileSystemItem fsItem = null;
         try {
             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-            fsItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc, false, false,
-                    false);
+            fsItem = Framework.getService(FileSystemItemAdapterService.class)
+                              .getFileSystemItem(doc, false, false, false);
         } catch (RootlessItemException e) {
             // Can happen for an unregistered synchronization root that cannot
             // be adapted as a FileSystemItem: nothing to do.

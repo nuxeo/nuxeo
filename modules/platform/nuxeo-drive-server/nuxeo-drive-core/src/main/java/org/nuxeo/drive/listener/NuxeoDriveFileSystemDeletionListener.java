@@ -81,40 +81,39 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        DocumentEventContext ctx;
-        if (event.getContext() instanceof DocumentEventContext) {
-            ctx = (DocumentEventContext) event.getContext();
-        } else {
+        if (!(event.getContext() instanceof DocumentEventContext)) {
             // Not interested in events that are not related to documents
             return;
         }
+        DocumentEventContext ctx = (DocumentEventContext) event.getContext();
         DocumentModel doc = ctx.getSourceDocument();
         if (doc.hasFacet(FacetNames.SYSTEM_DOCUMENT)) {
             // Not interested in system documents
             return;
         }
+        String eventName = event.getName();
         DocumentModel docForLogEntry = doc;
-        if (DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
+        if (DocumentEventTypes.BEFORE_DOC_UPDATE.equals(eventName)) {
             docForLogEntry = handleBeforeDocUpdate(ctx, doc);
             if (docForLogEntry == null) {
                 return;
             }
         }
         // Fallback on the transition event check
-        if (!DOCUMENT_TRASHED.equals(event.getName()) && LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())
+        if (!DOCUMENT_TRASHED.equals(eventName) && LifeCycleConstants.TRANSITION_EVENT.equals(eventName)
                 && !handleLifeCycleTransition(ctx)) {
             return;
         }
-        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && !handleAboutToRemove(doc)) {
+        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(eventName) && !handleAboutToRemove(doc)) {
             return;
         }
         log.debug("NuxeoDriveFileSystemDeletionListener handling {} event for {}", event::getName, () -> doc);
         // Virtual event name
         String virtualEventName;
-        if (DocumentEventTypes.BEFORE_DOC_SECU_UPDATE.equals(event.getName())
-                || NuxeoDriveEvents.GROUP_UPDATED.equals(event.getName())) {
+        if (DocumentEventTypes.BEFORE_DOC_SECU_UPDATE.equals(eventName)
+                || NuxeoDriveEvents.GROUP_UPDATED.equals(eventName)) {
             virtualEventName = NuxeoDriveEvents.SECURITY_UPDATED_EVENT;
-        } else if (DocumentEventTypes.ABOUT_TO_MOVE.equals(event.getName())) {
+        } else if (DocumentEventTypes.ABOUT_TO_MOVE.equals(eventName)) {
             virtualEventName = NuxeoDriveEvents.MOVED_EVENT;
         } else {
             virtualEventName = NuxeoDriveEvents.DELETED_EVENT;
