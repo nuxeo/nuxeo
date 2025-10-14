@@ -30,7 +30,8 @@ import org.nuxeo.common.utils.FileMatcher;
 public class JarUtils {
 
     // the r? is for supporting version like: caja-r1234
-    public final static Pattern JAR_NAME = Pattern.compile("(.*?)-(r?\\d[\\w.\\-]*)\\.jar");
+    // 2nd group will match the last version (with dots) in the filename, with an optional qualifier
+    public static final Pattern JAR_NAME = Pattern.compile("^(.+?)-(r?\\d+(?:\\.\\w+)*(?:-\\w+)*)\\.jar$");
 
     public final static Pattern JAR_WITHOUT_VERSION_NAME = Pattern.compile("(.+)\\.jar");
 

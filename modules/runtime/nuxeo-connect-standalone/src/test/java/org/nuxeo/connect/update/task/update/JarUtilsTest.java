@@ -54,10 +54,73 @@ public class JarUtilsTest {
 
     // NXP-33139
     @Test
-    public void testFindJarVersionWithDash() {
+    public void testFindJarVersionWithDashInVersion() {
         var match = JarUtils.findJarVersion("zstd-jni-1.5.5-11.jar");
         assertNotNull(match);
         assertEquals("zstd-jni", match.object);
         assertEquals("1.5.5-11", match.version);
+    }
+
+    // NXP-33359
+    @Test
+    public void testFindJarVersionWithNumberInArtifactNameAfterDash() {
+        var match = JarUtils.findJarVersion("nuxeo-3d-viewer-core-2023.2-SNAPSHOT.jar");
+        assertNotNull(match);
+        assertEquals("nuxeo-3d-viewer-core", match.object);
+        assertEquals("2023.2-SNAPSHOT", match.version);
+    }
+
+    // NXP-33359
+    @Test
+    public void testFindJarVersionWithNumberInArtifactNameBeforeDash() {
+        var match = JarUtils.findJarVersion("b1-1.1.jar");
+        assertNotNull(match);
+        assertEquals("b1", match.object);
+        assertEquals("1.1", match.version);
+    }
+
+    // NXP-33359
+    @Test
+    public void testFindJarVersionWithDotInArtifactName() {
+        var match = JarUtils.findJarVersion("jakarta.servlet-api-6.0.0.jar");
+        assertNotNull(match);
+        assertEquals("jakarta.servlet-api", match.object);
+        assertEquals("6.0.0", match.version);
+    }
+
+    // NXP-33359
+    @Test
+    public void testFindJarVersionWithoutDotInVersion() {
+        var match = JarUtils.findJarVersion("oauth-20090531.jar");
+        assertNotNull(match);
+        assertEquals("oauth", match.object);
+        assertEquals("20090531", match.version);
+    }
+
+    // NXP-33359
+    @Test
+    public void testFindJarVersionWithUnderscoreInVersion() {
+        var match = JarUtils.findJarVersion("core-3.4.2.v_883_R34x.jar");
+        assertNotNull(match);
+        assertEquals("core", match.object);
+        assertEquals("3.4.2.v_883_R34x", match.version);
+    }
+
+    // NXP-33359
+    @Test
+    public void testFindJarVersionWithVersionInArtifactName() {
+        var match = JarUtils.findJarVersion("log4j-1.2-api-2.25.2.jar");
+        assertNotNull(match);
+        assertEquals("log4j-1.2-api", match.object);
+        assertEquals("2.25.2", match.version);
+    }
+
+    // NXP-33359
+    @Test
+    public void testFindJarVersionWithHashInVersion() {
+        var match = JarUtils.findJarVersion("jmd-0.8.1-tomasol-3e60e36137.jar");
+        assertNotNull(match);
+        assertEquals("jmd", match.object);
+        assertEquals("0.8.1-tomasol-3e60e36137", match.version);
     }
 }
