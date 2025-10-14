@@ -86,7 +86,7 @@ RUN --mount=type=secret,id=nuxeo-public,target=/etc/yum.repos.d/nuxeo-public.rep
     # ps is not included in the base oraclelinux image
     procps \
     unzip \
-    vim-enhanced-8.2.2637-22.0.1.el9_6 \
+    vim-enhanced-8.2.2637-22.0.1.el9_6.1 \
     wget \
     # Install Java before LibreOffice that depends on it
     zulu17-jdk \
