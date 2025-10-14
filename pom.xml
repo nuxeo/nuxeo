@@ -67,7 +67,7 @@
     <nuxeo.ftest.version>1.8.10</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.14.0</nuxeo.java.client.version>
 
-    <tomcat.version>9.0.110</tomcat.version>
+    <tomcat.version>9.0.111</tomcat.version>
     <opensearch.version>1.3.20</opensearch.version>
     <netty.version>4.2.5.Final</netty.version>
     <netty.boringssl.version>2.0.72.Final</netty.boringssl.version>
