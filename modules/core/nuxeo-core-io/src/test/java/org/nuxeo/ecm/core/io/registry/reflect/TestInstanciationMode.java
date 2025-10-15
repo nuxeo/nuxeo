@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.EACH_TIME;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.PER_THREAD;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.ThreadHelper.getFromAnotherThread;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,7 +40,6 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -120,7 +120,8 @@ public class TestInstanciationMode {
         final PerThreadMarshaller instance2 = inspector.getInstance(ctx);
         assertNotNull(instance2);
         assertSame(instance1, instance2);
-        final PerThreadMarshaller instance3 = getInstanceFromAnotherThread(inspector);
+        // in a different thread, it should be a different instance
+        final PerThreadMarshaller instance3 = getFromAnotherThread(() -> inspector.getInstance(ctx));
         assertNotNull(instance3);
         assertNotSame(instance2, instance3);
     }
@@ -133,29 +134,9 @@ public class TestInstanciationMode {
         final SingletonMarshaller instance2 = inspector.getInstance(ctx);
         assertNotNull(instance2);
         assertSame(instance1, instance2);
-        final SingletonMarshaller instance3 = getInstanceFromAnotherThread(inspector);
+        final SingletonMarshaller instance3 = getFromAnotherThread(() -> inspector.getInstance(ctx));
         assertNotNull(instance3);
         assertSame(instance2, instance3);
-    }
-
-    protected <M extends Writer<Object>> M getInstanceFromAnotherThread(MarshallerInspector inspector)
-            throws Exception {
-        var result = new MutableObject<M>();
-        var err = new MutableObject<RuntimeException>();
-        Thread subThread = new Thread(() -> {
-            try {
-                final M instance3 = inspector.getInstance(ctx);
-                result.setValue(instance3);
-            } catch (RuntimeException e) {
-                err.setValue(e);
-            }
-        });
-        subThread.start();
-        subThread.join();
-        if (err.get() != null) {
-            throw err.get();
-        }
-        return result.get();
     }
 
     @Setup(mode = SINGLETON)

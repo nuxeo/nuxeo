@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.io.registry.reflect.ThreadHelper.getFromAnotherThread;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -88,22 +89,9 @@ public class TestContextInjection {
         final MarshallerInspector inspector = new MarshallerInspector(PerThreadMarshaller.class);
         PerThreadMarshaller instance1 = inspector.getInstance(ctx);
         assertSame(ctx, instance1.ctx);
-        Thread subThread = new Thread() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    // in a different thread, it should be a different instance but same context
-                    final PerThreadMarshaller instance2 = inspector.getInstance(ctx);
-                    assertSame(ctx, instance2.ctx);
-                    notify();
-                }
-            }
-
-        };
-        subThread.start();
-        synchronized (subThread) {
-            subThread.wait();
-        }
+        // in a different thread, it should be a different instance but same context
+        final PerThreadMarshaller instance2 = getFromAnotherThread(() -> inspector.getInstance(ctx));
+        assertSame(ctx, instance2.ctx);
     }
 
     @Test
