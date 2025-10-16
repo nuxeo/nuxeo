@@ -46,6 +46,6 @@ jobs:
         mvn ${{ env.MAVEN_ARGS }} -f ftests/pom.xml install
 
     - name: Submit dependency graph
-      uses: anchore/sbom-action@d8a2c0130026bf585de5c176ab8f7ce62d75bf04 # v0.20.7
+      uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
       with:
         dependency-snapshot: true
