@@ -17,15 +17,39 @@ updates:
         patterns:
           - "*"
     ignore:
-      # Tomcat security and version updates, handled externally
-      - dependency-name: "org.apache.tomcat:tomcat*"
-
       # Major and minor version updates
       - dependency-name: "*"
         update-types: [
           "version-update:semver-major",
           "version-update:semver-minor"
         ]
+
+      # Tomcat security and version updates, handled externally
+      - dependency-name: "org.apache.tomcat:tomcat*"
+
+      # Spurious major version updates
+      - dependency-name: "com.google.apis:google-api-services-drive"
+        versions: [">v2-rev20201130-1.31.0"]
+
+      # Unwanted NX minor version update due to jakarta compatibility
+      - dependency-name: "org.apache.commons:commons-dbcp2"
+        versions: [">2.13"]
+
+      # Patch version updates breaking compilation
+      - dependency-name: "org.apache.directory.server:*"
+        versions: [">1.5.1"]
+      - dependency-name: "org.apache.directory.shared:*"
+        versions: [">0.9.7"]
+      - dependency-name: "io.dropwizard.metrics5:metrics-bom"
+        versions: [">5.0.0-rc3"]
+
+      # Patch version update not interesting
+      - dependency-name: "org.apache.geronimo.components:geronimo-transaction"
+        versions: [">3.1.4-NX1"]
+
+      # Not in our artifact repository
+      - dependency-name: "commons-httpclient:commons-httpclient"
+        versions: [ ">3.1" ] # no update to 3.1-jenkins-x
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
