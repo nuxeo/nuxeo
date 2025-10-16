@@ -62,6 +62,12 @@ updates:
         applies-to: "version-updates"
         patterns:
           - "*"
+    ignore:
+      # Ignore actions that are not working, see https://github.com/anchore/syft/issues/4288
+      - dependency-name: "anchore/sbom-action"
+        versions: [ "v0.20.7" ]
+      - dependency-name: "anchore/scan-action"
+        versions: [ "v7.0.1" ]
 
   # Branch 2025
   # Maven
@@ -145,3 +151,7 @@ updates:
       version-updates:
         patterns:
           - "*"
+    ignore:
+      # Ignore actions that are not working, see https://github.com/anchore/syft/issues/4288
+      - dependency-name: "anchore/scan-action"
+        versions: [ "v7.0.1" ]
