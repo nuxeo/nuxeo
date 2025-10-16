@@ -30,7 +30,7 @@ jobs:
           echo imageName = ${{ inputs.imageName }}
 
       - name: Log in to Docker registry
-        uses: docker/login-action@v3.6.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ env.DOCKER_REGISTRY_USERNAME }}
@@ -40,7 +40,7 @@ jobs:
         run: docker pull ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
 
       - name: Scan Docker image with Grype - console output
-        uses: anchore/scan-action@v7.0.0
+        uses: anchore/scan-action@f6601287cdb1efc985d6b765bbf99cb4c0ac29d8 # v7.0.0
         with:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
@@ -49,7 +49,7 @@ jobs:
       - name: Scan Docker image with Grype - JSON output
         if: always() # necessary as using a failure threshold in the scan step
         id: scan-json
-        uses: anchore/scan-action@v7.0.0
+        uses: anchore/scan-action@f6601287cdb1efc985d6b765bbf99cb4c0ac29d8 # v7.0.0
         with:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
@@ -63,13 +63,13 @@ jobs:
       - name: Scan Docker image with Grype - SARIF output
         if: always() # necessary as using a failure threshold in the scan step
         id: scan-sarif
-        uses: anchore/scan-action@v7.0.0
+        uses: anchore/scan-action@f6601287cdb1efc985d6b765bbf99cb4c0ac29d8 # v7.0.0
         with:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
 
       - name: Upload SARIF file
         if: always() # necessary as using a failure threshold in the scan step
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@f443b600d91635bebf5b0d9ebc620189c0d6fba5 # v4.30.8
         with:
           sarif_file: ${{ steps.scan-sarif.outputs.sarif }}

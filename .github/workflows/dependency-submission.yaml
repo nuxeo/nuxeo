@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
       with:
         java-version: '17'
         distribution: 'zulu'
@@ -46,6 +46,6 @@ jobs:
         mvn ${{ env.MAVEN_ARGS }} -f ftests/pom.xml install
 
     - name: Submit dependency graph
-      uses: anchore/sbom-action@v0
+      uses: anchore/sbom-action@d8a2c0130026bf585de5c176ab8f7ce62d75bf04 # v0.20.7
       with:
         dependency-snapshot: true
