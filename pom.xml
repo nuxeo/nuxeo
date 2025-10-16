@@ -69,8 +69,8 @@
 
     <tomcat.version>9.0.111</tomcat.version>
     <opensearch.version>1.3.20</opensearch.version>
-    <netty.version>4.2.5.Final</netty.version>
-    <netty.boringssl.version>2.0.72.Final</netty.boringssl.version>
+    <netty.version>4.2.7.Final</netty.version>
+    <netty.boringssl.version>2.0.74.Final</netty.boringssl.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <guice.version>3.0</guice.version>
@@ -84,19 +84,19 @@
     <jxls2.version>2.14.0</jxls2.version>
     <keycloak.version>24.0.5</keycloak.version>
     <xdocreport.version>1.0.6</xdocreport.version>
-    <google.http.client.version>1.47.0</google.http.client.version>
+    <google.http.client.version>1.47.1</google.http.client.version>
     <google.oauth.client.version>1.39.0</google.oauth.client.version>
     <google.api.client.version>1.35.2</google.api.client.version>
     <google.api.drive.version>v2-rev20201130-1.31.0</google.api.drive.version>
     <box.api.version>1.1.0</box.api.version>
     <selenium.version>2.53.0</selenium.version>
-    <pdfbox.version>2.0.34</pdfbox.version>
+    <pdfbox.version>2.0.35</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
     <aws.version>1.12.792</aws.version>
     <gcp.version>2.52.3</gcp.version>
-    <jackson1.version>1.9.11</jackson1.version>
-    <jackson.version>2.19.0</jackson.version>
-    <jackson.bom.version>2.19.0</jackson.bom.version>
+    <jackson1.version>1.9.13</jackson1.version>
+    <jackson.version>2.19.2</jackson.version>
+    <jackson.bom.version>2.19.2</jackson.bom.version>
     <bouncycastle.version>1.78.1</bouncycastle.version>
     <avro.version>1.12.0</avro.version>
     <restlet.version>2.4.4</restlet.version>
@@ -113,8 +113,8 @@
     <gatling.version>3.4.2</gatling.version>
     <gatling-plugin.version>3.1.2</gatling-plugin.version>
     <scala.version>2.12.20</scala.version>
-    <scala-logging.version>3.9.5</scala-logging.version>
-    <scala-maven-plugin.version>4.9.5</scala-maven-plugin.version>
+    <scala-logging.version>3.9.6</scala-logging.version>
+    <scala-maven-plugin.version>4.9.6</scala-maven-plugin.version>
 
     <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
 
@@ -156,7 +156,7 @@
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
     <prometheus.client.version>0.11.0</prometheus.client.version>
-    <protobuf.java.version>3.25.7</protobuf.java.version>
+    <protobuf.java.version>3.25.8</protobuf.java.version>
     <opensaml.version>4.3.2</opensaml.version>
     <quartz.version>2.5.0</quartz.version>
   </properties>
@@ -2720,7 +2720,7 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.27.3</version>
+        <version>3.27.6</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -2829,7 +2829,7 @@
       <dependency>
         <groupId>org.dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <version>2.1.4</version>
+        <version>2.1.5</version>
       </dependency>
       <dependency>
         <groupId>org.yaml</groupId>
@@ -2850,13 +2850,13 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.7</version>
+        <version>42.7.8</version>
       </dependency>
       <!-- fix transitive dependency of org.postgresql:postgresql to avoid multiple versions in dependency graph -->
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>3.49.3</version>
+        <version>3.49.5</version>
       </dependency>
 
       <dependency>
@@ -3092,7 +3092,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.13.1</version>
+        <version>2.13.2</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -3535,7 +3535,7 @@
       <dependency>
         <groupId>org.owasp.esapi</groupId>
         <artifactId>esapi</artifactId>
-        <version>2.6.1.0</version>
+        <version>2.6.2.0</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -3696,7 +3696,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
-        <version>2.22.0</version>
+        <version>2.22.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3995,12 +3995,12 @@
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client-apache-v2</artifactId>
-        <version>1.47.0</version>
+        <version>1.47.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.http-client</groupId>
         <artifactId>google-http-client-gson</artifactId>
-        <version>1.47.0</version>
+        <version>1.47.1</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
@@ -4016,7 +4016,7 @@
       <dependency>
         <groupId>com.azure</groupId>
         <artifactId>azure-storage-blob</artifactId>
-        <version>12.30.0</version>
+        <version>12.30.1</version>
         <exclusions>
           <exclusion>
             <!-- use com.sun.activation:javax.activation-api instead -->
@@ -4070,7 +4070,7 @@
       <dependency>
         <groupId>io.github.classgraph</groupId>
         <artifactId>classgraph</artifactId>
-        <version>4.8.179</version>
+        <version>4.8.184</version>
       </dependency>
 
       <!-- dmk adaptor -->
@@ -4705,7 +4705,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -4738,7 +4738,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.11.2</version>
+          <version>3.11.3</version>
           <configuration>
             <doclint>all,-missing</doclint>
             <show>protected</show>
@@ -4861,7 +4861,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.0</version>
+          <version>3.14.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
