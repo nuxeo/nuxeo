@@ -198,4 +198,20 @@ public class TestDefaultRendition {
         assertEquals("application/pdf", fileRen.getBlob().getMimeType());
     }
 
+    // NXP-33347
+    @Test
+    public void testStoredDefaultRenditionFolderishCustomLifecycle() throws IOException {
+        DocumentModel doc = TestRenditionProvider.createBlobDoc("CustomFolderish", session);
+        Renderable renderable = doc.getAdapter(Renderable.class);
+        assertNotNull(renderable);
+
+        // Get "publish" default rendition for document with file schema, expecting "mainBlob"
+        Rendition ren = renditionService.getDefaultRendition(doc, "publish", true, null);
+        assertNotNull(ren);
+        assertEquals("mainBlob", ren.getName());
+        Blob blob = ren.getBlob();
+        assertEquals("text/plain", blob.getMimeType());
+        assertEquals("Dummy text", blob.getString());
+    }
+
 }

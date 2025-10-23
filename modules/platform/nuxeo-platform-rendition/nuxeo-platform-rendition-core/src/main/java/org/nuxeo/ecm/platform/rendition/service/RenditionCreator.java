@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
@@ -132,9 +133,10 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     }
 
     protected DocumentModel createRenditionDocument(DocumentModel sourceDocument) {
-        String doctype = sourceDocument.getType();
         String renditionMimeType = renditionBlob.getMimeType();
         BlobHolder blobHolder = sourceDocument.getAdapter(BlobHolder.class);
+        String doctype = sourceDocument.getType();
+        String lifeCycleState = sourceDocument.getCurrentLifeCycleState();
         if (sourceDocument.hasFacet(FacetNames.FOLDERISH) || blobHolder == null
                 || (blobHolder instanceof DocumentStringBlobHolder && !(renditionMimeType.startsWith("text/")
                         || renditionMimeType.startsWith("application/xhtml")))) {
@@ -143,6 +145,8 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             // MIME type.
             // In each case, we'll create a File to hold it.
             doctype = FILE;
+            var lfs = Framework.getService(LifeCycleService.class);
+            lifeCycleState = lfs.getLifeCycleByName(lfs.getLifeCycleNameFor(FILE)).getDefaultInitialStateName();
         }
 
         boolean isVersionable = sourceDocument.isVersionable();
@@ -186,8 +190,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         }
 
         rendition.copyContent(sourceDocument);
-        rendition.putContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
-                sourceDocument.getCurrentLifeCycleState());
+        rendition.putContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME, lifeCycleState);
 
         rendition.addFacet(RENDITION_FACET);
         rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY, sourceDocument.getId());
