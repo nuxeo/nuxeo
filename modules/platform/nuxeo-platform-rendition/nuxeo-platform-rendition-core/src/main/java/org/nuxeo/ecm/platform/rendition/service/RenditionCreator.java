@@ -167,7 +167,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
         Calendar sourceLastModified = (Calendar) sourceDocument.getPropertyValue(modificationDatePropertyName);
         DocumentModel rendition;
-        if (existingRenditions.size() > 0) {
+        if (!existingRenditions.isEmpty()) {
             rendition = session.getDocument(existingRenditions.get(0).getRef());
             if (!isVersionable) {
                 Calendar renditionSourceLastModified = (Calendar) rendition.getPropertyValue(
