@@ -90,13 +90,23 @@ public class TestComplexTypeJSONDecoder {
         String json = """
                 {
                   "providerId":"testBlobProvider",
-                  "key":"testKey"
+                  "key":"testKey",
+                  "mime-type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                  "name": "test.docx",
+                  "length": 13336,
+                  "encoding": "UTF-8",
+                  "digest": "283f0bb23d91cd2339047fad6db3b645"
                 }""";
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
         assertTrue(blob instanceof ManagedBlob);
         ManagedBlob managedBlob = (ManagedBlob) blob;
         assertEquals("testBlobProvider", managedBlob.getProviderId());
         assertEquals("testBlobProvider:testKey", managedBlob.getKey());
+        assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                managedBlob.getMimeType());
+        assertEquals("test.docx", managedBlob.getFilename());
+        assertEquals(13336, managedBlob.getLength());
+        assertEquals("UTF-8", managedBlob.getEncoding());
     }
 
     @Test
