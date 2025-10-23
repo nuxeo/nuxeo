@@ -54,6 +54,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -85,8 +86,12 @@ public class TestComplexTypeJSONDecoder {
     protected DownloadService downloadService;
 
     @Test
-    public void testDecodeManagedBlob() throws Exception {
-        String json = "{\"providerId\":\"testBlobProvider\", \"key\":\"testKey\"}";
+    public void testDecodeManagedBlob() throws JacksonException {
+        String json = """
+                {
+                  "providerId":"testBlobProvider",
+                  "key":"testKey"
+                }""";
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
         assertTrue(blob instanceof ManagedBlob);
         ManagedBlob managedBlob = (ManagedBlob) blob;
@@ -95,23 +100,34 @@ public class TestComplexTypeJSONDecoder {
     }
 
     @Test
-    public void testDecodeManagedBlobEmptyKey() throws Exception {
-        String emptyKeyJson = "{\"providerId\":\"testBlobProvider\"}";
+    public void testDecodeManagedBlobEmptyKey() throws JacksonException {
+        String emptyKeyJson = """
+                {
+                  "providerId": "testBlobProvider"
+                }""";
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(emptyKeyJson));
         assertNull(blob);
     }
 
     @Test
-    public void testDecodeManagedBlobUnknownProvider() throws Exception {
-        String unknownProviderJson = "{\"providerId\":\"fakeBlobProvider\", \"key\":\"testKey\"}";
+    public void testDecodeManagedBlobUnknownProvider() throws JacksonException {
+        String unknownProviderJson = """
+                {
+                  "providerId": "fakeBlobProvider",
+                  "key": "testKey"}
+                """;
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(unknownProviderJson));
         assertNull(blob);
     }
 
     @Test
     @WithUser("dummyName")
-    public void testDecodeManagedBlobWithUnauthorizedAccess() throws Exception {
-        String json = "{\"providerId\":\"testBlobProvider\", \"key\":\"testKey\"}";
+    public void testDecodeManagedBlobWithUnauthorizedAccess() throws JacksonException {
+        String json = """
+                  {
+                  "providerId": "testBlobProvider",
+                  "key": "testKey"}
+                """;
         try {
             ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
             fail("The blob should not have been fetched");
@@ -123,8 +139,12 @@ public class TestComplexTypeJSONDecoder {
     @Test
     @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
     @WithUser("testUser1")
-    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyUser1() throws Exception {
-        String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyUser1() throws JacksonException {
+        String json = """
+                  {
+                  "providerId": "testBlobProviderWithAuthorizedUsers",
+                  "key": "testKey"}
+                """;
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
         assertNotNull(blob);
     }
@@ -132,8 +152,12 @@ public class TestComplexTypeJSONDecoder {
     @Test
     @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
     @WithUser("testUser2")
-    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyUser2() throws Exception {
-        String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyUser2() throws JacksonException {
+        String json = """
+                  {
+                    "providerId": "testBlobProviderWithAuthorizedUsers",
+                  "key": "testKey"}
+                """;
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
         assertNotNull(blob);
     }
@@ -141,11 +165,15 @@ public class TestComplexTypeJSONDecoder {
     @Test
     @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
     @WithUser("testUser3")
-    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyGroup() throws Exception {
+    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyGroup() throws JacksonException {
         // add testUser3 to testGroup group
         principal.setGroups(List.of("testGroup"));
         // test
-        String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+        String json = """
+                  {
+                    "providerId": "testBlobProviderWithAuthorizedUsers",
+                  "key": "testKey"}
+                """;
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
         assertNotNull(blob);
     }
@@ -153,9 +181,13 @@ public class TestComplexTypeJSONDecoder {
     @Test
     @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
     @WithUser("testUser4")
-    public void testDecodeManagedBlobWithUnauthorizedUserFromProperty() throws Exception {
+    public void testDecodeManagedBlobWithUnauthorizedUserFromProperty() throws JacksonException {
         try {
-            String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+            String json = """
+                      {
+                        "providerId": "testBlobProviderWithAuthorizedUsers",
+                      "key": "testKey"}
+                    """;
             Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
             assertNotNull(blob);
         } catch (NuxeoException e) {

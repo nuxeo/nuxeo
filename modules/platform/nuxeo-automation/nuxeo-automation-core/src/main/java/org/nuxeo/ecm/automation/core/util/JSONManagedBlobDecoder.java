@@ -48,14 +48,20 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class JSONManagedBlobDecoder implements JSONBlobDecoder {
 
+    /** @since 2025.10 */
+    public static final String KEY = "key";
+
+    /** @since 2025.10 */
+    public static final String PROVIDER_ID = "providerId";
+
     @Override
     public Blob getBlobFromJSON(ObjectNode jsonObject) {
 
-        if (!(jsonObject.has("providerId") && jsonObject.has("key"))) {
+        if (!(jsonObject.has(PROVIDER_ID) && jsonObject.has(KEY))) {
             return null;
         }
 
-        String providerId = jsonObject.get("providerId").textValue();
+        String providerId = jsonObject.get(PROVIDER_ID).textValue();
         BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(providerId);
         if (blobProvider == null) {
             return null;
@@ -68,7 +74,7 @@ public class JSONManagedBlobDecoder implements JSONBlobDecoder {
 
         try {
             BlobInfo blobInfo = new BlobInfo();
-            blobInfo.key = providerId + ":" + jsonObject.get("key").textValue();
+            blobInfo.key = providerId + ":" + jsonObject.get(KEY).textValue();
             return blobProvider.readBlob(blobInfo);
         } catch (IOException e) {
             throw new NuxeoException(e);
