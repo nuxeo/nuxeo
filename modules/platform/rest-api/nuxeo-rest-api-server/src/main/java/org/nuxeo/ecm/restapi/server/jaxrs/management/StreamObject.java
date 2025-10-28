@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KEY;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KV_STORE;
 import static org.nuxeo.runtime.pubsub.ClusterActionServiceImpl.STREAM_START_CONSUMER_ACTION;
@@ -32,13 +33,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionConverter;
@@ -67,27 +68,35 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
 
     protected static final String PUML_FORMAT = "puml";
 
+    protected static final String D2_FORMAT = "d2";
+
     protected static final String NO_CONSUMER = "none";
 
     protected static final String ENABLED_OPTION = "metrics.streams.enabled";
 
     @GET
-    public String doGet(@QueryParam("format") String format) {
+    public String doGet(@QueryParam("format") String format, @QueryParam("excludeFilter") String excludeFilter,
+            @QueryParam("excludeInactive") @DefaultValue("false") Boolean excludeInactive) {
         String json = getJson();
-        if (PUML_FORMAT.equals(format)) {
-            return new StreamIntrospectionConverter(json).getPuml();
+        List<String> exclude = excludeFilter == null ? List.of() : List.of(excludeFilter.split(","));
+        if (format == null) {
+            return json;
         }
-        return json;
+        return switch (format) {
+            case PUML_FORMAT -> new StreamIntrospectionConverter(json).getPuml();
+            case D2_FORMAT -> new StreamIntrospectionConverter(json).getD2(exclude, excludeInactive);
+            default -> json;
+        };
     }
 
     /**
-     * @deprecated since 2022.21 use {@link StreamObject#doGet(String)} with format=puml instead.
+     * @deprecated since 2022.21 use {@link StreamObject#doGet(String, String, Boolean)} with format=puml instead.
      */
     @Deprecated
     @GET
     @Path("/puml")
     public String doGetPuml() {
-        return doGet(PUML_FORMAT);
+        return doGet(PUML_FORMAT, null, null);
     }
 
     @GET
@@ -119,14 +128,14 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("/consumer/position")
     public String getConsumerPosition(@QueryParam("consumer") String consumer, @QueryParam("stream") String stream) {
-        if (StringUtils.isBlank(stream)) {
+        if (isBlank(stream)) {
             throw new NuxeoException("Missing stream param", HttpServletResponse.SC_BAD_REQUEST);
         }
         LogManager logManager = Framework.getService(StreamService.class).getLogManager();
         if (!logManager.exists(Name.ofUrn(stream))) {
             throw new NuxeoException("Unknown stream", HttpServletResponse.SC_BAD_REQUEST);
         }
-        if (StringUtils.isBlank(consumer)) {
+        if (isBlank(consumer)) {
             consumer = NO_CONSUMER;
         }
         List<LogLag> lag = logManager.getLagPerPartition(Name.ofUrn(stream), Name.ofUrn(consumer));
@@ -137,10 +146,10 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     @Path("/consumer/position/end")
     public String setConsumerPositionToEnd(@QueryParam("consumer") String consumer,
             @QueryParam("stream") String stream) {
-        if (StringUtils.isBlank(stream)) {
+        if (isBlank(stream)) {
             throw new NuxeoException("Missing stream param", HttpServletResponse.SC_BAD_REQUEST);
         }
-        if (StringUtils.isBlank(consumer)) {
+        if (isBlank(consumer)) {
             throw new NuxeoException("Missing consumer param", HttpServletResponse.SC_BAD_REQUEST);
         }
         LogManager logManager = Framework.getService(StreamService.class).getLogManager();
@@ -169,10 +178,10 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     @Path("/consumer/position/beginning")
     public String setConsumerPositionToBeginning(@QueryParam("consumer") String consumer,
             @QueryParam("stream") String stream) {
-        if (StringUtils.isBlank(stream)) {
+        if (isBlank(stream)) {
             throw new NuxeoException("Missing stream param", HttpServletResponse.SC_BAD_REQUEST);
         }
-        if (StringUtils.isBlank(consumer)) {
+        if (isBlank(consumer)) {
             throw new NuxeoException("Missing consumer param", HttpServletResponse.SC_BAD_REQUEST);
         }
         LogManager logManager = Framework.getService(StreamService.class).getLogManager();
@@ -197,10 +206,10 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     public String setConsumerPositionToOffset(@QueryParam("consumer") String consumer,
             @QueryParam("stream") String stream, @QueryParam("partition") int partition,
             @QueryParam("offset") long offset) {
-        if (StringUtils.isBlank(stream)) {
+        if (isBlank(stream)) {
             throw new NuxeoException("Missing stream param", HttpServletResponse.SC_BAD_REQUEST);
         }
-        if (StringUtils.isBlank(consumer)) {
+        if (isBlank(consumer)) {
             throw new NuxeoException("Missing consumer param", HttpServletResponse.SC_BAD_REQUEST);
         }
         LogManager logManager = Framework.getService(StreamService.class).getLogManager();
@@ -233,14 +242,14 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     @Path("/consumer/position/after")
     public String setConsumerPositionAfterDate(@QueryParam("consumer") String consumer,
             @QueryParam("stream") String stream, @QueryParam("date") String dateTime) {
-        if (StringUtils.isBlank(stream)) {
+        if (isBlank(stream)) {
             throw new NuxeoException("Missing stream param", HttpServletResponse.SC_BAD_REQUEST);
         }
-        if (StringUtils.isBlank(consumer)) {
+        if (isBlank(consumer)) {
             throw new NuxeoException("Missing consumer param", HttpServletResponse.SC_BAD_REQUEST);
         }
         Instant afterDate;
-        if (StringUtils.isBlank(dateTime)) {
+        if (isBlank(dateTime)) {
             throw new NuxeoException("Missing date param", HttpServletResponse.SC_BAD_REQUEST);
         } else {
             try {

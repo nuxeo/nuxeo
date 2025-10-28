@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -87,12 +88,16 @@ public class StreamIntrospectionConverter {
         if (node != null && node.isArray()) {
             for (JsonNode item : node) {
                 JsonNode topologies = item.get("topology");
-                for (JsonNode topo : topologies) {
-                    String source = topo.get(0).asText();
-                    if (match.equals(source)) {
-                        String target = topo.get(1).asText();
-                        if (target.startsWith("computation:")) {
-                            consumers.add(target.substring(12));
+                if (topologies != null && topologies.isArray()) {
+                    for (JsonNode topo : topologies) {
+                        if (topo != null && topo.isArray() && topo.size() >= 2) {
+                            String source = topo.get(0).asText();
+                            if (match.equals(source)) {
+                                String target = topo.get(1).asText();
+                                if (target.startsWith("computation:")) {
+                                    consumers.add(target.substring(12));
+                                }
+                            }
                         }
                     }
                 }
@@ -104,258 +109,26 @@ public class StreamIntrospectionConverter {
     }
 
     public String getPuml() {
-        StringBuilder ret = new StringBuilder();
-        ret.append("@startuml\n");
-        Map<String, String> streamMetrics = parseMetrics();
-        ret.append(getPumlHeader("Stream Introspection at " + streamMetrics.get("date")));
-        JsonNode node = root.get("streams");
-        if (node != null && node.isArray()) {
-            for (JsonNode item : node) {
-                dumpStream(ret, item, streamMetrics);
-            }
-        }
-
-        node = root.get("processors");
-        if (node != null && node.isArray()) {
-            for (JsonNode item : node) {
-                String host = item.at("/metadata/nodeId").asText();
-                String created = Instant.ofEpochSecond(item.at("/metadata/created").asLong()).toString();
-                // ret.append("rectangle node." + host + " {\n");
-                JsonNode computations = item.get("computations");
-                if (computations.isArray()) {
-                    for (JsonNode computation : computations) {
-                        dumpComputation(host, ret, computation, streamMetrics, created);
-                    }
-                }
-                // ret.append("}\n");
-                JsonNode topologies = item.get("topology");
-                if (topologies.isArray()) {
-                    for (JsonNode topo : topologies) {
-                        String comment = "";
-                        String source = topo.get(0).asText();
-                        String target = topo.get(1).asText();
-                        if (target.startsWith("computation:")) {
-                            String stream = source.replace("stream:", "");
-                            String computation = target.replace("computation:", "");
-                            String lag = streamMetrics.get(stream + ":" + computation + ":lag");
-                            String latency = streamMetrics.get(stream + ":" + computation + ":latency");
-                            String pos = streamMetrics.get(stream + ":" + computation + ":pos");
-                            String end = getStreamEnd(streamMetrics, stream);
-                            // provide info only when there is a lag
-                            if (lag != null && !"0".equals(lag)) {
-                                comment = String.format(": %s/%s lag: %s, latency: %ss", pos, end, lag, latency);
-                            }
-                        }
-                        ret.append(String.format("%s==>%s%s%n", getPumlIdentifierForHost(host, source),
-                                getPumlIdentifierForHost(host, target), comment));
-                    }
-                }
-
-            }
-        }
-
-        ret.append("@enduml\n");
-        return ret.toString();
+        StreamIntrospectionPlantUMLConverter pumlConverter = new StreamIntrospectionPlantUMLConverter(json);
+        return pumlConverter.getPuml();
     }
 
-    protected Map<String, String> parseMetrics() {
-        Map<String, String> streamMetrics = new HashMap<>();
-        JsonNode node = root.get("metrics");
-        long timestamp = 0;
-        if (node != null && node.isArray()) {
-            for (JsonNode host : node) {
-                String nodeId = host.get("nodeId").asText();
-                long metricTimestamp = host.get("timestamp").asLong();
-                if (metricTimestamp > timestamp) {
-                    timestamp = metricTimestamp;
-                }
-                JsonNode hostMetrics = host.get("metrics");
-                if (hostMetrics.isArray()) {
-                    for (JsonNode metric : hostMetrics) {
-                        if (metric.has("stream")) {
-                            String key = metric.get("k").asText();
-                            String streamName = Name.urnOfId(metric.get("stream").asText());
-                            String computationName = Name.urnOfId(metric.get("group").asText());
-                            if ("nuxeo.streams.global.stream.group.end".equals(key)) {
-                                streamMetrics.put(streamName + ":end", metric.get("v").asText());
-                            } else if ("nuxeo.streams.global.stream.group.lag".equals(key)) {
-                                streamMetrics.put(streamName + ":" + computationName + ":lag",
-                                        metric.get("v").asText());
-                            } else if ("nuxeo.streams.global.stream.group.latency".equals(key)) {
-                                streamMetrics.put(streamName + ":" + computationName + ":latency",
-                                        getNiceDouble(metric.get("v").asDouble() / 1000.0));
-                            } else if ("nuxeo.streams.global.stream.group.pos".equals(key)) {
-                                streamMetrics.put(streamName + ":" + computationName + ":pos",
-                                        metric.get("v").asText());
-                            }
-                        } else if (metric.get("k").asText().endsWith("processRecord")) {
-                            int count = metric.get("count").asInt();
-                            if (count == 0) {
-                                continue;
-                            }
-                            String computationName = Name.urnOfId(metric.get("computation").asText());
-                            streamMetrics.put(computationName + ":" + nodeId + ":count", metric.get("count").asText());
-                            streamMetrics.put(computationName + ":" + nodeId + ":sum",
-                                    getNiceDouble3(metric.get("sum").asDouble() / 1000000000));
-                            streamMetrics.put(computationName + ":" + nodeId + ":p50",
-                                    getNiceDouble3(metric.get("p50").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":mean",
-                                    getNiceDouble3(metric.get("mean").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":p99",
-                                    getNiceDouble3(metric.get("p99").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":rate1m",
-                                    getNiceDouble(metric.get("rate1m").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":rate5m",
-                                    getNiceDouble(metric.get("rate5m").asDouble()));
-                        } else if (metric.get("k").asText().endsWith("processTimer")) {
-                            int count = metric.get("count").asInt();
-                            if (count == 0) {
-                                continue;
-                            }
-                            String computationName = Name.urnOfId(metric.get("computation").asText());
-                            streamMetrics.put(computationName + ":" + nodeId + ":timer:count",
-                                    metric.get("count").asText());
-                            streamMetrics.put(computationName + ":" + nodeId + ":timer:sum",
-                                    getNiceDouble3(metric.get("sum").asDouble() / 1000000000));
-                            streamMetrics.put(computationName + ":" + nodeId + ":timer:p50",
-                                    getNiceDouble3(metric.get("p50").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":timer:mean",
-                                    getNiceDouble3(metric.get("mean").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":timer:p99",
-                                    getNiceDouble3(metric.get("p99").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":timer:rate1m",
-                                    getNiceDouble(metric.get("rate1m").asDouble()));
-                            streamMetrics.put(computationName + ":" + nodeId + ":timer:rate5m",
-                                    getNiceDouble(metric.get("rate5m").asDouble()));
-                        } else if (metric.get("k").asText().endsWith("computation.failure")) {
-                            int failure = metric.get("v").asInt();
-                            if (failure > 0) {
-                                String computationName = Name.urnOfId(metric.get("computation").asText()) + ":"
-                                        + nodeId;
-                                streamMetrics.put(computationName + ":failure", metric.get("v").asText());
-                            }
-                        } else if (metric.get("k").asText().endsWith("stream.failure")) {
-                            int value = metric.get("v").asInt();
-                            if (value > 0) {
-                                streamMetrics.put(nodeId + ":failure", metric.get("v").asText());
-                            }
-                        } else if (metric.get("k").asText().endsWith("computation.skippedRecord")) {
-                            int value = metric.get("v").asInt();
-                            if (value > 0) {
-                                String computationName = Name.urnOfId(metric.get("computation").asText()) + ":"
-                                        + nodeId;
-                                streamMetrics.put(computationName + ":skipped", metric.get("v").asText());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        streamMetrics.put("timestamp", String.valueOf(timestamp));
-        streamMetrics.put("date", Instant.ofEpochSecond(timestamp).toString());
-        return streamMetrics;
+    public String getD2() {
+        StreamIntrospectionD2Converter d2Converter = new StreamIntrospectionD2Converter(json);
+        return d2Converter.getD2();
     }
 
-    protected String getNiceDouble(Double number) {
-        return String.format("%.2f", number);
-    }
-
-    protected String getNiceDouble3(Double number) {
-        return String.format("%.3f", number);
-    }
-
-    protected String getPumlHeader(String title) {
-        return "title " + title + "\n\n" //
-                + "skinparam defaultFontName Courier\n" + "skinparam handwritten false\n" //
-                + "skinparam queueBackgroundColor LightYellow\n" //
-                + "skinparam nodeBackgroundColor Azure\n" //
-                + "skinparam componentBackgroundColor Azure\n" //
-                + "skinparam nodebackgroundColor<<failure>> Yellow\n" //
-                + "skinparam componentbackgroundColor<<failure>> Yellow\n" //
-                + "skinparam component {\n" + "  BorderColor black\n" + "  ArrowColor #CC6655\n" + "}\n";
-    }
-
-    protected String getPumlIdentifierForHost(String host, String id) {
-        if (id.startsWith("computation:")) {
-            return getPumlIdentifier(id + ":" + host);
-        }
-        return getPumlIdentifier(id);
-    }
-
-    protected void dumpStream(StringBuilder ret, JsonNode item, Map<String, String> metrics) {
-        String name = item.get("name").asText();
-        String partitions = item.get("partitions").asText();
-        String codec = item.get("codec").asText();
-        ret.append(String.format("queue %s [%s%n----%npartitions: %s%ncodec: %s%n-----%nrecords: %s]%n",
-                getPumlIdentifier("stream:" + name), name, partitions, codec, getStreamEnd(metrics, name)));
-    }
-
-    protected String getStreamEnd(Map<String, String> metrics, String name) {
-        String ret = metrics.get(name + ":end");
-        return ret == null ? "0" : ret;
-    }
-
-    protected void dumpComputation(String host, StringBuilder ret, JsonNode item, Map<String, String> metrics,
-            String created) {
-        String name = item.get("name").asText();
-        String threads = item.get("threads").asText();
-        String continueOnFailure = item.get("continueOnFailure").asText();
-        String failure = "";
-        if (metrics.containsKey(name + ":" + host + ":failure")) {
-            failure = " <<failure>>";
-        }
-        ret.append(String.format("component %s %s[%s%n----%ncreated: %s%nthreads: %s%ncontinue on failure: %s%n%s%s]%n",
-                getPumlIdentifier("computation:" + name + ":" + host), failure, name + " on " + host, created, threads,
-                continueOnFailure, getBatchInfo(item), getComputationMetrics(host, name, item, metrics)));
-    }
-
-    protected String getComputationMetrics(String host, String name, JsonNode item, Map<String, String> metrics) {
-        String ret = "";
-        String baseKey = name + ":" + host;
-        if (!metrics.containsKey(baseKey + ":count")) {
-            return ret;
-        }
-        ret += "\n----\n";
-        if (metrics.containsKey(baseKey + ":failure")) {
-            ret += "FAILURE: " + metrics.get(baseKey + ":failure") + "\n";
-        }
-        ret += "record count: " + metrics.get(baseKey + ":count") + ", total: " + metrics.get(baseKey + ":sum") + "s\n";
-        if (metrics.containsKey(baseKey + ":skipped")) {
-            ret += "record skipped: " + metrics.get(baseKey + ":skipped") + "\n";
-        }
-        ret += "mean: " + metrics.get(baseKey + ":mean") + "s, p50: " + metrics.get(baseKey + ":p50") + "s, p99: "
-                + metrics.get(baseKey + ":p99") + "s\n";
-        ret += "rate 1min: " + metrics.get(baseKey + ":rate1m") + "op/s, 5min: " + metrics.get(baseKey + ":rate5m")
-                + "op/s";
-        if (!metrics.containsKey(baseKey + ":timer:count")) {
-            return ret;
-        }
-        ret += "\n----\n";
-        baseKey = baseKey + ":timer";
-        ret += "timer count: " + metrics.get(baseKey + ":count") + ", total: " + metrics.get(baseKey + ":sum") + "s\n";
-        ret += "mean: " + metrics.get(baseKey + ":mean") + "s, p50: " + metrics.get(baseKey + ":p50") + "s, p99: "
-                + metrics.get(baseKey + ":p99") + "s\n";
-        ret += "rate 5min: " + metrics.get(baseKey + ":rate5m") + "op/s";
-        return ret;
-    }
-
-    protected String getBatchInfo(JsonNode item) {
-        String ret = "";
-        int batchCapacity = item.get("batchCapacity").asInt();
-        if (batchCapacity > 1) {
-            int batchThresholdMs = item.get("batchCapacity").asInt();
-            ret += "batch " + item.get("batchCapacity").asText() + " " + batchThresholdMs + "ms\n";
-        } else {
-            ret += "no batch\n";
-        }
-        int retry = item.get("maxRetries").asInt();
-        if (retry > 1) {
-            ret += "max retry: " + item.get("maxRetries").asText() + ", delay: " + item.get("retryDelayMs").asText()
-                    + "ms";
-        } else {
-            ret += "no retry";
-        }
-        return ret;
+    /**
+     * Gets the D2 diagram format with filtering options.
+     *
+     * @param excludePatterns list of patterns to exclude (e.g., Arrays.asList("work/", "bulk/"))
+     * @param excludeInactive whether to exclude inactive computations (computation-idle class) and empty streams
+     *            (stream-empty class)
+     * @return the D2 diagram as a string
+     */
+    public String getD2(List<String> excludePatterns, boolean excludeInactive) {
+        StreamIntrospectionD2Converter d2Converter = new StreamIntrospectionD2Converter(json);
+        return d2Converter.getD2(excludePatterns, excludeInactive);
     }
 
     public String getActivity() {
@@ -409,7 +182,7 @@ public class StreamIntrospectionConverter {
 
     protected JsonNode getActiveComputations(long atTimestamp) {
         ArrayNode ret = OBJECT_MAPPER.createArrayNode();
-        Map<JsonNode, ObjectNode> computations = new HashMap<>();
+        Map<String, ObjectNode> computations = new HashMap<>();
         JsonNode metrics = root.get("metrics");
         if (metrics == null || !metrics.isArray() || metrics.isEmpty()) {
             // no data available ?
@@ -422,16 +195,25 @@ public class StreamIntrospectionConverter {
         }
         // create a map of stream/partitions
         Map<String, Integer> partitions = new HashMap<>();
-        for (JsonNode stream : root.get("streams")) {
-            partitions.put(Name.ofUrn(stream.get("name").asText()).getId(), stream.get("partitions").asInt());
+        JsonNode streams = root.get("streams");
+        if (streams != null && streams.isArray()) {
+            for (JsonNode stream : streams) {
+                if (stream != null && stream.has("name") && stream.has("partitions")) {
+                    partitions.put(Name.ofUrn(stream.get("name").asText()).getId(), stream.get("partitions").asInt());
+                }
+            }
         }
         // create a map of computation/threads
         Map<String, Integer> threads = new HashMap<>();
         for (JsonNode item : processors) {
-            ArrayNode comps = (ArrayNode) item.get("computations");
-            for (JsonNode comp : comps) {
-                String name = Name.ofUrn(comp.get("name").asText()).getId();
-                threads.put(name, comp.get("threads").asInt());
+            JsonNode comps = item.get("computations");
+            if (comps != null && comps.isArray()) {
+                for (JsonNode comp : comps) {
+                    if (comp != null && comp.has("name") && comp.has("threads")) {
+                        String name = Name.ofUrn(comp.get("name").asText()).getId();
+                        threads.put(name, comp.get("threads").asInt());
+                    }
+                }
             }
         }
         // find active computations
@@ -441,40 +223,54 @@ public class StreamIntrospectionConverter {
                 continue;
             }
             // select computations with a significant rate
-            for (JsonNode metric : node.at("/metrics")) {
-                if ("nuxeo.streams.computation.processRecord".equals(metric.get("k").asText())
-                        && (metric.get("count").asInt() > 0)) {
-                    // ex: { "k": "nuxeo.streams.computation.processRecord",
-                    // "computation": "audit-writer", "count": 32, "rate1m": 0.07875646231106845, "mean": ...}
-                    boolean knownComputation = threads.containsKey(metric.get("computation").asText());
-                    ObjectNode comp = computations.get(metric.get("computation"));
-                    if (knownComputation && comp == null && metric.get("mean").asDouble() > 0) {
-                        double rate1m = metric.get("rate1m").asDouble();
-                        double mean = metric.get("mean").asDouble();
-                        double maxRateByThread = 1 / mean;
-                        // assume a rate is significant if one thread is busy at 50%
-                        if (rate1m > maxRateByThread / 2) {
-                            computations.put(metric.get("computation"), initComputation(metric.get("computation")));
+            JsonNode metricsArray = node.get("metrics");
+            if (metricsArray != null && metricsArray.isArray()) {
+                for (JsonNode metric : metricsArray) {
+                    if (metric != null && metric.has("k") && metric.has("computation") && metric.has("count")
+                            && "nuxeo.streams.computation.processRecord".equals(metric.get("k").asText())
+                            && (metric.get("count").asInt() > 0)) {
+                        // ex: { "k": "nuxeo.streams.computation.processRecord",
+                        // "computation": "audit-writer", "count": 32, "rate1m": 0.07875646231106845, "mean": ...}
+                        String computationName = metric.get("computation").asText();
+                        boolean knownComputation = threads.containsKey(computationName);
+                        ObjectNode comp = computations.get(computationName);
+                        if (knownComputation && comp == null && metric.has("mean")
+                                && metric.get("mean").asDouble() > 0) {
+                            if (metric.has("rate1m")) {
+                                double rate1m = metric.get("rate1m").asDouble();
+                                double mean = metric.get("mean").asDouble();
+                                double maxRateByThread = 1 / mean;
+                                // assume a rate is significant if one thread is busy at 50%
+                                if (rate1m > maxRateByThread / 2) {
+                                    computations.put(computationName, initComputation(computationName));
+                                }
+                            }
                         }
                     }
                 }
             }
             // select computation with lag, populate lag
-            for (JsonNode metric : node.at("/metrics")) {
-                if ("nuxeo.streams.global.stream.group.lag".equals(metric.get("k").asText())) {
-                    // ex: { "k": "nuxeo.streams.global.stream.group.lag",
-                    // "group": "bulk-csvExport", "stream": "bulk-csvExport", "v": 46 }
-                    boolean knownComputation = threads.containsKey(metric.get("group").asText());
-                    ObjectNode comp = computations.get(metric.get("group"));
-                    if (knownComputation && (comp != null || metric.get("v").asInt() > 0)) {
-                        comp = computations.computeIfAbsent(metric.get("group"), this::initComputation);
-                        // populate computation lag for its streams
-                        ObjectNode streams = (ObjectNode) comp.get("streams");
-                        ObjectNode stream = OBJECT_MAPPER.createObjectNode();
-                        stream.set("stream", metric.get("stream"));
-                        stream.put("partitions", partitions.get(metric.get("stream").asText()));
-                        stream.set("lag", metric.get("v"));
-                        streams.set(metric.get("stream").asText(), stream);
+            if (metricsArray != null && metricsArray.isArray()) {
+                for (JsonNode metric : metricsArray) {
+                    if (metric != null && metric.has("k") && metric.has("group") && metric.has("stream")
+                            && metric.has("v")
+                            && "nuxeo.streams.global.stream.group.lag".equals(metric.get("k").asText())) {
+                        // ex: { "k": "nuxeo.streams.global.stream.group.lag",
+                        // "group": "bulk-csvExport", "stream": "bulk-csvExport", "v": 46 }
+                        String groupName = metric.get("group").asText();
+                        boolean knownComputation = threads.containsKey(groupName);
+                        ObjectNode comp = computations.get(groupName);
+                        if (knownComputation && (comp != null || metric.get("v").asInt() > 0)) {
+                            comp = computations.computeIfAbsent(groupName, this::initComputation);
+                            // populate computation lag for its streams
+                            ObjectNode compStreams = (ObjectNode) comp.get("streams");
+                            ObjectNode stream = OBJECT_MAPPER.createObjectNode();
+                            stream.set("stream", metric.get("stream"));
+                            String streamName = metric.get("stream").asText();
+                            stream.put("partitions", partitions.getOrDefault(streamName, 0));
+                            stream.set("lag", metric.get("v"));
+                            compStreams.set(streamName, stream);
+                        }
                     }
                 }
             }
@@ -485,26 +281,42 @@ public class StreamIntrospectionConverter {
             if (atTimestamp - ts > ACTIVE_THRESHOLD_SECONDS) {
                 continue;
             }
-            for (JsonNode metric : node.at("/metrics")) {
-                if ("nuxeo.streams.global.stream.group.latency".equals(metric.get("k").asText())
-                        && (metric.get("v").asInt() > 0)) {
-                    // ex {"k": "nuxeo.streams.global.stream.group.latency",
-                    // "group": "bulk-exposeBlob", "stream": "bulk-exposeBlob", "v": 123}
-                    ObjectNode comp = computations.get(metric.get("group"));
-                    if (comp != null) {
-                        ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
-                        if (stream != null) {
-                            stream.set("latency", metric.get("v"));
-                        }
-                    }
-                } else if ("nuxeo.streams.global.stream.group.end".equals(metric.get("k").asText())) {
-                    ObjectNode comp = computations.get(metric.get("group"));
-                    // ex {"k": "nuxeo.streams.global.stream.group.end",
-                    // "group": "StreamImporter-runDocumentConsumers", "stream": "import-doc", "v": 10000}
-                    if (comp != null) {
-                        ObjectNode stream = (ObjectNode) comp.get("streams").get(metric.get("stream").asText());
-                        if (stream != null) {
-                            stream.set("end", metric.get("v"));
+            JsonNode latencyMetricsArray = node.get("metrics");
+            if (latencyMetricsArray != null && latencyMetricsArray.isArray()) {
+                for (JsonNode metric : latencyMetricsArray) {
+                    if (metric != null && metric.has("k") && metric.has("group") && metric.has("stream")) {
+                        if ("nuxeo.streams.global.stream.group.latency".equals(metric.get("k").asText())
+                                && metric.has("v") && (metric.get("v").asInt() > 0)) {
+                            // ex {"k": "nuxeo.streams.global.stream.group.latency",
+                            // "group": "bulk-exposeBlob", "stream": "bulk-exposeBlob", "v": 123}
+                            String groupName = metric.get("group").asText();
+                            ObjectNode comp = computations.get(groupName);
+                            if (comp != null) {
+                                JsonNode streamsNode = comp.get("streams");
+                                if (streamsNode != null) {
+                                    String streamName = metric.get("stream").asText();
+                                    ObjectNode stream = (ObjectNode) streamsNode.get(streamName);
+                                    if (stream != null) {
+                                        stream.set("latency", metric.get("v"));
+                                    }
+                                }
+                            }
+                        } else if ("nuxeo.streams.global.stream.group.end".equals(metric.get("k").asText())
+                                && metric.has("v")) {
+                            String groupName = metric.get("group").asText();
+                            ObjectNode comp = computations.get(groupName);
+                            // ex {"k": "nuxeo.streams.global.stream.group.end",
+                            // "group": "StreamImporter-runDocumentConsumers", "stream": "import-doc", "v": 10000}
+                            if (comp != null) {
+                                JsonNode streamsNode = comp.get("streams");
+                                if (streamsNode != null) {
+                                    String streamName = metric.get("stream").asText();
+                                    ObjectNode stream = (ObjectNode) streamsNode.get(streamName);
+                                    if (stream != null) {
+                                        stream.set("end", metric.get("v"));
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -517,26 +329,43 @@ public class StreamIntrospectionConverter {
                 continue;
             }
             JsonNode nodeId = node.get("nodeId");
-            for (JsonNode metric : node.at("/metrics")) {
-                if ("nuxeo.streams.computation.processRecord".equals(metric.get("k").asText())
-                        && (metric.get("count").asInt() > 0)) {
-                    ObjectNode comp = computations.get(metric.get("computation"));
-                    if (comp != null) {
-                        ObjectNode compInstance = OBJECT_MAPPER.createObjectNode();
-                        compInstance.set("nodeId", nodeId);
-                        compInstance.put("threads", threads.getOrDefault(metric.get("computation").asText(), 1));
-                        compInstance.set("timestamp", ts);
-                        compInstance.set("count", metric.get("count"));
-                        compInstance.set("sum", metric.get("sum"));
-                        compInstance.set("rate1m", metric.get("rate1m"));
-                        compInstance.set("rate5m", metric.get("rate5m"));
-                        compInstance.set("min", metric.get("min"));
-                        compInstance.set("p50", metric.get("p50"));
-                        compInstance.set("mean", metric.get("mean"));
-                        compInstance.set("p95", metric.get("p95"));
-                        compInstance.set("max", metric.get("max"));
-                        compInstance.set("stddev", metric.get("stddev"));
-                        ((ArrayNode) comp.get("nodes")).add(compInstance);
+            JsonNode nodeMetricsArray = node.get("metrics");
+            if (nodeMetricsArray != null && nodeMetricsArray.isArray()) {
+                for (JsonNode metric : nodeMetricsArray) {
+                    if (metric != null && metric.has("k") && metric.has("computation") && metric.has("count")
+                            && "nuxeo.streams.computation.processRecord".equals(metric.get("k").asText())
+                            && (metric.get("count").asInt() > 0)) {
+                        String computationName = metric.get("computation").asText();
+                        ObjectNode comp = computations.get(computationName);
+                        if (comp != null) {
+                            ObjectNode compInstance = OBJECT_MAPPER.createObjectNode();
+                            compInstance.set("nodeId", nodeId);
+                            compInstance.put("threads", threads.getOrDefault(computationName, 1));
+                            compInstance.set("timestamp", ts);
+                            compInstance.set("count", metric.get("count"));
+                            if (metric.has("sum"))
+                                compInstance.set("sum", metric.get("sum"));
+                            if (metric.has("rate1m"))
+                                compInstance.set("rate1m", metric.get("rate1m"));
+                            if (metric.has("rate5m"))
+                                compInstance.set("rate5m", metric.get("rate5m"));
+                            if (metric.has("min"))
+                                compInstance.set("min", metric.get("min"));
+                            if (metric.has("p50"))
+                                compInstance.set("p50", metric.get("p50"));
+                            if (metric.has("mean"))
+                                compInstance.set("mean", metric.get("mean"));
+                            if (metric.has("p95"))
+                                compInstance.set("p95", metric.get("p95"));
+                            if (metric.has("max"))
+                                compInstance.set("max", metric.get("max"));
+                            if (metric.has("stddev"))
+                                compInstance.set("stddev", metric.get("stddev"));
+                            JsonNode nodesArray = comp.get("nodes");
+                            if (nodesArray instanceof ArrayNode) {
+                                ((ArrayNode) nodesArray).add(compInstance);
+                            }
+                        }
                     }
                 }
             }
@@ -555,17 +384,24 @@ public class StreamIntrospectionConverter {
             }
             int lag = 0;
             int part = 0;
-            for (Iterator<JsonNode> iter = comp.get("streams").elements(); iter.hasNext();) {
-                JsonNode stream = iter.next();
-                if (stream.get("lag").asInt() > lag) {
-                    lag = stream.get("lag").asInt();
-                    part = partitions.get(stream.get("stream").asText());
+            JsonNode streamsNode = comp.get("streams");
+            if (streamsNode != null) {
+                for (Iterator<JsonNode> iter = streamsNode.elements(); iter.hasNext();) {
+                    JsonNode stream = iter.next();
+                    if (stream != null && stream.has("lag") && stream.has("stream")) {
+                        int streamLag = stream.get("lag").asInt();
+                        if (streamLag > lag) {
+                            lag = streamLag;
+                            String streamName = stream.get("stream").asText();
+                            part = partitions.getOrDefault(streamName, 0);
+                        }
+                    }
                 }
             }
             if (count == 0) {
                 continue;
             }
-            int eta = (int) (lag / rate1m);
+            int eta = rate1m > 0 ? (int) (lag / rate1m) : Integer.MAX_VALUE;
             ObjectNode current = OBJECT_MAPPER.createObjectNode();
             current.put("nodes", count);
             current.put("threads", threadsCount);
@@ -581,9 +417,9 @@ public class StreamIntrospectionConverter {
                 best.put("relevant", true);
             } else {
                 // active computation with lag, best nb of nodes depends on stream partitions
-                int bestNodes = (int) Math.ceil((double) part / (double) threadsPerNode);
-                float bestRate = rate1m * part / threadsCount;
-                int bestEta = (int) (lag / bestRate);
+                int bestNodes = threadsPerNode > 0 ? (int) Math.ceil((double) part / (double) threadsPerNode) : 1;
+                float bestRate = threadsCount > 0 ? rate1m * part / threadsCount : 0;
+                int bestEta = bestRate > 0 ? (int) (lag / bestRate) : Integer.MAX_VALUE;
                 best.put("nodes", bestNodes);
                 best.put("threads", part);
                 best.put("rate1m", bestRate);
@@ -599,9 +435,9 @@ public class StreamIntrospectionConverter {
         return ret;
     }
 
-    protected ObjectNode initComputation(JsonNode key) {
+    protected ObjectNode initComputation(String key) {
         var active = OBJECT_MAPPER.createObjectNode();
-        active.set("computation", key);
+        active.put("computation", key);
         active.set("streams", OBJECT_MAPPER.createObjectNode());
         active.set("nodes", OBJECT_MAPPER.createArrayNode());
         return active;
@@ -654,10 +490,6 @@ public class StreamIntrospectionConverter {
             }
         });
         return ret;
-    }
-
-    protected String getPumlIdentifier(String name) {
-        return name.replaceAll("[^a-zA-Z0-9]", ".");
     }
 
 }

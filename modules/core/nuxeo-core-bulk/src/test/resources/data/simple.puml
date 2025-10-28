@@ -1,5 +1,5 @@
 @startuml
-title Stream Introspection at 2020-12-07T06:18:24Z
+title Stream Introspection at 2025-10-27T11:48:11Z
 
 skinparam defaultFontName Courier
 skinparam handwritten false
@@ -12,57 +12,45 @@ skinparam component {
   BorderColor black
   ArrowColor #CC6655
 }
-queue stream.bulk.recomputeThumbnails [bulk/recomputeThumbnails
-----
-partitions: 1
-codec: avro
------
-records: 0]
 queue stream.work.collections [work/collections
 ----
-partitions: 12
-codec: avro
------
-records: 0]
-queue stream.bulk.zipBlob [bulk/zipBlob
-----
-partitions: 2
-codec: avro
------
-records: 0]
-queue stream.audit.audit [audit/audit
-----
 partitions: 1
 codec: avro
 -----
-records: 2123]
+records: 0]
 queue stream.bulk.csvExport [bulk/csvExport
 ----
-partitions: 1
+partitions: 4
 codec: avro
 -----
-records: 21]
-queue stream.bulk.done [bulk/done
+records: 107]
+queue stream.bulk.garbageCollectOrphanVersions [bulk/garbageCollectOrphanVersions
 ----
-partitions: 1
-codec: avro
------
-records: 12]
-queue stream.work.pictureViewsGeneration [work/pictureViewsGeneration
-----
-partitions: 12
+partitions: 4
 codec: avro
 -----
 records: 0]
-queue stream.work.escalation [work/escalation
+queue stream.bulk.updateReadAcls [bulk/updateReadAcls
 ----
-partitions: 12
+partitions: 1
+codec: avro
+-----
+records: 0]
+queue stream.work.updateThumbListener [work/updateThumbListener
+----
+partitions: 6
+codec: avro
+-----
+records: 195]
+queue stream.bulk.documentRoutingEscalation [bulk/documentRoutingEscalation
+----
+partitions: 4
 codec: avro
 -----
 records: 0]
 queue stream.work.videoConversion [work/videoConversion
 ----
-partitions: 12
+partitions: 6
 codec: avro
 -----
 records: 0]
@@ -80,6 +68,150 @@ codec: avro
 records: 0]
 queue stream.work.renditionBuilder [work/renditionBuilder
 ----
+partitions: 6
+codec: avro
+-----
+records: 1]
+queue stream.work.transientStorageGC [work/transientStorageGC
+----
+partitions: 1
+codec: avro
+-----
+records: 304]
+queue stream.work.permissionsPurge [work/permissionsPurge
+----
+partitions: 1
+codec: avro
+-----
+records: 0]
+queue stream.bulk.recomputeViews [bulk/recomputeViews
+----
+partitions: 6
+codec: avro
+-----
+records: 0]
+queue stream.source.document [source/document
+----
+partitions: 1
+codec: avro
+-----
+records: 0]
+queue stream.bulk.status [bulk/status
+----
+partitions: 1
+codec: avro
+-----
+records: 422]
+queue stream.bulk.sortBlob [bulk/sortBlob
+----
+partitions: 4
+codec: avro
+-----
+records: 7]
+queue stream.bulk.recomputeVideoConversion [bulk/recomputeVideoConversion
+----
+partitions: 6
+codec: avro
+-----
+records: 0]
+queue stream.bulk.idle [bulk/idle
+----
+partitions: 12
+codec: avro
+-----
+records: 20]
+queue stream.input.null [input/null
+----
+partitions: 1
+codec: avro
+-----
+records: 0]
+queue stream.source.indexing [source/indexing
+----
+partitions: 12
+codec: avro
+-----
+records: 7884]
+queue stream.bulk.exposeBlob [bulk/exposeBlob
+----
+partitions: 4
+codec: avro
+-----
+records: 7]
+queue stream.bulk.recomputeTranscodedVideos [bulk/recomputeTranscodedVideos
+----
+partitions: 6
+codec: avro
+-----
+records: 0]
+queue stream.bulk.garbageCollectWokflows [bulk/garbageCollectWokflows
+----
+partitions: 4
+codec: avro
+-----
+records: 0]
+queue stream.work.default [work/default
+----
+partitions: 12
+codec: avro
+-----
+records: 1]
+queue stream.bulk.setSystemProperties [bulk/setSystemProperties
+----
+partitions: 4
+codec: avro
+-----
+records: 0]
+queue stream.bulk.automationUi [bulk/automationUi
+----
+partitions: 4
+codec: avro
+-----
+records: 0]
+queue stream.bulk.recomputeThumbnails [bulk/recomputeThumbnails
+----
+partitions: 6
+codec: avro
+-----
+records: 0]
+queue stream.bulk.zipBlob [bulk/zipBlob
+----
+partitions: 4
+codec: avro
+-----
+records: 0]
+queue stream.bulk.garbageCollectExpiredOAuth2Tokens [bulk/garbageCollectExpiredOAuth2Tokens
+----
+partitions: 4
+codec: avro
+-----
+records: 0]
+queue stream.audit.audit [audit/audit
+----
+partitions: 1
+codec: avro
+-----
+records: 2264]
+queue stream.bulk.done [bulk/done
+----
+partitions: 1
+codec: avro
+-----
+records: 0]
+queue stream.work.raclupdate [work/raclupdate
+----
+partitions: 12
+codec: avro
+-----
+records: 0]
+queue stream.work.pictureViewsGeneration [work/pictureViewsGeneration
+----
+partitions: 6
+codec: avro
+-----
+records: 2152]
+queue stream.work.escalation [work/escalation
+----
 partitions: 12
 codec: avro
 -----
@@ -89,49 +221,43 @@ queue stream.bulk.command [bulk/command
 partitions: 2
 codec: avro
 -----
-records: 12]
-queue stream.bulk.automation [bulk/automation
+records: 134]
+queue stream.source.blob [source/blob
 ----
 partitions: 1
 codec: avro
 -----
 records: 0]
-queue stream.work.permissionsPurge [work/permissionsPurge
+queue stream.bulk.automation [bulk/automation
 ----
-partitions: 12
+partitions: 4
 codec: avro
 -----
 records: 0]
 queue stream.bulk.deletion [bulk/deletion
 ----
-partitions: 1
+partitions: 4
 codec: avro
 -----
-records: 10]
-queue stream.bulk.index [bulk/index
+records: 0]
+queue stream.bulk.garbageCollectOrphanBlobs [bulk/garbageCollectOrphanBlobs
 ----
-partitions: 1
+partitions: 4
 codec: avro
 -----
-records: 3]
+records: 0]
 queue stream.bulk.setProperties [bulk/setProperties
 ----
-partitions: 1
+partitions: 4
 codec: avro
 -----
 records: 0]
-queue stream.bulk.recomputeViews [bulk/recomputeViews
+queue stream.bulk.indexingBackground [bulk/indexingBackground
 ----
-partitions: 1
+partitions: 8
 codec: avro
 -----
-records: 0]
-queue stream.work.elasticSearchIndexing [work/elasticSearchIndexing
-----
-partitions: 12
-codec: avro
------
-records: 3052]
+records: 13]
 queue stream.internal.metrics [internal/metrics
 ----
 partitions: 1
@@ -140,451 +266,597 @@ codec: avro
 records: 543]
 queue stream.work.updateACEStatus [work/updateACEStatus
 ----
-partitions: 12
-codec: avro
------
-records: 105]
-queue stream.bulk.status [bulk/status
-----
 partitions: 1
 codec: avro
 -----
-records: 40]
+records: 112]
+queue stream.bulk.indexing [bulk/indexing
+----
+partitions: 8
+codec: avro
+-----
+records: 5]
 queue stream.work.blobs [work/blobs
 ----
-partitions: 12
+partitions: 6
 codec: avro
 -----
 records: 0]
-queue stream.bulk.sortBlob [bulk/sortBlob
-----
-partitions: 2
-codec: avro
------
-records: 1]
 queue stream.internal.processors [internal/processors
 ----
 partitions: 1
 codec: avro
 -----
-records: 96]
-queue stream.input.null [input/null
+records: 388]
+queue stream.work.common [work/common
 ----
-partitions: 1
+partitions: 6
+codec: avro
+-----
+records: 6277]
+queue stream.work.computeDigest [work/computeDigest
+----
+partitions: 6
 codec: avro
 -----
 records: 0]
-queue stream.bulk.exposeBlob [bulk/exposeBlob
-----
-partitions: 2
-codec: avro
------
-records: 1]
 queue stream.bulk.removeProxy [bulk/removeProxy
 ----
-partitions: 1
+partitions: 4
 codec: avro
 -----
 records: 0]
 queue stream.bulk.makeBlob [bulk/makeBlob
 ----
-partitions: 2
+partitions: 4
 codec: avro
 -----
-records: 21]
-queue stream.work.default [work/default
-----
-partitions: 12
-codec: avro
------
-records: 5195]
-queue stream.bulk.bulkIndex [bulk/bulkIndex
+records: 107]
+queue stream.bulk.extractBinaryFulltext [bulk/extractBinaryFulltext
 ----
 partitions: 4
 codec: avro
 -----
-records: 5]
-queue stream.bulk.setSystemProperties [bulk/setSystemProperties
-----
-partitions: 1
-codec: avro
------
 records: 0]
-queue stream.work.fulltextUpdater [work/fulltextUpdater
+component computation.bulk.recomputeVideoInfos.172.22.0.7 [bulk/recomputeVideoInfos on 172.22.0.7
 ----
-partitions: 12
-codec: avro
------
-records: 0]
-component computation.bulk.removeProxy.nuxeo1 [bulk/removeProxy on nuxeo1
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 1, delay: 5000ms]
+component computation.bulk.recomputeTranscodedVideos.172.22.0.7 [bulk/recomputeTranscodedVideos on 172.22.0.7
 ----
-created: 1970-01-01T00:00:00Z
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 1, delay: 5000ms]
+computation.bulk.recomputeTranscodedVideos.172.22.0.7==>stream.bulk.status
+stream.bulk.recomputeTranscodedVideos==>computation.bulk.recomputeTranscodedVideos.172.22.0.7
+computation.bulk.recomputeVideoInfos.172.22.0.7==>stream.bulk.recomputeTranscodedVideos
+stream.bulk.recomputeVideoConversion==>computation.bulk.recomputeVideoInfos.172.22.0.7
+component computation.bulk.updateReadAcls.172.22.0.7 [bulk/updateReadAcls on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 1
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.updateReadAcls.172.22.0.7==>stream.bulk.status
+stream.bulk.updateReadAcls==>computation.bulk.updateReadAcls.172.22.0.7
+component computation.bulk.garbageCollectOrphanVersions.172.22.0.7 [bulk/garbageCollectOrphanVersions on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
 max retry: 3, delay: 500ms]
-computation.bulk.removeProxy.nuxeo1==>stream.bulk.status
-stream.bulk.removeProxy==>computation.bulk.removeProxy.nuxeo1
-component computation.audit.writer.nuxeo1 [audit/writer on nuxeo1
+computation.bulk.garbageCollectOrphanVersions.172.22.0.7==>stream.bulk.status
+stream.bulk.garbageCollectOrphanVersions==>computation.bulk.garbageCollectOrphanVersions.172.22.0.7
+component computation.bulk.automation.172.22.0.7 [bulk/automation on 172.22.0.7
 ----
-created: 1970-01-01T00:00:00Z
-threads: 1
-continue on failure: false
-batch 25 25ms
-max retry: 20, delay: 1000ms
-----
-record count: 2028, total: 11.328s
-mean: 0.003s, p50: 0.000s, p99: 0.117s
-rate 1min: 0.00op/s, 5min: 0.00op/s
-----
-timer count: 37902, total: 1.443s
-mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 1.89op/s]
-stream.audit.audit==>computation.audit.writer.nuxeo1: 2113/2123 lag: 10, latency: 1.20s
-component computation.bulk.automation.nuxeo1 [bulk/automation on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
+created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
 max retry: 3, delay: 1000ms]
-computation.bulk.automation.nuxeo1==>stream.bulk.status
-stream.bulk.automation==>computation.bulk.automation.nuxeo1
-component computation.bulk.deletion.nuxeo1 [bulk/deletion on nuxeo1
+computation.bulk.automation.172.22.0.7==>stream.bulk.status
+stream.bulk.automation==>computation.bulk.automation.172.22.0.7
+component computation.bulk.scroller.172.22.0.7 [bulk/scroller on 172.22.0.7
 ----
-created: 1970-01-01T00:00:00Z
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: false
+no batch
+no retry
+----
+record count: 17, total: 0.501s
+mean: 0.002s, p50: 0.002s, p99: 0.002s
+rate 1min: 0.00op/s, 5min: 0.00op/s]
+component computation.bulk.status.172.22.0.7 [bulk/status on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 1
+continue on failure: false
+no batch
+max retry: 20, delay: 1000ms
+----
+record count: 84, total: 0.117s
+mean: 0.001s, p50: 0.001s, p99: 0.001s
+rate 1min: 0.00op/s, 5min: 0.01op/s]
+computation.bulk.scroller.172.22.0.7==>stream.bulk.recomputeThumbnails
+computation.bulk.scroller.172.22.0.7==>stream.bulk.indexing
+computation.bulk.scroller.172.22.0.7==>stream.bulk.garbageCollectExpiredOAuth2Tokens
+computation.bulk.scroller.172.22.0.7==>stream.bulk.status
+computation.bulk.scroller.172.22.0.7==>stream.bulk.csvExport
+computation.bulk.scroller.172.22.0.7==>stream.bulk.recomputeVideoConversion
+computation.bulk.scroller.172.22.0.7==>stream.bulk.garbageCollectOrphanVersions
+computation.bulk.scroller.172.22.0.7==>stream.bulk.updateReadAcls
+computation.bulk.scroller.172.22.0.7==>stream.bulk.idle
+computation.bulk.scroller.172.22.0.7==>stream.bulk.documentRoutingEscalation
+computation.bulk.scroller.172.22.0.7==>stream.bulk.garbageCollectWokflows
+computation.bulk.scroller.172.22.0.7==>stream.bulk.removeProxy
+computation.bulk.scroller.172.22.0.7==>stream.retention.retentionExpired
+computation.bulk.scroller.172.22.0.7==>stream.bulk.migration
+computation.bulk.scroller.172.22.0.7==>stream.bulk.trash
+computation.bulk.scroller.172.22.0.7==>stream.bulk.automation
+computation.bulk.scroller.172.22.0.7==>stream.bulk.deletion
+computation.bulk.scroller.172.22.0.7==>stream.bulk.garbageCollectOrphanBlobs
+computation.bulk.scroller.172.22.0.7==>stream.bulk.setProperties
+computation.bulk.scroller.172.22.0.7==>stream.bulk.recomputeViews
+computation.bulk.scroller.172.22.0.7==>stream.bulk.extractBinaryFulltext
+computation.bulk.scroller.172.22.0.7==>stream.bulk.setSystemProperties
+computation.bulk.scroller.172.22.0.7==>stream.bulk.indexingBackground
+computation.bulk.scroller.172.22.0.7==>stream.bulk.automationUi
+stream.bulk.command==>computation.bulk.scroller.172.22.0.7
+computation.bulk.status.172.22.0.7==>stream.bulk.done
+stream.bulk.status==>computation.bulk.status.172.22.0.7
+component computation.bulk.garbageCollectWokflows.172.22.0.7 [bulk/garbageCollectWokflows on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.garbageCollectWokflows.172.22.0.7==>stream.bulk.status
+stream.bulk.garbageCollectWokflows==>computation.bulk.garbageCollectWokflows.172.22.0.7
+component computation.blob.gc.172.22.0.7 [blob/gc on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 1
+continue on failure: true
+no batch
+max retry: 3, delay: 3000ms]
+stream.source.blob==>computation.blob.gc.172.22.0.7
+component computation.bulk.garbageCollectExpiredOAuth2Tokens.172.22.0.7 [bulk/garbageCollectExpiredOAuth2Tokens on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.garbageCollectExpiredOAuth2Tokens.172.22.0.7==>stream.bulk.status
+stream.bulk.garbageCollectExpiredOAuth2Tokens==>computation.bulk.garbageCollectExpiredOAuth2Tokens.172.22.0.7
+component computation.bulk.idle.172.22.0.7 [bulk/idle on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 4
+continue on failure: true
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.idle.172.22.0.7==>stream.bulk.status
+stream.bulk.idle==>computation.bulk.idle.172.22.0.7
+component computation.bulk.recomputeViews.172.22.0.7 [bulk/recomputeViews on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 1, delay: 5000ms]
+computation.bulk.recomputeViews.172.22.0.7==>stream.bulk.status
+stream.bulk.recomputeViews==>computation.bulk.recomputeViews.172.22.0.7
+component computation.bulk.indexing.172.22.0.7 [bulk/indexing on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 4
+continue on failure: true
+no batch
+max retry: 4, delay: 3000ms]
+computation.bulk.indexing.172.22.0.7==>stream.bulk.status
+stream.bulk.indexing==>computation.bulk.indexing.172.22.0.7
+component computation.document.gc.172.22.0.7 [document/gc on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 1
+continue on failure: true
+no batch
+max retry: 3, delay: 3000ms]
+stream.source.document==>computation.document.gc.172.22.0.7
+component computation.indexing.synchronous.172.22.0.7 [indexing/synchronous on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 4
+continue on failure: true
+batch 20 250ms
+max retry: 4, delay: 3000ms
+----
+record count: 15, total: 0.094s
+mean: 0.005s, p50: 0.000s, p99: 0.042s
+rate 1min: 0.00op/s, 5min: 0.00op/s
+----
+timer count: 47497, total: 0.194s
+mean: 0.000s, p50: 0.000s, p99: 0.000s
+rate 5min: 13.31op/s]
+component computation.indexing.asynchronous.172.22.0.7 [indexing/asynchronous on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 4
+continue on failure: true
+batch 20 250ms
+max retry: 4, delay: 3000ms
+----
+record count: 15, total: 0.001s
+mean: 0.000s, p50: 0.000s, p99: 0.000s
+rate 1min: 0.00op/s, 5min: 0.00op/s
+----
+timer count: 47497, total: 0.190s
+mean: 0.000s, p50: 0.000s, p99: 0.000s
+rate 5min: 13.31op/s]
+stream.source.indexing==>computation.indexing.synchronous.172.22.0.7
+stream.source.indexing==>computation.indexing.asynchronous.172.22.0.7
+component computation.bulk.automationUi.172.22.0.7 [bulk/automationUi on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 3, delay: 1000ms]
+computation.bulk.automationUi.172.22.0.7==>stream.bulk.status
+stream.bulk.automationUi==>computation.bulk.automationUi.172.22.0.7
+component computation.stream.introspection.172.22.0.7 [stream/introspection on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 1
+continue on failure: true
+no batch
+max retry: 1, delay: 100ms
+----
+record count: 89, total: 0.282s
+mean: 0.002s, p50: 0.002s, p99: 0.002s
+rate 1min: 0.01op/s, 5min: 0.02op/s
+----
+timer count: 58, total: 0.005s
+mean: 0.000s, p50: 0.000s, p99: 0.000s
+rate 5min: 0.02op/s]
+stream.internal.processors==>computation.stream.introspection.172.22.0.7
+stream.internal.metrics==>computation.stream.introspection.172.22.0.7
+component computation.bulk.csvExport.172.22.0.7 [bulk/csvExport on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
 max retry: 3, delay: 1000ms
 ----
-record count: 2, total: 0.047s
-mean: 0.023s, p50: 0.017s, p99: 0.030s
+record count: 42, total: 2.859s
+mean: 0.058s, p50: 0.059s, p99: 0.083s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
-computation.bulk.deletion.nuxeo1==>stream.bulk.status
-stream.bulk.deletion==>computation.bulk.deletion.nuxeo1
-component computation.bulk.trash.nuxeo1 [bulk/trash on nuxeo1
+component computation.bulk.makeBlob.172.22.0.7 [bulk/makeBlob on 172.22.0.7
 ----
-created: 1970-01-01T00:00:00Z
-threads: 1
-continue on failure: false
-no batch
-max retry: 3, delay: 500ms]
-computation.bulk.trash.nuxeo1==>stream.bulk.status
-stream.bulk.trash==>computation.bulk.trash.nuxeo1
-component computation.bulk.setProperties.nuxeo1 [bulk/setProperties on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
+created: 2025-10-27T10:48:09Z
 threads: 2
-continue on failure: false
+continue on failure: true
 no batch
-max retry: 3, delay: 500ms]
-computation.bulk.setProperties.nuxeo1==>stream.bulk.status
-stream.bulk.setProperties==>computation.bulk.setProperties.nuxeo1
-component computation.stream.metrics.nuxeo1 [stream/metrics on nuxeo1
+max retry: 3, delay: 1000ms
 ----
-created: 1970-01-01T00:00:00Z
-threads: 1
-continue on failure: false
-no batch
-max retry: 5, delay: 1000ms]
-stream.input.null==>computation.stream.metrics.nuxeo1
-component computation.bulk.setSystemProperties.nuxeo1 [bulk/setSystemProperties on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: false
-no batch
-max retry: 3, delay: 500ms]
-computation.bulk.setSystemProperties.nuxeo1==>stream.bulk.status
-stream.bulk.setSystemProperties==>computation.bulk.setSystemProperties.nuxeo1
-component computation.bulk.indexCompletion.nuxeo1 [bulk/indexCompletion on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 1
-continue on failure: false
-no batch
-max retry: 20, delay: 1000ms
-----
-record count: 4, total: 0.023s
-mean: 0.010s, p50: 0.000s, p99: 0.022s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.index.nuxeo1 [bulk/index on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: false
-no batch
-max retry: 20, delay: 1000ms
-----
-record count: 3, total: 3.438s
-mean: 1.145s, p50: 1.293s, p99: 1.611s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.bulkIndex.nuxeo1  <<failure>>[bulk/bulkIndex on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: false
-no batch
-max retry: 20, delay: 1000ms
-----
-FAILURE: 1
-record count: 5, total: 1.603s
-mean: 0.322s, p50: 0.067s, p99: 1.199s
+record count: 42, total: 0.030s
+mean: 0.000s, p50: 0.000s, p99: 0.005s
 rate 1min: 0.00op/s, 5min: 0.00op/s
 ----
-timer count: 7926, total: 1.002s
+timer count: 7126, total: 0.066s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 0.40op/s]
-stream.bulk.done==>computation.bulk.indexCompletion.nuxeo1
-computation.bulk.index.nuxeo1==>stream.bulk.bulkIndex
-stream.bulk.index==>computation.bulk.index.nuxeo1
-computation.bulk.bulkIndex.nuxeo1==>stream.bulk.status
-stream.bulk.bulkIndex==>computation.bulk.bulkIndex.nuxeo1
-component computation.retention.retentionExpired.nuxeo1 [retention/retentionExpired on nuxeo1
+rate 5min: 2.00op/s]
+component computation.bulk.sortBlob.172.22.0.7 [bulk/sortBlob on 172.22.0.7
 ----
-created: 1970-01-01T00:00:00Z
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 3, delay: 1000ms
+----
+record count: 2, total: 0.188s
+mean: 0.085s, p50: 0.084s, p99: 0.104s
+rate 1min: 0.00op/s, 5min: 0.00op/s]
+component computation.bulk.zipBlob.172.22.0.7 [bulk/zipBlob on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 3, delay: 1000ms]
+component computation.bulk.exposeBlob.172.22.0.7 [bulk/exposeBlob on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 3, delay: 1000ms
+----
+record count: 2, total: 0.018s
+mean: 0.004s, p50: 0.003s, p99: 0.015s
+rate 1min: 0.00op/s, 5min: 0.00op/s]
+computation.bulk.zipBlob.172.22.0.7==>stream.bulk.exposeBlob
+stream.bulk.zipBlob==>computation.bulk.zipBlob.172.22.0.7
+computation.bulk.makeBlob.172.22.0.7==>stream.bulk.zipBlob
+computation.bulk.makeBlob.172.22.0.7==>stream.bulk.sortBlob
+computation.bulk.makeBlob.172.22.0.7==>stream.bulk.exposeBlob
+stream.bulk.makeBlob==>computation.bulk.makeBlob.172.22.0.7
+computation.bulk.sortBlob.172.22.0.7==>stream.bulk.zipBlob
+computation.bulk.sortBlob.172.22.0.7==>stream.bulk.exposeBlob
+stream.bulk.sortBlob==>computation.bulk.sortBlob.172.22.0.7
+computation.bulk.csvExport.172.22.0.7==>stream.bulk.makeBlob
+computation.bulk.csvExport.172.22.0.7==>stream.bulk.status
+stream.bulk.csvExport==>computation.bulk.csvExport.172.22.0.7
+computation.bulk.exposeBlob.172.22.0.7==>stream.bulk.status
+stream.bulk.exposeBlob==>computation.bulk.exposeBlob.172.22.0.7
+component computation.stream.metrics.172.22.0.7 [stream/metrics on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 1
+continue on failure: false
+no batch
+max retry: 18, delay: 15000ms]
+stream.input.null==>computation.stream.metrics.172.22.0.7
+component computation.bulk.removeProxy.172.22.0.7 [bulk/removeProxy on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.removeProxy.172.22.0.7==>stream.bulk.status
+stream.bulk.removeProxy==>computation.bulk.removeProxy.172.22.0.7
+component computation.work.transientStorageGC.172.22.0.7 [work/transientStorageGC on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 1
+continue on failure: true
+no batch
+no retry
+----
+record count: 32, total: 0.035s
+mean: 0.000s, p50: 0.000s, p99: 0.001s
+rate 1min: 0.01op/s, 5min: 0.02op/s]
+component computation.work.default.172.22.0.7 [work/default on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 4
+continue on failure: true
+no batch
+no retry
+----
+record count: 1, total: 0.003s
+mean: 0.003s, p50: 0.003s, p99: 0.003s
+rate 1min: 0.00op/s, 5min: 0.00op/s]
+component computation.work.raclupdate.172.22.0.7 [work/raclupdate on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 4
+continue on failure: true
+no batch
+no retry]
+component computation.work.escalation.172.22.0.7 [work/escalation on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 4
+continue on failure: true
+no batch
+no retry]
+component computation.work.renditionBuilder.172.22.0.7 [work/renditionBuilder on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: true
+no batch
+no retry]
+component computation.work.updateThumbListener.172.22.0.7 [work/updateThumbListener on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: true
+no batch
+no retry]
+component computation.work.computeDigest.172.22.0.7 [work/computeDigest on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: true
+no batch
+no retry]
+component computation.work.videoConversion.172.22.0.7 [work/videoConversion on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: true
+no batch
+no retry]
+component computation.work.permissionsPurge.172.22.0.7 [work/permissionsPurge on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 1
+continue on failure: true
+no batch
+no retry]
+component computation.work.blobs.172.22.0.7 [work/blobs on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: true
+no batch
+no retry]
+component computation.work.collections.172.22.0.7 [work/collections on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 1
+continue on failure: true
+no batch
+no retry]
+component computation.work.common.172.22.0.7 [work/common on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: true
+no batch
+no retry
+----
+record count: 20, total: 0.037s
+mean: 0.001s, p50: 0.001s, p99: 0.001s
+rate 1min: 0.00op/s, 5min: 0.00op/s]
+component computation.work.updateACEStatus.172.22.0.7 [work/updateACEStatus on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 1
+continue on failure: true
+no batch
+no retry
+----
+record count: 12, total: 0.060s
+mean: 0.002s, p50: 0.002s, p99: 0.003s
+rate 1min: 0.00op/s, 5min: 0.00op/s]
+component computation.work.pictureViewsGeneration.172.22.0.7 [work/pictureViewsGeneration on 172.22.0.7
+----
+created: 2025-10-27T10:48:11Z
+threads: 2
+continue on failure: true
+no batch
+no retry
+----
+record count: 2, total: 0.005s
+mean: 0.002s, p50: 0.002s, p99: 0.003s
+rate 1min: 0.00op/s, 5min: 0.00op/s]
+stream.work.transientStorageGC==>computation.work.transientStorageGC.172.22.0.7
+stream.work.default==>computation.work.default.172.22.0.7
+stream.work.raclupdate==>computation.work.raclupdate.172.22.0.7
+stream.work.escalation==>computation.work.escalation.172.22.0.7
+stream.work.renditionBuilder==>computation.work.renditionBuilder.172.22.0.7
+stream.work.updateThumbListener==>computation.work.updateThumbListener.172.22.0.7
+stream.work.computeDigest==>computation.work.computeDigest.172.22.0.7
+stream.work.videoConversion==>computation.work.videoConversion.172.22.0.7
+stream.work.permissionsPurge==>computation.work.permissionsPurge.172.22.0.7
+stream.work.blobs==>computation.work.blobs.172.22.0.7
+stream.work.collections==>computation.work.collections.172.22.0.7
+stream.work.common==>computation.work.common.172.22.0.7
+stream.work.updateACEStatus==>computation.work.updateACEStatus.172.22.0.7
+stream.work.pictureViewsGeneration==>computation.work.pictureViewsGeneration.172.22.0.7
+component computation.bulk.deletion.172.22.0.7 [bulk/deletion on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 3, delay: 1000ms]
+computation.bulk.deletion.172.22.0.7==>stream.bulk.status
+stream.bulk.deletion==>computation.bulk.deletion.172.22.0.7
+component computation.audit.writer.172.22.0.7 [audit/writer on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 1
+continue on failure: false
+batch 25 500ms
+max retry: 20, delay: 1000ms
+----
+record count: 150, total: 0.005s
+mean: 0.000s, p50: 0.000s, p99: 0.000s
+rate 1min: 0.01op/s, 5min: 0.00op/s
+----
+timer count: 7118, total: 0.632s
+mean: 0.000s, p50: 0.000s, p99: 0.000s
+rate 5min: 2.00op/s]
+stream.audit.audit==>computation.audit.writer.172.22.0.7
+component computation.bulk.trash.172.22.0.7 [bulk/trash on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 1
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.trash.172.22.0.7==>stream.bulk.status
+stream.bulk.trash==>computation.bulk.trash.172.22.0.7
+component computation.bulk.recomputeThumbnails.172.22.0.7 [bulk/recomputeThumbnails on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 1, delay: 5000ms]
+computation.bulk.recomputeThumbnails.172.22.0.7==>stream.bulk.status
+stream.bulk.recomputeThumbnails==>computation.bulk.recomputeThumbnails.172.22.0.7
+component computation.bulk.setProperties.172.22.0.7 [bulk/setProperties on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.setProperties.172.22.0.7==>stream.bulk.status
+stream.bulk.setProperties==>computation.bulk.setProperties.172.22.0.7
+component computation.bulk.garbageCollectOrphanBlobs.172.22.0.7 [bulk/garbageCollectOrphanBlobs on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.garbageCollectOrphanBlobs.172.22.0.7==>stream.bulk.status
+stream.bulk.garbageCollectOrphanBlobs==>computation.bulk.garbageCollectOrphanBlobs.172.22.0.7
+component computation.bulk.extractBinaryFulltext.172.22.0.7 [bulk/extractBinaryFulltext on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: true
+no batch
+max retry: 3, delay: 1000ms]
+computation.bulk.extractBinaryFulltext.172.22.0.7==>stream.bulk.status
+stream.bulk.extractBinaryFulltext==>computation.bulk.extractBinaryFulltext.172.22.0.7
+component computation.bulk.setSystemProperties.172.22.0.7 [bulk/setSystemProperties on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
+threads: 2
+continue on failure: false
+no batch
+max retry: 3, delay: 500ms]
+computation.bulk.setSystemProperties.172.22.0.7==>stream.bulk.status
+stream.bulk.setSystemProperties==>computation.bulk.setSystemProperties.172.22.0.7
+component computation.retention.retentionExpired.172.22.0.7 [retention/retentionExpired on 172.22.0.7
+----
+created: 2025-10-27T10:48:09Z
 threads: 1
 continue on failure: true
 no batch
 max retry: 20, delay: 1000ms]
-computation.retention.retentionExpired.nuxeo1==>stream.bulk.status
-stream.retention.retentionExpired==>computation.retention.retentionExpired.nuxeo1
-component computation.stream.introspection.nuxeo1 [stream/introspection on nuxeo1
+computation.retention.retentionExpired.172.22.0.7==>stream.bulk.status
+stream.retention.retentionExpired==>computation.retention.retentionExpired.172.22.0.7
+component computation.bulk.indexingBackground.172.22.0.7 [bulk/indexingBackground on 172.22.0.7
 ----
-created: 1970-01-01T00:00:00Z
-threads: 1
-continue on failure: false
-no batch
-no retry
-----
-record count: 348, total: 1.807s
-mean: 0.003s, p50: 0.002s, p99: 0.009s
-rate 1min: 0.01op/s, 5min: 0.02op/s]
-stream.internal.processors==>computation.stream.introspection.nuxeo1
-stream.internal.metrics==>computation.stream.introspection.nuxeo1
-component computation.bulk.csvExport.nuxeo1 [bulk/csvExport on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
+created: 2025-10-27T10:48:09Z
+threads: 4
 continue on failure: true
 no batch
-max retry: 3, delay: 1000ms
+max retry: 4, delay: 3000ms
 ----
-record count: 21, total: 2.356s
-record skipped: 4
-mean: 0.112s, p50: 0.106s, p99: 0.183s
+record count: 6, total: 5.232s
+mean: 0.706s, p50: 0.883s, p99: 1.424s
 rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.makeBlob.nuxeo1 [bulk/makeBlob on nuxeo1
+computation.bulk.indexingBackground.172.22.0.7==>stream.bulk.status
+stream.bulk.indexingBackground==>computation.bulk.indexingBackground.172.22.0.7
+component computation.bulk.documentRoutingEscalation.172.22.0.7 [bulk/documentRoutingEscalation on 172.22.0.7
 ----
-created: 1970-01-01T00:00:00Z
+created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 3, delay: 1000ms
-----
-record count: 21, total: 0.118s
-mean: 0.006s, p50: 0.000s, p99: 0.106s
-rate 1min: 0.00op/s, 5min: 0.00op/s
-----
-timer count: 38844, total: 0.566s
-mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 1.94op/s]
-component computation.bulk.sortBlob.nuxeo1 [bulk/sortBlob on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: true
-no batch
-max retry: 3, delay: 1000ms
-----
-record count: 1, total: 0.977s
-mean: 0.977s, p50: 0.977s, p99: 0.977s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.zipBlob.nuxeo1 [bulk/zipBlob on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: true
-no batch
-max retry: 3, delay: 1000ms]
-component computation.bulk.exposeBlob.nuxeo1 [bulk/exposeBlob on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: true
-no batch
-max retry: 3, delay: 1000ms
-----
-record count: 1, total: 0.049s
-mean: 0.049s, p50: 0.049s, p99: 0.049s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-computation.bulk.zipBlob.nuxeo1==>stream.bulk.exposeBlob
-stream.bulk.zipBlob==>computation.bulk.zipBlob.nuxeo1
-computation.bulk.makeBlob.nuxeo1==>stream.bulk.zipBlob
-computation.bulk.makeBlob.nuxeo1==>stream.bulk.sortBlob
-computation.bulk.makeBlob.nuxeo1==>stream.bulk.exposeBlob
-stream.bulk.makeBlob==>computation.bulk.makeBlob.nuxeo1
-computation.bulk.csvExport.nuxeo1==>stream.bulk.makeBlob
-stream.bulk.csvExport==>computation.bulk.csvExport.nuxeo1
-computation.bulk.sortBlob.nuxeo1==>stream.bulk.zipBlob
-computation.bulk.sortBlob.nuxeo1==>stream.bulk.exposeBlob
-stream.bulk.sortBlob==>computation.bulk.sortBlob.nuxeo1
-computation.bulk.exposeBlob.nuxeo1==>stream.bulk.status
-stream.bulk.exposeBlob==>computation.bulk.exposeBlob.nuxeo1
-component computation.work.videoConversion.nuxeo1 [work/videoConversion on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-component computation.work.permissionsPurge.nuxeo1 [work/permissionsPurge on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-component computation.work.blobs.nuxeo1 [work/blobs on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-component computation.work.default.nuxeo1 [work/default on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry
-----
-record count: 5013, total: 616.797s
-mean: 0.010s, p50: 0.007s, p99: 0.123s
-rate 1min: 0.00op/s, 5min: 0.01op/s]
-component computation.work.elasticSearchIndexing.nuxeo1 [work/elasticSearchIndexing on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry
-----
-record count: 3042, total: 45.390s
-mean: 0.010s, p50: 0.008s, p99: 0.045s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.work.collections.nuxeo1 [work/collections on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-component computation.work.escalation.nuxeo1 [work/escalation on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-component computation.work.renditionBuilder.nuxeo1 [work/renditionBuilder on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-component computation.work.fulltextUpdater.nuxeo1 [work/fulltextUpdater on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-component computation.work.updateACEStatus.nuxeo1 [work/updateACEStatus on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry
-----
-record count: 68, total: 0.563s
-mean: 0.003s, p50: 0.003s, p99: 0.003s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.work.pictureViewsGeneration.nuxeo1 [work/pictureViewsGeneration on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 4
-continue on failure: true
-no batch
-no retry]
-stream.work.videoConversion==>computation.work.videoConversion.nuxeo1
-stream.work.permissionsPurge==>computation.work.permissionsPurge.nuxeo1
-stream.work.blobs==>computation.work.blobs.nuxeo1
-stream.work.default==>computation.work.default.nuxeo1
-stream.work.elasticSearchIndexing==>computation.work.elasticSearchIndexing.nuxeo1
-stream.work.collections==>computation.work.collections.nuxeo1
-stream.work.escalation==>computation.work.escalation.nuxeo1
-stream.work.renditionBuilder==>computation.work.renditionBuilder.nuxeo1
-stream.work.fulltextUpdater==>computation.work.fulltextUpdater.nuxeo1
-stream.work.updateACEStatus==>computation.work.updateACEStatus.nuxeo1
-stream.work.pictureViewsGeneration==>computation.work.pictureViewsGeneration.nuxeo1
-component computation.bulk.recomputeThumbnails.nuxeo1 [bulk/recomputeThumbnails on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: true
-no batch
-max retry: 3, delay: 1000ms]
-computation.bulk.recomputeThumbnails.nuxeo1==>stream.bulk.status
-stream.bulk.recomputeThumbnails==>computation.bulk.recomputeThumbnails.nuxeo1
-component computation.bulk.recomputeViews.nuxeo1 [bulk/recomputeViews on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: true
-no batch
-max retry: 3, delay: 1000ms]
-computation.bulk.recomputeViews.nuxeo1==>stream.bulk.status
-stream.bulk.recomputeViews==>computation.bulk.recomputeViews.nuxeo1
-component computation.bulk.scroller.nuxeo1 [bulk/scroller on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 2
-continue on failure: false
-no batch
-no retry
-----
-record count: 4, total: 0.487s
-mean: 0.231s, p50: 0.366s, p99: 0.366s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.status.nuxeo1 [bulk/status on nuxeo1
-----
-created: 1970-01-01T00:00:00Z
-threads: 1
-continue on failure: false
-no batch
-max retry: 20, delay: 1000ms
-----
-record count: 16, total: 0.056s
-mean: 0.003s, p50: 0.003s, p99: 0.007s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-computation.bulk.scroller.nuxeo1==>stream.bulk.removeProxy
-computation.bulk.scroller.nuxeo1==>stream.bulk.recomputeThumbnails
-computation.bulk.scroller.nuxeo1==>stream.retention.retentionExpired
-computation.bulk.scroller.nuxeo1==>stream.bulk.trash
-computation.bulk.scroller.nuxeo1==>stream.bulk.status
-computation.bulk.scroller.nuxeo1==>stream.bulk.csvExport
-computation.bulk.scroller.nuxeo1==>stream.bulk.automation
-computation.bulk.scroller.nuxeo1==>stream.bulk.deletion
-computation.bulk.scroller.nuxeo1==>stream.bulk.index
-computation.bulk.scroller.nuxeo1==>stream.bulk.setProperties
-computation.bulk.scroller.nuxeo1==>stream.bulk.recomputeViews
-computation.bulk.scroller.nuxeo1==>stream.bulk.setSystemProperties
-stream.bulk.command==>computation.bulk.scroller.nuxeo1
-computation.bulk.status.nuxeo1==>stream.bulk.done
-stream.bulk.status==>computation.bulk.status.nuxeo1
+max retry: 3, delay: 500ms]
+computation.bulk.documentRoutingEscalation.172.22.0.7==>stream.bulk.status
+stream.bulk.documentRoutingEscalation==>computation.bulk.documentRoutingEscalation.172.22.0.7
 @enduml

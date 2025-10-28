@@ -1,0 +1,1398 @@
+title: |md
+  # Stream Introspection at 2025-10-27T11:48:11Z
+| {near: top-center}
+
+classes: {
+  stream: {
+    shape: queue
+    style: {
+      fill: lightyellow
+    }
+  }
+  computation: {
+    shape: rectangle
+    style: {
+      fill: azure
+      shadow: true
+    }
+  }
+  computation-failure: {
+    shape: rectangle
+    style: {
+      fill: yellow
+      stroke: black
+      shadow: true
+    }
+  }
+  stream-empty: {
+    shape: queue
+    style: {
+      fill: lightgray
+      stroke: gray
+      opacity: 0.6
+    }
+  }
+  computation-idle: {
+    shape: rectangle
+    style: {
+      fill: lightgray
+      stroke: gray
+      opacity: 0.6
+    }
+  }
+  computation-group: {
+    style: {
+      fill: lightcyan
+      stroke: darkblue
+      stroke-width: 2
+    }
+  }
+}
+
+stream_work_collections: |md
+  #### work/collections
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_work_collections.class: stream-empty
+
+stream_bulk_csvExport: |md
+  #### bulk/csvExport
+  - partitions: 4
+  - codec: avro
+  - records: 107
+|
+stream_bulk_csvExport.class: stream
+
+stream_bulk_garbageCollectOrphanVersions: |md
+  #### bulk/garbageCollectOrphanVersions
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_garbageCollectOrphanVersions.class: stream-empty
+
+stream_bulk_updateReadAcls: |md
+  #### bulk/updateReadAcls
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_bulk_updateReadAcls.class: stream-empty
+
+stream_work_updateThumbListener: |md
+  #### work/updateThumbListener
+  - partitions: 6
+  - codec: avro
+  - records: 195
+|
+stream_work_updateThumbListener.class: stream
+
+stream_bulk_documentRoutingEscalation: |md
+  #### bulk/documentRoutingEscalation
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_documentRoutingEscalation.class: stream-empty
+
+stream_work_videoConversion: |md
+  #### work/videoConversion
+  - partitions: 6
+  - codec: avro
+  - records: 0
+|
+stream_work_videoConversion.class: stream-empty
+
+stream_retention_retentionExpired: |md
+  #### retention/retentionExpired
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_retention_retentionExpired.class: stream-empty
+
+stream_bulk_trash: |md
+  #### bulk/trash
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_bulk_trash.class: stream-empty
+
+stream_work_renditionBuilder: |md
+  #### work/renditionBuilder
+  - partitions: 6
+  - codec: avro
+  - records: 1
+|
+stream_work_renditionBuilder.class: stream
+
+stream_work_transientStorageGC: |md
+  #### work/transientStorageGC
+  - partitions: 1
+  - codec: avro
+  - records: 304
+|
+stream_work_transientStorageGC.class: stream
+
+stream_work_permissionsPurge: |md
+  #### work/permissionsPurge
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_work_permissionsPurge.class: stream-empty
+
+stream_bulk_recomputeViews: |md
+  #### bulk/recomputeViews
+  - partitions: 6
+  - codec: avro
+  - records: 0
+|
+stream_bulk_recomputeViews.class: stream-empty
+
+stream_source_document: |md
+  #### source/document
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_source_document.class: stream-empty
+
+stream_bulk_status: |md
+  #### bulk/status
+  - partitions: 1
+  - codec: avro
+  - records: 422
+|
+stream_bulk_status.class: stream
+
+stream_bulk_sortBlob: |md
+  #### bulk/sortBlob
+  - partitions: 4
+  - codec: avro
+  - records: 7
+|
+stream_bulk_sortBlob.class: stream
+
+stream_bulk_recomputeVideoConversion: |md
+  #### bulk/recomputeVideoConversion
+  - partitions: 6
+  - codec: avro
+  - records: 0
+|
+stream_bulk_recomputeVideoConversion.class: stream-empty
+
+stream_bulk_idle: |md
+  #### bulk/idle
+  - partitions: 12
+  - codec: avro
+  - records: 20
+|
+stream_bulk_idle.class: stream
+
+stream_input_null: |md
+  #### input/null
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_input_null.class: stream-empty
+
+stream_source_indexing: |md
+  #### source/indexing
+  - partitions: 12
+  - codec: avro
+  - records: 7884
+|
+stream_source_indexing.class: stream
+
+stream_bulk_exposeBlob: |md
+  #### bulk/exposeBlob
+  - partitions: 4
+  - codec: avro
+  - records: 7
+|
+stream_bulk_exposeBlob.class: stream
+
+stream_bulk_recomputeTranscodedVideos: |md
+  #### bulk/recomputeTranscodedVideos
+  - partitions: 6
+  - codec: avro
+  - records: 0
+|
+stream_bulk_recomputeTranscodedVideos.class: stream-empty
+
+stream_bulk_garbageCollectWokflows: |md
+  #### bulk/garbageCollectWokflows
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_garbageCollectWokflows.class: stream-empty
+
+stream_work_default: |md
+  #### work/default
+  - partitions: 12
+  - codec: avro
+  - records: 1
+|
+stream_work_default.class: stream
+
+stream_bulk_setSystemProperties: |md
+  #### bulk/setSystemProperties
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_setSystemProperties.class: stream-empty
+
+stream_bulk_automationUi: |md
+  #### bulk/automationUi
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_automationUi.class: stream-empty
+
+stream_bulk_recomputeThumbnails: |md
+  #### bulk/recomputeThumbnails
+  - partitions: 6
+  - codec: avro
+  - records: 0
+|
+stream_bulk_recomputeThumbnails.class: stream-empty
+
+stream_bulk_zipBlob: |md
+  #### bulk/zipBlob
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_zipBlob.class: stream-empty
+
+stream_bulk_garbageCollectExpiredOAuth2Tokens: |md
+  #### bulk/garbageCollectExpiredOAuth2Tokens
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_garbageCollectExpiredOAuth2Tokens.class: stream-empty
+
+stream_audit_audit: |md
+  #### audit/audit
+  - partitions: 1
+  - codec: avro
+  - records: 2264
+|
+stream_audit_audit.class: stream
+
+stream_bulk_done: |md
+  #### bulk/done
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_bulk_done.class: stream-empty
+
+stream_work_raclupdate: |md
+  #### work/raclupdate
+  - partitions: 12
+  - codec: avro
+  - records: 0
+|
+stream_work_raclupdate.class: stream-empty
+
+stream_work_pictureViewsGeneration: |md
+  #### work/pictureViewsGeneration
+  - partitions: 6
+  - codec: avro
+  - records: 2152
+|
+stream_work_pictureViewsGeneration.class: stream
+
+stream_work_escalation: |md
+  #### work/escalation
+  - partitions: 12
+  - codec: avro
+  - records: 0
+|
+stream_work_escalation.class: stream-empty
+
+stream_bulk_command: |md
+  #### bulk/command
+  - partitions: 2
+  - codec: avro
+  - records: 134
+|
+stream_bulk_command.class: stream
+
+stream_source_blob: |md
+  #### source/blob
+  - partitions: 1
+  - codec: avro
+  - records: 0
+|
+stream_source_blob.class: stream-empty
+
+stream_bulk_automation: |md
+  #### bulk/automation
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_automation.class: stream-empty
+
+stream_bulk_deletion: |md
+  #### bulk/deletion
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_deletion.class: stream-empty
+
+stream_bulk_garbageCollectOrphanBlobs: |md
+  #### bulk/garbageCollectOrphanBlobs
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_garbageCollectOrphanBlobs.class: stream-empty
+
+stream_bulk_setProperties: |md
+  #### bulk/setProperties
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_setProperties.class: stream-empty
+
+stream_bulk_indexingBackground: |md
+  #### bulk/indexingBackground
+  - partitions: 8
+  - codec: avro
+  - records: 13
+|
+stream_bulk_indexingBackground.class: stream
+
+stream_internal_metrics: |md
+  #### internal/metrics
+  - partitions: 1
+  - codec: avro
+  - records: 543
+|
+stream_internal_metrics.class: stream
+
+stream_work_updateACEStatus: |md
+  #### work/updateACEStatus
+  - partitions: 1
+  - codec: avro
+  - records: 112
+|
+stream_work_updateACEStatus.class: stream
+
+stream_bulk_indexing: |md
+  #### bulk/indexing
+  - partitions: 8
+  - codec: avro
+  - records: 5
+|
+stream_bulk_indexing.class: stream
+
+stream_work_blobs: |md
+  #### work/blobs
+  - partitions: 6
+  - codec: avro
+  - records: 0
+|
+stream_work_blobs.class: stream-empty
+
+stream_internal_processors: |md
+  #### internal/processors
+  - partitions: 1
+  - codec: avro
+  - records: 388
+|
+stream_internal_processors.class: stream
+
+stream_work_common: |md
+  #### work/common
+  - partitions: 6
+  - codec: avro
+  - records: 6277
+|
+stream_work_common.class: stream
+
+stream_work_computeDigest: |md
+  #### work/computeDigest
+  - partitions: 6
+  - codec: avro
+  - records: 0
+|
+stream_work_computeDigest.class: stream-empty
+
+stream_bulk_removeProxy: |md
+  #### bulk/removeProxy
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_removeProxy.class: stream-empty
+
+stream_bulk_makeBlob: |md
+  #### bulk/makeBlob
+  - partitions: 4
+  - codec: avro
+  - records: 107
+|
+stream_bulk_makeBlob.class: stream
+
+stream_bulk_extractBinaryFulltext: |md
+  #### bulk/extractBinaryFulltext
+  - partitions: 4
+  - codec: avro
+  - records: 0
+|
+stream_bulk_extractBinaryFulltext.class: stream-empty
+
+group_work_collections: {
+  label: "work/collections"
+  class: computation-group
+}
+
+group_bulk_csvExport: {
+  label: "bulk/csvExport"
+  class: computation-group
+}
+
+group_bulk_garbageCollectOrphanVersions: {
+  label: "bulk/garbageCollectOrphanVersions"
+  class: computation-group
+}
+
+group_bulk_scroller: {
+  label: "bulk/scroller"
+  class: computation-group
+}
+
+group_bulk_updateReadAcls: {
+  label: "bulk/updateReadAcls"
+  class: computation-group
+}
+
+group_work_updateThumbListener: {
+  label: "work/updateThumbListener"
+  class: computation-group
+}
+
+group_bulk_documentRoutingEscalation: {
+  label: "bulk/documentRoutingEscalation"
+  class: computation-group
+}
+
+group_work_videoConversion: {
+  label: "work/videoConversion"
+  class: computation-group
+}
+
+group_bulk_trash: {
+  label: "bulk/trash"
+  class: computation-group
+}
+
+group_retention_retentionExpired: {
+  label: "retention/retentionExpired"
+  class: computation-group
+}
+
+group_work_renditionBuilder: {
+  label: "work/renditionBuilder"
+  class: computation-group
+}
+
+group_work_transientStorageGC: {
+  label: "work/transientStorageGC"
+  class: computation-group
+}
+
+group_work_permissionsPurge: {
+  label: "work/permissionsPurge"
+  class: computation-group
+}
+
+group_bulk_recomputeViews: {
+  label: "bulk/recomputeViews"
+  class: computation-group
+}
+
+group_bulk_status: {
+  label: "bulk/status"
+  class: computation-group
+}
+
+group_bulk_sortBlob: {
+  label: "bulk/sortBlob"
+  class: computation-group
+}
+
+group_stream_introspection: {
+  label: "stream/introspection"
+  class: computation-group
+}
+
+group_stream_metrics: {
+  label: "stream/metrics"
+  class: computation-group
+}
+
+group_bulk_idle: {
+  label: "bulk/idle"
+  class: computation-group
+}
+
+group_bulk_exposeBlob: {
+  label: "bulk/exposeBlob"
+  class: computation-group
+}
+
+group_bulk_recomputeTranscodedVideos: {
+  label: "bulk/recomputeTranscodedVideos"
+  class: computation-group
+}
+
+group_bulk_garbageCollectWokflows: {
+  label: "bulk/garbageCollectWokflows"
+  class: computation-group
+}
+
+group_indexing_asynchronous: {
+  label: "indexing/asynchronous"
+  class: computation-group
+}
+
+group_work_default: {
+  label: "work/default"
+  class: computation-group
+}
+
+group_blob_gc: {
+  label: "blob/gc"
+  class: computation-group
+}
+
+group_bulk_setSystemProperties: {
+  label: "bulk/setSystemProperties"
+  class: computation-group
+}
+
+group_bulk_automationUi: {
+  label: "bulk/automationUi"
+  class: computation-group
+}
+
+group_bulk_recomputeThumbnails: {
+  label: "bulk/recomputeThumbnails"
+  class: computation-group
+}
+
+group_bulk_garbageCollectExpiredOAuth2Tokens: {
+  label: "bulk/garbageCollectExpiredOAuth2Tokens"
+  class: computation-group
+}
+
+group_bulk_zipBlob: {
+  label: "bulk/zipBlob"
+  class: computation-group
+}
+
+group_work_raclupdate: {
+  label: "work/raclupdate"
+  class: computation-group
+}
+
+group_work_pictureViewsGeneration: {
+  label: "work/pictureViewsGeneration"
+  class: computation-group
+}
+
+group_audit_writer: {
+  label: "audit/writer"
+  class: computation-group
+}
+
+group_work_escalation: {
+  label: "work/escalation"
+  class: computation-group
+}
+
+group_bulk_automation: {
+  label: "bulk/automation"
+  class: computation-group
+}
+
+group_bulk_deletion: {
+  label: "bulk/deletion"
+  class: computation-group
+}
+
+group_bulk_setProperties: {
+  label: "bulk/setProperties"
+  class: computation-group
+}
+
+group_bulk_garbageCollectOrphanBlobs: {
+  label: "bulk/garbageCollectOrphanBlobs"
+  class: computation-group
+}
+
+group_bulk_indexingBackground: {
+  label: "bulk/indexingBackground"
+  class: computation-group
+}
+
+group_work_updateACEStatus: {
+  label: "work/updateACEStatus"
+  class: computation-group
+}
+
+group_bulk_indexing: {
+  label: "bulk/indexing"
+  class: computation-group
+}
+
+group_document_gc: {
+  label: "document/gc"
+  class: computation-group
+}
+
+group_work_blobs: {
+  label: "work/blobs"
+  class: computation-group
+}
+
+group_work_common: {
+  label: "work/common"
+  class: computation-group
+}
+
+group_indexing_synchronous: {
+  label: "indexing/synchronous"
+  class: computation-group
+}
+
+group_work_computeDigest: {
+  label: "work/computeDigest"
+  class: computation-group
+}
+
+group_bulk_removeProxy: {
+  label: "bulk/removeProxy"
+  class: computation-group
+}
+
+group_bulk_makeBlob: {
+  label: "bulk/makeBlob"
+  class: computation-group
+}
+
+group_bulk_recomputeVideoInfos: {
+  label: "bulk/recomputeVideoInfos"
+  class: computation-group
+}
+
+group_bulk_extractBinaryFulltext: {
+  label: "bulk/extractBinaryFulltext"
+  class: computation-group
+}
+
+group_bulk_recomputeVideoInfos.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 1, delay: 5000ms, no batch
+  - continue on failure: true
+|
+group_bulk_recomputeVideoInfos.comp_172_22_0_7.class: computation-idle
+
+group_bulk_recomputeTranscodedVideos.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 1, delay: 5000ms, no batch
+  - continue on failure: true
+|
+group_bulk_recomputeTranscodedVideos.comp_172_22_0_7.class: computation-idle
+
+group_bulk_updateReadAcls.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_updateReadAcls.comp_172_22_0_7.class: computation-idle
+
+group_bulk_garbageCollectOrphanVersions.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_garbageCollectOrphanVersions.comp_172_22_0_7.class: computation-idle
+
+group_bulk_automation.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+|
+group_bulk_automation.comp_172_22_0_7.class: computation-idle
+
+group_bulk_scroller.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: false
+  #### record
+  - count: 17, sum: 0.501s
+  - duration: 0.002s (+/- 0.000s)
+    -  min: 0.002s, max: 0.276s
+    -  p50: 0.002s, p99: 0.002s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_bulk_scroller.comp_172_22_0_7.class: computation
+
+group_bulk_status.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 1
+  - retry: 20, delay: 1000ms, no batch
+  - continue on failure: false
+  #### record
+  - count: 84, sum: 0.117s
+  - duration: 0.001s (+/- 0.000s)
+    -  min: 0.001s, max: 0.004s
+    -  p50: 0.001s, p99: 0.001s
+  - rate 1min: 0.00ops/s, 5min: 0.01ops/s
+|
+group_bulk_status.comp_172_22_0_7.class: computation
+
+group_bulk_garbageCollectWokflows.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_garbageCollectWokflows.comp_172_22_0_7.class: computation-idle
+
+group_blob_gc.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 3, delay: 3000ms, no batch
+  - continue on failure: true
+|
+group_blob_gc.comp_172_22_0_7.class: computation-idle
+
+group_bulk_garbageCollectExpiredOAuth2Tokens.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_garbageCollectExpiredOAuth2Tokens.comp_172_22_0_7.class: computation-idle
+
+group_bulk_idle.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 4
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: true
+|
+group_bulk_idle.comp_172_22_0_7.class: computation-idle
+
+group_bulk_recomputeViews.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 1, delay: 5000ms, no batch
+  - continue on failure: true
+|
+group_bulk_recomputeViews.comp_172_22_0_7.class: computation-idle
+
+group_bulk_indexing.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 4
+  - retry: 4, delay: 3000ms, no batch
+  - continue on failure: true
+|
+group_bulk_indexing.comp_172_22_0_7.class: computation-idle
+
+group_document_gc.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 3, delay: 3000ms, no batch
+  - continue on failure: true
+|
+group_document_gc.comp_172_22_0_7.class: computation-idle
+
+group_indexing_synchronous.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 4
+  - retry: 4, delay: 3000ms, batch: 20, 250ms
+  - continue on failure: true
+  #### record
+  - count: 15, sum: 0.094s
+  - duration: 0.005s (+/- 0.012s)
+    -  min: 0.000s, max: 0.042s
+    -  p50: 0.000s, p99: 0.042s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+  #### timer
+  - count: 47497, sum: 0.194s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.000s
+    -  p50: 0.000s, p99: 0.000s
+  - rate 1min: 13.33ops/s, 5min: 13.31ops/s
+|
+group_indexing_synchronous.comp_172_22_0_7.class: computation
+
+group_indexing_asynchronous.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 4
+  - retry: 4, delay: 3000ms, batch: 20, 250ms
+  - continue on failure: true
+  #### record
+  - count: 15, sum: 0.001s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.000s
+    -  p50: 0.000s, p99: 0.000s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+  #### timer
+  - count: 47497, sum: 0.190s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.000s
+    -  p50: 0.000s, p99: 0.000s
+  - rate 1min: 13.31ops/s, 5min: 13.31ops/s
+|
+group_indexing_asynchronous.comp_172_22_0_7.class: computation
+
+group_bulk_automationUi.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+|
+group_bulk_automationUi.comp_172_22_0_7.class: computation-idle
+
+group_stream_introspection.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 1, delay: 100ms, no batch
+  - continue on failure: true
+  #### record
+  - count: 89, sum: 0.282s
+  - duration: 0.002s (+/- 0.000s)
+    -  min: 0.002s, max: 0.029s
+    -  p50: 0.002s, p99: 0.002s
+  - rate 1min: 0.01ops/s, 5min: 0.02ops/s
+  #### timer
+  - count: 58, sum: 0.005s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.001s
+    -  p50: 0.000s, p99: 0.000s
+  - rate 1min: 0.02ops/s, 5min: 0.02ops/s
+|
+group_stream_introspection.comp_172_22_0_7.class: computation
+
+group_bulk_csvExport.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+  #### record
+  - count: 42, sum: 2.859s
+  - duration: 0.058s (+/- 0.013s)
+    -  min: 0.005s, max: 0.111s
+    -  p50: 0.059s, p99: 0.083s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_bulk_csvExport.comp_172_22_0_7.class: computation
+
+group_bulk_makeBlob.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+  #### record
+  - count: 42, sum: 0.030s
+  - duration: 0.000s (+/- 0.001s)
+    -  min: 0.000s, max: 0.016s
+    -  p50: 0.000s, p99: 0.005s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+  #### timer
+  - count: 7126, sum: 0.066s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.000s
+    -  p50: 0.000s, p99: 0.000s
+  - rate 1min: 2.00ops/s, 5min: 2.00ops/s
+|
+group_bulk_makeBlob.comp_172_22_0_7.class: computation
+
+group_bulk_sortBlob.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+  #### record
+  - count: 2, sum: 0.188s
+  - duration: 0.085s (+/- 0.004s)
+    -  min: 0.084s, max: 0.104s
+    -  p50: 0.084s, p99: 0.104s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_bulk_sortBlob.comp_172_22_0_7.class: computation
+
+group_bulk_zipBlob.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+|
+group_bulk_zipBlob.comp_172_22_0_7.class: computation-idle
+
+group_bulk_exposeBlob.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+  #### record
+  - count: 2, sum: 0.018s
+  - duration: 0.004s (+/- 0.002s)
+    -  min: 0.003s, max: 0.015s
+    -  p50: 0.003s, p99: 0.015s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_bulk_exposeBlob.comp_172_22_0_7.class: computation
+
+group_stream_metrics.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 18, delay: 15000ms, no batch
+  - continue on failure: false
+  #### timer
+  - count: 59, sum: 9.411s
+  - duration: 0.082s (+/- 0.061s)
+    -  min: 0.053s, max: 0.769s
+    -  p50: 0.071s, p99: 0.376s
+  - rate 1min: 0.02ops/s, 5min: 0.02ops/s
+|
+group_stream_metrics.comp_172_22_0_7.class: computation
+
+group_bulk_removeProxy.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_removeProxy.comp_172_22_0_7.class: computation-idle
+
+group_work_transientStorageGC.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 1
+  - no retry, no batch
+  - continue on failure: true
+  #### record
+  - count: 32, sum: 0.035s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.005s
+    -  p50: 0.000s, p99: 0.001s
+  - rate 1min: 0.01ops/s, 5min: 0.02ops/s
+|
+group_work_transientStorageGC.comp_172_22_0_7.class: computation
+
+group_work_default.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 4
+  - no retry, no batch
+  - continue on failure: true
+  #### record
+  - count: 1, sum: 0.003s
+  - duration: 0.003s (+/- 0.000s)
+    -  min: 0.003s, max: 0.003s
+    -  p50: 0.003s, p99: 0.003s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_work_default.comp_172_22_0_7.class: computation
+
+group_work_raclupdate.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 4
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_raclupdate.comp_172_22_0_7.class: computation-idle
+
+group_work_escalation.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 4
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_escalation.comp_172_22_0_7.class: computation-idle
+
+group_work_renditionBuilder.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_renditionBuilder.comp_172_22_0_7.class: computation-idle
+
+group_work_updateThumbListener.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_updateThumbListener.comp_172_22_0_7.class: computation-idle
+
+group_work_computeDigest.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_computeDigest.comp_172_22_0_7.class: computation-idle
+
+group_work_videoConversion.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_videoConversion.comp_172_22_0_7.class: computation-idle
+
+group_work_permissionsPurge.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 1
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_permissionsPurge.comp_172_22_0_7.class: computation-idle
+
+group_work_blobs.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_blobs.comp_172_22_0_7.class: computation-idle
+
+group_work_collections.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 1
+  - no retry, no batch
+  - continue on failure: true
+|
+group_work_collections.comp_172_22_0_7.class: computation-idle
+
+group_work_common.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: true
+  #### record
+  - count: 20, sum: 0.037s
+  - duration: 0.001s (+/- 0.000s)
+    -  min: 0.000s, max: 0.011s
+    -  p50: 0.001s, p99: 0.001s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_work_common.comp_172_22_0_7.class: computation
+
+group_work_updateACEStatus.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 1
+  - no retry, no batch
+  - continue on failure: true
+  #### record
+  - count: 12, sum: 0.060s
+  - duration: 0.002s (+/- 0.000s)
+    -  min: 0.002s, max: 0.016s
+    -  p50: 0.002s, p99: 0.003s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_work_updateACEStatus.comp_172_22_0_7.class: computation
+
+group_work_pictureViewsGeneration.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:11Z
+  - threads: 2
+  - no retry, no batch
+  - continue on failure: true
+  #### record
+  - count: 2, sum: 0.005s
+  - duration: 0.002s (+/- 0.000s)
+    -  min: 0.002s, max: 0.003s
+    -  p50: 0.002s, p99: 0.003s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_work_pictureViewsGeneration.comp_172_22_0_7.class: computation
+
+group_bulk_deletion.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+|
+group_bulk_deletion.comp_172_22_0_7.class: computation-idle
+
+group_audit_writer.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 20, delay: 1000ms, batch: 25, 500ms
+  - continue on failure: false
+  #### record
+  - count: 150, sum: 0.005s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.000s
+    -  p50: 0.000s, p99: 0.000s
+  - rate 1min: 0.01ops/s, 5min: 0.00ops/s
+  #### timer
+  - count: 7118, sum: 0.632s
+  - duration: 0.000s (+/- 0.000s)
+    -  min: 0.000s, max: 0.010s
+    -  p50: 0.000s, p99: 0.000s
+  - rate 1min: 2.00ops/s, 5min: 2.00ops/s
+|
+group_audit_writer.comp_172_22_0_7.class: computation
+
+group_bulk_trash.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_trash.comp_172_22_0_7.class: computation-idle
+
+group_bulk_recomputeThumbnails.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 1, delay: 5000ms, no batch
+  - continue on failure: true
+|
+group_bulk_recomputeThumbnails.comp_172_22_0_7.class: computation-idle
+
+group_bulk_setProperties.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_setProperties.comp_172_22_0_7.class: computation-idle
+
+group_bulk_garbageCollectOrphanBlobs.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_garbageCollectOrphanBlobs.comp_172_22_0_7.class: computation-idle
+
+group_bulk_extractBinaryFulltext.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 1000ms, no batch
+  - continue on failure: true
+|
+group_bulk_extractBinaryFulltext.comp_172_22_0_7.class: computation-idle
+
+group_bulk_setSystemProperties.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: false
+|
+group_bulk_setSystemProperties.comp_172_22_0_7.class: computation-idle
+
+group_retention_retentionExpired.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 1
+  - retry: 20, delay: 1000ms, no batch
+  - continue on failure: true
+|
+group_retention_retentionExpired.comp_172_22_0_7.class: computation-idle
+
+group_bulk_indexingBackground.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 4
+  - retry: 4, delay: 3000ms, no batch
+  - continue on failure: true
+  #### record
+  - count: 6, sum: 5.232s
+  - duration: 0.706s (+/- 0.329s)
+    -  min: 0.232s, max: 1.482s
+    -  p50: 0.883s, p99: 1.424s
+  - rate 1min: 0.00ops/s, 5min: 0.00ops/s
+|
+group_bulk_indexingBackground.comp_172_22_0_7.class: computation
+
+group_bulk_documentRoutingEscalation.comp_172_22_0_7: |md
+  ### 172.22.0.7
+  - created: 2025-10-27T10:48:09Z
+  - threads: 2
+  - retry: 3, delay: 500ms, no batch
+  - continue on failure: true
+|
+group_bulk_documentRoutingEscalation.comp_172_22_0_7.class: computation-idle
+
+group_bulk_recomputeTranscodedVideos.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_recomputeTranscodedVideos -> group_bulk_recomputeTranscodedVideos.comp_172_22_0_7
+group_bulk_recomputeVideoInfos.comp_172_22_0_7 -> stream_bulk_recomputeTranscodedVideos
+stream_bulk_recomputeVideoConversion -> group_bulk_recomputeVideoInfos.comp_172_22_0_7
+group_bulk_updateReadAcls.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_updateReadAcls -> group_bulk_updateReadAcls.comp_172_22_0_7
+group_bulk_garbageCollectOrphanVersions.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_garbageCollectOrphanVersions -> group_bulk_garbageCollectOrphanVersions.comp_172_22_0_7
+group_bulk_automation.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_automation -> group_bulk_automation.comp_172_22_0_7
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_recomputeThumbnails
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_indexing
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_garbageCollectExpiredOAuth2Tokens
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_status
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_csvExport
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_recomputeVideoConversion
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_garbageCollectOrphanVersions
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_updateReadAcls
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_idle
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_documentRoutingEscalation
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_garbageCollectWokflows
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_removeProxy
+group_bulk_scroller.comp_172_22_0_7 -> stream_retention_retentionExpired
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_migration
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_trash
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_automation
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_deletion
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_garbageCollectOrphanBlobs
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_setProperties
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_recomputeViews
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_extractBinaryFulltext
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_setSystemProperties
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_indexingBackground
+group_bulk_scroller.comp_172_22_0_7 -> stream_bulk_automationUi
+stream_bulk_command -> group_bulk_scroller.comp_172_22_0_7
+group_bulk_status.comp_172_22_0_7 -> stream_bulk_done
+stream_bulk_status -> group_bulk_status.comp_172_22_0_7
+group_bulk_garbageCollectWokflows.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_garbageCollectWokflows -> group_bulk_garbageCollectWokflows.comp_172_22_0_7
+stream_source_blob -> group_blob_gc.comp_172_22_0_7
+group_bulk_garbageCollectExpiredOAuth2Tokens.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_garbageCollectExpiredOAuth2Tokens -> group_bulk_garbageCollectExpiredOAuth2Tokens.comp_172_22_0_7
+group_bulk_idle.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_idle -> group_bulk_idle.comp_172_22_0_7
+group_bulk_recomputeViews.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_recomputeViews -> group_bulk_recomputeViews.comp_172_22_0_7
+group_bulk_indexing.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_indexing -> group_bulk_indexing.comp_172_22_0_7
+stream_source_document -> group_document_gc.comp_172_22_0_7
+stream_source_indexing -> group_indexing_synchronous.comp_172_22_0_7
+stream_source_indexing -> group_indexing_asynchronous.comp_172_22_0_7
+group_bulk_automationUi.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_automationUi -> group_bulk_automationUi.comp_172_22_0_7
+stream_internal_processors -> group_stream_introspection.comp_172_22_0_7
+stream_internal_metrics -> group_stream_introspection.comp_172_22_0_7
+group_bulk_zipBlob.comp_172_22_0_7 -> stream_bulk_exposeBlob
+stream_bulk_zipBlob -> group_bulk_zipBlob.comp_172_22_0_7
+group_bulk_makeBlob.comp_172_22_0_7 -> stream_bulk_zipBlob
+group_bulk_makeBlob.comp_172_22_0_7 -> stream_bulk_sortBlob
+group_bulk_makeBlob.comp_172_22_0_7 -> stream_bulk_exposeBlob
+stream_bulk_makeBlob -> group_bulk_makeBlob.comp_172_22_0_7
+group_bulk_sortBlob.comp_172_22_0_7 -> stream_bulk_zipBlob
+group_bulk_sortBlob.comp_172_22_0_7 -> stream_bulk_exposeBlob
+stream_bulk_sortBlob -> group_bulk_sortBlob.comp_172_22_0_7
+group_bulk_csvExport.comp_172_22_0_7 -> stream_bulk_makeBlob
+group_bulk_csvExport.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_csvExport -> group_bulk_csvExport.comp_172_22_0_7
+group_bulk_exposeBlob.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_exposeBlob -> group_bulk_exposeBlob.comp_172_22_0_7
+stream_input_null -> group_stream_metrics.comp_172_22_0_7
+group_bulk_removeProxy.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_removeProxy -> group_bulk_removeProxy.comp_172_22_0_7
+stream_work_transientStorageGC -> group_work_transientStorageGC.comp_172_22_0_7
+stream_work_default -> group_work_default.comp_172_22_0_7
+stream_work_raclupdate -> group_work_raclupdate.comp_172_22_0_7
+stream_work_escalation -> group_work_escalation.comp_172_22_0_7
+stream_work_renditionBuilder -> group_work_renditionBuilder.comp_172_22_0_7
+stream_work_updateThumbListener -> group_work_updateThumbListener.comp_172_22_0_7
+stream_work_computeDigest -> group_work_computeDigest.comp_172_22_0_7
+stream_work_videoConversion -> group_work_videoConversion.comp_172_22_0_7
+stream_work_permissionsPurge -> group_work_permissionsPurge.comp_172_22_0_7
+stream_work_blobs -> group_work_blobs.comp_172_22_0_7
+stream_work_collections -> group_work_collections.comp_172_22_0_7
+stream_work_common -> group_work_common.comp_172_22_0_7
+stream_work_updateACEStatus -> group_work_updateACEStatus.comp_172_22_0_7
+stream_work_pictureViewsGeneration -> group_work_pictureViewsGeneration.comp_172_22_0_7
+group_bulk_deletion.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_deletion -> group_bulk_deletion.comp_172_22_0_7
+stream_audit_audit -> group_audit_writer.comp_172_22_0_7
+group_bulk_trash.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_trash -> group_bulk_trash.comp_172_22_0_7
+group_bulk_recomputeThumbnails.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_recomputeThumbnails -> group_bulk_recomputeThumbnails.comp_172_22_0_7
+group_bulk_setProperties.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_setProperties -> group_bulk_setProperties.comp_172_22_0_7
+group_bulk_garbageCollectOrphanBlobs.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_garbageCollectOrphanBlobs -> group_bulk_garbageCollectOrphanBlobs.comp_172_22_0_7
+group_bulk_extractBinaryFulltext.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_extractBinaryFulltext -> group_bulk_extractBinaryFulltext.comp_172_22_0_7
+group_bulk_setSystemProperties.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_setSystemProperties -> group_bulk_setSystemProperties.comp_172_22_0_7
+group_retention_retentionExpired.comp_172_22_0_7 -> stream_bulk_status
+stream_retention_retentionExpired -> group_retention_retentionExpired.comp_172_22_0_7
+group_bulk_indexingBackground.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_indexingBackground -> group_bulk_indexingBackground.comp_172_22_0_7
+group_bulk_documentRoutingEscalation.comp_172_22_0_7 -> stream_bulk_status
+stream_bulk_documentRoutingEscalation -> group_bulk_documentRoutingEscalation.comp_172_22_0_7
