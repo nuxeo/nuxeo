@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webengine.jaxrs.coreiodelegate;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_CSV;
+import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_D2;
+import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_PLANT_UML;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -50,7 +52,7 @@ import com.sun.jersey.spi.inject.InjectableProvider;
  * @since 11.1
  */
 @Provider
-@Produces({ APPLICATION_JSON, TEXT_CSV })
+@Produces({ APPLICATION_JSON, TEXT_CSV, TEXT_D2, TEXT_PLANT_UML })
 public class CoreIODelegate extends PartialCoreIODelegate
         implements InjectableProvider<Context, Type>, Injectable<RenderingContext> {
 

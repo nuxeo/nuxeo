@@ -18,6 +18,12 @@
  */
 package org.nuxeo.common.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+
 /**
  * @since 2025.0
  */
@@ -26,6 +32,20 @@ public class ModuleUnderTest {
     protected static final String CUSTOM_ENVIRONMENT_SYSTEM_PROPERTY = "custom.environment";
 
     protected static final String DEFAULT_OUTPUT_DIRECTORY = "target";
+
+    /**
+     * @since 2023.40
+     */
+    public static String getClassLoaderResourceAsString(String name) {
+        try (var stream = ModuleUnderTest.class.getClassLoader().getResourceAsStream(name)) {
+            if (stream == null) {
+                throw new IOException("The resource is null");
+            }
+            return IOUtils.toString(stream, UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to retrieve resource: " + name, e);
+        }
+    }
 
     public static String getOutputDirectory() {
         String customEnvironment = System.getProperty(CUSTOM_ENVIRONMENT_SYSTEM_PROPERTY);

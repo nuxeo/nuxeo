@@ -12,358 +12,471 @@ skinparam component {
   BorderColor black
   ArrowColor #CC6655
 }
-queue stream.work.collections [work/collections
+queue stream.work.collections [
+work/collections
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.bulk.csvExport [bulk/csvExport
+----
+records: 0
+]
+queue stream.bulk.csvExport [
+bulk/csvExport
 ----
 partitions: 4
 codec: avro
------
-records: 107]
-queue stream.bulk.garbageCollectOrphanVersions [bulk/garbageCollectOrphanVersions
+----
+records: 107
+]
+queue stream.bulk.garbageCollectOrphanVersions [
+bulk/garbageCollectOrphanVersions
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.updateReadAcls [bulk/updateReadAcls
+----
+records: 0
+]
+queue stream.bulk.updateReadAcls [
+bulk/updateReadAcls
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.work.updateThumbListener [work/updateThumbListener
+----
+records: 0
+]
+queue stream.work.updateThumbListener [
+work/updateThumbListener
 ----
 partitions: 6
 codec: avro
------
-records: 195]
-queue stream.bulk.documentRoutingEscalation [bulk/documentRoutingEscalation
+----
+records: 195
+]
+queue stream.bulk.documentRoutingEscalation [
+bulk/documentRoutingEscalation
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.work.videoConversion [work/videoConversion
+----
+records: 0
+]
+queue stream.work.videoConversion [
+work/videoConversion
 ----
 partitions: 6
 codec: avro
------
-records: 0]
-queue stream.retention.retentionExpired [retention/retentionExpired
+----
+records: 0
+]
+queue stream.retention.retentionExpired [
+retention/retentionExpired
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.bulk.trash [bulk/trash
+----
+records: 0
+]
+queue stream.bulk.trash [
+bulk/trash
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.work.renditionBuilder [work/renditionBuilder
+----
+records: 0
+]
+queue stream.work.renditionBuilder [
+work/renditionBuilder
 ----
 partitions: 6
 codec: avro
------
-records: 1]
-queue stream.work.transientStorageGC [work/transientStorageGC
+----
+records: 1
+]
+queue stream.work.transientStorageGC [
+work/transientStorageGC
 ----
 partitions: 1
 codec: avro
------
-records: 304]
-queue stream.work.permissionsPurge [work/permissionsPurge
+----
+records: 304
+]
+queue stream.work.permissionsPurge [
+work/permissionsPurge
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.bulk.recomputeViews [bulk/recomputeViews
+----
+records: 0
+]
+queue stream.bulk.recomputeViews [
+bulk/recomputeViews
 ----
 partitions: 6
 codec: avro
------
-records: 0]
-queue stream.source.document [source/document
+----
+records: 0
+]
+queue stream.source.document [
+source/document
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.bulk.status [bulk/status
+----
+records: 0
+]
+queue stream.bulk.status [
+bulk/status
 ----
 partitions: 1
 codec: avro
------
-records: 422]
-queue stream.bulk.sortBlob [bulk/sortBlob
+----
+records: 422
+]
+queue stream.bulk.sortBlob [
+bulk/sortBlob
 ----
 partitions: 4
 codec: avro
------
-records: 7]
-queue stream.bulk.recomputeVideoConversion [bulk/recomputeVideoConversion
+----
+records: 7
+]
+queue stream.bulk.recomputeVideoConversion [
+bulk/recomputeVideoConversion
 ----
 partitions: 6
 codec: avro
------
-records: 0]
-queue stream.bulk.idle [bulk/idle
+----
+records: 0
+]
+queue stream.bulk.idle [
+bulk/idle
 ----
 partitions: 12
 codec: avro
------
-records: 20]
-queue stream.input.null [input/null
+----
+records: 20
+]
+queue stream.input.null [
+input/null
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.source.indexing [source/indexing
+----
+records: 0
+]
+queue stream.source.indexing [
+source/indexing
 ----
 partitions: 12
 codec: avro
------
-records: 7884]
-queue stream.bulk.exposeBlob [bulk/exposeBlob
+----
+records: 7884
+]
+queue stream.bulk.exposeBlob [
+bulk/exposeBlob
 ----
 partitions: 4
 codec: avro
------
-records: 7]
-queue stream.bulk.recomputeTranscodedVideos [bulk/recomputeTranscodedVideos
+----
+records: 7
+]
+queue stream.bulk.recomputeTranscodedVideos [
+bulk/recomputeTranscodedVideos
 ----
 partitions: 6
 codec: avro
------
-records: 0]
-queue stream.bulk.garbageCollectWokflows [bulk/garbageCollectWokflows
+----
+records: 0
+]
+queue stream.bulk.garbageCollectWokflows [
+bulk/garbageCollectWokflows
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.work.default [work/default
+----
+records: 0
+]
+queue stream.work.default [
+work/default
 ----
 partitions: 12
 codec: avro
------
-records: 1]
-queue stream.bulk.setSystemProperties [bulk/setSystemProperties
+----
+records: 1
+]
+queue stream.bulk.setSystemProperties [
+bulk/setSystemProperties
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.automationUi [bulk/automationUi
+----
+records: 0
+]
+queue stream.bulk.automationUi [
+bulk/automationUi
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.recomputeThumbnails [bulk/recomputeThumbnails
+----
+records: 0
+]
+queue stream.bulk.recomputeThumbnails [
+bulk/recomputeThumbnails
 ----
 partitions: 6
 codec: avro
------
-records: 0]
-queue stream.bulk.zipBlob [bulk/zipBlob
+----
+records: 0
+]
+queue stream.bulk.zipBlob [
+bulk/zipBlob
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.garbageCollectExpiredOAuth2Tokens [bulk/garbageCollectExpiredOAuth2Tokens
+----
+records: 0
+]
+queue stream.bulk.garbageCollectExpiredOAuth2Tokens [
+bulk/garbageCollectExpiredOAuth2Tokens
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.audit.audit [audit/audit
+----
+records: 0
+]
+queue stream.audit.audit [
+audit/audit
 ----
 partitions: 1
 codec: avro
------
-records: 2264]
-queue stream.bulk.done [bulk/done
+----
+records: 2264
+]
+queue stream.bulk.done [
+bulk/done
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.work.raclupdate [work/raclupdate
+----
+records: 0
+]
+queue stream.work.raclupdate [
+work/raclupdate
 ----
 partitions: 12
 codec: avro
------
-records: 0]
-queue stream.work.pictureViewsGeneration [work/pictureViewsGeneration
+----
+records: 0
+]
+queue stream.work.pictureViewsGeneration [
+work/pictureViewsGeneration
 ----
 partitions: 6
 codec: avro
------
-records: 2152]
-queue stream.work.escalation [work/escalation
+----
+records: 2152
+]
+queue stream.work.escalation [
+work/escalation
 ----
 partitions: 12
 codec: avro
------
-records: 0]
-queue stream.bulk.command [bulk/command
+----
+records: 0
+]
+queue stream.bulk.command [
+bulk/command
 ----
 partitions: 2
 codec: avro
------
-records: 134]
-queue stream.source.blob [source/blob
+----
+records: 134
+]
+queue stream.source.blob [
+source/blob
 ----
 partitions: 1
 codec: avro
------
-records: 0]
-queue stream.bulk.automation [bulk/automation
+----
+records: 0
+]
+queue stream.bulk.automation [
+bulk/automation
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.deletion [bulk/deletion
+----
+records: 0
+]
+queue stream.bulk.deletion [
+bulk/deletion
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.garbageCollectOrphanBlobs [bulk/garbageCollectOrphanBlobs
+----
+records: 0
+]
+queue stream.bulk.garbageCollectOrphanBlobs [
+bulk/garbageCollectOrphanBlobs
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.setProperties [bulk/setProperties
+----
+records: 0
+]
+queue stream.bulk.setProperties [
+bulk/setProperties
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.indexingBackground [bulk/indexingBackground
+----
+records: 0
+]
+queue stream.bulk.indexingBackground [
+bulk/indexingBackground
 ----
 partitions: 8
 codec: avro
------
-records: 13]
-queue stream.internal.metrics [internal/metrics
+----
+records: 13
+]
+queue stream.internal.metrics [
+internal/metrics
 ----
 partitions: 1
 codec: avro
------
-records: 543]
-queue stream.work.updateACEStatus [work/updateACEStatus
+----
+records: 543
+]
+queue stream.work.updateACEStatus [
+work/updateACEStatus
 ----
 partitions: 1
 codec: avro
------
-records: 112]
-queue stream.bulk.indexing [bulk/indexing
+----
+records: 112
+]
+queue stream.bulk.indexing [
+bulk/indexing
 ----
 partitions: 8
 codec: avro
------
-records: 5]
-queue stream.work.blobs [work/blobs
+----
+records: 5
+]
+queue stream.work.blobs [
+work/blobs
 ----
 partitions: 6
 codec: avro
------
-records: 0]
-queue stream.internal.processors [internal/processors
+----
+records: 0
+]
+queue stream.internal.processors [
+internal/processors
 ----
 partitions: 1
 codec: avro
------
-records: 388]
-queue stream.work.common [work/common
+----
+records: 388
+]
+queue stream.work.common [
+work/common
 ----
 partitions: 6
 codec: avro
------
-records: 6277]
-queue stream.work.computeDigest [work/computeDigest
+----
+records: 6277
+]
+queue stream.work.computeDigest [
+work/computeDigest
 ----
 partitions: 6
 codec: avro
------
-records: 0]
-queue stream.bulk.removeProxy [bulk/removeProxy
+----
+records: 0
+]
+queue stream.bulk.removeProxy [
+bulk/removeProxy
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-queue stream.bulk.makeBlob [bulk/makeBlob
+----
+records: 0
+]
+queue stream.bulk.makeBlob [
+bulk/makeBlob
 ----
 partitions: 4
 codec: avro
------
-records: 107]
-queue stream.bulk.extractBinaryFulltext [bulk/extractBinaryFulltext
+----
+records: 107
+]
+queue stream.bulk.extractBinaryFulltext [
+bulk/extractBinaryFulltext
 ----
 partitions: 4
 codec: avro
------
-records: 0]
-component computation.bulk.recomputeVideoInfos.172.22.0.7 [bulk/recomputeVideoInfos on 172.22.0.7
+----
+records: 0
+]
+component computation.bulk.recomputeVideoInfos.172.22.0.7 [
+bulk/recomputeVideoInfos on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 1, delay: 5000ms]
-component computation.bulk.recomputeTranscodedVideos.172.22.0.7 [bulk/recomputeTranscodedVideos on 172.22.0.7
+max retry: 1, delay: 5000ms
+]
+component computation.bulk.recomputeTranscodedVideos.172.22.0.7 [
+bulk/recomputeTranscodedVideos on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 1, delay: 5000ms]
+max retry: 1, delay: 5000ms
+]
 computation.bulk.recomputeTranscodedVideos.172.22.0.7==>stream.bulk.status
 stream.bulk.recomputeTranscodedVideos==>computation.bulk.recomputeTranscodedVideos.172.22.0.7
 computation.bulk.recomputeVideoInfos.172.22.0.7==>stream.bulk.recomputeTranscodedVideos
 stream.bulk.recomputeVideoConversion==>computation.bulk.recomputeVideoInfos.172.22.0.7
-component computation.bulk.updateReadAcls.172.22.0.7 [bulk/updateReadAcls on 172.22.0.7
+component computation.bulk.updateReadAcls.172.22.0.7 [
+bulk/updateReadAcls on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.updateReadAcls.172.22.0.7==>stream.bulk.status
 stream.bulk.updateReadAcls==>computation.bulk.updateReadAcls.172.22.0.7
-component computation.bulk.garbageCollectOrphanVersions.172.22.0.7 [bulk/garbageCollectOrphanVersions on 172.22.0.7
+component computation.bulk.garbageCollectOrphanVersions.172.22.0.7 [
+bulk/garbageCollectOrphanVersions on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.garbageCollectOrphanVersions.172.22.0.7==>stream.bulk.status
 stream.bulk.garbageCollectOrphanVersions==>computation.bulk.garbageCollectOrphanVersions.172.22.0.7
-component computation.bulk.automation.172.22.0.7 [bulk/automation on 172.22.0.7
+component computation.bulk.automation.172.22.0.7 [
+bulk/automation on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 3, delay: 1000ms]
+max retry: 3, delay: 1000ms
+]
 computation.bulk.automation.172.22.0.7==>stream.bulk.status
 stream.bulk.automation==>computation.bulk.automation.172.22.0.7
-component computation.bulk.scroller.172.22.0.7 [bulk/scroller on 172.22.0.7
+component computation.bulk.scroller.172.22.0.7 [
+bulk/scroller on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
@@ -373,8 +486,10 @@ no retry
 ----
 record count: 17, total: 0.501s
 mean: 0.002s, p50: 0.002s, p99: 0.002s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.status.172.22.0.7 [bulk/status on 172.22.0.7
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
+component computation.bulk.status.172.22.0.7 [
+bulk/status on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 1
@@ -384,7 +499,8 @@ max retry: 20, delay: 1000ms
 ----
 record count: 84, total: 0.117s
 mean: 0.001s, p50: 0.001s, p99: 0.001s
-rate 1min: 0.00op/s, 5min: 0.01op/s]
+rate 1min: 0.00op/s, 5min: 0.01op/s
+]
 computation.bulk.scroller.172.22.0.7==>stream.bulk.recomputeThumbnails
 computation.bulk.scroller.172.22.0.7==>stream.bulk.indexing
 computation.bulk.scroller.172.22.0.7==>stream.bulk.garbageCollectExpiredOAuth2Tokens
@@ -412,68 +528,83 @@ computation.bulk.scroller.172.22.0.7==>stream.bulk.automationUi
 stream.bulk.command==>computation.bulk.scroller.172.22.0.7
 computation.bulk.status.172.22.0.7==>stream.bulk.done
 stream.bulk.status==>computation.bulk.status.172.22.0.7
-component computation.bulk.garbageCollectWokflows.172.22.0.7 [bulk/garbageCollectWokflows on 172.22.0.7
+component computation.bulk.garbageCollectWokflows.172.22.0.7 [
+bulk/garbageCollectWokflows on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.garbageCollectWokflows.172.22.0.7==>stream.bulk.status
 stream.bulk.garbageCollectWokflows==>computation.bulk.garbageCollectWokflows.172.22.0.7
-component computation.blob.gc.172.22.0.7 [blob/gc on 172.22.0.7
+component computation.blob.gc.172.22.0.7 [
+blob/gc on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
 continue on failure: true
 no batch
-max retry: 3, delay: 3000ms]
+max retry: 3, delay: 3000ms
+]
 stream.source.blob==>computation.blob.gc.172.22.0.7
-component computation.bulk.garbageCollectExpiredOAuth2Tokens.172.22.0.7 [bulk/garbageCollectExpiredOAuth2Tokens on 172.22.0.7
+component computation.bulk.garbageCollectExpiredOAuth2Tokens.172.22.0.7 [
+bulk/garbageCollectExpiredOAuth2Tokens on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.garbageCollectExpiredOAuth2Tokens.172.22.0.7==>stream.bulk.status
 stream.bulk.garbageCollectExpiredOAuth2Tokens==>computation.bulk.garbageCollectExpiredOAuth2Tokens.172.22.0.7
-component computation.bulk.idle.172.22.0.7 [bulk/idle on 172.22.0.7
+component computation.bulk.idle.172.22.0.7 [
+bulk/idle on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 4
 continue on failure: true
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.idle.172.22.0.7==>stream.bulk.status
 stream.bulk.idle==>computation.bulk.idle.172.22.0.7
-component computation.bulk.recomputeViews.172.22.0.7 [bulk/recomputeViews on 172.22.0.7
+component computation.bulk.recomputeViews.172.22.0.7 [
+bulk/recomputeViews on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 1, delay: 5000ms]
+max retry: 1, delay: 5000ms
+]
 computation.bulk.recomputeViews.172.22.0.7==>stream.bulk.status
 stream.bulk.recomputeViews==>computation.bulk.recomputeViews.172.22.0.7
-component computation.bulk.indexing.172.22.0.7 [bulk/indexing on 172.22.0.7
+component computation.bulk.indexing.172.22.0.7 [
+bulk/indexing on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 4
 continue on failure: true
 no batch
-max retry: 4, delay: 3000ms]
+max retry: 4, delay: 3000ms
+]
 computation.bulk.indexing.172.22.0.7==>stream.bulk.status
 stream.bulk.indexing==>computation.bulk.indexing.172.22.0.7
-component computation.document.gc.172.22.0.7 [document/gc on 172.22.0.7
+component computation.document.gc.172.22.0.7 [
+document/gc on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
 continue on failure: true
 no batch
-max retry: 3, delay: 3000ms]
+max retry: 3, delay: 3000ms
+]
 stream.source.document==>computation.document.gc.172.22.0.7
-component computation.indexing.synchronous.172.22.0.7 [indexing/synchronous on 172.22.0.7
+component computation.indexing.synchronous.172.22.0.7 [
+indexing/synchronous on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 4
@@ -487,8 +618,10 @@ rate 1min: 0.00op/s, 5min: 0.00op/s
 ----
 timer count: 47497, total: 0.194s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 13.31op/s]
-component computation.indexing.asynchronous.172.22.0.7 [indexing/asynchronous on 172.22.0.7
+rate 5min: 13.31op/s
+]
+component computation.indexing.asynchronous.172.22.0.7 [
+indexing/asynchronous on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 4
@@ -502,19 +635,23 @@ rate 1min: 0.00op/s, 5min: 0.00op/s
 ----
 timer count: 47497, total: 0.190s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 13.31op/s]
+rate 5min: 13.31op/s
+]
 stream.source.indexing==>computation.indexing.synchronous.172.22.0.7
 stream.source.indexing==>computation.indexing.asynchronous.172.22.0.7
-component computation.bulk.automationUi.172.22.0.7 [bulk/automationUi on 172.22.0.7
+component computation.bulk.automationUi.172.22.0.7 [
+bulk/automationUi on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 3, delay: 1000ms]
+max retry: 3, delay: 1000ms
+]
 computation.bulk.automationUi.172.22.0.7==>stream.bulk.status
 stream.bulk.automationUi==>computation.bulk.automationUi.172.22.0.7
-component computation.stream.introspection.172.22.0.7 [stream/introspection on 172.22.0.7
+component computation.stream.introspection.172.22.0.7 [
+stream/introspection on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
@@ -528,10 +665,12 @@ rate 1min: 0.01op/s, 5min: 0.02op/s
 ----
 timer count: 58, total: 0.005s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 0.02op/s]
+rate 5min: 0.02op/s
+]
 stream.internal.processors==>computation.stream.introspection.172.22.0.7
 stream.internal.metrics==>computation.stream.introspection.172.22.0.7
-component computation.bulk.csvExport.172.22.0.7 [bulk/csvExport on 172.22.0.7
+component computation.bulk.csvExport.172.22.0.7 [
+bulk/csvExport on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
@@ -541,8 +680,10 @@ max retry: 3, delay: 1000ms
 ----
 record count: 42, total: 2.859s
 mean: 0.058s, p50: 0.059s, p99: 0.083s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.makeBlob.172.22.0.7 [bulk/makeBlob on 172.22.0.7
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
+component computation.bulk.makeBlob.172.22.0.7 [
+bulk/makeBlob on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
@@ -556,8 +697,10 @@ rate 1min: 0.00op/s, 5min: 0.00op/s
 ----
 timer count: 7126, total: 0.066s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 2.00op/s]
-component computation.bulk.sortBlob.172.22.0.7 [bulk/sortBlob on 172.22.0.7
+rate 5min: 2.00op/s
+]
+component computation.bulk.sortBlob.172.22.0.7 [
+bulk/sortBlob on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
@@ -567,15 +710,19 @@ max retry: 3, delay: 1000ms
 ----
 record count: 2, total: 0.188s
 mean: 0.085s, p50: 0.084s, p99: 0.104s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.bulk.zipBlob.172.22.0.7 [bulk/zipBlob on 172.22.0.7
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
+component computation.bulk.zipBlob.172.22.0.7 [
+bulk/zipBlob on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 3, delay: 1000ms]
-component computation.bulk.exposeBlob.172.22.0.7 [bulk/exposeBlob on 172.22.0.7
+max retry: 3, delay: 1000ms
+]
+component computation.bulk.exposeBlob.172.22.0.7 [
+bulk/exposeBlob on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
@@ -585,7 +732,8 @@ max retry: 3, delay: 1000ms
 ----
 record count: 2, total: 0.018s
 mean: 0.004s, p50: 0.003s, p99: 0.015s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
 computation.bulk.zipBlob.172.22.0.7==>stream.bulk.exposeBlob
 stream.bulk.zipBlob==>computation.bulk.zipBlob.172.22.0.7
 computation.bulk.makeBlob.172.22.0.7==>stream.bulk.zipBlob
@@ -600,24 +748,29 @@ computation.bulk.csvExport.172.22.0.7==>stream.bulk.status
 stream.bulk.csvExport==>computation.bulk.csvExport.172.22.0.7
 computation.bulk.exposeBlob.172.22.0.7==>stream.bulk.status
 stream.bulk.exposeBlob==>computation.bulk.exposeBlob.172.22.0.7
-component computation.stream.metrics.172.22.0.7 [stream/metrics on 172.22.0.7
+component computation.stream.metrics.172.22.0.7 [
+stream/metrics on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
 continue on failure: false
 no batch
-max retry: 18, delay: 15000ms]
+max retry: 18, delay: 15000ms
+]
 stream.input.null==>computation.stream.metrics.172.22.0.7
-component computation.bulk.removeProxy.172.22.0.7 [bulk/removeProxy on 172.22.0.7
+component computation.bulk.removeProxy.172.22.0.7 [
+bulk/removeProxy on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.removeProxy.172.22.0.7==>stream.bulk.status
 stream.bulk.removeProxy==>computation.bulk.removeProxy.172.22.0.7
-component computation.work.transientStorageGC.172.22.0.7 [work/transientStorageGC on 172.22.0.7
+component computation.work.transientStorageGC.172.22.0.7 [
+work/transientStorageGC on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 1
@@ -627,8 +780,10 @@ no retry
 ----
 record count: 32, total: 0.035s
 mean: 0.000s, p50: 0.000s, p99: 0.001s
-rate 1min: 0.01op/s, 5min: 0.02op/s]
-component computation.work.default.172.22.0.7 [work/default on 172.22.0.7
+rate 1min: 0.01op/s, 5min: 0.02op/s
+]
+component computation.work.default.172.22.0.7 [
+work/default on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 4
@@ -638,71 +793,91 @@ no retry
 ----
 record count: 1, total: 0.003s
 mean: 0.003s, p50: 0.003s, p99: 0.003s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.work.raclupdate.172.22.0.7 [work/raclupdate on 172.22.0.7
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
+component computation.work.raclupdate.172.22.0.7 [
+work/raclupdate on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 4
 continue on failure: true
 no batch
-no retry]
-component computation.work.escalation.172.22.0.7 [work/escalation on 172.22.0.7
+no retry
+]
+component computation.work.escalation.172.22.0.7 [
+work/escalation on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 4
 continue on failure: true
 no batch
-no retry]
-component computation.work.renditionBuilder.172.22.0.7 [work/renditionBuilder on 172.22.0.7
+no retry
+]
+component computation.work.renditionBuilder.172.22.0.7 [
+work/renditionBuilder on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
 continue on failure: true
 no batch
-no retry]
-component computation.work.updateThumbListener.172.22.0.7 [work/updateThumbListener on 172.22.0.7
+no retry
+]
+component computation.work.updateThumbListener.172.22.0.7 [
+work/updateThumbListener on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
 continue on failure: true
 no batch
-no retry]
-component computation.work.computeDigest.172.22.0.7 [work/computeDigest on 172.22.0.7
+no retry
+]
+component computation.work.computeDigest.172.22.0.7 [
+work/computeDigest on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
 continue on failure: true
 no batch
-no retry]
-component computation.work.videoConversion.172.22.0.7 [work/videoConversion on 172.22.0.7
+no retry
+]
+component computation.work.videoConversion.172.22.0.7 [
+work/videoConversion on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
 continue on failure: true
 no batch
-no retry]
-component computation.work.permissionsPurge.172.22.0.7 [work/permissionsPurge on 172.22.0.7
+no retry
+]
+component computation.work.permissionsPurge.172.22.0.7 [
+work/permissionsPurge on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 1
 continue on failure: true
 no batch
-no retry]
-component computation.work.blobs.172.22.0.7 [work/blobs on 172.22.0.7
+no retry
+]
+component computation.work.blobs.172.22.0.7 [
+work/blobs on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
 continue on failure: true
 no batch
-no retry]
-component computation.work.collections.172.22.0.7 [work/collections on 172.22.0.7
+no retry
+]
+component computation.work.collections.172.22.0.7 [
+work/collections on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 1
 continue on failure: true
 no batch
-no retry]
-component computation.work.common.172.22.0.7 [work/common on 172.22.0.7
+no retry
+]
+component computation.work.common.172.22.0.7 [
+work/common on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
@@ -712,8 +887,10 @@ no retry
 ----
 record count: 20, total: 0.037s
 mean: 0.001s, p50: 0.001s, p99: 0.001s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.work.updateACEStatus.172.22.0.7 [work/updateACEStatus on 172.22.0.7
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
+component computation.work.updateACEStatus.172.22.0.7 [
+work/updateACEStatus on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 1
@@ -723,8 +900,10 @@ no retry
 ----
 record count: 12, total: 0.060s
 mean: 0.002s, p50: 0.002s, p99: 0.003s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
-component computation.work.pictureViewsGeneration.172.22.0.7 [work/pictureViewsGeneration on 172.22.0.7
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
+component computation.work.pictureViewsGeneration.172.22.0.7 [
+work/pictureViewsGeneration on 172.22.0.7
 ----
 created: 2025-10-27T10:48:11Z
 threads: 2
@@ -734,7 +913,8 @@ no retry
 ----
 record count: 2, total: 0.005s
 mean: 0.002s, p50: 0.002s, p99: 0.003s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
 stream.work.transientStorageGC==>computation.work.transientStorageGC.172.22.0.7
 stream.work.default==>computation.work.default.172.22.0.7
 stream.work.raclupdate==>computation.work.raclupdate.172.22.0.7
@@ -749,16 +929,19 @@ stream.work.collections==>computation.work.collections.172.22.0.7
 stream.work.common==>computation.work.common.172.22.0.7
 stream.work.updateACEStatus==>computation.work.updateACEStatus.172.22.0.7
 stream.work.pictureViewsGeneration==>computation.work.pictureViewsGeneration.172.22.0.7
-component computation.bulk.deletion.172.22.0.7 [bulk/deletion on 172.22.0.7
+component computation.bulk.deletion.172.22.0.7 [
+bulk/deletion on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 3, delay: 1000ms]
+max retry: 3, delay: 1000ms
+]
 computation.bulk.deletion.172.22.0.7==>stream.bulk.status
 stream.bulk.deletion==>computation.bulk.deletion.172.22.0.7
-component computation.audit.writer.172.22.0.7 [audit/writer on 172.22.0.7
+component computation.audit.writer.172.22.0.7 [
+audit/writer on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
@@ -772,72 +955,88 @@ rate 1min: 0.01op/s, 5min: 0.00op/s
 ----
 timer count: 7118, total: 0.632s
 mean: 0.000s, p50: 0.000s, p99: 0.000s
-rate 5min: 2.00op/s]
+rate 5min: 2.00op/s
+]
 stream.audit.audit==>computation.audit.writer.172.22.0.7
-component computation.bulk.trash.172.22.0.7 [bulk/trash on 172.22.0.7
+component computation.bulk.trash.172.22.0.7 [
+bulk/trash on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.trash.172.22.0.7==>stream.bulk.status
 stream.bulk.trash==>computation.bulk.trash.172.22.0.7
-component computation.bulk.recomputeThumbnails.172.22.0.7 [bulk/recomputeThumbnails on 172.22.0.7
+component computation.bulk.recomputeThumbnails.172.22.0.7 [
+bulk/recomputeThumbnails on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 1, delay: 5000ms]
+max retry: 1, delay: 5000ms
+]
 computation.bulk.recomputeThumbnails.172.22.0.7==>stream.bulk.status
 stream.bulk.recomputeThumbnails==>computation.bulk.recomputeThumbnails.172.22.0.7
-component computation.bulk.setProperties.172.22.0.7 [bulk/setProperties on 172.22.0.7
+component computation.bulk.setProperties.172.22.0.7 [
+bulk/setProperties on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.setProperties.172.22.0.7==>stream.bulk.status
 stream.bulk.setProperties==>computation.bulk.setProperties.172.22.0.7
-component computation.bulk.garbageCollectOrphanBlobs.172.22.0.7 [bulk/garbageCollectOrphanBlobs on 172.22.0.7
+component computation.bulk.garbageCollectOrphanBlobs.172.22.0.7 [
+bulk/garbageCollectOrphanBlobs on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.garbageCollectOrphanBlobs.172.22.0.7==>stream.bulk.status
 stream.bulk.garbageCollectOrphanBlobs==>computation.bulk.garbageCollectOrphanBlobs.172.22.0.7
-component computation.bulk.extractBinaryFulltext.172.22.0.7 [bulk/extractBinaryFulltext on 172.22.0.7
+component computation.bulk.extractBinaryFulltext.172.22.0.7 [
+bulk/extractBinaryFulltext on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 3, delay: 1000ms]
+max retry: 3, delay: 1000ms
+]
 computation.bulk.extractBinaryFulltext.172.22.0.7==>stream.bulk.status
 stream.bulk.extractBinaryFulltext==>computation.bulk.extractBinaryFulltext.172.22.0.7
-component computation.bulk.setSystemProperties.172.22.0.7 [bulk/setSystemProperties on 172.22.0.7
+component computation.bulk.setSystemProperties.172.22.0.7 [
+bulk/setSystemProperties on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: false
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.setSystemProperties.172.22.0.7==>stream.bulk.status
 stream.bulk.setSystemProperties==>computation.bulk.setSystemProperties.172.22.0.7
-component computation.retention.retentionExpired.172.22.0.7 [retention/retentionExpired on 172.22.0.7
+component computation.retention.retentionExpired.172.22.0.7 [
+retention/retentionExpired on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 1
 continue on failure: true
 no batch
-max retry: 20, delay: 1000ms]
+max retry: 20, delay: 1000ms
+]
 computation.retention.retentionExpired.172.22.0.7==>stream.bulk.status
 stream.retention.retentionExpired==>computation.retention.retentionExpired.172.22.0.7
-component computation.bulk.indexingBackground.172.22.0.7 [bulk/indexingBackground on 172.22.0.7
+component computation.bulk.indexingBackground.172.22.0.7 [
+bulk/indexingBackground on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 4
@@ -847,16 +1046,19 @@ max retry: 4, delay: 3000ms
 ----
 record count: 6, total: 5.232s
 mean: 0.706s, p50: 0.883s, p99: 1.424s
-rate 1min: 0.00op/s, 5min: 0.00op/s]
+rate 1min: 0.00op/s, 5min: 0.00op/s
+]
 computation.bulk.indexingBackground.172.22.0.7==>stream.bulk.status
 stream.bulk.indexingBackground==>computation.bulk.indexingBackground.172.22.0.7
-component computation.bulk.documentRoutingEscalation.172.22.0.7 [bulk/documentRoutingEscalation on 172.22.0.7
+component computation.bulk.documentRoutingEscalation.172.22.0.7 [
+bulk/documentRoutingEscalation on 172.22.0.7
 ----
 created: 2025-10-27T10:48:09Z
 threads: 2
 continue on failure: true
 no batch
-max retry: 3, delay: 500ms]
+max retry: 3, delay: 500ms
+]
 computation.bulk.documentRoutingEscalation.172.22.0.7==>stream.bulk.status
 stream.bulk.documentRoutingEscalation==>computation.bulk.documentRoutingEscalation.172.22.0.7
 @enduml

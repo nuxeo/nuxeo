@@ -16,24 +16,18 @@
  * Contributors:
  *     Kevin Leturc <kevin.leturc@hyland.com>
  */
-package org.nuxeo.ecm.core.io.marshallers;
+package org.nuxeo.ecm.restapi.jaxrs.io.management;
 
-import javax.ws.rs.core.MediaType;
+import java.util.List;
+
+import org.nuxeo.lib.stream.log.LogLag;
 
 /**
  * @since 2025.12
  */
-public class NuxeoMediaType {
+public record StreamLagChange(StreamLag before, StreamLag after) {
 
-    public static final String TEXT_CSV = "text/csv";
-
-    public static final MediaType TEXT_CSV_TYPE = new MediaType("text", "csv");
-
-    public static final String TEXT_D2 = "text/vnd.d2";
-
-    public static final MediaType TEXT_D2_TYPE = new MediaType("text", "vnd.d2");
-
-    public static final String TEXT_PLANT_UML = "text/vnd.plantuml";
-
-    public static final MediaType TEXT_PLANT_UML_TYPE = new MediaType("text", "vnd.plantuml");
+    public StreamLagChange(String stream, String consumer, List<LogLag> before, List<LogLag> after) {
+        this(new StreamLag(stream, consumer, before), new StreamLag(stream, consumer, after));
+    }
 }

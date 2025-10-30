@@ -17,6 +17,26 @@
       "type": "front"
     },
     {
+      "hostname": "035f48108386",
+      "cpuCores": "8",
+      "created": "2024-03-01T20:51:43Z",
+      "ip": "192.168.1.3",
+      "nodeId": "myapp-dev-worker-421-10-9-8-85-euc",
+      "jvmHeapSize": "16584278016",
+      "alive": "2024-03-04T14:26:54Z",
+      "type": "worker"
+    },
+    {
+      "hostname": "c151df364916",
+      "cpuCores": "8",
+      "created": "2024-03-01T20:50:12Z",
+      "ip": "192.168.1.3",
+      "nodeId": "myapp-dev-worker-421-10-9-9-190-euc",
+      "jvmHeapSize": "16584278016",
+      "alive": "2024-03-04T14:27:26Z",
+      "type": "worker"
+    },
+    {
       "hostname": "5c81b5d32594",
       "cpuCores": "8",
       "created": "2024-03-01T20:50:12Z",
@@ -27,29 +47,9 @@
       "type": "worker"
     },
     {
-      "hostname": "c151df364916",
-      "cpuCores": "8",
-      "created": "2024-03-01T20:50:13Z",
-      "ip": "192.168.1.3",
-      "nodeId": "myapp-dev-worker-421-10-9-9-190-euc",
-      "jvmHeapSize": "16584278016",
-      "alive": "2024-03-04T14:27:26Z",
-      "type": "worker"
-    },
-    {
-      "hostname": "035f48108386",
-      "cpuCores": "8",
-      "created": "2024-03-01T20:51:47Z",
-      "ip": "192.168.1.3",
-      "nodeId": "myapp-dev-worker-421-10-9-8-85-euc",
-      "jvmHeapSize": "16584278016",
-      "alive": "2024-03-04T14:26:54Z",
-      "type": "worker"
-    },
-    {
       "hostname": "66d9d9fb81b4",
       "cpuCores": "8",
-      "created": "2024-03-01T20:50:01Z",
+      "created": "2024-03-01T20:50:00Z",
       "ip": "192.168.1.4",
       "nodeId": "myapp-dev-worker-421-10-9-9-90-euc",
       "jvmHeapSize": "16584278016",
@@ -134,13 +134,14 @@
       "current": {
         "nodes": 4,
         "threads": 8,
-        "rate1m": 0.32531962,
-        "eta": 463949
+        "rate1m": 0.3253196179866791,
+        "eta": 463949,
+        "relevant": true
       },
       "best": {
         "nodes": 4,
         "threads": 8,
-        "rate1m": 0.32531962,
+        "rate1m": 0.3253196179866791,
         "eta": 463949,
         "relevant": true
       }

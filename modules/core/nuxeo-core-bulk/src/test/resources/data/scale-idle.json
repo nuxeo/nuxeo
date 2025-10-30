@@ -51,13 +51,14 @@
       "current": {
         "nodes": 1,
         "threads": 2,
-        "rate1m": 1.0692374,
-        "eta": 0
+        "rate1m": 1.0692373514175415,
+        "eta": 0,
+        "relevant" : true
       },
       "best": {
         "nodes": 1,
         "threads": 2,
-        "rate1m": 1.0692374,
+        "rate1m": 1.0692373514175415,
         "eta": 0,
         "relevant": true
       }

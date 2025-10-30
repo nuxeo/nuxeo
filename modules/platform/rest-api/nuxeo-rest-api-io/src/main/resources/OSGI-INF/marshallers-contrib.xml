@@ -16,6 +16,8 @@
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.SequencerJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.SequencerListJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.SimplifiedServerInfoJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.StreamLagJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.restapi.jaxrs.io.management.StreamLagChangeJsonWriter" enable="true" />
   </extension>
 
 </component>

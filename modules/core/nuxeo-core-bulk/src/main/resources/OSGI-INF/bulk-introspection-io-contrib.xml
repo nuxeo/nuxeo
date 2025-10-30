@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.bulk.introspection.io" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <!-- json -->
+    <register class="org.nuxeo.ecm.core.bulk.introspection.ScaleActivityJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionStreamJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionStreamJsonWriter$ListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionProcessorTopologyJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionProcessorTopologyJsonWriter$ListJsonWriter" enable="true" />
+    <!-- puml -->
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionPlantUMLWriter" enable="true" />
+    <!-- d2 -->
+    <register class="org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionD2Writer" enable="true" />
+  </extension>
+
+</component>

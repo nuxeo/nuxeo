@@ -85,4 +85,25 @@ public class MapMultis {
             }
         };
     }
+
+    /**
+     * Returns a {@link BiConsumer} to use with {@link java.util.stream.Stream#mapMulti(BiConsumer)} in order to get a
+     * stream on a {@link Collection} that is of the given {@link Class} type.
+     *
+     * @param mapper the mapping function to produce elements
+     * @param clazz the type of elements to keep
+     * @return a {@link BiConsumer} to use with mapMulti
+     * @param <T> the type of elements within the stream
+     * @param <R> the type of elements within the collection
+     */
+    public static <T, R> BiConsumer<? super T, Consumer<R>> eachInstanceOf(
+            Function<T, ? extends Collection<? super R>> mapper, Class<R> clazz) {
+        return (elements, downstream) -> {
+            for (var element : mapper.apply(elements)) {
+                if (clazz.isInstance(element)) {
+                    downstream.accept(clazz.cast(element));
+                }
+            }
+        };
+    }
 }

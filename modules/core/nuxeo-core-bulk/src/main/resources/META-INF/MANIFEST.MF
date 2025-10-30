@@ -7,4 +7,5 @@ Nuxeo-Component: OSGI-INF/scroll-service.xml,
  OSGI-INF/scroll-contrib.xml,
  OSGI-INF/bulk-component.xml,
  OSGI-INF/bulk-config.xml,
+ OSGI-INF/bulk-introspection-io-contrib.xml,
  OSGI-INF/bulk-io-contrib.xml

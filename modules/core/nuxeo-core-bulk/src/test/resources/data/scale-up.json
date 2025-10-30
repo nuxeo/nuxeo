@@ -11,8 +11,8 @@
       "cpuCores": "16",
       "created": "2023-03-10T08:55:56Z",
       "ip": "172.27.0.8",
-      "jvmHeapSize": "2147483648",
       "nodeId": "nuxeo2",
+      "jvmHeapSize": "2147483648",
       "alive": "2023-03-10T09:04:58Z",
       "type": "worker"
     },
@@ -21,55 +21,13 @@
       "cpuCores": "16",
       "created": "2023-03-10T08:55:46Z",
       "ip": "172.27.0.7",
-      "jvmHeapSize": "2147483648",
       "nodeId": "nuxeo1",
+      "jvmHeapSize": "2147483648",
       "alive": "2023-03-10T09:04:46Z",
       "type": "front"
     }
   ],
   "computations": [
-    {
-      "computation": "bulk-makeBlob",
-      "streams": {
-        "bulk-makeBlob": {
-          "stream": "bulk-makeBlob",
-          "partitions": 3,
-          "lag": 10000,
-          "end": 2032,
-          "latency": 85340305
-        }
-      },
-      "nodes": [
-        {
-          "nodeId": "nuxeo2",
-          "threads": 2,
-          "timestamp": 1678439098,
-          "count": 176,
-          "sum": 31765342,
-          "rate1m": 1.069237387958875,
-          "rate5m": 0.4534031511581195,
-          "min": 1.00107E-4,
-          "p50": 1.30692E-4,
-          "mean": 1.7029590241373935E-4,
-          "p95": 3.70754E-4,
-          "max": 0.001149035,
-          "stddev": 9.831805544029706E-5
-        }
-      ],
-      "current": {
-        "nodes": 1,
-        "threads": 2,
-        "rate1m": 1.0692374,
-        "eta": 9352
-      },
-      "best": {
-        "nodes": 2,
-        "threads": 3,
-        "rate1m": 1.6038561,
-        "eta": 6234,
-        "relevant": true
-      }
-    },
     {
       "computation": "bulk-csvExport",
       "streams": {
@@ -101,15 +59,59 @@
       "current": {
         "nodes": 1,
         "threads": 2,
-        "rate1m": 1.0692374,
-        "eta": 43
+        "rate1m": 1.0692373514175415,
+        "eta": 43,
+        "relevant": true
       },
       "best": {
         "nodes": 6,
         "threads": 12,
-        "rate1m": 6.4154243,
+        "rate1m": 6.415424346923828,
         "eta": 7,
         "relevant": false
+      }
+    },
+    {
+      "computation": "bulk-makeBlob",
+      "streams": {
+        "bulk-makeBlob": {
+          "stream": "bulk-makeBlob",
+          "partitions": 3,
+          "lag": 10000,
+          "end": 2032,
+          "latency": 85340305
+        }
+      },
+      "nodes": [
+        {
+          "nodeId": "nuxeo2",
+          "threads": 2,
+          "timestamp": 1678439098,
+          "count": 176,
+          "sum": 31765342,
+          "rate1m": 1.069237387958875,
+          "rate5m": 0.4534031511581195,
+          "min": 1.00107E-4,
+          "p50": 1.30692E-4,
+          "mean": 1.7029590241373935E-4,
+          "p95": 3.70754E-4,
+          "max": 0.001149035,
+          "stddev": 9.831805544029706E-5
+        }
+      ],
+      "current": {
+        "nodes": 1,
+        "threads": 2,
+        "rate1m": 1.0692373514175415,
+        "eta": 9352,
+        "relevant": true
+      },
+      "best": {
+        "nodes": 2,
+        "threads": 3,
+        "rate1m": 1.603856086730957,
+        "eta": 6234,
+        "relevant": true
       }
     }
   ]
