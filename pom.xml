@@ -95,8 +95,8 @@
     <aws.version>1.12.793</aws.version>
     <gcp.version>2.52.3</gcp.version>
     <jackson1.version>1.9.13</jackson1.version>
-    <jackson.version>2.19.2</jackson.version>
-    <jackson.bom.version>2.19.2</jackson.bom.version>
+    <jackson.version>2.19.4</jackson.version>
+    <jackson.bom.version>2.19.4</jackson.bom.version>
     <bouncycastle.version>1.79</bouncycastle.version>
     <avro.version>1.12.1</avro.version>
     <restlet.version>2.4.4</restlet.version>
