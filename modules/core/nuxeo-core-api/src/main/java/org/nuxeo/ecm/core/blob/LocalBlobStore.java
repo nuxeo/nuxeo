@@ -312,7 +312,7 @@ public class LocalBlobStore extends AbstractBlobStore {
                 for (File f : file.listFiles()) {
                     computeToDelete(f, minTime);
                 }
-            } else if (file.isFile() && file.canWrite()) {
+            } else if (file.isFile() && file.canWrite() && !pathStrategy.isTempFile(file.toPath())) {
                 long lastModified = file.lastModified();
                 if (lastModified == 0) {
                     log.warn("GC cannot read last modified for file: {}", file);
@@ -331,7 +331,7 @@ public class LocalBlobStore extends AbstractBlobStore {
             } else {
                 OptionalOrUnknown<Path> fileOpt = getStoredFile(key);
                 if (!fileOpt.isPresent()) {
-                    log.trace("Unknown blob for key: {}",  key);
+                    log.trace("Unknown blob for key: {}", key);
                     return;
                 }
                 // mark the blob by touching the file
@@ -389,7 +389,7 @@ public class LocalBlobStore extends AbstractBlobStore {
                     deleteOld(f, minTime, depth + 1, delete);
                 }
                 // NXP-30465: do not delete empty directories
-            } else if (file.isFile() && file.canWrite()) {
+            } else if (file.isFile() && file.canWrite() && !pathStrategy.isTempFile(file.toPath())) {
                 long lastModified = file.lastModified();
                 long length = file.length();
                 if (lastModified == 0) {

@@ -23,12 +23,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blob-provider-local-digest.xml")
@@ -39,6 +41,18 @@ public class TestLocalBlobStoreDigest extends TestLocalBlobStoreAbstract {
         assertFalse(bp.isTransactional());
         assertFalse(bp.isRecordMode());
         assertTrue(bs.getKeyStrategy().useDeDuplication());
+    }
+
+    @Test
+    public void testDoNotGCTempFile() throws IOException {
+        LocalBlobStore lbs = (LocalBlobStore) ((BlobStoreBlobProvider) bp).store;
+        var tmp = lbs.getPathStrategy().createTempFile();
+        waitForGCTimeThreshold();
+        BinaryGarbageCollector gc = bp.getBinaryGarbageCollector();
+        gc.start();
+        gc.stop(true);
+        assertTrue("Tmp file should not be deleted", Files.exists(tmp));
+        Files.deleteIfExists(tmp);
     }
 
     @Test
@@ -97,7 +111,5 @@ public class TestLocalBlobStoreDigest extends TestLocalBlobStoreAbstract {
         }
         assertEquals(n, done.get());
     }
-
-
 
 }
