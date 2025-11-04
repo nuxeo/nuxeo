@@ -2,13 +2,16 @@
 nuxeo.template.includes=common
 mssql.target=.
 
+# server certificate validation is enabled by default since 10.x driver update
+mssql.jdbc.url.options.trustServerCertificate=true
+
 nuxeo.db.type=mssql
 nuxeo.db.host=localhost
 nuxeo.db.port=1433
 nuxeo.db.name=nuxeo
 nuxeo.db.user=nuxeo
 nuxeo.db.password=password
-nuxeo.db.jdbc.url=jdbc:sqlserver://${nuxeo.db.host}:${nuxeo.db.port};database=${nuxeo.db.name};selectMethod=cursor
+nuxeo.db.jdbc.url=jdbc:sqlserver://${nuxeo.db.host}:${nuxeo.db.port};database=${nuxeo.db.name};selectMethod=cursor;trustServerCertificate=${mssql.jdbc.url.options.trustServerCertificate}
 nuxeo.db.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
 nuxeo.db.xadatasource=com.microsoft.sqlserver.jdbc.SQLServerXADataSource
 
