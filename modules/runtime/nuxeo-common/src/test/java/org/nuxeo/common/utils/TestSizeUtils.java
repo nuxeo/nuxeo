@@ -21,6 +21,10 @@ package org.nuxeo.common.utils;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+/**
+ * @deprecated since 2025.11
+ */
+@Deprecated(since = "2025.11", forRemoval = true)
 public class TestSizeUtils {
 
     public long parse(String string) {

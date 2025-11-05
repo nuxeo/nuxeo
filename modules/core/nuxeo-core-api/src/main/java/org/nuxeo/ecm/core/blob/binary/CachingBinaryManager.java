@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.file.FileCache;
 import org.nuxeo.common.file.LRUFileCache;
-import org.nuxeo.common.utils.SizeUtils;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.CachingBlobStore;
 import org.nuxeo.runtime.api.Framework;
@@ -101,7 +101,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      * @param maxCountStr the maximum number of files in the cache
      * @param minAgeStr the minimum age of a file in the cache to be eligible for removal (in seconds)
      * @param fileStorage the file storage mechanism to use to store and fetch files
-     * @see SizeUtils#parseSizeInBytes(String)
+     * @see ByteSize#parse(String)
      * @since 7.10-HF03, 8.1
      */
     public void initializeCache(String maxSizeStr, String maxCountStr, String minAgeStr, FileStorage fileStorage)
@@ -109,7 +109,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
         cachedir = Framework.createTempFile("nxbincache.", "");
         cachedir.delete();
         cachedir.mkdir();
-        long maxSize = SizeUtils.parseSizeInBytes(maxSizeStr);
+        long maxSize = ByteSize.parse(maxSizeStr).bytes();
         long maxCount = Long.parseLong(maxCountStr);
         long minAge = Long.parseLong(minAgeStr);
         initializeCache(cachedir, maxSize, maxCount, minAge, fileStorage);

@@ -20,7 +20,10 @@ package org.nuxeo.common.utils;
 
 /**
  * Class containing helpers related to the expression of sizes in bytes, kilobytes, etc.
+ *
+ * @deprecated since 2025.11, use {@link ByteSize} instead
  */
+@Deprecated(since = "2025.11", forRemoval = true)
 public class SizeUtils {
 
     private SizeUtils() {
