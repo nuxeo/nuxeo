@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
@@ -319,4 +320,20 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
         return getDuration(key).orElse(defaultValue);
     }
 
+    @Override
+    public Optional<ByteSize> getByteSize(String key) {
+        return getString(key).map(value -> {
+            try {
+                return ByteSize.parse(value);
+            } catch (NumberFormatException e) {
+                log.error("Invalid configuration property '{}', '{}' should be a byte size", key, value, e);
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public ByteSize getByteSize(String key, ByteSize defaultValue) {
+        return getByteSize(key).orElse(defaultValue);
+    }
 }

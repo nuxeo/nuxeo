@@ -25,6 +25,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
+import org.nuxeo.common.utils.ByteSize;
+
 /**
  * Service holding runtime configuration properties.
  *
@@ -139,6 +141,22 @@ public interface ConfigurationService {
      * @since 11.1
      */
     Duration getDuration(String key, Duration defaultValue);
+
+    /**
+     * Returns the given property value if any.
+     *
+     * @param key the property key
+     * @since 2025.11
+     */
+    Optional<ByteSize> getByteSize(String key);
+
+    /**
+     * Returns the given property value if any, otherwise returns the given default value.
+     *
+     * @param key the property key
+     * @since 2025.11
+     */
+    ByteSize getByteSize(String key, ByteSize defaultValue);
 
     /**
      * Returns the given property value if any, otherwise null.
