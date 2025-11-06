@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -219,5 +220,17 @@ public class Author {
 
     @XNode("durationJdk")
     Duration durationJdk;
+
+    @XNode("byteSize")
+    ByteSize byteSize;
+
+    @XNode("byteSizeKiB")
+    ByteSize byteSizeKiB;
+
+    @XNode("byteSizeMiB")
+    ByteSize byteSizeMiB;
+
+    @XNode("byteSizeGiB")
+    ByteSize byteSizeGiB;
 
 }

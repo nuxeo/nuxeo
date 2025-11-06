@@ -94,6 +94,11 @@
     <durationAll>1d2h3m4s5ms</durationAll>
     <durationJdk>PT1S</durationJdk>
 
+    <byteSize>1</byteSize>
+    <byteSizeKiB>1KiB</byteSizeKiB>
+    <byteSizeMiB>1MiB</byteSizeMiB>
+    <byteSizeGiB>1GiB</byteSizeGiB>
+
   </author>
 
 
