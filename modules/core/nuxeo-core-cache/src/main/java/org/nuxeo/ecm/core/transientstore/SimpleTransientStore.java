@@ -191,7 +191,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
         if (entry != null) {
             log.debug("Invalidating StorageEntry stored at key: {} form L1 cache", key);
             getL1Cache().invalidate(key);
-            if (getStorageSize() <= config.getTargetMaxSizeMB() * (1024 * 1024) || config.getTargetMaxSizeMB() < 0) {
+            if (config.getTargetMaxSize().isEmpty() || getStorageSize() <= config.getTargetMaxSize().get().toBytes()) {
                 log.debug("Putting StorageEntry at key: {} in L2 cache", key);
                 getL2Cache().put(key, entry);
             }

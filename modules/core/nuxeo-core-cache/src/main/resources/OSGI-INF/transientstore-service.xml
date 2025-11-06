@@ -20,8 +20,8 @@
      <code>
        <store name="microStore">
           <!--  a store that can not store anything  -->
-          <targetMaxSizeMB>0</targetMaxSizeMB>
-          <absoluteMaxSizeMB>0</absoluteMaxSizeMB>
+          <targetMaxSize>0</targetMaxSize>
+          <absoluteMaxSize>0</absoluteMaxSize>
        </store>
      </code>
 
@@ -33,8 +33,8 @@
 
      Nested configuration elements are :
      <ul>
-         <li>targetMaxSizeMB : target size that ideally should never be exceeded</li>
-         <li>absoluteMaxSizeMB : size that must never be exceeded</li>
+         <li>targetMaxSize : target size that ideally should never be exceeded</li>
+         <li>absoluteMaxSize : size that must never be exceeded</li>
          <li>firstLevelTTL : TTL in minutes of the first level cache</li>
          <li>secondLevelTTL : TTL in minutes of the first level cache</li>
      </ul>

@@ -9,8 +9,6 @@
     <#else>
     <store name="default" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
     </#if>
-      <targetMaxSizeMB>-1</targetMaxSizeMB>
-      <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
       <firstLevelTTL>${nuxeo.transientstore.ttl}</firstLevelTTL>
       <secondLevelTTL>${nuxeo.transientstore.ttl2}</secondLevelTTL>
     </store>

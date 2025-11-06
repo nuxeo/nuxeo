@@ -27,6 +27,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -44,7 +45,7 @@ public abstract class BaseOfficeXMLTextConverter implements Converter {
 
     public static final String MAX_SIZE = "MAX_SIZE";
 
-    protected long maxSize4POI = 5 * 1024 * 1024L;
+    protected long maxSize4POI = ByteSize.ofMebibytes(5).toBytes();
 
     protected BlobHolder runFallBackConverter(BlobHolder blobHolder, final String prefix) throws ConversionException {
 
@@ -75,7 +76,7 @@ public abstract class BaseOfficeXMLTextConverter implements Converter {
     public void init(ConverterDescriptor descriptor) {
         String max = descriptor.getParameters().get(MAX_SIZE);
         if (max != null) {
-            maxSize4POI = Long.parseLong(max);
+            maxSize4POI = ByteSize.parse(max).toBytes();
         }
     }
 

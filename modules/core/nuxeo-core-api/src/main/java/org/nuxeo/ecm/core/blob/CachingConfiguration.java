@@ -61,9 +61,7 @@ public class CachingConfiguration extends PropertyBasedConfiguration {
         dir = Framework.createTempDirectory("nxbincache.");
         String maxCountProp = getProperty(CACHE_COUNT_PROPERTY, DEFAULT_CACHE_COUNT);
         String minAgeProp = getProperty(CACHE_MIN_AGE_PROPERTY, DEFAULT_CACHE_MIN_AGE);
-        maxSize = getOptionalProperty(CACHE_SIZE_PROPERTY).map(ByteSize::parse)
-                                                          .orElse(DEFAULT_CACHE_BYTE_SIZE)
-                                                          .toBytes();
+        maxSize = getOptionalByteSizeProperty(CACHE_SIZE_PROPERTY).orElse(DEFAULT_CACHE_BYTE_SIZE).toBytes();
         maxCount = Long.parseLong(maxCountProp);
         minAge = Long.parseLong(minAgeProp);
     }

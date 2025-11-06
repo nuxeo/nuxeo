@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.RecordFilter;
@@ -49,7 +50,16 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
 
     public static final String THRESHOLD_SIZE_OPTION = "thresholdSize";
 
-    public static final int DEFAULT_THRESHOLD_SIZE = 1_000_000;
+    /**
+     * Maximum size allowed for a record in Kafka is 1MiB, take a bit less to leave room for metadata.
+     * 
+     * @since 2025.11
+     */
+    public static final ByteSize DEFAULT_THRESHOLD_BYTE_SIZE = ByteSize.ofKibibytes(976);
+
+    /** @deprecated since 2025.11, use {@link #DEFAULT_THRESHOLD_BYTE_SIZE} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
+    public static final int DEFAULT_THRESHOLD_SIZE = (int) DEFAULT_THRESHOLD_BYTE_SIZE.toBytes();
 
     public static final String PREFIX_OPTION = "prefix";
 
@@ -79,10 +89,25 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
     public void init(Map<String, String> options) {
         storeName = options.getOrDefault(STORE_NAME_OPTION, DEFAULT_STORE_NAME);
         prefix = options.getOrDefault(PREFIX_OPTION, DEFAULT_PREFIX);
-        thresholdSize = parseIntOrDefault(options.get(THRESHOLD_SIZE_OPTION), DEFAULT_THRESHOLD_SIZE);
+        thresholdSize = retrieveThresholdSize(options);
         storeTTL = DurationUtils.parse(options.getOrDefault(STORE_TTL_OPTION, DEFAULT_STORE_TTL));
     }
 
+    protected int retrieveThresholdSize(Map<String, String> options) {
+        ByteSize byteSize = DEFAULT_THRESHOLD_BYTE_SIZE;
+        String valueAsString = options.get(THRESHOLD_SIZE_OPTION);
+        if (StringUtils.isNotBlank(valueAsString)) {
+            try {
+                byteSize = ByteSize.parse(valueAsString);
+            } catch (NumberFormatException e) {
+                log.error("Invalid byte size for RecordFilter option: {}", valueAsString, e);
+            }
+        }
+        return (int) byteSize.toBytes();
+    }
+
+    /** @deprecated since 2025.11, not used anymore */
+    @Deprecated(since = "2025.11", forRemoval = true)
     protected int parseIntOrDefault(String valueAsString, int defaultValue) {
         if (StringUtils.isEmpty(valueAsString)) {
             return defaultValue;

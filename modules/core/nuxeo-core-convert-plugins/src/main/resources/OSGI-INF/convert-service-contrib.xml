@@ -38,7 +38,7 @@
       <sourceMimeType>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
       <parameters>
-       <parameter name="MAX_SIZE">3145728</parameter>
+       <parameter name="MAX_SIZE">3MiB</parameter>
       </parameters>
     </converter>
 

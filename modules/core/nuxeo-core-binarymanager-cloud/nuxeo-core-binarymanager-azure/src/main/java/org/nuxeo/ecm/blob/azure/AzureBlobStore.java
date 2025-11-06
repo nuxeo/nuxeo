@@ -201,9 +201,9 @@ public class AzureBlobStore extends AbstractBlobStore {
             return;
         }
         ParallelTransferOptions parallelTransferOptions = new ParallelTransferOptions();
-        parallelTransferOptions.setBlockSizeLong(config.blockSize)
+        parallelTransferOptions.setBlockSizeLong(config.blockSize.bytes())
                                .setMaxConcurrency(config.maxConcurrency)
-                               .setMaxSingleUploadSizeLong(config.maxSingleUploadSize);
+                               .setMaxSingleUploadSizeLong(config.maxSingleUploadSize.bytes());
         BlobUploadFromFileOptions options = new BlobUploadFromFileOptions(file.toString());
         options.setParallelTransferOptions(parallelTransferOptions);
         try {

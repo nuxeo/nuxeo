@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -159,8 +160,8 @@ public class TestSQLBinariesIndexingOverride {
         SQLRepositoryService repositoryService = Framework.getService(SQLRepositoryService.class);
         RepositoryDescriptor repositoryDescriptor = repositoryService.getRepositoryImpl(
                 session.getRepositoryName()).getRepositoryDescriptor();
-        int fulltextFieldSizeLimit = repositoryDescriptor.getFulltextDescriptor().getFulltextFieldSizeLimit();
-        assertEquals(1024, fulltextFieldSizeLimit); // from XML config
+        var fulltextFieldByteSizeLimit = repositoryDescriptor.getFulltextDescriptor().getFulltextFieldByteSizeLimit();
+        assertEquals(ByteSize.ofKibibytes(1), fulltextFieldByteSizeLimit); // from XML config
 
         String query = "SELECT * FROM Document WHERE ecm:fulltext = %s";
         DocumentModelList res;
@@ -191,7 +192,7 @@ public class TestSQLBinariesIndexingOverride {
                 assertEquals(1, res.size());
             } else {
                 assertEquals(0, res.size());
-                content = content.substring(0, fulltextFieldSizeLimit - 1);
+                content = content.substring(0, (int) fulltextFieldByteSizeLimit.toBytes() - 1);
                 res = session.query(String.format(query, NXQL.escapeString(content)));
                 assertEquals(2, res.size());
             }

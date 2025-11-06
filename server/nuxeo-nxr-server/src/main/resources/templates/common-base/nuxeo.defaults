@@ -231,6 +231,13 @@ kafka.keystore.type=JKS
 kafka.keystore.path=
 kafka.keystore.password=
 
+# Core Convert cache
+nuxeo.conversion.cache.enabled=true
+nuxeo.conversion.cache.gcRate=10m
+## @deprecated since 2025.11, use nuxeo.conversion.cache.maxSize instead
+nuxeo.conversion.cache.maxSizeKB=10240
+nuxeo.conversion.cache.maxSize=${nuxeo.conversion.cache.maxSizeKB}KiB
+
 # Legacy rendition are performed on front nodes
 nuxeo.rendition.legacy.enabled=false
 # Thumbnail renditions are pre calculated and can be returned in sync

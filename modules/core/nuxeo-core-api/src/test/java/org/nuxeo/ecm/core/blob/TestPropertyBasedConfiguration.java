@@ -28,6 +28,7 @@ import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -39,6 +40,18 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 public class TestPropertyBasedConfiguration {
+
+    @Test
+    @WithFrameworkProperty(name = "test.valid1", value = "1GiB")
+    @WithFrameworkProperty(name = "test.invalid1", value = "3ZiB")
+    public void testGetOptionalByteSize() {
+        var props = new PropertyBasedConfiguration("test", Map.of("valid2", "512MiB", "invalid2", "d5"));
+        assertEquals(ByteSize.ofGibibytes(1), props.getOptionalByteSizeProperty("valid1").orElseThrow());
+        assertEquals(ByteSize.ofMebibytes(512), props.getOptionalByteSizeProperty("valid2").orElseThrow());
+        assertTrue(props.getOptionalByteSizeProperty("invalid1").isEmpty());
+        assertTrue(props.getOptionalByteSizeProperty("invalid2").isEmpty());
+        assertThrows(NoSuchElementException.class, () -> props.getOptionalByteSizeProperty("unknown").orElseThrow());
+    }
 
     @Test
     @WithFrameworkProperty(name = "test.valid1", value = "1h")

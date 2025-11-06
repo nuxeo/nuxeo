@@ -31,7 +31,7 @@ temporary credentials from the instance role (if any).
   For ap-northeast-1 (Tokyo), use ap-northeast-1
   For sa-east-1 (Sao Paulo), use sa-east-1
 
-- nuxeo.s3storage.cachesize : size of the local cache (default is 100MB).
+- nuxeo.s3storage.cachesize : size of the local cache (default is 100MiB).
 - nuxeo.s3storage.bucket_prefix : bucket prefix
 - nuxeo.s3storage.pathstyleaccess : if `true`, configures the client to use path-style access for all requests (default is `false`)
 

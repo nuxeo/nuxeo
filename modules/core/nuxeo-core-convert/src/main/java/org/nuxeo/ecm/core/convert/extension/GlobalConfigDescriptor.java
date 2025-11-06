@@ -111,5 +111,4 @@ public class GlobalConfigDescriptor {
             cachingDirectory = other.cachingDirectory;
         }
     }
-
 }

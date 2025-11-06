@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.ecm.core.api.repository.PoolConfiguration;
@@ -72,9 +73,16 @@ public class DBSRepositoryDescriptor implements Cloneable {
         return fulltextDescriptor;
     }
 
+    /** @since 2025.11 */
     @XNode("fulltext@fieldSizeLimit")
+    public void setFulltextFieldSizeLimit(ByteSize fieldSizeLimit) {
+        fulltextDescriptor.setFulltextFieldByteSizeLimit(fieldSizeLimit);
+    }
+
+    /** @deprecated since 2025.11, use {@link #setFulltextFieldSizeLimit(ByteSize)} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public void setFulltextFieldSizeLimit(int fieldSizeLimit) {
-        fulltextDescriptor.setFulltextFieldSizeLimit(fieldSizeLimit);
+        setFulltextFieldSizeLimit(ByteSize.ofBytes(fieldSizeLimit));
     }
 
     @XNode("fulltext@disabled")

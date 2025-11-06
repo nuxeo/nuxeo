@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.blob.CloudBlobStoreConfiguration;
 
 import com.azure.storage.blob.BlobContainerClient;
@@ -63,7 +64,7 @@ public class AzureBlobStoreConfiguration extends CloudBlobStoreConfiguration {
     /**
      * @since 2025.10
      */
-    public static final long BLOCK_SIZE_DEFAULT = (long) (4 * 1024 * 1024); // 4 MiB
+    public static final ByteSize BLOCK_SIZE_DEFAULT = ByteSize.ofMebibytes(4);
 
     /**
      * @since 2025.10
@@ -83,7 +84,7 @@ public class AzureBlobStoreConfiguration extends CloudBlobStoreConfiguration {
     /**
      * @since 2025.10
      */
-    public static final long MAX_SINGLE_UPLOAD_SIZE_DEFAULT = (long) 8 * 1024 * 1024; // 8 MiB
+    public static final ByteSize MAX_SINGLE_UPLOAD_SIZE_DEFAULT = ByteSize.ofMebibytes(8);
 
     /**
      * @since 2025.10
@@ -100,11 +101,11 @@ public class AzureBlobStoreConfiguration extends CloudBlobStoreConfiguration {
      */
     public static final String UPLOAD_TIMEOUT_PROPERTY = "upload.timeout";
 
-    protected final long blockSize;
+    protected final ByteSize blockSize;
 
     protected final int maxConcurrency;
 
-    protected final long maxSingleUploadSize;
+    protected final ByteSize maxSingleUploadSize;
 
     protected final Duration uploadTimeout;
     // End upload properties
@@ -147,9 +148,9 @@ public class AzureBlobStoreConfiguration extends CloudBlobStoreConfiguration {
                 prefix += delimiter;
             }
         }
-        blockSize = getOptionalLongProperty(BLOCK_SIZE_PROPERTY).orElse(BLOCK_SIZE_DEFAULT);
+        blockSize = getOptionalByteSizeProperty(BLOCK_SIZE_PROPERTY).orElse(BLOCK_SIZE_DEFAULT);
         maxConcurrency = getOptionalIntegerProperty(MAX_CONCURRENCY_PROPERTY).orElse(MAX_CONCURRENCY_DEFAULT);
-        maxSingleUploadSize = getOptionalLongProperty(MAX_SINGLE_UPLOAD_SIZE_PROPERTY).orElse(
+        maxSingleUploadSize = getOptionalByteSizeProperty(MAX_SINGLE_UPLOAD_SIZE_PROPERTY).orElse(
                 MAX_SINGLE_UPLOAD_SIZE_DEFAULT);
         uploadTimeout = getOptionalDurationProperty(UPLOAD_TIMEOUT_PROPERTY).orElse(UPLOAD_TIMEOUT_DEFAULT);
     }

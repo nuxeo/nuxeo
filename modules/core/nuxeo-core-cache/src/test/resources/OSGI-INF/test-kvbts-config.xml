@@ -15,8 +15,8 @@
 
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
     <store name="default" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
-      <targetMaxSizeMB>1</targetMaxSizeMB>
-      <absoluteMaxSizeMB>1</absoluteMaxSizeMB>
+      <targetMaxSize>1MiB</targetMaxSize>
+      <absoluteMaxSize>1MiB</absoluteMaxSize>
       <property name="defaultBlobProvider">mytransient</property>
     </store>
   </extension>

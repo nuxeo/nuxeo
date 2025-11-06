@@ -40,6 +40,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
@@ -205,8 +206,8 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         mapper = new ObjectMapper();
         ttl = config.getFirstLevelTTL() * 60;
         releaseTTL = config.getSecondLevelTTL() * 60;
-        targetMaxSize = config.getTargetMaxSizeMB() * 1024L * 1024;
-        absoluteMaxSize = config.getAbsoluteMaxSizeMB() * 1024L * 1024;
+        targetMaxSize = config.getTargetMaxSize().map(ByteSize::toBytes).orElse(-1L);
+        absoluteMaxSize = config.getAbsoluteMaxSize().map(ByteSize::toBytes).orElse(-1L);
         getBlobProvider(); // force explicit registration of the blob provider
     }
 

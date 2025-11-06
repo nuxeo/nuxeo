@@ -20,7 +20,6 @@ package org.nuxeo.ecm.quota.automation;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.quota.size.QuotaAware;
+import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
 import org.nuxeo.ecm.quota.size.QuotaInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,18 +73,10 @@ public class GetQuotaStatisticsOperation {
     }
 
     public String toJSON(QuotaInfo quotaInfo, Locale locale) {
-        NumberFormat nf = NumberFormat.getInstance();
-        nf.setMaximumFractionDigits(2);
         List<QuotaStat> stats = new ArrayList<>();
-        stats.add(new QuotaStat(quotaInfo.getLiveSize().getValue(), getI18nLabel("label.quota.liveSize", locale) + ":"
-                + nf.format(quotaInfo.getLiveSize().getValueInUnit()) + " " + getI18nLabel(quotaInfo.getLiveSize().getUnit(), locale)));
-        stats.add(new QuotaStat(quotaInfo.getTrashSize().getValue(), getI18nLabel("label.quota.trashSize", locale)
-                + ":" + nf.format(quotaInfo.getTrashSize().getValueInUnit()) + " "
-                + getI18nLabel(quotaInfo.getTrashSize().getUnit(), locale)));
-        stats.add(new QuotaStat(quotaInfo.getSizeVersions().getValue(),
-                getI18nLabel("label.quota.versionsSize", locale) + ":"
-                        + nf.format(quotaInfo.getSizeVersions().getValueInUnit()) + " "
-                        + getI18nLabel(quotaInfo.getSizeVersions().getUnit(), locale)));
+        stats.add(toQuotaStat(quotaInfo.getLiveSize(), "label.quota.liveSize", locale));
+        stats.add(toQuotaStat(quotaInfo.getTrashSize(), "label.quota.trashSize", locale));
+        stats.add(toQuotaStat(quotaInfo.getSizeVersions(), "label.quota.versionsSize", locale));
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         try {
@@ -93,6 +85,11 @@ public class GetQuotaStatisticsOperation {
             throw new NuxeoException(e);
         }
         return writer.toString();
+    }
+
+    QuotaStat toQuotaStat(QuotaDisplayValue quotaDisplayValue, String headerLabelKey, Locale locale) {
+        var label = getI18nLabel(headerLabelKey, locale) + ":" + quotaDisplayValue.format(locale);
+        return new QuotaStat(quotaDisplayValue.getValue(), label);
     }
 
     protected String getI18nLabel(String label, Locale locale) {

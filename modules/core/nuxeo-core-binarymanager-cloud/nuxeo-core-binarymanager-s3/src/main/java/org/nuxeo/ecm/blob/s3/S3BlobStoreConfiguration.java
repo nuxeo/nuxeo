@@ -48,6 +48,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.blob.CloudBlobStoreConfiguration;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.PathStrategy;
@@ -187,7 +189,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      *
      * @since 2021.11
      */
-    public static final long MULTIPART_COPY_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // 5 MB;
+    public static final long MULTIPART_COPY_PART_SIZE_DEFAULT = ByteSize.ofMebibytes(5).bytes();
 
     /**
      * The Framework property to define the multipart copy threshold.
@@ -198,10 +200,12 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     /**
      * The default value for the multipart copy threshold.
+     * <p>
+     * AWS SDK default.
      *
      * @since 2021.11
      */
-    public static final long MULTIPART_COPY_THRESHOLD_DEFAULT = 5L * 1024 * 1024 * 1024; // AWS SDK default = 5 GB
+    public static final long MULTIPART_COPY_THRESHOLD_DEFAULT = ByteSize.ofGibibytes(5).bytes();
 
     /**
      * The Framework property to define the multipart upload threshold.
@@ -212,10 +216,12 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     /**
      * The default value for the multipart upload threshold.
+     * <p>
+     * AWS SDK default.
      *
      * @since 2021.11
      */
-    public static final long MULTIPART_UPLOAD_THRESHOLD_DEFAULT = 16L * 1024 * 1024; // AWS SDK default = 16 MB;
+    public static final long MULTIPART_UPLOAD_THRESHOLD_DEFAULT = ByteSize.ofMebibytes(16).bytes();
 
     /**
      * The Framework property to define the minimum upload part size.
@@ -226,10 +232,12 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     /**
      * The default value for the minimum upload part size.
+     * <p>
+     * AWS SDK default.
      *
      * @since 2021.11
      */
-    public static final long MINIMUM_UPLOAD_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // AWS SDK default = 5 MB
+    public static final long MINIMUM_UPLOAD_PART_SIZE_DEFAULT = ByteSize.ofMebibytes(5).bytes();
 
     /**
      * The Framework property to define the transfer manager thread pool size.
@@ -304,6 +312,11 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      * @since 2023.7
      */
     protected final boolean pathSeparatorIsBackslash;
+
+
+    protected ByteSize minimumPartSize;
+
+    protected ByteSize multipartUploadThreshold;
 
     public S3BlobStoreConfiguration(Map<String, String> properties) throws IOException {
         super(SYSTEM_PROPERTY_PREFIX, properties);

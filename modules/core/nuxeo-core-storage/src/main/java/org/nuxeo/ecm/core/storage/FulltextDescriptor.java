@@ -18,12 +18,15 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -84,16 +87,35 @@ public class FulltextDescriptor {
         }
     }
 
-    public static final int FULLTEXT_FIELD_SIZE_LIMIT_DEFAULT = 128 * 1024; // 128 K
+    /** @since 2025.11 */
+    public static final ByteSize FULLTEXT_FIELD_BYTE_SIZE_LIMIT_DEFAULT = ByteSize.ofKibibytes(128);
 
-    private Integer fulltextFieldSizeLimit;
+    /** @deprecated since 2025.11, use {@link #FULLTEXT_FIELD_BYTE_SIZE_LIMIT_DEFAULT} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
+    public static final int FULLTEXT_FIELD_SIZE_LIMIT_DEFAULT = (int) FULLTEXT_FIELD_BYTE_SIZE_LIMIT_DEFAULT.toBytes();
 
-    public int getFulltextFieldSizeLimit() {
-        return fulltextFieldSizeLimit == null ? FULLTEXT_FIELD_SIZE_LIMIT_DEFAULT : fulltextFieldSizeLimit.intValue();
+    private ByteSize fulltextFieldByteSizeLimit;
+
+    /** @since 2025.11 */
+    public ByteSize getFulltextFieldByteSizeLimit() {
+        return getIfNull(fulltextFieldByteSizeLimit, FULLTEXT_FIELD_BYTE_SIZE_LIMIT_DEFAULT);
     }
 
+    /** @deprecated since 2025.11, use {@link #setFulltextFieldByteSizeLimit(ByteSize)} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
+    public int getFulltextFieldSizeLimit() {
+        return (int) getFulltextFieldByteSizeLimit().toBytes();
+    }
+
+    /** @since 2025.11 */
+    public void setFulltextFieldByteSizeLimit(ByteSize fulltextFieldByteSizeLimit) {
+        this.fulltextFieldByteSizeLimit = fulltextFieldByteSizeLimit;
+    }
+
+    /** @deprecated since 2025.11, use {@link #setFulltextFieldByteSizeLimit(ByteSize)} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public void setFulltextFieldSizeLimit(int fulltextFieldSizeLimit) {
-        this.fulltextFieldSizeLimit = Integer.valueOf(fulltextFieldSizeLimit);
+        setFulltextFieldByteSizeLimit(ByteSize.ofBytes(fulltextFieldSizeLimit));
     }
 
     /** False if the boolean is null or FALSE, true otherwise. */
@@ -171,7 +193,7 @@ public class FulltextDescriptor {
 
     /** Copy constructor. */
     public FulltextDescriptor(FulltextDescriptor other) {
-        fulltextFieldSizeLimit = other.fulltextFieldSizeLimit;
+        fulltextFieldByteSizeLimit = other.fulltextFieldByteSizeLimit;
         fulltextDisabled = other.fulltextDisabled;
         fulltextStoredInBlob = other.fulltextStoredInBlob;
         fulltextSearchDisabled = other.fulltextSearchDisabled;
@@ -181,8 +203,8 @@ public class FulltextDescriptor {
     }
 
     public void merge(FulltextDescriptor other) {
-        if (other.fulltextFieldSizeLimit != null) {
-            fulltextFieldSizeLimit = other.fulltextFieldSizeLimit;
+        if (other.fulltextFieldByteSizeLimit != null) {
+            fulltextFieldByteSizeLimit = other.fulltextFieldByteSizeLimit;
         }
         if (other.fulltextDisabled != null) {
             fulltextDisabled = other.fulltextDisabled;

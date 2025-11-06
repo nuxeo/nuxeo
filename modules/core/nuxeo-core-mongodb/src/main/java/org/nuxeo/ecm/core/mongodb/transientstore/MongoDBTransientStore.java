@@ -47,6 +47,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
@@ -164,8 +165,8 @@ public class MongoDBTransientStore implements TransientStoreProvider {
         this.config = config;
         firstLevelTTL = config.getFirstLevelTTL() * 60;
         secondLevelTTL = config.getSecondLevelTTL() * 60;
-        targetMaxSize = config.getTargetMaxSizeMB() * 1024L * 1024;
-        absoluteMaxSize = config.getAbsoluteMaxSizeMB() * 1024L * 1024;
+        targetMaxSize = config.getTargetMaxSize().map(ByteSize::toBytes).orElse(-1L);
+        absoluteMaxSize = config.getAbsoluteMaxSize().map(ByteSize::toBytes).orElse(-1L);
         Map<String, String> properties = config.getProperties();
         if (properties == null) {
             properties = Collections.emptyMap();

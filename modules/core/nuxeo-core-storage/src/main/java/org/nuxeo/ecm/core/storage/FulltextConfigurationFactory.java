@@ -61,7 +61,7 @@ public class FulltextConfigurationFactory {
     public static FulltextConfiguration make(FulltextDescriptor fulltextDescriptor) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         FulltextConfiguration ftc = new FulltextConfiguration();
-        ftc.fulltextFieldSizeLimit = fulltextDescriptor.getFulltextFieldSizeLimit();
+        ftc.fulltextFieldSizeLimit = (int) fulltextDescriptor.getFulltextFieldByteSizeLimit().bytes();
         ftc.fulltextStoredInBlob = fulltextDescriptor.getFulltextStoredInBlob();
         ftc.fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
 

@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -297,9 +298,16 @@ public class RepositoryDescriptor {
         return fulltextDescriptor;
     }
 
+    /** @since 2025.11 */
     @XNode("indexing/fulltext@fieldSizeLimit")
+    public void setFulltextFieldSizeLimit(ByteSize fieldByteSizeLimit) {
+        fulltextDescriptor.setFulltextFieldByteSizeLimit(fieldByteSizeLimit);
+    }
+
+    /** @deprecated since 2025.11, use {@link #setFulltextFieldSizeLimit(ByteSize)} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public void setFulltextFieldSizeLimit(int fieldSizeLimit) {
-        fulltextDescriptor.setFulltextFieldSizeLimit(fieldSizeLimit);
+        setFulltextFieldSizeLimit(ByteSize.ofBytes(fieldSizeLimit));
     }
 
     @XNode("indexing/fulltext@disabled")

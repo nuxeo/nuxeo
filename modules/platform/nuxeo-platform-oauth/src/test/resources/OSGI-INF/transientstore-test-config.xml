@@ -4,8 +4,6 @@
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
     point="store">
     <store name="authorizationRequestStore">
-      <targetMaxSizeMB>-1</targetMaxSizeMB>
-      <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
       <firstLevelTTL>10</firstLevelTTL>
       <secondLevelTTL>0</secondLevelTTL>
     </store>

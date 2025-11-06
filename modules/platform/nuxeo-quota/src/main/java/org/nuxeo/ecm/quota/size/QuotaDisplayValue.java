@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Locale;
+
+import org.nuxeo.common.utils.ByteSize;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * Helper class mainly used for UI display
@@ -30,72 +33,117 @@ import java.text.NumberFormat;
  */
 public class QuotaDisplayValue {
 
+    /** @deprecated since 2025.11 */
+    @Deprecated(since = "2025.11", forRemoval = true)
     protected static final long KB_LIMIT = 1024L;
 
+    /** @deprecated since 2025.11 */
+    @Deprecated(since = "2025.11", forRemoval = true)
     protected static final long MB_LIMIT = 1024L * KB_LIMIT;
 
+    /** @deprecated since 2025.11 */
+    @Deprecated(since = "2025.11", forRemoval = true)
     protected static final long GB_LIMIT = 1024L * MB_LIMIT;
 
+    /** @deprecated since 2025.11 */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public static final String GB_UNIT = "label.unit.GB";
 
+    /** @deprecated since 2025.11 */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public static final String MB_UNIT = "label.unit.MB";
 
+    /** @deprecated since 2025.11 */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public static final String KB_UNIT = "label.unit.KB";
 
     public static final String UNLIMITED_VALUE = "label.unit.unlimited.value";
 
-    protected final long value;
+    protected final ByteSize byteSize;
 
-    protected float valueInUnit;
-
-    protected String unit;
-
-    protected long max;
-
-    public QuotaDisplayValue(long value) {
-        this.value = value;
-        init();
+    public QuotaDisplayValue(ByteSize byteSize) {
+        this.byteSize = byteSize;
     }
 
+    /**
+     * @param value the quota size in {@link ByteSize.Unit#KIBI KiB} unit
+     */
+    public QuotaDisplayValue(long value) {
+        this(ByteSize.ofKibibytes(value));
+    }
+
+    /** @deprecated since 2025.11, use {@link #QuotaDisplayValue(long)} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public QuotaDisplayValue(long value, long max) {
         this(value);
-        this.max = max;
     }
 
-    protected void init() {
+    /** @since 2025.11 */
+    public ByteSize getByteSize() {
+        return byteSize;
+    }
+
+    /**
+     * @return the current quota value in {@link ByteSize.Unit#KIBI KiB}
+     */
+    public long getValue() {
+        return byteSize.toKibibytes();
+    }
+
+    /** @deprecated since 2025.11, use {@link #getByteSize()} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
+    public float getValueInUnit() {
+        var value = byteSize.toKibibytes();
+        float valueInUnit;
         if (value < 0) {
-            unit = UNLIMITED_VALUE;
             valueInUnit = 0;
         } else if (value > GB_LIMIT) {
-            unit = GB_UNIT;
             valueInUnit = Float.valueOf(value) / GB_LIMIT;
         } else if (value > MB_LIMIT) {
-            unit = MB_UNIT;
             valueInUnit = Float.valueOf(value) / MB_LIMIT;
         } else {
-            unit = KB_UNIT;
             valueInUnit = Float.valueOf(value) / KB_LIMIT;
         }
-    }
-
-    public long getValue() {
-        return value;
-    }
-
-    public float getValueInUnit() {
         return valueInUnit;
     }
 
+    /** @deprecated since 2025.11, use {@link #getByteSize()} instead */
+    @Deprecated(since = "2025.11", forRemoval = true)
     public String getUnit() {
+        var value = byteSize.toKibibytes();
+        String unit;
+        if (value < 0) {
+            unit = UNLIMITED_VALUE;
+        } else if (value > GB_LIMIT) {
+            unit = GB_UNIT;
+        } else if (value > MB_LIMIT) {
+            unit = MB_UNIT;
+        } else {
+            unit = KB_UNIT;
+        }
         return unit;
     }
 
-    public String getPercent() {
-        if (max > 0) {
-            NumberFormat formatter = new DecimalFormat("0.0");
-            return formatter.format((Float.valueOf(value) / max) * 100) + "%";
+    /** @since 2025.11 */
+    public String format(Locale locale) {
+        ByteSize.Unit unit;
+        long byteSizeLong = byteSize.toBytes();
+        if (byteSizeLong > ByteSize.Unit.GIBI.toBytes(1)) {
+            unit = ByteSize.Unit.GIBI;
+        } else if (byteSizeLong > ByteSize.Unit.MEBI.toBytes(1)) {
+            unit = ByteSize.Unit.MEBI;
         } else {
-            return "";
+            unit = ByteSize.Unit.KIBI;
         }
+        var numberFormat = NumberFormat.getInstance(locale);
+        numberFormat.setMaximumFractionDigits(2);
+        return numberFormat.format(unit.fromBytes(byteSize.toBytes())) + " "
+                + I18NUtils.getMessageString("messages", unit.labelKey(), null, locale);
+    }
+
+    /** @deprecated since 2025.11, not used */
+    @Deprecated(since = "2025.11", forRemoval = true)
+    public String getPercent() {
+        return "";
     }
 }

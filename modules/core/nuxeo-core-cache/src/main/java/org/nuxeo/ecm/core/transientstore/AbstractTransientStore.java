@@ -134,7 +134,7 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
 
     @Override
     public void putBlobs(String key, List<Blob> blobs) {
-        if (config.getAbsoluteMaxSizeMB() < 0 || getStorageSize() < config.getAbsoluteMaxSizeMB() * (1024 * 1024)) {
+        if (config.getAbsoluteMaxSize().isEmpty() || getStorageSize() < config.getAbsoluteMaxSize().get().toBytes()) {
             // Store blobs on the file system
             List<Map<String, String>> blobInfos = storeBlobs(key, blobs);
             // Persist blob information in the store

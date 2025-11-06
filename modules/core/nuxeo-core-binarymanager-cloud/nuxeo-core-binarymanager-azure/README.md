@@ -37,7 +37,7 @@ If you want to use Azure CDN as a front instead of Storage; you should read  [Mi
 
 - nuxeo.storage.azure.prefix : the directory prefix to use inside the container
 
-- nuxeo.storage.azure.cachesize : size of the local cache (default is `100MB`).
+- nuxeo.storage.azure.cachesize : size of the local cache (default is `100MiB`).
 
 - nuxeo.storage.azure.directdownload : enable direct download from Azure servers (default is `false`)
 

@@ -15,7 +15,7 @@ nuxeo.s3storage.region=
 
 # optional
 nuxeo.s3storage.cacheminage=60
-nuxeo.s3storage.cachesize=100MB
+nuxeo.s3storage.cachesize=100MiB
 nuxeo.s3storage.cachecount=10000
 nuxeo.s3storage.connection.max=50
 nuxeo.s3storage.connection.retry=3
@@ -34,8 +34,8 @@ nuxeo.s3storage.crypt.serverside=false
 nuxeo.s3storage.crypt.kms.key=
 nuxeo.s3storage.multipart.copy.part.size=5242880
 nuxeo.s3storage.multipart.copy.threshold=5368709120
-nuxeo.s3storage.multipart.upload.threshold=16777216
-nuxeo.s3storage.minimum.upload.part.size=5242880
+nuxeo.s3storage.multipart.upload.threshold=16MiB
+nuxeo.s3storage.minimum.upload.part.size=5MiB
 nuxeo.s3storage.user.agent.prefix=
 nuxeo.s3storage.user.agent.suffix=
 
@@ -45,7 +45,7 @@ nuxeo.s3storage.s3DirectUpload.bucket_prefix=s3DirectUpload
 # mandatory
 nuxeo.s3storage.transient.bucket=
 nuxeo.s3storage.transient.roleArn=
-nuxeo.s3storage.transient.targetMaxSizeMB=100
+nuxeo.s3storage.transient.targetMaxSize=${nuxeo.s3storage.transient.targetMaxSizeMB:100}MiB
 nuxeo.s3storage.transient.ttl=4320
 nuxeo.s3storage.transient.ttl2=10
 

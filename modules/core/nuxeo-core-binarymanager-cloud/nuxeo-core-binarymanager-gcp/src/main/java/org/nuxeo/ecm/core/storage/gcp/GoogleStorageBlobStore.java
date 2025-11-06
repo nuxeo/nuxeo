@@ -38,6 +38,7 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.AbstractBlobGarbageCollector;
 import org.nuxeo.ecm.core.blob.AbstractBlobStore;
@@ -77,7 +78,7 @@ public class GoogleStorageBlobStore extends AbstractBlobStore {
 
     protected final Storage storage;
 
-    protected final int chunkSize;
+    protected final ByteSize chunkSize;
 
     protected final boolean allowByteRange;
 
@@ -144,8 +145,11 @@ public class GoogleStorageBlobStore extends AbstractBlobStore {
             }
             String resultKey = null;
             try {
-                CopyWriter writer = storage.copy(
-                        Storage.CopyRequest.newBuilder().setSource(source).setTarget(target, precondition).build());
+                CopyWriter writer = storage.copy(Storage.CopyRequest.newBuilder()
+                                                                    .setSource(source)
+                                                                    .setTarget(target, precondition)
+                                                                    .setMegabytesCopiedPerChunk(chunkSize.toMebibytes())
+                                                                    .build());
                 Blob blob = writer.getResult();
                 if (blob != null) {
                     resultKey = blob.getBlobId().getName();
@@ -195,8 +199,9 @@ public class GoogleStorageBlobStore extends AbstractBlobStore {
                 try (var is = new BufferedInputStream(new FileInputStream(file.toFile()));
                         var writer = storage.writer(BlobInfo.newBuilder(bucketName, bucketKey).build())) {
                     int bufferLength;
-                    byte[] buffer = new byte[chunkSize];
-                    writer.setChunkSize(chunkSize);
+                    int bufferSize = (int) chunkSize.toBytes();
+                    byte[] buffer = new byte[bufferSize];
+                    writer.setChunkSize(bufferSize);
                     while ((bufferLength = IOUtils.read(is, buffer)) > 0) {
                         writer.write(ByteBuffer.wrap(buffer, 0, bufferLength));
                     }
@@ -319,8 +324,9 @@ public class GoogleStorageBlobStore extends AbstractBlobStore {
                 try (var is = new BufferedInputStream(new FileInputStream(file.toFile()));
                         var writer = storage.writer(BlobInfo.newBuilder(bucketName, bucketKey).build())) {
                     int bufferLength;
-                    byte[] buffer = new byte[chunkSize];
-                    writer.setChunkSize(chunkSize);
+                    int bufferSize = (int) chunkSize.toBytes();
+                    byte[] buffer = new byte[bufferSize];
+                    writer.setChunkSize(bufferSize);
                     while ((bufferLength = IOUtils.read(is, buffer)) > 0) {
                         writer.write(ByteBuffer.wrap(buffer, 0, bufferLength));
                     }

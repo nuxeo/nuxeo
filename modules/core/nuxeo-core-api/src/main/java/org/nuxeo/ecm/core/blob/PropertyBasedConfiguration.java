@@ -26,6 +26,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -79,6 +80,20 @@ public class PropertyBasedConfiguration {
     /** Gets a boolean property. */
     public boolean getBooleanProperty(String key) {
         return Boolean.parseBoolean(getProperty(key));
+    }
+
+    /**
+     * @since 2025.11
+     */
+    public Optional<ByteSize> getOptionalByteSizeProperty(String key) {
+        return getOptionalProperty(key).map(s -> {
+            try {
+                return ByteSize.parse(s);
+            } catch (NumberFormatException e) {
+                log.error("Cannot parse byte size {}: {} ", key, s);
+                return null;
+            }
+        });
     }
 
     /**

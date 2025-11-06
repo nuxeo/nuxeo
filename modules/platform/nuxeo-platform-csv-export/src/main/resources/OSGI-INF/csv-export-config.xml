@@ -20,7 +20,7 @@
         <filter name="overflow" class="org.nuxeo.ecm.core.transientstore.computation.TransientStoreOverflowRecordFilter">
           <option name="storeName">default</option>
           <option name="prefix">csvoverflow</option>
-          <option name="thresholdSize">990000</option>
+          <option name="thresholdSize">966KiB</option>
         </filter>
       </stream>
       <option name="produceImmediate">true</option>

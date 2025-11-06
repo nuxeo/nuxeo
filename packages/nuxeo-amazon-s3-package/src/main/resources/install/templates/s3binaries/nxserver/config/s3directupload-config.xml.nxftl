@@ -8,8 +8,7 @@
     <store name="s3TransientStore" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
       <property name="blobProvider">s3DirectUploadBlobProviderDestination</property> <!-- this is the destination bolb provider -->
       <property name="keyValueStore">s3DirectUploadKeyValueStore</property> <!-- not defined there, fallback on default -->
-      <targetMaxSizeMB>${nuxeo.s3storage.transient.targetMaxSizeMB}</targetMaxSizeMB>
-      <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
+      <targetMaxSize>${nuxeo.s3storage.transient.targetMaxSize}</targetMaxSize>
       <firstLevelTTL>${nuxeo.s3storage.transient.ttl}</firstLevelTTL>
       <secondLevelTTL>${nuxeo.s3storage.transient.ttl2}</secondLevelTTL>
     </store>
@@ -30,7 +29,7 @@
       <property name="region">${nuxeo.s3storage.transient.region}</property>
       <property name="bucket_prefix">${nuxeo.s3storage.transient.bucket_prefix}</property>
       <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
-      <property name="cachesize">100MB</property>
+      <property name="cachesize">100MiB</property>
       <!-- min file age, in second, to be removed from cache if the size max size is reached, default is 3600 -->
       <property name="cacheminage">${nuxeo.s3storage.cacheminage}</property>
       <property name="connection.max">${nuxeo.s3storage.connection.max}</property>

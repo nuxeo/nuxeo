@@ -40,6 +40,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
@@ -79,9 +80,9 @@ public class NuxeoIdempotentFilter extends HttpFilter {
 
     public static final String INFO_SUFFIX = "_info";
 
-    protected static final int DEFERRED_OUTPUT_STREAM_THRESHOLD = 1024 * 1024; // 1 MB
+    protected static final ByteSize DEFERRED_OUTPUT_STREAM_THRESHOLD = ByteSize.ofMebibytes(1);
 
-    protected static final int MAX_CONTENT_SIZE = 1024 * 1024 * 5; // 5 MB
+    protected static final ByteSize MAX_CONTENT_SIZE = ByteSize.ofMebibytes(5);
 
     protected static final Set<String> IDEMPOTENT_METHODS = Set.of(
             // safe methods according to RFC 7231 4.2.1
@@ -139,13 +140,13 @@ public class NuxeoIdempotentFilter extends HttpFilter {
             long ttl = getTTL().toSeconds();
             store.put(key + INFO_SUFFIX, INPROGRESS_MARKER, ttl);
             try {
-                try (CopyingResponseWrapper wrapper = new CopyingResponseWrapper(DEFERRED_OUTPUT_STREAM_THRESHOLD,
-                        response)) {
+                try (CopyingResponseWrapper wrapper = new CopyingResponseWrapper(
+                        (int) DEFERRED_OUTPUT_STREAM_THRESHOLD.toBytes(), response)) {
                     wrapper.setHeader(HEADER_KEY, key);
                     chain.doFilter(request, wrapper);
                     wrapper.flushBuffer();
                     long size = wrapper.getCopySize();
-                    if (size > MAX_CONTENT_SIZE) {
+                    if (size > MAX_CONTENT_SIZE.toBytes()) {
                         log.debug(
                                 "Not storing response for key: {} (status: {}, size in bytes: {}), max content size exceeded: {}",
                                 key, wrapper.getStatus(), size, MAX_CONTENT_SIZE);

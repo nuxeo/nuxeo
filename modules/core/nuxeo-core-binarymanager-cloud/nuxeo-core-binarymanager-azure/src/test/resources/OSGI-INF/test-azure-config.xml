@@ -13,8 +13,8 @@
       <property name="directdownload.expire">60</property> <!-- 60 seconds -->
       <property name="upload.timeout">1m</property>
       <property name="upload.maxConcurrency">4</property>
-      <property name="upload.maxSingleUploadSize">4194304</property> <!-- 4MB -->
-      <property name="upload.blockSize">1048576</property> <!-- 1MB -->
+      <property name="upload.maxSingleUploadSize">4MiB</property>
+      <property name="upload.blockSize">1MiB</property>
     </blobprovider>
     <blobprovider name="other">
       <class>org.nuxeo.ecm.blob.azure.AzureBlobProvider</class>
