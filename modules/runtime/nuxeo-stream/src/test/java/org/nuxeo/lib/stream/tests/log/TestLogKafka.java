@@ -98,7 +98,7 @@ public class TestLogKafka extends TestLog {
         // keep number low to reduce time interval between poll
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 5);
         // enable fast consumer close mitigating KAFKA-15402
-        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 5);
+        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 50);
         return props;
     }
 

@@ -23,7 +23,7 @@
         <property name="session.timeout.ms">10000</property>
         <property name="heartbeat.interval.ms">2000</property>
         <property name="max.poll.records">5</property>
-        <property name="fetch.max.wait.ms">5</property>
+        <property name="fetch.max.wait.ms">50</property>
       </consumer>
     </kafkaConfig>
   </extension>
