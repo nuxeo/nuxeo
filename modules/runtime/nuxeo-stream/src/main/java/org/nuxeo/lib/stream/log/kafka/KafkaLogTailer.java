@@ -425,7 +425,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
             log.debug("Closing tailer: {}", id);
             try {
                 // calling wakeup enable to terminate consumer blocking on poll call
-                consumer.close();
+                consumer.close(Duration.ofMillis(0));
             } catch (ConcurrentModificationException e) {
                 // closing from another thread raises this exception
                 // it is possible that the consumer is already closed
