@@ -563,6 +563,11 @@ public class MongoDBConnection extends DBSConnectionBase {
     }
 
     protected NuxeoException newQueryException(String message, MongoException cause, Bson filter) {
+        return newQueryException(message, cause, filter, null, null, null);
+    }
+
+    protected NuxeoException newQueryException(String message, MongoException cause, Bson filter, Bson orderBy,
+            Integer limit, Integer offset) {
         NuxeoException exc = new NuxeoException(message, cause);
         if (filter != null) {
             String msg;
@@ -573,24 +578,54 @@ public class MongoDBConnection extends DBSConnectionBase {
             }
             exc.addInfo("Filter: " + msg);
         }
+        if (orderBy != null) {
+            String msg;
+            if (orderBy instanceof Document) {
+                msg = ((Document) orderBy).toJson();
+            } else {
+                msg = orderBy.toString();
+            }
+            exc.addInfo("OrderBy: " + msg);
+        }
+        if (limit != null) {
+            exc.addInfo("Limit: " + limit);
+        }
+        if (offset != null) {
+            exc.addInfo("Offset: " + offset);
+        }
         return exc;
     }
 
     protected NuxeoException newQueryTimeout(MongoException cause, Bson filter) {
+        return newQueryTimeout(cause, filter, null, null, null);
+    }
+
+    protected NuxeoException newQueryTimeout(MongoException cause, Bson filter, Bson orderBy, Integer limit,
+            Integer offset) {
         return newQueryException("MongoDB timed out on processing query, maxTime: %sms.".formatted(lastMaxTime), cause,
-                filter);
+                filter, orderBy, limit, offset);
     }
 
     protected NuxeoException newQueryTimeoutClient(MongoException cause, Bson filter) {
+        return newQueryTimeoutClient(cause, filter, null, null, null);
+    }
+
+    protected NuxeoException newQueryTimeoutClient(MongoException cause, Bson filter, Bson orderBy, Integer limit,
+            Integer offset) {
         var socketSettings = ((MongoClientImpl) mongoDBRepository.getClient()).getSettings().getSocketSettings();
         return newQueryException(
                 "MongoDB timed out on socket, connectionTimeout: %d ms, socketTimeout: %dms.".formatted(
                         socketSettings.getConnectTimeout(MILLISECONDS), socketSettings.getReadTimeout(MILLISECONDS)),
-                cause, filter);
+                cause, filter, orderBy, limit, offset);
+    }
+
+    protected NuxeoException newQueryFailure(MongoException cause, Bson filter, Bson orderBy, Integer limit,
+            Integer offset) {
+        return newQueryException("Query operation failed on the server", cause, filter, orderBy, limit, offset);
     }
 
     protected NuxeoException newQueryFailure(MongoException cause, Bson filter) {
-        return newQueryException("Query operation failed on the server", cause, filter);
+        return newQueryFailure(cause, filter, null, null, null);
     }
 
     protected void logQuery(String id, Bson fields) {
@@ -777,11 +812,11 @@ public class MongoDBConnection extends DBSConnectionBase {
             completedAbruptly = false;
             return stream;
         } catch (MongoExecutionTimeoutException e) {
-            throw newQueryTimeout(e, filter); // NOSONAR (cursor is not leaked)
+            throw newQueryTimeout(e, filter, null, limit, null); // NOSONAR (cursor is not leaked)
         } catch (MongoSocketReadTimeoutException e) {
-            throw newQueryTimeoutClient(e, filter); // NOSONAR (cursor is not leaked)
+            throw newQueryTimeoutClient(e, filter, null, limit, null); // NOSONAR (cursor is not leaked)
         } catch (MongoQueryException e) {
-            throw newQueryFailure(e, filter); // NOSONAR (cursor is not leaked)
+            throw newQueryFailure(e, filter, null, limit, null); // NOSONAR (cursor is not leaked)
         } finally {
             if (completedAbruptly) {
                 cursor.close();
@@ -839,11 +874,11 @@ public class MongoDBConnection extends DBSConnectionBase {
                 }
             }
         } catch (MongoExecutionTimeoutException e) {
-            throw newQueryTimeout(e, filter);
+            throw newQueryTimeout(e, filter, orderBy, limit, offset);
         } catch (MongoSocketReadTimeoutException e) {
-            throw newQueryTimeoutClient(e, filter);
+            throw newQueryTimeoutClient(e, filter, orderBy, limit, offset);
         } catch (MongoQueryException e) {
-            throw newQueryFailure(e, filter);
+            throw newQueryFailure(e, filter, orderBy, limit, offset);
         }
         if (countUpTo == -1) {
             // count full size
