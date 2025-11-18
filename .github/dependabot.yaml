@@ -47,6 +47,10 @@ updates:
       - dependency-name: "org.apache.geronimo.components:geronimo-transaction"
         versions: [">3.1.4-NX1"]
 
+      # Patch version containing regression
+      - dependency-name: "org.quartz-scheduler:quartz"
+        versions: ["2.5.1"]
+
       # Not in our artifact repository
       - dependency-name: "commons-httpclient:commons-httpclient"
         versions: [ ">3.1" ] # no update to 3.1-jenkins-x
@@ -121,6 +125,10 @@ updates:
         versions: [">1.5.1"]
       - dependency-name: "org.apache.directory.shared:*"
         versions: [">0.9.7"]
+
+      # Patch version containing regression
+      - dependency-name: "org.quartz-scheduler:quartz"
+        versions: ["2.5.1"]
 
       # Nuxeo patch needed
       - dependency-name: "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer"
