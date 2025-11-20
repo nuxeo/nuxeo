@@ -18,12 +18,16 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobStore;
+import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 
 public class TestS3BlobStore extends TestS3BlobStoreAbstract {
 
@@ -36,7 +40,15 @@ public class TestS3BlobStore extends TestS3BlobStoreAbstract {
 
     @Test
     public void testStorageClass() throws IOException {
+        // Write
         assertStorageClass(bs.writeBlob(blobContext(ID1, FOO)));
+        // Copy
+        BlobProvider srcProvider = blobManager.getBlobProvider("other");
+        BlobStore srcStore = ((BlobStoreBlobProvider) srcProvider).store;
+        String key2 = useDeDuplication() ? BAR_MD5 : ID2;
+        String key3 = useDeDuplication() ? key2 : ID3;
+        assertEquals(key2, srcStore.writeBlob(blobContext(ID2, BAR)));
+        assertStorageClass(bs.copyOrMoveBlob(key3, srcStore, key2, true));
     }
 
 }

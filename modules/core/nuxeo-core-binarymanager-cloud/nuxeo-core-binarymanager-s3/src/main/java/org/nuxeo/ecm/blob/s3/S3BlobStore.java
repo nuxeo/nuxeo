@@ -695,7 +695,7 @@ public class S3BlobStore extends AbstractBlobStore {
             S3BlobStoreConfiguration destinationConfig, String destinationKey, boolean move) {
         CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceConfig.bucketName, sourceKey, sourceVersionId,
                 destinationConfig.bucketName, destinationKey);
-        copyObjectRequest.withStorageClass(config.storageClass);
+        copyObjectRequest.withStorageClass(destinationConfig.storageClass);
         if (destinationConfig.useServerSideEncryption) {
             // server-side encryption
             if (isNotBlank(destinationConfig.serverSideKMSKeyID)) {
