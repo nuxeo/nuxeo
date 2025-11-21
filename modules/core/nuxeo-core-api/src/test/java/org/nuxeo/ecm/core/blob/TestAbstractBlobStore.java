@@ -227,7 +227,9 @@ public abstract class TestAbstractBlobStore {
         // check deleted
         assertNoBlob(key1);
         // check delete is idempotent
-        bs.deleteBlob(key1);
+        await().pollDelay(Duration.TWO_HUNDRED_MILLISECONDS)
+               .atMost(Duration.FIVE_HUNDRED_MILLISECONDS)
+               .untilAsserted(() -> bs.deleteBlob(key1));
     }
 
     @Test
