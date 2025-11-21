@@ -16,16 +16,15 @@ controller:
   replicaCount: 1
   # we want controller+broker process
   controllerOnly: false
-  heapOpts: -Xmx640m -Xms640m
+  heapOpts: -XX:InitialRAMPercentage=60 -XX:MaxRAMPercentage=60
   persistence:
     enabled: false
   resources:
     requests:
       cpu: "1"
-      memory: "1024Mi"
+      memory: "2Gi"
     limits:
-      cpu: "1"
-      memory: "1024Mi"
+      memory: "2Gi"
   extraConfigYaml:
     auto.create.topics.enable: false
     delete.topic.enable: true

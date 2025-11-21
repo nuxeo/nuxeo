@@ -7,12 +7,11 @@ persistence:
   enabled: false
 resources:
   requests:
-    cpu: "250m"
-    memory: "1Gi"
+    cpu: "1"
+    memory: "4Gi"
   limits:
-    cpu: "500m"
-    memory: "2Gi"
-opensearchJavaOpts: "-Xmx1g -Xms1g"
+    memory: "4Gi"
+opensearchJavaOpts: "-Xmx2g -Xms2g"
 config:
   opensearch.yml:
     plugins:
