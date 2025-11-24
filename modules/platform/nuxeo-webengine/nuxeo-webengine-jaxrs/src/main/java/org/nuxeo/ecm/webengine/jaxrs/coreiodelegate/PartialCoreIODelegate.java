@@ -107,8 +107,10 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
         if (writer != null) {
             ((Writer<Object>) writer).write(t, type, genericType, mediaType, entityStream);
         }
-        response.setHeader(CONTENT_TYPE,
-                mediaType + NUXEO_ENTITY + ctx.getParameter(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY));
+        Object entityType = ctx.getParameter(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY);
+        if (entityType != null) {
+            response.setHeader(CONTENT_TYPE, mediaType + NUXEO_ENTITY + entityType);
+        }
     }
 
     @Override

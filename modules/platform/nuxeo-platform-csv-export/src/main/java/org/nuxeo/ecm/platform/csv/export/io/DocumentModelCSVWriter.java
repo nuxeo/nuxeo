@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 /**
  * @since 10.3
  */
+@SuppressWarnings("removal") // import to NuxeoMediaType should be added when removed
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
 

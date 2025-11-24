@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -44,12 +45,17 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
  * @param <T> The Java type to marshall as CSV.
  * @since 10.3
  */
-@Supports(AbstractCSVWriter.TEXT_CSV)
+@Supports(NuxeoMediaType.TEXT_CSV)
 public abstract class AbstractCSVWriter<T> implements Writer<T> {
 
-    public static final String TEXT_CSV = "text/csv";
+    /** @deprecated since 2025.12, use {@link NuxeoMediaType#TEXT_CSV} instead */
+    @Deprecated(since = "2025.12", forRemoval = true)
+    public static final String TEXT_CSV = NuxeoMediaType.TEXT_CSV;
 
-    public static final MediaType TEXT_CSV_TYPE = new MediaType("text", "csv");
+    /** @deprecated since 2025.12, use {@link NuxeoMediaType#TEXT_CSV_TYPE} instead */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(since = "2025.12", forRemoval = true)
+    public static final MediaType TEXT_CSV_TYPE = NuxeoMediaType.TEXT_CSV_TYPE;
 
     /**
      * The current {@link RenderingContext}.

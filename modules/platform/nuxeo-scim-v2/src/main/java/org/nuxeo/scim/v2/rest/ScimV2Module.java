@@ -24,7 +24,6 @@ import java.util.Set;
 import org.nuxeo.ecm.webengine.app.JsonNuxeoExceptionWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet;
-import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.CoreIODelegate;
 
 import com.unboundid.scim2.server.resources.ResourceTypesEndpoint;
 import com.unboundid.scim2.server.resources.SchemasEndpoint;
@@ -46,7 +45,6 @@ public class ScimV2Module extends WebEngineModule {
         // result contains scimV2 resources from module scanning
         Set<Class<?>> result = super.getClasses();
         // marshalling
-        result.add(CoreIODelegate.class);
         result.add(JsonNuxeoExceptionWriter.class);
         // resources
         result.add(SchemasEndpoint.class);

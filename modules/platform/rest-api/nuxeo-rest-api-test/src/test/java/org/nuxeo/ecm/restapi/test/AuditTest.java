@@ -24,7 +24,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
-import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV;
+import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_CSV;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
 import java.io.InputStreamReader;
