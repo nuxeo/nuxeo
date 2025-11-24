@@ -66,9 +66,8 @@ RUN rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
 # Install required software
 # Mount nuxeo-public as secret even if it is not secret in order to not leave the file in the image
 RUN --mount=type=secret,id=nuxeo-public,target=/etc/yum.repos.d/nuxeo-public.repo \
-  microdnf -y update \
   # Required by ImageMagick 7 libs, also, it provides dnf
-  && microdnf -y install epel-release \
+  microdnf -y install epel-release \
   && dnf -y install \
     # find is not included in the oraclelinux slim base image
     findutils \
