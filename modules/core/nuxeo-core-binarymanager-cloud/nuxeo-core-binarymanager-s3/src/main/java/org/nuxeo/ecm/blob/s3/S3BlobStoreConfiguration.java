@@ -721,10 +721,13 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         boolean alwaysCalculateMultipartMd5 = s3RetentionEnabled;
         return TransferManagerBuilder.standard()
                                      .withS3Client(amazonS3)
-                                     .withMinimumUploadPartSize(Long.valueOf(getLongProperty(
-                                             MINIMUM_UPLOAD_PART_SIZE_PROPERTY, MINIMUM_UPLOAD_PART_SIZE_DEFAULT)))
-                                     .withMultipartUploadThreshold(Long.valueOf(getLongProperty(
-                                             MULTIPART_UPLOAD_THRESHOLD_PROPERTY, MULTIPART_UPLOAD_THRESHOLD_DEFAULT)))
+                                     .withMinimumUploadPartSize(
+                                             getOptionalByteSizeProperty(MINIMUM_UPLOAD_PART_SIZE_PROPERTY).orElseGet(
+                                                     () -> new ByteSize(MINIMUM_UPLOAD_PART_SIZE_DEFAULT))
+                                                                                                           .toBytes())
+                                     .withMultipartUploadThreshold(
+                                             getOptionalByteSizeProperty(MULTIPART_UPLOAD_THRESHOLD_PROPERTY).orElseGet(
+                                                     () -> new ByteSize(MULTIPART_UPLOAD_THRESHOLD_DEFAULT)).toBytes())
                                      .withMultipartCopyThreshold(Long.valueOf(getLongProperty(
                                              MULTIPART_COPY_THRESHOLD_PROPERTY, MULTIPART_COPY_THRESHOLD_DEFAULT)))
                                      .withMultipartCopyPartSize(Long.valueOf(getMultipartCopyPartSize()))
