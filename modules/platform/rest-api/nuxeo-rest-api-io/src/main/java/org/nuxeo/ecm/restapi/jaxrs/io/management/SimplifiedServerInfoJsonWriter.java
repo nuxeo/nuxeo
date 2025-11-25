@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 
+import org.nuxeo.common.function.ThrowableConsumer;
 import org.nuxeo.ecm.admin.runtime.SimplifiedBundleInfo;
 import org.nuxeo.ecm.admin.runtime.SimplifiedServerInfo;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -56,6 +57,8 @@ public class SimplifiedServerInfoJsonWriter extends ExtensibleEntityJsonWriter<S
             jg.writeStartObject();
             jg.writeStringField("name", b.getName());
             jg.writeStringField("version", b.getVersion());
+            b.getRevision()
+             .ifPresent(ThrowableConsumer.asConsumer(revision -> jg.writeStringField("revision", revision)));
             jg.writeEndObject();
         }
         jg.writeEndArray();

@@ -21,6 +21,10 @@
 
 package org.nuxeo.ecm.admin.runtime;
 
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 /**
  * Very simplified representation of a Nuxeo Bundle used for displaying in the admin screens.
  *
@@ -32,9 +36,19 @@ public class SimplifiedBundleInfo implements Comparable<SimplifiedBundleInfo> {
 
     protected final String version;
 
+    @Nullable
+    protected final String revision;
+
+    /** @deprecated since 2025.12, use {@link #SimplifiedBundleInfo(String, String,String)} */
+    @Deprecated(since = "2025.12", forRemoval = true)
     public SimplifiedBundleInfo(String name, String version) {
+        this(name, version, null);
+    }
+
+    public SimplifiedBundleInfo(String name, String version, @Nullable String revision) {
         this.name = name;
         this.version = version;
+        this.revision = revision;
     }
 
     public String getName() {
@@ -43,6 +57,11 @@ public class SimplifiedBundleInfo implements Comparable<SimplifiedBundleInfo> {
 
     public String getVersion() {
         return version;
+    }
+
+    /** @since 2025.12 */
+    public Optional<String> getRevision() {
+        return Optional.ofNullable(revision);
     }
 
     @Override
