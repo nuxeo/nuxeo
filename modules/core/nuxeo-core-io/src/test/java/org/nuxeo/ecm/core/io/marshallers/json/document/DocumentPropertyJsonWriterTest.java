@@ -38,10 +38,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
  */
 public class DocumentPropertyJsonWriterTest extends AbstractJsonWriterTest.Local<DocumentPropertyJsonWriter, Property> {
 
-    public DocumentPropertyJsonWriterTest() {
-        super(DocumentPropertyJsonWriter.class, Property.class);
-    }
-
     // NXP-29840
     @Test
     public void testLongValueWithDoubleType() throws IOException {

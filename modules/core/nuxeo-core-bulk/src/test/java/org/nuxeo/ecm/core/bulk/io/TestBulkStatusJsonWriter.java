@@ -48,10 +48,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(CoreBulkFeature.class)
 public class TestBulkStatusJsonWriter extends AbstractJsonWriterTest.Local<BulkStatusJsonWriter, BulkStatus> {
 
-    public TestBulkStatusJsonWriter() {
-        super(BulkStatusJsonWriter.class, BulkStatus.class);
-    }
-
     @Test
     public void testDefault() throws Exception {
         String zeroId = "00000000-0000-0000-0000-000000000000";

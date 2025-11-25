@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,10 +42,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.platform.csv.export")
 public class DocumentModelListCSVWriterTest
         extends AbstractCSVWriterTest.Local<DocumentModelListCSVWriter, List<DocumentModel>> {
-
-    public DocumentModelListCSVWriterTest() {
-        super(DocumentModelListCSVWriter.class, List.class, TypeUtils.parameterize(List.class, DocumentModel.class));
-    }
 
     @Inject
     protected CoreSession session;

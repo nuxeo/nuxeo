@@ -41,10 +41,6 @@ public class SavedSearchWriterTest extends AbstractJsonWriterTest.External<Saved
 
     public static final String SEACH_TITLE = "My Search";
 
-    public SavedSearchWriterTest() {
-        super(SavedSearchWriter.class, SavedSearch.class);
-    }
-
     protected SavedSearch search;
 
     @Inject

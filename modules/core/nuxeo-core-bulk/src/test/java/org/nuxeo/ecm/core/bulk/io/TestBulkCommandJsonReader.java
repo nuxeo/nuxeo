@@ -39,10 +39,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(CoreBulkFeature.class)
 public class TestBulkCommandJsonReader extends AbstractJsonReaderTest.Local<BulkCommandJsonReader, BulkCommand> {
 
-    public TestBulkCommandJsonReader() {
-        super(BulkCommandJsonReader.class, BulkCommand.class);
-    }
-
     @Test
     public void testDefault() throws Exception {
         File file = FileUtils.getResourceFileFromContext("bulk-command-test-default.json");

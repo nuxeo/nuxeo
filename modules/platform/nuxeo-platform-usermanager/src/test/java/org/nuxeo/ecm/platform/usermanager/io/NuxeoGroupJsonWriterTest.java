@@ -44,10 +44,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class NuxeoGroupJsonWriterTest extends AbstractJsonWriterTest.External<NuxeoGroupJsonWriter, NuxeoGroup> {
 
-    public NuxeoGroupJsonWriterTest() {
-        super(NuxeoGroupJsonWriter.class, NuxeoGroup.class);
-    }
-
     @Inject
     private UserManager userManager;
 

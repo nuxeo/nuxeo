@@ -44,10 +44,6 @@ import org.nuxeo.runtime.test.runner.Features;
 public class DocumentValidationReportJsonWriterTest extends
         AbstractJsonWriterTest.Local<DocumentValidationReportJsonWriter, DocumentValidationReport> {
 
-    public DocumentValidationReportJsonWriterTest() {
-        super(DocumentValidationReportJsonWriter.class, DocumentValidationReport.class);
-    }
-
     @Inject
     private SchemaManager schemaManager;
 

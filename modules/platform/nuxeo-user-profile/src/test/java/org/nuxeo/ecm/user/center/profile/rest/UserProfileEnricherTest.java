@@ -66,10 +66,6 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    public UserProfileEnricherTest() {
-        super(NuxeoPrincipalJsonWriter.class, NuxeoPrincipal.class);
-    }
-
     @Inject
     CoreSession session;
 

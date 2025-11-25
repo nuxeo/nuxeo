@@ -40,10 +40,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(CoreBulkFeature.class)
 public class TestBulkStatusJsonReader extends AbstractJsonReaderTest.Local<BulkStatusJsonReader, BulkStatus> {
 
-    public TestBulkStatusJsonReader() {
-        super(BulkStatusJsonReader.class, BulkStatus.class);
-    }
-
     @Test
     @SuppressWarnings("unchecked")
     public void testDefault() throws Exception {

@@ -54,10 +54,6 @@ public class FirstAccessibleAncestorJsonEnricherTest
 
     public static final String JOHN = "John";
 
-    public FirstAccessibleAncestorJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Inject
     protected CoreFeature coreFeature;
 

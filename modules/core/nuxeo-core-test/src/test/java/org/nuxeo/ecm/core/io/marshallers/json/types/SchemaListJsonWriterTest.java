@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
@@ -37,10 +36,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class SchemaListJsonWriterTest extends AbstractJsonWriterTest.Local<SchemaListJsonWriter, List<Schema>> {
-
-    public SchemaListJsonWriterTest() {
-        super(SchemaListJsonWriter.class, List.class, TypeUtils.parameterize(List.class, Schema.class));
-    }
 
     @Inject
     private SchemaManager schemaManager;

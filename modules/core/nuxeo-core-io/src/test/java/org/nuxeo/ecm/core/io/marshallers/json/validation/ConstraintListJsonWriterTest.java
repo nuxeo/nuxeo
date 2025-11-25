@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.io.marshallers.json.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
@@ -32,10 +31,6 @@ import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
 
 public class ConstraintListJsonWriterTest extends
         AbstractJsonWriterTest.Local<ConstraintListJsonWriter, List<Constraint>> {
-
-    public ConstraintListJsonWriterTest() {
-        super(ConstraintListJsonWriter.class, List.class, TypeUtils.parameterize(List.class, Constraint.class));
-    }
 
     public List<Constraint> getElements() {
         List<Constraint> constraints = new ArrayList<>();

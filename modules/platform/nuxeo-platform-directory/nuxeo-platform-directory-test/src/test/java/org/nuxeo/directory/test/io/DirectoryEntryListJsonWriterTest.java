@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -52,10 +51,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.directory.tests:test-directory-resolver-contrib.xml")
 public class DirectoryEntryListJsonWriterTest extends
         AbstractJsonWriterTest.External<DirectoryEntryListJsonWriter, List<DirectoryEntry>> {
-
-    public DirectoryEntryListJsonWriterTest() {
-        super(DirectoryEntryListJsonWriter.class, List.class, TypeUtils.parameterize(List.class, DirectoryEntry.class));
-    }
 
     @Inject
     private DirectoryService directoryService;

@@ -83,10 +83,6 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
 
     protected static final int BASE_PROPERTIES = 19;
 
-    public DocumentModelJsonWriterTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     private DocumentModel document;
 
     @Inject

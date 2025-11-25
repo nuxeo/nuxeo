@@ -46,10 +46,6 @@ import org.nuxeo.runtime.test.runner.Features;
 public class NuxeoPrincipalJsonWriterTest
         extends AbstractJsonWriterTest.External<NuxeoPrincipalJsonWriter, NuxeoPrincipal> {
 
-    public NuxeoPrincipalJsonWriterTest() {
-        super(NuxeoPrincipalJsonWriter.class, NuxeoPrincipal.class);
-    }
-
     @Inject
     private UserManager userManager;
 

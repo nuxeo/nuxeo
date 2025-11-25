@@ -53,10 +53,6 @@ public class FailingEnricherTest extends AbstractJsonWriterTest.External<Documen
     @Inject
     protected CoreSession session;
 
-    public FailingEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Test
     @LogCaptureFeature.FilterOn(loggerClass = AbstractJsonEnricher.class, logLevel = "WARN")
     public void test() throws IOException {

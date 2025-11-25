@@ -32,10 +32,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(CoreFeature.class)
 public class DocumentTypeJsonWriterTest extends AbstractJsonWriterTest.Local<DocumentTypeJsonWriter, DocumentType> {
 
-    public DocumentTypeJsonWriterTest() {
-        super(DocumentTypeJsonWriter.class, DocumentType.class);
-    }
-
     @Inject
     private SchemaManager schemaManager;
 

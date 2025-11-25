@@ -33,10 +33,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Features(CoreFeature.class)
 public class SavedSearchReaderTest extends AbstractJsonReaderTest.Local<SavedSearchRequestReader, SavedSearchRequest> {
 
-    public SavedSearchReaderTest() {
-        super(SavedSearchRequestReader.class, SavedSearchRequest.class);
-    }
-
     // NXP-31456
     @Test
     public void testReadRequestWithNullParameter() throws IOException {

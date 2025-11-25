@@ -65,10 +65,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @Features({ WOPIFeature.class, WOPIDiscoveryFeature.class })
 public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public TestWOPIJsonEnricher() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Inject
     private CoreSession session;
 

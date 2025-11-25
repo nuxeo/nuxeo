@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,10 +37,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class DocumentModelListJsonWriterTest extends
         AbstractJsonWriterTest.Local<DocumentModelListJsonWriter, List<DocumentModel>> {
-
-    public DocumentModelListJsonWriterTest() {
-        super(DocumentModelListJsonWriter.class, List.class, TypeUtils.parameterize(List.class, DocumentModel.class));
-    }
 
     @Inject
     private CoreSession session;

@@ -38,10 +38,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class ACPJsonWriterTest extends AbstractJsonWriterTest.Local<ACPJsonWriter, ACP> {
 
-    public ACPJsonWriterTest() {
-        super(ACPJsonWriter.class, ACP.class);
-    }
-
     private DocumentModel document;
 
     @Inject

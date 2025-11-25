@@ -28,10 +28,6 @@ import org.nuxeo.ecm.core.schema.types.constraints.NumericIntervalConstraint;
 
 public class ConstraintJsonWriterTest extends AbstractJsonWriterTest.Local<ConstraintJsonWriter, Constraint> {
 
-    public ConstraintJsonWriterTest() {
-        super(ConstraintJsonWriter.class, Constraint.class);
-    }
-
     @Test
     public void testWithParameters() throws Exception {
         Constraint constraint = new NumericIntervalConstraint(10, true, 20, false);

@@ -58,10 +58,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/defaultvalue-docTypes.xml")
 public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public DocumentModelJsonReaderTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     private DocumentModel document;
 
     @Inject

@@ -60,10 +60,6 @@ public class LogEntryCSVWriterTest extends AbstractCSVWriterTest.External<LogEnt
 
     protected DocumentModel file;
 
-    public LogEntryCSVWriterTest() {
-        super(LogEntryCSVWriter.class, LogEntry.class);
-    }
-
     @Test
     public void testDefaultProperties() throws IOException {
         // No fetch param in the context, retrieve all default properties

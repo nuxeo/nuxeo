@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
@@ -46,10 +45,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml")
 public class DocumentPropertiesJsonReaderTest
         extends AbstractJsonWriterTest.Local<DocumentPropertyJsonWriter, Property> {
-
-    public DocumentPropertiesJsonReaderTest() {
-        super(DocumentPropertyJsonWriter.class, List.class, TypeUtils.parameterize(List.class, Property.class));
-    }
 
     /*
      * NXP-22436

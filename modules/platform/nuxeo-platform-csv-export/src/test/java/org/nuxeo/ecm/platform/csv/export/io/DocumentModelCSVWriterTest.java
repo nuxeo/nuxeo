@@ -62,10 +62,6 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
 
     protected Calendar retainUntil;
 
-    public DocumentModelCSVWriterTest() {
-        super(DocumentModelCSVWriter.class, DocumentModel.class);
-    }
-
     @Before
     public void setup() {
         document = session.createDocumentModel("/", "myDoc", "File");

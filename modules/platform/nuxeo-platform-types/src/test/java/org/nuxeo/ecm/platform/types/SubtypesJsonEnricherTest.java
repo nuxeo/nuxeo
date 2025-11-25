@@ -53,10 +53,6 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
     @Inject
     private CoreSession session;
 
-    public SubtypesJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Before
     public void setup() {
         DocumentModel document = session.createDocumentModel("/", "folder_root", "MyFolderRoot");

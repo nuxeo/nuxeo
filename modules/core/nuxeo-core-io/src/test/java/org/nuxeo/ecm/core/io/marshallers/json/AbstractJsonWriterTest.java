@@ -25,16 +25,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import javax.inject.Inject;
-
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.io.CoreIOFeature;
-import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
+import org.nuxeo.ecm.core.io.marshallers.AbstractWriterTest;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Base class to test Java to Json marshallers.
@@ -59,17 +53,24 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @param <MarshalledType> The marshalled type to test.
  * @since 7.2
  */
-@RunWith(FeaturesRunner.class)
-@Features(CoreIOFeature.class)
-public abstract class AbstractJsonWriterTest<WriterClass extends Writer<MarshalledType>, MarshalledType> {
+public abstract class AbstractJsonWriterTest<WriterClass extends Writer<MarshalledType>, MarshalledType>
+        extends AbstractWriterTest<WriterClass, MarshalledType> {
 
     public static abstract class Local<WriterClass extends Writer<MarshalledType>, MarshalledType>
             extends AbstractJsonWriterTest<WriterClass, MarshalledType> {
 
+        public Local() {
+            super();
+        }
+
+        /** @deprecated since 2025.12, use {@link #Local()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public Local(Class<WriterClass> writerClass, Class<?> marshalledClass, Type marshalledGenericType) {
             super(writerClass, marshalledClass, marshalledGenericType);
         }
 
+        /** @deprecated since 2025.12, use {@link #Local()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public Local(Class<WriterClass> writerClass, Class<?> marshalledClass) {
             super(writerClass, marshalledClass);
         }
@@ -80,43 +81,40 @@ public abstract class AbstractJsonWriterTest<WriterClass extends Writer<Marshall
     public static abstract class External<WriterClass extends Writer<MarshalledType>, MarshalledType>
             extends AbstractJsonWriterTest<WriterClass, MarshalledType> {
 
+        public External() {
+            super();
+        }
+
+        /** @deprecated since 2025.12, use {@link #External()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public External(Class<WriterClass> writerClass, Class<?> marshalledClass, Type marshalledGenericType) {
             super(writerClass, marshalledClass, marshalledGenericType);
         }
 
+        /** @deprecated since 2025.12, use {@link #External()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public External(Class<WriterClass> writerClass, Class<?> marshalledClass) {
             super(writerClass, marshalledClass);
         }
 
     }
 
-    @Inject
-    protected MarshallerRegistry registry;
+    public AbstractJsonWriterTest() {
+        super();
+    }
 
-    private Class<WriterClass> writerClass;
-
-    private Class<?> marshalledClass;
-
-    private Type marshalledGenericType;
-
+    /** @deprecated since 2025.12, use {@link #AbstractJsonWriterTest()} instead */
+    @Deprecated(since = "2025.12", forRemoval = true)
     public AbstractJsonWriterTest(Class<WriterClass> writerClass, Class<?> marshalledClass) {
         this(writerClass, marshalledClass, marshalledClass);
     }
 
+    /** @deprecated since 2025.12, use {@link #AbstractJsonWriterTest()} instead */
+    @SuppressWarnings("removal") // weirdly detected as still used
+    @Deprecated(since = "2025.12", forRemoval = true)
     public AbstractJsonWriterTest(Class<WriterClass> writerClass, Class<?> marshalledClass,
             Type marshalledGenericType) {
-        super();
-        this.writerClass = writerClass;
-        this.marshalledClass = marshalledClass;
-        this.marshalledGenericType = marshalledGenericType;
-    }
-
-    public WriterClass getInstance() {
-        return registry.getInstance(RenderingContext.CtxBuilder.get(), writerClass);
-    }
-
-    public WriterClass getInstance(RenderingContext ctx) {
-        return registry.getInstance(ctx, writerClass);
+        super(writerClass, marshalledClass, marshalledGenericType);
     }
 
     public String asJson(MarshalledType object) throws IOException {

@@ -55,10 +55,6 @@ public class BlobPreviewJsonEnricherTest extends AbstractJsonWriterTest.Local<Do
     @Inject
     private CoreSession session;
 
-    public BlobPreviewJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Before
     public void setup() throws IOException {
         Blob b = Blobs.createBlob("foo", "video/mp4");

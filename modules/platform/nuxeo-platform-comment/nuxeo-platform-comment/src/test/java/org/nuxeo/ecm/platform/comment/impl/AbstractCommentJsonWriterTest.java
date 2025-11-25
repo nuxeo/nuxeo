@@ -73,10 +73,6 @@ public abstract class AbstractCommentJsonWriterTest
 
     protected abstract Class<? extends CommentManager> getCommentManager();
 
-    public AbstractCommentJsonWriterTest() {
-        super(CommentJsonWriter.class, Comment.class);
-    }
-
     @Before
     public void setUp() {
 

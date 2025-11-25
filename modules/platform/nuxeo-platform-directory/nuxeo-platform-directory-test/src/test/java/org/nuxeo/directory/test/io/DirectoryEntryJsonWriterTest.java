@@ -58,10 +58,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 public class DirectoryEntryJsonWriterTest
         extends AbstractJsonWriterTest.External<DirectoryEntryJsonWriter, DirectoryEntry> {
 
-    public DirectoryEntryJsonWriterTest() {
-        super(DirectoryEntryJsonWriter.class, DirectoryEntry.class);
-    }
-
     @Inject
     private DirectoryService directoryService;
 

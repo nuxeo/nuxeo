@@ -45,10 +45,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(CoreBulkFeature.class)
 public class TestBulkCommandJsonWriter extends AbstractJsonWriterTest.Local<BulkCommandJsonWriter, BulkCommand> {
 
-    public TestBulkCommandJsonWriter() {
-        super(BulkCommandJsonWriter.class, BulkCommand.class);
-    }
-
     @Test
     public void testDefault() throws Exception {
         BulkCommand command = new BulkCommand.Builder("myAction", QUERY, "myUser")

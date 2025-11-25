@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -40,10 +39,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class NuxeoGroupListJsonWriterTest extends
         AbstractJsonWriterTest.External<NuxeoGroupListJsonWriter, List<NuxeoGroup>> {
-
-    public NuxeoGroupListJsonWriterTest() {
-        super(NuxeoGroupListJsonWriter.class, List.class, TypeUtils.parameterize(List.class, NuxeoGroup.class));
-    }
 
     @Inject
     private UserManager userManager;

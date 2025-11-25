@@ -50,10 +50,6 @@ public class JsonEnricherPriorityTest extends AbstractJsonWriterTest.Local<Docum
     @Inject
     protected CoreSession session;
 
-    public JsonEnricherPriorityTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Test
     public void testPriorities() throws IOException {
         DocumentModel rootDoc = session.getRootDocument();

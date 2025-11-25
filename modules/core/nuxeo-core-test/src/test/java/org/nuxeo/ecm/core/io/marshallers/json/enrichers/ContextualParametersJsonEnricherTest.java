@@ -42,10 +42,6 @@ import org.nuxeo.runtime.test.runner.Features;
 public class ContextualParametersJsonEnricherTest extends
         AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public ContextualParametersJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Inject
     private CoreSession session;
 

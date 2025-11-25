@@ -50,10 +50,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(RenditionFeature.class)
 public class PublicationJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public PublicationJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Inject
     private CoreSession session;
 

@@ -39,10 +39,6 @@ import org.nuxeo.runtime.test.runner.Features;
 public class DocumentUrlJsonEnricherTest
         extends AbstractJsonWriterTest.External<DocumentModelJsonWriter, DocumentModel> {
 
-    public DocumentUrlJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Inject
     private CoreSession session;
 

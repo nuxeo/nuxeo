@@ -61,10 +61,6 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
     @Inject
     private CoreSession session;
 
-    public LogEntryJsonWriterTest() {
-        super(LogEntryJsonWriter.class, LogEntry.class);
-    }
-
     @Test
     public void test() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));

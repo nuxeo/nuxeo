@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,10 +42,6 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(AuditFeature.class)
 @Deploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
 public class LogEntryListJsonWriterTest extends AbstractJsonWriterTest.External<LogEntryListJsonWriter, List<LogEntry>> {
-
-    public LogEntryListJsonWriterTest() {
-        super(LogEntryListJsonWriter.class, List.class, TypeUtils.parameterize(List.class, LogEntry.class));
-    }
 
     @Inject
     private PageProviderService pps;

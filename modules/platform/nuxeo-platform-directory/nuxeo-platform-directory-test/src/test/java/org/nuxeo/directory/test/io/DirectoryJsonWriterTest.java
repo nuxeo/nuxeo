@@ -40,10 +40,6 @@ public class DirectoryJsonWriterTest extends AbstractJsonWriterTest.External<Dir
     @Inject
     protected DirectoryService directoryService;
 
-    public DirectoryJsonWriterTest() {
-        super(DirectoryJsonWriter.class, Directory.class);
-    }
-
     @Test
     public void test() throws Exception {
         String directoryName = "hierarchicalDirectory";

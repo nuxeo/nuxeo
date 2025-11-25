@@ -43,10 +43,6 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.platform.rendition.core:test-renditionprovider-contrib.xml")
 public class RenditionJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public RenditionJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Inject
     private CoreSession session;
 

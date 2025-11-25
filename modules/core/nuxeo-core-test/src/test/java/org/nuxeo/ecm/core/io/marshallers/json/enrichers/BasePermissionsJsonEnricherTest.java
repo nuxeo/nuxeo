@@ -44,10 +44,6 @@ import org.nuxeo.runtime.test.runner.Features;
 public class BasePermissionsJsonEnricherTest extends
         AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
-    public BasePermissionsJsonEnricherTest() {
-        super(DocumentModelJsonWriter.class, DocumentModel.class);
-    }
-
     @Inject
     private CoreSession session;
 

@@ -27,16 +27,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import javax.inject.Inject;
-
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.io.CoreIOFeature;
-import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
+import org.nuxeo.ecm.core.io.marshallers.AbstractReaderTest;
 import org.nuxeo.ecm.core.io.registry.Reader;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Base class to test Json to Java marshallers.
@@ -56,17 +50,24 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @param <MarshalledType> The marshalled type to test.
  * @since 10.2
  */
-@RunWith(FeaturesRunner.class)
-@Features(CoreIOFeature.class)
-public abstract class AbstractJsonReaderTest<ReaderClass extends Reader<MarshalledType>, MarshalledType> {
+public abstract class AbstractJsonReaderTest<ReaderClass extends Reader<MarshalledType>, MarshalledType>
+        extends AbstractReaderTest<ReaderClass, MarshalledType> {
 
     public static abstract class Local<ReaderClass extends Reader<MarshalledType>, MarshalledType>
             extends AbstractJsonReaderTest<ReaderClass, MarshalledType> {
 
+        public Local() {
+            super();
+        }
+
+        /** @deprecated since 2025.12, use {@link #Local()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public Local(Class<ReaderClass> readerClass, Class<?> marshalledClass, Type marshalledGenericType) {
             super(readerClass, marshalledClass, marshalledGenericType);
         }
 
+        /** @deprecated since 2025.12, use {@link #Local()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public Local(Class<ReaderClass> readerClass, Class<?> marshalledClass) {
             super(readerClass, marshalledClass);
         }
@@ -77,43 +78,40 @@ public abstract class AbstractJsonReaderTest<ReaderClass extends Reader<Marshall
     public static abstract class External<ReaderClass extends Reader<MarshalledType>, MarshalledType>
             extends AbstractJsonReaderTest<ReaderClass, MarshalledType> {
 
+        public External() {
+            super();
+        }
+
+        /** @deprecated since 2025.12, use {@link #External()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public External(Class<ReaderClass> readerClass, Class<?> marshalledClass, Type marshalledGenericType) {
             super(readerClass, marshalledClass, marshalledGenericType);
         }
 
+        /** @deprecated since 2025.12, use {@link #External()} instead */
+        @Deprecated(since = "2025.12", forRemoval = true)
         public External(Class<ReaderClass> readerClass, Class<?> marshalledClass) {
             super(readerClass, marshalledClass);
         }
 
     }
 
-    @Inject
-    protected MarshallerRegistry registry;
+    public AbstractJsonReaderTest() {
+        super();
+    }
 
-    private Class<ReaderClass> readerClass;
-
-    private Class<?> marshalledClass;
-
-    private Type marshalledGenericType;
-
+    /** @deprecated since 2025.12, use {@link #AbstractJsonReaderTest()} instead */
+    @Deprecated(since = "2025.12", forRemoval = true)
     public AbstractJsonReaderTest(Class<ReaderClass> readerClass, Class<?> marshalledClass) {
         this(readerClass, marshalledClass, marshalledClass);
     }
 
+    /** @deprecated since 2025.12, use {@link #AbstractJsonReaderTest()} instead */
+    @SuppressWarnings("removal") // weirdly detected as still used
+    @Deprecated(since = "2025.12", forRemoval = true)
     public AbstractJsonReaderTest(Class<ReaderClass> readerClass, Class<?> marshalledClass,
             Type marshalledGenericType) {
-        super();
-        this.readerClass = readerClass;
-        this.marshalledClass = marshalledClass;
-        this.marshalledGenericType = marshalledGenericType;
-    }
-
-    public ReaderClass getInstance() {
-        return registry.getInstance(RenderingContext.CtxBuilder.get(), readerClass);
-    }
-
-    public ReaderClass getInstance(RenderingContext ctx) {
-        return registry.getInstance(ctx, readerClass);
+        super(readerClass, marshalledClass, marshalledGenericType);
     }
 
     public MarshalledType asObject(String json) throws IOException {
