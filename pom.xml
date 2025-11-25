@@ -92,7 +92,7 @@
     <selenium.version>2.53.0</selenium.version>
     <pdfbox.version>2.0.35</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
-    <aws.version>1.12.793</aws.version>
+    <aws.version>1.12.794</aws.version>
     <gcp.version>2.52.3</gcp.version>
     <jackson1.version>1.9.13</jackson1.version>
     <jackson.version>2.19.4</jackson.version>
