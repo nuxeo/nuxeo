@@ -53,7 +53,9 @@ jobs:
       # Run the build manually, we need several Maven commands with custom parameters to build the whole codebase
       - name: Build
         env:
-          MAVEN_OPTS: -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+          MAVEN_OPTS: >-
+            -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+            -Daether.syncContext.named.time=600
         run: |
           # Modules
           mvn install -B -e -nsu -DskipTests -T4C -V
