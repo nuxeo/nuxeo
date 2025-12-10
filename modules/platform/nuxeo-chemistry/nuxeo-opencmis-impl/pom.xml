@@ -3,7 +3,7 @@
   <parent>
     <groupId>cloud.docbyte.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-chemistry</artifactId>
-    <version>2025.2-SNAPSHOT</version>
+    <version>2026.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-opencmis-impl</artifactId>

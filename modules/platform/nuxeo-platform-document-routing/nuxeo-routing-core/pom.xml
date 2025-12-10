@@ -3,7 +3,7 @@
   <parent>
     <groupId>cloud.docbyte.nuxeo.ecm.routing</groupId>
     <artifactId>parent</artifactId>
-    <version>2025.2-SNAPSHOT</version>
+    <version>2026.1-SNAPSHOT</version>
   </parent>
   <groupId>cloud.docbyte.nuxeo.ecm.routing</groupId>
   <artifactId>nuxeo-routing-core</artifactId>

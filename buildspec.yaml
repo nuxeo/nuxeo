@@ -28,11 +28,7 @@ phases:
       - REGISTRY_URI=518241560725.dkr.ecr.eu-west-1.amazonaws.com
       - REPOSITORY_URI=518241560725.dkr.ecr.eu-west-1.amazonaws.com/docbyte-nuxeo
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - if [ "$CODEBUILD_GIT_BRANCH" == "development" ];
-        then
-        CHANGELIST=-$CODEBUILD_BUILD_NUMBER;
-        fi
-      - VERSION=$(printf '%(%Y.%m.%d)T\n' -1)$CHANGELIST
+      - . ~/tools/codebuild-versioning.sh
       - IMAGE_TAG=${VERSION:=latest}
       - MAVEN_ARGS=" -Prelease,distrib,docker,kafka -nsu -ntp -Djdk.util.zip.disableZip64ExtraFieldValidation=true -Dnuxeo.skip.enforcer=true -Dcustom.environment=mongodb -Dcustom.environment.log.dir=target-mongodb -Dnuxeo.test.core=mongodb -Dnuxeo.test.redis.host=localhost -Pkafka -Dkafka.bootstrap.servers=localhost:9092 -Ddocker.verbose=true"
       - mvn versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false $MAVEN_ARGS

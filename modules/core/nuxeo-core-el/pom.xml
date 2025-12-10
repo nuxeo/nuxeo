@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-core-parent</artifactId>
     <groupId>cloud.docbyte.nuxeo.ecm.core</groupId>
-    <version>2025.2-SNAPSHOT</version>
+    <version>2026.1-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
