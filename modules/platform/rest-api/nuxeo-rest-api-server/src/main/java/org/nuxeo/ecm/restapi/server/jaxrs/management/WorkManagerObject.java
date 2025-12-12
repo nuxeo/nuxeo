@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.management;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.FormParam;
@@ -45,6 +46,10 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = ManagementObject.MANAGEMENT_OBJECT_PREFIX + "work-manager")
 public class WorkManagerObject extends AbstractResource<ResourceTypeImpl> {
 
+    public static final String CATEGORY_FILTER_PARAM_KEY = "categoryFilter";
+
+    public static final String DRY_RUN_PARAM_KEY = "dryRun";
+
     public static final String TIMEOUT_SECONDS_PARAM_KEY = "timeoutSeconds";
 
     /**
@@ -56,13 +61,17 @@ public class WorkManagerObject extends AbstractResource<ResourceTypeImpl> {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("run-works-in-failure")
-    public Blob launch(@FormParam(TIMEOUT_SECONDS_PARAM_KEY) String timeoutSeconds) throws OperationException {
+    public Blob launch(@FormParam(TIMEOUT_SECONDS_PARAM_KEY) String timeoutSeconds,
+            @FormParam(value = CATEGORY_FILTER_PARAM_KEY) List<String> categoryFilter,
+            @FormParam(value = DRY_RUN_PARAM_KEY) boolean dryRun) throws OperationException {
         AutomationService automationService = Framework.getService(AutomationService.class);
         try (OperationContext operationCtx = new OperationContext(this.ctx.getCoreSession())) {
             Map<String, Serializable> params = new HashMap<>();
             if (StringUtils.isNotBlank(timeoutSeconds)) {
                 params.put(TIMEOUT_SECONDS_PARAM_KEY, timeoutSeconds);
             }
+            params.put(DRY_RUN_PARAM_KEY, dryRun);
+            params.put(CATEGORY_FILTER_PARAM_KEY, (Serializable) categoryFilter);
             return (Blob) automationService.run(operationCtx, WorkManagerRunWorkInFailure.ID, params);
         }
     }
