@@ -205,6 +205,19 @@ public abstract class AbstractWorkManagerTest {
         }
     }
 
+    protected static class SleepNoSuspendingWork extends SleepWork {
+        private static final long serialVersionUID = 1L;
+
+        public SleepNoSuspendingWork(long durationMillis) {
+            super(durationMillis);
+        }
+
+        @Override
+        protected void doWork() throws InterruptedException {
+            Thread.sleep(durationMillis);
+        }
+    }
+
     protected class MetricsTracker {
         protected String queueId;
 

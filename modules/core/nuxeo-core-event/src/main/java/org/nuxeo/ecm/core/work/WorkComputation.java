@@ -110,7 +110,8 @@ public class WorkComputation extends AbstractComputation {
                 workIds.add(work.getId());
             }
             work.cleanUp(true, null);
-            if (!work.isWorkInstanceSuspended()) {
+            if (!work.isSuspending()) {
+                log.trace("{} completed and cleanup, asks for checkpoint", work.getId());
                 context.askForCheckpoint();
             }
         } catch (Exception e) {
@@ -132,9 +133,11 @@ public class WorkComputation extends AbstractComputation {
             log.debug("Exception during work " + work.getId(), e);
             // Try to cleanup after an exception, if exception comes from the previous cleanup it is a duplicate cleanup
             cleanupWorkInFailure(work, e);
+            log.trace("Work record: {} cleaned, context: {}", record.getKey(), context);
         } finally {
             workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
             work = null;
+            log.trace("Work record: {} finally, context: {}", record.getKey(), context);
         }
     }
 

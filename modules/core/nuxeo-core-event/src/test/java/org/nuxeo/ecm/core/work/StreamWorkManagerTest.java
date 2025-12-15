@@ -30,6 +30,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
+import org.nuxeo.lib.stream.log.Name;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -220,5 +223,74 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     @Test
     public void itCanFireWorkFailureEvent() throws InterruptedException {
         super.itCanFireWorkFailureEvent();
+    }
+
+    @Test
+    // Deploy a contrib in order to restart the WorkManager on the next test
+    @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
+    public void testWorkManagerShutdown() throws InterruptedException {
+        testWorkManagerShutdown(false, 4 * getDurationMillis(), true);
+    }
+
+    @Test
+    // Deploy a contrib in order to restart the WorkManager on the next test
+    @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
+    public void testWorkManagerAbruptShutdown() throws InterruptedException {
+        testWorkManagerShutdown(false, 0, false);
+    }
+
+    @Test
+    // Deploy a contrib in order to restart the WorkManager on the next test
+    @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
+    public void testWorkManagerShutdownWithSuspendingWorks() throws InterruptedException {
+        testWorkManagerShutdown(true, 4 * getDurationMillis(), true);
+    }
+
+    @Test
+    // Deploy a contrib in order to restart the WorkManager on the next test
+    @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
+    public void testWorkManagerAbruptShutdownWithSuspendingWorks() throws InterruptedException {
+        testWorkManagerShutdown(true, 0, false);
+    }
+
+    public void testWorkManagerShutdown(boolean suspendingWork, long shutdownMillis, boolean assertTerminated)
+            throws InterruptedException {
+        var manager = getLogManager();
+        var lag = manager.getLag(Name.ofUrn("work/SleepWork"), Name.ofUrn("work/SleepWork"));
+        assertEquals(lag.toString(), 0, lag.lag());
+        int duration = getDurationMillis() * 2;
+        SleepWork work1, work2, work3;
+        if (suspendingWork) {
+            work1 = new SleepWork(duration);
+            work2 = new SleepWork(duration);
+            work3 = new SleepWork(duration);
+        } else {
+            work1 = new SleepNoSuspendingWork(duration);
+            work2 = new SleepNoSuspendingWork(duration);
+            work3 = new SleepNoSuspendingWork(duration);
+        }
+        service.schedule(work1);
+        service.schedule(work2);
+        service.schedule(work3);
+
+        Thread.sleep(duration / 2);
+
+        lag = manager.getLag(Name.ofUrn("work/SleepWork"), Name.ofUrn("work/SleepWork"));
+        assertEquals(lag.toString(), 3, lag.lag());
+
+        // Stop while work are at best at 1/4 of execution
+        boolean terminated = service.shutdown(shutdownMillis, TimeUnit.MILLISECONDS);
+        if (assertTerminated) {
+            assertTrue(terminated);
+        }
+
+        // Running Works are interrupted, no checkpoint, Works will be re-executed elsewhere
+        lag = manager.getLag(Name.ofUrn("work/SleepWork"), Name.ofUrn("work/SleepWork"));
+        assertEquals(lag.toString(), 3, lag.lag());
+    }
+
+    protected org.nuxeo.lib.stream.log.LogManager getLogManager() {
+        StreamService service = Framework.getService(StreamService.class);
+        return service.getLogManager();
     }
 }
