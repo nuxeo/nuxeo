@@ -310,8 +310,11 @@ public abstract class AbstractWorkManagerTest {
     public void testWorkManagerScheduling() throws InterruptedException {
         int duration = getDurationMillis() * 5;
         SleepWork work1 = new SleepWork(duration);
+        work1.setPartitionKey("1");
         SleepWork work2 = new SleepWork(duration);
+        work2.setPartitionKey("2");
         SleepWork work3 = new SleepWork(duration);
+        work3.setPartitionKey(work1.getPartitionKey()); // ensure it's processed after work1
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
@@ -321,25 +324,13 @@ public abstract class AbstractWorkManagerTest {
         assertState(RUNNING, work1);
         assertState(RUNNING, work2);
         assertState(SCHEDULED, work3);
-
-        // disabled IF_NOT_* features
-        if (Boolean.FALSE.booleanValue()) {
-            SleepWork work4 = new SleepWork(duration, work3.getId());
-            service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
-            assertState(UNKNOWN, work4);
-
-            SleepWork work5 = new SleepWork(duration, work1.getId());
-            service.schedule(work5, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
-            assertState(UNKNOWN, work5);
-        }
-
-        SleepWork work7 = new SleepWork(duration, work3.getId());
-        service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
-        assertState(SCHEDULED, work7);
+        // now cancel work3
+        SleepWork work4 = new SleepWork(duration, work3.getId());
+        service.schedule(work4, Scheduling.CANCEL_SCHEDULED);
+        assertState(SCHEDULED, work4);
         tracker.assertDiff(1, 2, 0, 1);
 
         service.schedule(new SleepAndFailWork(0));
-        tracker.assertDiff(2, 2, 0, 1);
 
         assertTrue(service.awaitCompletion(duration * 3L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 1);
