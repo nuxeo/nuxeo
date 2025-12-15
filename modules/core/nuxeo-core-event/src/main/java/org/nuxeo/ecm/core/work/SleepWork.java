@@ -39,13 +39,13 @@ public class SleepWork extends AbstractWork {
 
     protected String category;
 
-    protected AtomicInteger count = new AtomicInteger();
-
-    protected String partitionKey;
+    protected static AtomicInteger count = new AtomicInteger();
 
     protected boolean idempotent = true;
 
     protected boolean coalescing = false;
+
+    protected String partitionKey;
 
     /**
      * Creates a work instance that does nothing but sleep.
@@ -57,7 +57,6 @@ public class SleepWork extends AbstractWork {
         super(id);
         this.durationMillis = durationMillis;
         this.category = category;
-        partitionKey = String.valueOf(count.incrementAndGet());
         setProgress(Progress.PROGRESS_0_PC);
     }
 
@@ -133,6 +132,18 @@ public class SleepWork extends AbstractWork {
         }
     }
 
+    @Override
+    public String getPartitionKey() {
+        if (partitionKey != null) {
+            return partitionKey;
+        }
+        return super.getPartitionKey();
+    }
+
+    public void setPartitionKey(String partitionKey) {
+        this.partitionKey = partitionKey;
+    }
+
     protected void doWork() throws InterruptedException {
         for (;;) {
             long elapsed = System.currentTimeMillis() - getStartTime();
@@ -155,11 +166,6 @@ public class SleepWork extends AbstractWork {
             Thread.sleep(10);
         }
 
-    }
-
-    @Override
-    public String getPartitionKey() {
-        return partitionKey;
     }
 
     @Override
