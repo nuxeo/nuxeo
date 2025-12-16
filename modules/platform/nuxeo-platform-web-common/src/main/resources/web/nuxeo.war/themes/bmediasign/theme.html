@@ -1,0 +1,165 @@
+<!--
+@license
+©2023 Hyland Software, Inc. and its affiliates. All rights reserved. 
+All Hyland product names are registered or unregistered trademarks of Hyland Software, Inc. or its affiliates.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<custom-style>
+  <style is="custom-style">
+    html {
+      /* -- Nuxeo Branding colors -- */
+      --nuxeo-app-font: 'Inter', Arial, sans-serif;
+      --nuxeo-text-default: #2b4144;
+
+      --nuxeo-primary-color: #426368;
+      --nuxeo-secondary-color: #a0ccd3;
+      --nuxeo-button-secondary-text: #6d9297;
+
+      --nuxeo-page-background: #f7f7f7;
+      --nuxeo-border: rgba(0, 0, 0, 0.1);
+
+      /* App Header */
+      --nuxeo-app-header: var(--nuxeo-text-default);
+      --nuxeo-app-header-background: #fff;
+      --nuxeo-app-header-pill: #ededef;
+      --nuxeo-app-header-pill-hover: var(--nuxeo-primary-color);
+      --nuxeo-app-header-pill-active: var(--nuxeo-secondary-color);
+
+      /* App Sidebar + Drawer*/
+      --nuxeo-sidebar-background: #32353f;
+      --nuxeo-sidebar-menu: rgba(255, 255, 255, 0.5);
+      --nuxeo-sidebar-menu-hover: rgba(255, 255, 255, 1);
+      --nuxeo-badge-background: var(--nuxeo-primary-color);
+      --nuxeo-drawer-header: var(--nuxeo-text-default);
+      --nuxeo-drawer-text: var(--nuxeo-text-default);
+      --nuxeo-drawer-background: #fff;
+
+      /* App Quick Search */
+      --nuxeo-quicksearch-text: var(--nuxeo-text-default);
+      --nuxeo-quicksearch-background: #fff;
+
+      /* Tags & Pills */
+      --nuxeo-tag-background: rgba(0, 0, 0, 0.05);
+      --nuxeo-tag-text: var(--nuxeo-text-default);
+      --nuxeo-pill-filter-background: rgba(0, 0, 0, 0.05);
+      --nuxeo-pill-filter-background-active: var(--nuxeo-secondary-color);
+
+      /* Boxes, Tables & Listings */
+      --nuxeo-box: #fff;
+      --nuxeo-table-header-background: #fff;
+      --nuxeo-table-items-background: #ffffff;
+      --nuxeo-grid-selected: var(--nuxeo-primary-color);
+      --nuxeo-dropdown-list-background: #fff;
+
+      /* Buttons & Links */
+      --nuxeo-button: transparent;
+      --nuxeo-button-primary: var(--nuxeo-primary-color);
+      --nuxeo-button-primary-focus: var(--nuxeo-secondary-color);
+      --nuxeo-button-primary-text: #ffffff;
+      --nuxeo-button-disabled: rgba(0, 0, 0, 0.05);
+      --nuxeo-button-disabled-text: rgba(0, 0, 0, 0.1);
+      --nuxeo-link-color: var(--nuxeo-text-default);
+      --nuxeo-link-hover-color: var(--nuxeo-primary-color);
+
+      /* Custom Backgrounds */
+      --nuxeo-container-hover: var(--nuxeo-page-background);
+      --nuxeo-dialog-buttons-bar: rgba(0, 0, 0, 0.05);
+
+      /* Warn, Info, Error */
+      --nuxeo-action-color-activated: var(--nuxeo-primary-color);
+      --nuxeo-warn-text: #de350b;
+      --nuxeo-validated: #42be65;
+      --nuxeo-result-highlight: var(--nuxeo-primary-color);
+
+      /* Selection toolbar */
+      --nuxeo-selection-toolbar-background: var(--nuxeo-primary-color);
+      --nuxeo-selection-toolbar-text: #fff;
+      --nuxeo-selection-toolbar-link: #fff;
+      --nuxeo-selection-toolbar-link-hover: #000;
+
+      /*-- Polymer Variables --*/
+      --default-primary-color: var(--nuxeo-primary-color);
+      --dark-primary-color: #426368;
+      --light-primary-color: #f3f7f9;
+      --text-primary-color: #ffffff;
+      --accent-color: var(--nuxeo-primary-color);
+      --primary-background-color: #f8fafc;
+      --primary-text-color: #434343;
+      --secondary-text-color: #727272;
+      --disabled-text-color: #bdbdbd;
+      --divider-color: var(--nuxeo-border);
+
+      /* Tabs, Toolbars & Menus */
+      --paper-tabs-selection-bar-color: var(--nuxeo-primary-color);
+      --paper-tab-ink: var(--nuxeo-primary-color);
+
+      --paper-toolbar-background: var(--nuxeo-box);
+      --paper-toolbar-color: var(--nuxeo-text-default);
+
+      --paper-listbox-background-color: var(--nuxeo-box);
+      --paper-menu-background-color: var(--nuxeo-box);
+      --paper-menu-color: var(--nuxeo-text-default);
+      --paper-menu-disabled-color: #e9eff3;
+
+      /* Forms & Buttons */
+      --paper-checkbox-checked-color: var(--nuxeo-primary-color);
+      --paper-checkbox-checked-ink-color: var(--nuxeo-primary-color);
+      --paper-checkbox-unchecked-color: var(--nuxeo-text-default);
+      --paper-checkbox-unchecked-ink-color: #6c6f7c;
+      --paper-checkbox-label-color: var(--nuxeo-text-default);
+
+      --paper-radio-button-checked-color: var(--nuxeo-primary-color);
+      --paper-radio-button-checked-ink-color: #ffffff;
+      --paper-radio-button-unchecked-color: var(--nuxeo-text-default);
+      --paper-radio-button-unchecked-ink-color: #6c6f7c;
+      --paper-radio-button-label-color: var(--nuxeo-text-default);
+
+      --paper-input-container-color: var(--nuxeo-text-default);
+      --paper-input-container-focus-color: var(--nuxeo-primary-color);
+      --paper-input-container-focus-background-color: #00aded1a;
+      --paper-input-container-invalid-color: #ff003c;
+      --paper-input-container-input-color: var(--nuxeo-text-default);
+
+      --paper-slider-knob-color: var(--nuxeo-primary-color);
+      --paper-slider-active-color: var(--nuxeo-primary-color);
+      --paper-slider-pin-color: var(--nuxeo-primary-color);
+
+      --paper-toggle-button-checked-bar-color: var(--nuxeo-primary-color);
+      --paper-toggle-button-checked-button-color: var(--nuxeo-primary-color);
+      --paper-toggle-button-checked-ink-color: var(--nuxeo-primary-color);
+      --paper-toggle-button-unchecked-bar-color: #6c6f7c;
+      --paper-toggle-button-unchecked-button-color: #6c6f7c;
+      --paper-toggle-button-unchecked-ink-color: #6c6f7c;
+
+      --paper-fab-background: var(--nuxeo-primary-color);
+      --paper-fab-disabled-background: #e9eff3;
+      --paper-fab-disabled-text: #2f2b16;
+      --paper-icon-button-disabled-text: #e9eff3;
+
+      /* Loaders */
+      --paper-progress-active-color: var(--nuxeo-primary-color);
+      --paper-progress-secondary-color: var(--nuxeo-primary-color);
+
+      --paper-spinner-layer-1-color: var(--nuxeo-primary-color);
+      --paper-spinner-layer-2-color: #426368;
+      --paper-spinner-layer-3-color: #426368;
+      --paper-spinner-layer-4-color: var(--nuxeo-primary-color);
+
+      /* Diff */
+      --nuxeo-diff-added-color: #b4efcb;
+      --nuxeo-diff-deleted-color: #e6b1b1;
+      --nuxeo-diff-label-color: #d4d4d9;
+    }
+  </style>
+</custom-style>
