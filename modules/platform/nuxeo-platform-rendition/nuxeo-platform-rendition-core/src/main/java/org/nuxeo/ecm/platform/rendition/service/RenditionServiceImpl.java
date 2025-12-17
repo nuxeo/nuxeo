@@ -234,49 +234,30 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
-            RenditionDefinition renditionDefinition = (RenditionDefinition) contribution;
-            renditionDefinitionRegistry.addContribution(renditionDefinition);
-        } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
-            renditionDefinitionProviderRegistry.addContribution((RenditionDefinitionProviderDescriptor) contribution);
-        } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
-            storedRenditionManagerDescriptors.add(((StoredRenditionManagerDescriptor) contribution));
-        } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
-            // Save contribution
-            defaultRenditionDescriptors.add((DefaultRenditionDescriptor) contribution);
-        } else if (RENDITION_TARGET_DOC_TYPES_EP.equals(extensionPoint)) {
-            super.registerContribution(contribution, extensionPoint, contributor);
+        switch (extensionPoint) {
+            case RENDITION_DEFINITIONS_EP ->
+                renditionDefinitionRegistry.addContribution((RenditionDefinition) contribution);
+            case RENDITON_DEFINION_PROVIDERS_EP -> renditionDefinitionProviderRegistry.addContribution(
+                    (RenditionDefinitionProviderDescriptor) contribution);
+            case STORED_RENDITION_MANAGERS_EP ->
+                storedRenditionManagerDescriptors.add((StoredRenditionManagerDescriptor) contribution);
+            case DEFAULT_RENDITION_EP -> defaultRenditionDescriptors.add((DefaultRenditionDescriptor) contribution);
+            case RENDITION_TARGET_DOC_TYPES_EP -> super.registerContribution(contribution, extensionPoint, contributor);
         }
-    }
-
-    protected RenditionDefinition mergeRenditions(RenditionDefinition oldRenditionDefinition,
-            RenditionDefinition newRenditionDefinition) {
-        String label = newRenditionDefinition.getLabel();
-        if (label != null) {
-            oldRenditionDefinition.label = label;
-        }
-
-        String operationChain = newRenditionDefinition.getOperationChain();
-        if (operationChain != null) {
-            oldRenditionDefinition.operationChain = operationChain;
-        }
-
-        return oldRenditionDefinition;
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
-            renditionDefinitionRegistry.removeContribution((RenditionDefinition) contribution);
-        } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
-            renditionDefinitionProviderRegistry.removeContribution(
+        switch (extensionPoint) {
+            case RENDITION_DEFINITIONS_EP ->
+                renditionDefinitionRegistry.removeContribution((RenditionDefinition) contribution);
+            case RENDITON_DEFINION_PROVIDERS_EP -> renditionDefinitionProviderRegistry.removeContribution(
                     (RenditionDefinitionProviderDescriptor) contribution);
-        } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
-            storedRenditionManagerDescriptors.remove((contribution));
-        } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
-            defaultRenditionDescriptors.remove(contribution);
-        } else if (RENDITION_TARGET_DOC_TYPES_EP.equals(extensionPoint)) {
-            super.unregisterContribution(contribution, extensionPoint, contributor);
+            case STORED_RENDITION_MANAGERS_EP ->
+                storedRenditionManagerDescriptors.remove((StoredRenditionManagerDescriptor) contribution);
+            case DEFAULT_RENDITION_EP -> defaultRenditionDescriptors.remove((DefaultRenditionDescriptor) contribution);
+            case RENDITION_TARGET_DOC_TYPES_EP ->
+                super.unregisterContribution(contribution, extensionPoint, contributor);
         }
     }
 
@@ -402,7 +383,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         cleaner.runUnrestricted();
     }
 
-    private final class StoredRenditionsCleaner extends UnrestrictedSessionRunner {
+    private static final class StoredRenditionsCleaner extends UnrestrictedSessionRunner {
 
         private static final int BATCH_SIZE = 100;
 
@@ -447,8 +428,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             int processedSourceIds = 0;
             while (processedSourceIds < liveDocumentRefs.size()) {
                 // compute the batch of source ids to check for existence
-                int limit = processedSourceIds + BATCH_SIZE > liveDocumentRefs.size() ? liveDocumentRefs.size()
-                        : processedSourceIds + BATCH_SIZE;
+                int limit = Math.min(processedSourceIds + BATCH_SIZE, liveDocumentRefs.size());
                 List<String> batchSourceIds = liveDocumentRefs.subList(processedSourceIds, limit);
 
                 // retrieve still existing documents
