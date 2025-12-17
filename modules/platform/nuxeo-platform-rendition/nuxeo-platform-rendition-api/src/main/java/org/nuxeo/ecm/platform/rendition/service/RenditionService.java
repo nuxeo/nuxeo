@@ -118,6 +118,14 @@ public interface RenditionService {
     Rendition getRendition(DocumentModel doc, String renditionName, boolean store);
 
     /**
+     * Gets the target document type for storing a rendition of a source document.
+     *
+     * @param doc the source document
+     * @since 2025.13
+     */
+    String getRenditionTargetDocType(DocumentModel doc);
+
+    /**
      * Returns a {@code List} of {@code Rendition} available on the given Document.
      * <p>
      * The order of the List does not depend on the registering order.

@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -59,6 +60,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
 
     private static final Logger log = LogManager.getLogger(RenditionCreator.class);
 
+    @Deprecated(since = "2025.13", forRemoval = true)
     public static final String FILE = "File";
 
     protected DocumentModel detachedRendition;
@@ -143,10 +145,10 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             // We have a source document that is Folderish or is unable to hold blobs, or
             // we have a Note or other blob holder that can only hold strings, but the rendition is not a string-related
             // MIME type.
-            // In each case, we'll create a File to hold it.
-            doctype = FILE;
+            // In each case, we'll search for a target type fallback.
+            doctype = Framework.getService(RenditionService.class).getRenditionTargetDocType(sourceDocument);
             var lfs = Framework.getService(LifeCycleService.class);
-            lifeCycleState = lfs.getLifeCycleByName(lfs.getLifeCycleNameFor(FILE)).getDefaultInitialStateName();
+            lifeCycleState = lfs.getLifeCycleByName(lfs.getLifeCycleNameFor(doctype)).getDefaultInitialStateName();
         }
 
         boolean isVersionable = sourceDocument.isVersionable();
@@ -187,6 +189,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             }
         } else {
             rendition = session.createDocumentModel(null, sourceDocument.getName(), doctype);
+            if (rendition.getAdapter(BlobHolder.class) == null) {
+                throw new NuxeoException("Doc type: '%s' is not adaptable as a BlobHolder.".formatted(doctype));
+            }
         }
 
         rendition.copyContent(sourceDocument);

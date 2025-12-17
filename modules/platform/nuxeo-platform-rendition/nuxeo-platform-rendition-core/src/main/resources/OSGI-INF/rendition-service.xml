@@ -84,6 +84,19 @@
     <object class="org.nuxeo.ecm.platform.rendition.service.DefaultRenditionDescriptor" />
   </extension-point>
 
+  <extension-point name="targetDocTypes">
+    <documentation>
+      Extension point to register the target document type for holding a rendition of a source document type
+      that is either Folderish or is not adaptable as a BlobHolder, which is required to hold the rendition result.
+      Contributed target types must be adaptable as a BlobHolder.
+      If no target doc type is found for a given type, it falls back on File.
+      <code>
+        <targetDocType from="Note" to="File" />
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.rendition.service.RenditionTargetDocTypeDescriptor" />
+  </extension-point>
+
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
     <!-- Explicit declaration based on default configuration to enforce GC -->
     <store name="LazyRenditionCache" />

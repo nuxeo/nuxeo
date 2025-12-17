@@ -3,6 +3,10 @@
 
   <require>org.nuxeo.ecm.platform.rendition.operations</require>
 
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="targetDocTypes">
+    <targetDocType from="Note" to="File" />
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
     point="renditionDefinitions">
     <renditionDefinition name="pdf"
