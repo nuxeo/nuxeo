@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -223,13 +224,20 @@ public abstract class TestAbstractBlobStore {
         // check content
         assertBlob(key1, FOO);
 
-        bs.deleteBlob(key1);
+        await().pollDelay(delayBetweenOperation())
+               .atMost(Duration.TWO_SECONDS)
+               .untilAsserted(() -> bs.deleteBlob(key1));
+
         // check deleted
         assertNoBlob(key1);
         // check delete is idempotent
-        await().pollDelay(Duration.TWO_HUNDRED_MILLISECONDS)
-               .atMost(Duration.FIVE_HUNDRED_MILLISECONDS)
+        await().pollDelay(delayBetweenOperation())
+               .atMost(Duration.TWO_SECONDS)
                .untilAsserted(() -> bs.deleteBlob(key1));
+    }
+
+    protected Duration delayBetweenOperation() {
+        return new Duration(100, MILLISECONDS);
     }
 
     @Test

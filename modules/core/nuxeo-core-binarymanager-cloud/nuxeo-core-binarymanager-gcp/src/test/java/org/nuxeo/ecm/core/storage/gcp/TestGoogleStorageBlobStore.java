@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.gcp;
 
+import org.awaitility.Duration;
 import org.nuxeo.ecm.core.blob.TestAbstractBlobStoreWithOptimizedCopy;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -27,4 +28,11 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(GoogleStorageBlobProviderFeature.class)
 public class TestGoogleStorageBlobStore extends TestAbstractBlobStoreWithOptimizedCopy {
 
+    /**
+     * GCS has a hard limit on 1 mutation operation per second per key.
+     */
+    @Override
+    protected Duration delayBetweenOperation() {
+        return Duration.ONE_SECOND;
+    }
 }
