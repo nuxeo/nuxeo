@@ -51,6 +51,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class PaginableAdapter<T> extends DefaultAdapter {
 
+    // @since 2025.13
+    public static final String NAME_PREFIX = "ADAPTER_";
+
     protected Long currentPageIndex;
 
     protected Long pageSize;
@@ -132,8 +135,8 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
                 sortInfos.add(new SortInfo(sort, sortAscending));
             }
         }
-        PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), sortInfos,
-                pageSize, currentPageIndex, props, getParams());
+        PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider(NAME_PREFIX + ppDefinition.getName(), ppDefinition,
+                getSearchDocument(), sortInfos, pageSize, currentPageIndex, props, getParams());
 
         return getPaginableEntries(pp);
     }
