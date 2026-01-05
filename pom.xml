@@ -2906,7 +2906,7 @@
       <dependency>
         <groupId>com.microsoft.sqlserver</groupId>
         <artifactId>mssql-jdbc</artifactId>
-        <version>10.2.4.jre8</version>
+        <version>10.2.4.jre11</version>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
