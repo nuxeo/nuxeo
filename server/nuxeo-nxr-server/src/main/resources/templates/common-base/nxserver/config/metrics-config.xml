@@ -93,6 +93,16 @@
       <option name="port">${metrics.prometheus.port}</option>
     </reporter>
 
+    <reporter enabled="${metrics.dynatrace.enabled}" name="dynatrace" pollInterval="${metrics.dynatrace.pollInterval}"
+      class="org.nuxeo.runtime.metrics.reporter.DynatraceReporter">
+      <option name="host">${metrics.dynatrace.host}</option>
+      <option name="port">${metrics.dynatrace.port}</option>
+      <option name="prefix">${metrics.dynatrace.prefix}</option>
+      <option name="hostname">${metrics.dynatrace.hostname}</option>
+      <option name="dimensions">${metrics.dynatrace.dimensions}</option>
+      <option name="emptyTimerAsCount">${metrics.dynatrace.emptyTimerAsCount}</option>
+    </reporter>
+
     <reporter enabled="${tracing.jaeger.enabled}" name="jaeger"
       class="org.nuxeo.runtime.metrics.reporter.JaegerReporter">
       <option name="url">${tracing.jaeger.url}</option>

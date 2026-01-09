@@ -2,6 +2,7 @@ perf.target=.
 
 metrics.filter.name=minimal
 metrics.datadog.emptyTimerAsCount=true
+metrics.dynatrace.emptyTimerAsCount=true
 
 # Use a bigger pool size for db/vcs
 nuxeo.db.max-pool-size=52

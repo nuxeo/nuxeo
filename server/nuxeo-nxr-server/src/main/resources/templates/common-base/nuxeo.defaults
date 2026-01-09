@@ -339,6 +339,16 @@ metrics.datadog.emptyTimerAsCount=false
 metrics.prometheus.enabled=false
 metrics.prometheus.port=9090
 
+## Dynatrace statsd udp reporter
+metrics.dynatrace.enabled=false
+metrics.dynatrace.pollInterval=60
+metrics.dynatrace.host=localhost
+metrics.dynatrace.port=18125
+metrics.dynatrace.prefix=nuxeo
+metrics.dynatrace.hostname=
+metrics.dynatrace.dimensions=
+metrics.dynatrace.emptyTimerAsCount=false
+
 ## Open tracing
 tracing.attributes.max=128
 tracing.annotations.max=128
