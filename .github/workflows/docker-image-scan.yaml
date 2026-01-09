@@ -40,7 +40,7 @@ jobs:
         run: docker pull ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
 
       - name: Scan Docker image with Grype - console output
-        uses: anchore/scan-action@3c9a191a0fbab285ca6b8530b5de5a642cba332f # v7.2.2
+        uses: anchore/scan-action@62b74fb7bb810d2c45b1865f47a77655621862a5 # v7.2.3
         with:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
@@ -49,7 +49,7 @@ jobs:
       - name: Scan Docker image with Grype - JSON output
         if: always() # necessary as using a failure threshold in the scan step
         id: scan-json
-        uses: anchore/scan-action@3c9a191a0fbab285ca6b8530b5de5a642cba332f # v7.2.2
+        uses: anchore/scan-action@62b74fb7bb810d2c45b1865f47a77655621862a5 # v7.2.3
         with:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
@@ -63,7 +63,7 @@ jobs:
       - name: Scan Docker image with Grype - SARIF output
         if: always() # necessary as using a failure threshold in the scan step
         id: scan-sarif
-        uses: anchore/scan-action@3c9a191a0fbab285ca6b8530b5de5a642cba332f # v7.2.2
+        uses: anchore/scan-action@62b74fb7bb810d2c45b1865f47a77655621862a5 # v7.2.3
         with:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
