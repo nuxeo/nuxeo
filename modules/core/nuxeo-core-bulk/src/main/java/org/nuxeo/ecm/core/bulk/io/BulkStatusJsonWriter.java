@@ -41,8 +41,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -68,29 +66,18 @@ public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus>
         jg.writeNumberField(STATUS_SKIP_COUNT, entity.getSkipCount());
         jg.writeBooleanField(STATUS_HAS_ERROR, entity.hasError());
         jg.writeNumberField(STATUS_ERROR_COUNT, entity.getErrorCount());
-        if (entity.getErrorMessage() != null) {
-            jg.writeStringField(STATUS_ERROR_MESSAGE, entity.getErrorMessage());
-        }
+        writeStringFieldIfNotNull(STATUS_ERROR_MESSAGE, entity.getErrorMessage(), jg);
         jg.writeNumberField(STATUS_TOTAL, entity.getTotal());
         jg.writeStringField(STATUS_ACTION, entity.getAction());
         jg.writeStringField(STATUS_USERNAME, entity.getUsername());
-        jg.writeStringField(STATUS_SUBMIT_TIME,
-                entity.getSubmitTime() != null ? entity.getSubmitTime().toString() : null);
-        jg.writeStringField(STATUS_SCROLL_START_TIME,
-                entity.getScrollStartTime() != null ? entity.getScrollStartTime().toString() : null);
-        jg.writeStringField(STATUS_SCROLL_END_TIME,
-                entity.getScrollEndTime() != null ? entity.getScrollEndTime().toString() : null);
-        jg.writeStringField(STATUS_PROCESSING_START_TIME,
-                entity.getProcessingStartTime() != null ? entity.getProcessingStartTime().toString() : null);
-        jg.writeStringField(STATUS_PROCESSING_END_TIME,
-                entity.getProcessingEndTime() != null ? entity.getProcessingEndTime().toString() : null);
-        jg.writeStringField(STATUS_COMPLETED_TIME,
-                entity.getCompletedTime() != null ? entity.getCompletedTime().toString() : null);
+        writeTemporalField(STATUS_SUBMIT_TIME, entity.getSubmitTime(), jg);
+        writeTemporalField(STATUS_SCROLL_START_TIME, entity.getScrollStartTime(), jg);
+        writeTemporalField(STATUS_SCROLL_END_TIME, entity.getScrollEndTime(), jg);
+        writeTemporalField(STATUS_PROCESSING_START_TIME, entity.getProcessingStartTime(), jg);
+        writeTemporalField(STATUS_PROCESSING_END_TIME, entity.getProcessingEndTime(), jg);
+        writeTemporalField(STATUS_COMPLETED_TIME, entity.getCompletedTime(), jg);
         jg.writeNumberField(STATUS_PROCESSING_MILLIS, entity.getProcessingDurationMillis());
-        Map<String, Serializable> result = entity.getResult();
-        if (!result.isEmpty()) {
-            jg.writeObjectField(STATUS_RESULT, result);
-        }
+        writeObjectFieldIfNotEmpty(STATUS_RESULT, entity.getResult(), jg);
     }
 
 }

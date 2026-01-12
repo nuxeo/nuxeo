@@ -40,7 +40,7 @@ public class StreamIntrospectionJsonWriter extends AbstractJsonWriter<StreamIntr
     public void write(StreamIntrospection entity, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         // streams
-        writeSerializableListField("streams", entity.streams(), jg);
+        writeEntityArrayField("streams", entity.streams(), jg);
         // processors
         jg.writeArrayFieldStart("processors");
         entity.processors().forEach(ThrowableConsumer.asConsumer(processor -> write(processor, jg)));
@@ -62,7 +62,7 @@ public class StreamIntrospectionJsonWriter extends AbstractJsonWriter<StreamIntr
         processor.computations().forEach(ThrowableConsumer.asConsumer(computation -> write(computation, jg)));
         jg.writeEndArray();
         // topology
-        writeSerializableListField("topology", processor.topology(), jg);
+        writeEntityArrayField("topology", processor.topology(), jg);
         jg.writeEndObject();
     }
 
@@ -117,7 +117,7 @@ public class StreamIntrospectionJsonWriter extends AbstractJsonWriter<StreamIntr
     protected void write(StreamIntrospection.ValueMetric metric, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("k", metric.key());
-        writeSerializableField("v", metric.value(), jg);
+        writeNumberFieldIfNotNull("v", metric.value(), jg);
         metric.tags().forEach(ThrowableBiConsumer.asBiConsumer(jg::writeStringField));
         jg.writeEndObject();
     }

@@ -19,20 +19,15 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.types;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
-import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
-import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
-import org.nuxeo.ecm.core.schema.types.Schema;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -72,13 +67,7 @@ public class FacetJsonWriter extends ExtensibleEntityJsonWriter<CompositeType> {
     protected void writeEntityBody(CompositeType facet, JsonGenerator jg) throws IOException {
         jg.writeStringField("name", facet.getName());
         if (facet.getSchemaNames() != null && facet.getSchemaNames().length > 0) {
-            jg.writeArrayFieldStart("schemas");
-            Writer<Schema> schemaWriter = registry.getWriter(ctx, Schema.class, APPLICATION_JSON_TYPE);
-            for (Schema schema : facet.getSchemas()) {
-                OutputStream out = new OutputStreamWithJsonWriter(jg);
-                schemaWriter.write(schema, Schema.class, Schema.class, APPLICATION_JSON_TYPE, out);
-            }
-            jg.writeEndArray();
+            writeEntityArrayField("schemas", facet.getSchemas(), jg);
         }
     }
 

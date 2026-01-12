@@ -26,13 +26,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.time.temporal.Temporal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -144,6 +150,108 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
         writer.write(entity, entity.getClass(), entity.getClass(), APPLICATION_JSON_TYPE, out);
     }
 
+    protected <ObjectType> void writeEntityArrayField(String fieldName, ObjectType[] entities, JsonGenerator jg)
+            throws IOException {
+        writeEntityArrayField(fieldName, entities == null ? List.of() : List.of(entities), jg);
+    }
+
+    protected <ObjectType> void writeEntityArrayField(String fieldName, Collection<ObjectType> entities,
+            JsonGenerator jg) throws IOException {
+        jg.writeArrayFieldStart(fieldName);
+        if (CollectionUtils.isNotEmpty(entities)) {
+            @SuppressWarnings("unchecked")
+            var entityClass = (Class<ObjectType>) IterableUtils.first(entities).getClass();
+            var writer = registry.getWriter(ctx, entityClass, APPLICATION_JSON_TYPE);
+            if (writer == null) {
+                throw new MarshallingException("Unable to get a writer for Java type " + entityClass + " and mimetype "
+                        + APPLICATION_JSON_TYPE);
+            }
+            var out = new OutputStreamWithJsonWriter(jg);
+            for (var entity : entities) {
+                writer.write(entity, entity.getClass(), entity.getClass(), APPLICATION_JSON_TYPE, out);
+            }
+        }
+        jg.writeEndArray();
+    }
+
+    /**
+     * Writes the given number field if the value is not null.
+     *
+     * @param fieldName the field name to write
+     * @param value the value to write
+     * @param jg the {@link JsonGenerator} to write the given value
+     * @since 2025.14
+     */
+    protected void writeNumberFieldIfNotNull(String fieldName, @Nullable Number value, JsonGenerator jg)
+            throws IOException {
+        if (value != null) {
+            jg.writeFieldName(fieldName);
+            jg.writeNumber(value.toString());
+        }
+    }
+
+    /**
+     * Writes the given object field if the value is not null.
+     *
+     * @param fieldName the field name to write
+     * @param value the value to write
+     * @param jg the {@link JsonGenerator} to write the given value
+     * @since 2025.14
+     */
+    protected void writeObjectFieldIfNotNull(String fieldName, @Nullable Object value, JsonGenerator jg)
+            throws IOException {
+        if (value != null) {
+            jg.writeObjectField(fieldName, value);
+        }
+    }
+
+    /**
+     * Writes the given map field if the value is not null and not empty, the map will be written with
+     * {@link JsonGenerator#writeObject(Object)}.
+     *
+     * @param fieldName the field name to write
+     * @param value the value to write
+     * @param jg the {@link JsonGenerator} to write the given value
+     * @since 2025.14
+     */
+    protected void writeObjectFieldIfNotEmpty(String fieldName, @Nullable Map<?, ?> value, JsonGenerator jg)
+            throws IOException {
+        if (MapUtils.isNotEmpty(value)) {
+            jg.writeObjectField(fieldName, value);
+        }
+    }
+
+    /**
+     * Writes the given string field if the value is not null.
+     *
+     * @param fieldName the field name to write
+     * @param value the value to write
+     * @param jg the {@link JsonGenerator} to write the given value
+     * @since 2025.14
+     */
+    protected void writeStringFieldIfNotNull(String fieldName, @Nullable String value, JsonGenerator jg)
+            throws IOException {
+        if (value != null) {
+            jg.writeStringField(fieldName, value);
+        }
+    }
+
+    /**
+     * Writes a temporal field in a similar way as {@link JsonGenerator#writeStringField(String, String)}.
+     *
+     * @param fieldName the field name to write
+     * @param value the value to write
+     * @param jg the {@link JsonGenerator} to write the given value
+     * @since 2025.14
+     */
+    protected void writeTemporalField(String fieldName, @Nullable Temporal value, JsonGenerator jg) throws IOException {
+        if (value != null) {
+            jg.writeStringField(fieldName, value.toString());
+        } else {
+            jg.writeNullField(fieldName);
+        }
+    }
+
     /**
      * Get the current Json generator or create it if none was found.
      *
@@ -167,7 +275,12 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
      * @param serializables The serializables to write.
      * @param jg The {@link JsonGenerator} used to write the given serializables.
      * @since 10.1
+     * @deprecated since 2025.14, use other typed APIs instead, like
+     *             {@link #writeEntityArrayField(String, Collection, JsonGenerator)}
+     * @implNote It is deprecated because instanceof usage has poor performance, while we want to have an efficient
+     *           serializer.
      */
+    @Deprecated(since = "2025.14", forRemoval = true)
     protected <T extends Serializable> void writeSerializableListField(String fieldName, Collection<T> serializables,
             JsonGenerator jg) throws IOException {
         jg.writeArrayFieldStart(fieldName);
@@ -184,7 +297,11 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
      * @param map The map to write.
      * @param jg The {@link JsonGenerator} used to write the given map.
      * @since 10.1
+     * @deprecated since 2025.14, use other typed APIs instead
+     * @implNote It is deprecated because instanceof usage has poor performance, while we want to have an efficient
+     *           serializer.
      */
+    @Deprecated(since = "2025.14", forRemoval = true)
     protected <T extends Serializable> void writeSerializableMapField(String fieldName, Map<String, T> map,
             JsonGenerator jg) throws IOException {
         jg.writeObjectFieldStart(fieldName);
@@ -204,7 +321,11 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
      * @param value The value to write.
      * @param jg The {@link JsonGenerator} used to write the given serializable.
      * @since 10.1
+     * @deprecated since 2025.14, use other typed APIs instead
+     * @implNote It is deprecated because instanceof usage has poor performance, while we want to have an efficient
+     *           serializer.
      */
+    @Deprecated(since = "2025.14", forRemoval = true)
     protected void writeSerializableField(String fieldName, Serializable value, JsonGenerator jg) throws IOException {
         jg.writeFieldName(fieldName);
         writeSerializable(value, jg);
@@ -219,8 +340,12 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
      * @param value The value to write.
      * @param jg The {@link JsonGenerator} used to write the given serializable.
      * @since 10.1
+     * @deprecated since 2025.14, use other typed APIs instead
+     * @implNote It is deprecated because instanceof usage has poor performance, while we want to have an efficient
+     *           serializer.
      */
     @SuppressWarnings("unchecked")
+    @Deprecated(since = "2025.14", forRemoval = true)
     protected void writeSerializable(Serializable value, JsonGenerator jg) throws IOException {
         if (value instanceof Collection) {
             jg.writeStartArray();
