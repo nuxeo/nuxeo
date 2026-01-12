@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.reindexVersions.listener" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="reindexVersions" inputStream="bulk/reindexVersions" bucketSize="100" batchSize="50" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="reindexVersions" class="org.nuxeo.elasticsearch.versioning.ReindexVersionsAction"
+                     defaultConcurrency="${nuxeo.bulk.action.reindexVersions.defaultConcurrency:=2}"
+                     defaultPartitions="${nuxeo.bulk.action.reindexVersions.defaultPartitions:=4}">
+      <policy name="default" maxRetries="2" delay="1s" maxDelay="10s" continueOnFailure="true"/>
+    </streamProcessor>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="liveDocumentMovedListener" async="false" postCommit="false"
+      enabled="${elasticsearch.reindexVersionsListener.enabled:=false}"
+      class="org.nuxeo.elasticsearch.versioning.ReindexVersionsOnMoveListener">
+      <event>documentMoved</event>
+    </listener>
+  </extension>
+
+</component>
