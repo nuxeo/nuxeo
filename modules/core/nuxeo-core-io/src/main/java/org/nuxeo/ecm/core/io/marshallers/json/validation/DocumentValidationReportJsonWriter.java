@@ -74,7 +74,7 @@ public class DocumentValidationReportJsonWriter extends ExtensibleEntityJsonWrit
     public static final String ENTITY_TYPE = "validation_report";
 
     public DocumentValidationReportJsonWriter() {
-        super(ENTITY_TYPE, DocumentValidationReport.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

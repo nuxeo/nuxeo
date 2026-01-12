@@ -36,7 +36,7 @@ public class TaskListWriter extends DefaultListJsonWriter<Task> {
     private static final String ENTITY_TYPE = "tasks";
 
     public TaskListWriter() {
-        super(ENTITY_TYPE, Task.class);
+        super(ENTITY_TYPE);
     }
 
 

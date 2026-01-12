@@ -33,7 +33,7 @@ public class SavedSearchListWriter extends DefaultListJsonWriter<SavedSearch> {
     public static final String ENTITY_TYPE = "savedSearches";
 
     public SavedSearchListWriter() {
-        super(ENTITY_TYPE, SavedSearch.class);
+        super(ENTITY_TYPE);
     }
 
 }

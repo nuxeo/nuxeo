@@ -19,14 +19,12 @@
 package org.nuxeo.ecm.core.io.marshallers;
 
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.ReflectUtils;
 import org.nuxeo.ecm.core.io.CoreIOFeature;
 import org.nuxeo.ecm.core.io.registry.Marshaller;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
@@ -52,9 +50,10 @@ abstract class AbstractMarshallerTest<MarshallerClass extends Marshaller<Marshal
 
     @SuppressWarnings("unchecked")
     public AbstractMarshallerTest() {
-        var types = retrieveGenericTypes();
-        this.marshallerClass = types.getLeft();
-        this.marshalledGenericType = types.getRight();
+        var types = ReflectUtils.retrieveParameterTypes(getClass(), AbstractMarshallerTest.class, "MarshallerClass",
+                "MarshalledType");
+        this.marshallerClass = (Class<MarshallerClass>) types[0];
+        this.marshalledGenericType = types[1];
         this.marshalledClass = (Class<MarshalledType>) TypeUtils.getRawType(this.marshalledGenericType, null);
     }
 
@@ -75,26 +74,5 @@ abstract class AbstractMarshallerTest<MarshallerClass extends Marshaller<Marshal
 
     public MarshallerClass getInstance(RenderingContext ctx) {
         return registry.getInstance(ctx, marshallerClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected final Pair<Class<MarshallerClass>, Type> retrieveGenericTypes() {
-        Class<MarshallerClass> writerClass = null;
-        Type marshalledGenericType = null;
-        Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(getClass(), AbstractMarshallerTest.class);
-        for (Map.Entry<TypeVariable<?>, Type> entry : typeArguments.entrySet()) {
-            if (AbstractMarshallerTest.class.equals(entry.getKey().getGenericDeclaration())) {
-                if ("MarshallerClass".equals(entry.getKey().getName())) {
-                    var writerType = TypeUtils.unrollVariables(typeArguments, entry.getValue());
-                    writerClass = (Class<MarshallerClass>) TypeUtils.getRawType(writerType, null);
-                } else if ("MarshalledType".equals(entry.getKey().getName())) {
-                    marshalledGenericType = TypeUtils.unrollVariables(typeArguments, entry.getValue());
-                }
-            }
-        }
-        if (writerClass == null || marshalledGenericType == null) {
-            throw new IllegalStateException("Unable to determine types");
-        }
-        return Pair.of(writerClass, marshalledGenericType);
     }
 }

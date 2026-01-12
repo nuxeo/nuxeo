@@ -73,7 +73,7 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
     private SchemaManager schemaManager;
 
     public DocumentRouteWriter() {
-        super(ENTITY_TYPE, DocumentRoute.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

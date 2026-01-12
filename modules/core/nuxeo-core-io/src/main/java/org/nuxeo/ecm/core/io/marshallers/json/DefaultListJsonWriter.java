@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.nuxeo.common.utils.ReflectUtils;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PartialList;
@@ -86,11 +87,22 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
     private final Type elGenericType;
 
     /**
+     * @param entityType The list "entity-type".
+     */
+    public DefaultListJsonWriter(String entityType) {
+        super();
+        this.entityType = entityType;
+        this.elClazz = ReflectUtils.retrieveFirstParameterType(getClass(), DefaultListJsonWriter.class);
+        this.elGenericType = this.elClazz;
+    }
+
+    /**
      * Use this constructor if the element of the list are not based on Java generic type.
      *
      * @param entityType The list "entity-type".
      * @param elClazz The class of the element of the list.
      */
+    @Deprecated(since = "2025.14", forRemoval = true)
     public DefaultListJsonWriter(String entityType, Class<EntityType> elClazz) {
         super();
         this.entityType = entityType;

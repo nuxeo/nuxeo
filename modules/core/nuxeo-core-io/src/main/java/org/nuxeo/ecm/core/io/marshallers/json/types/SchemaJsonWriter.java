@@ -97,7 +97,7 @@ public class SchemaJsonWriter extends ExtensibleEntityJsonWriter<Schema> {
     public static final String FETCH_FIELDS = "fields";
 
     public SchemaJsonWriter() {
-        super(ENTITY_TYPE, Schema.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

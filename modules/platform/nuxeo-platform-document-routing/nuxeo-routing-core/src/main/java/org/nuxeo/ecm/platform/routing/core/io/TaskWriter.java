@@ -101,7 +101,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
     protected UserManager userManager;
 
     public TaskWriter() {
-        super(ENTITY_TYPE, Task.class);
+        super(ENTITY_TYPE);
     }
 
     public static final String ENTITY_TYPE = "task";

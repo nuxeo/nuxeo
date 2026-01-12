@@ -35,6 +35,6 @@ public class AnnotationListJsonWriter extends DefaultListJsonWriter<Annotation> 
     public static final String ENTITY_TYPE = "annotations";
 
     public AnnotationListJsonWriter() {
-        super(ENTITY_TYPE, Annotation.class);
+        super(ENTITY_TYPE);
     }
 }

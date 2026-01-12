@@ -33,7 +33,7 @@ public class OAuth2ClientListWriter extends DefaultListJsonWriter<OAuth2Client> 
     public static final String ENTITY_TYPE = "oauth2Clients";
 
     public OAuth2ClientListWriter() {
-        super(ENTITY_TYPE, OAuth2Client.class);
+        super(ENTITY_TYPE);
     }
 
 }

@@ -79,7 +79,7 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
     protected CommentManager commentManager;
 
     public CommentJsonWriter() {
-        super(COMMENT_ENTITY_TYPE, Comment.class);
+        super(COMMENT_ENTITY_TYPE);
     }
 
     @Override

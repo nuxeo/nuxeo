@@ -68,7 +68,7 @@ public class DocumentTypeJsonWriter extends ExtensibleEntityJsonWriter<DocumentT
     public static final String ENTITY_TYPE = "docType";
 
     public DocumentTypeJsonWriter() {
-        super(ENTITY_TYPE, DocumentType.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

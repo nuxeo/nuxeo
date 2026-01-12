@@ -33,7 +33,7 @@ public class AuthenticationTokenListWriter extends DefaultListJsonWriter<Authent
     public static final String ENTITY_TYPE = "tokens";
 
     public AuthenticationTokenListWriter() {
-        super(ENTITY_TYPE, AuthenticationToken.class);
+        super(ENTITY_TYPE);
     }
 
 }

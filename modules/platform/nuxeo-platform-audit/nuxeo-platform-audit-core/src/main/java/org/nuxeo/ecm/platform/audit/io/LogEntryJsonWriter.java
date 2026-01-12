@@ -100,7 +100,7 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
     public static final String FETCH_PRINCIPAL = "principal";
 
     public LogEntryJsonWriter() {
-        super(ENTITY_TYPE, LogEntry.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

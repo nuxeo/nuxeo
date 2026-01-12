@@ -37,7 +37,7 @@ public class DirectoryEntryListJsonWriter extends DefaultListJsonWriter<Director
     public static final String ENTITY_TYPE = "directoryEntries";
 
     public DirectoryEntryListJsonWriter() {
-        super(ENTITY_TYPE, DirectoryEntry.class);
+        super(ENTITY_TYPE);
     }
 
 }

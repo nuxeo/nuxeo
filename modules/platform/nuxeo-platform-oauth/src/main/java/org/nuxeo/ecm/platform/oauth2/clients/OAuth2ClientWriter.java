@@ -59,7 +59,7 @@ public class OAuth2ClientWriter extends ExtensibleEntityJsonWriter<OAuth2Client>
     public static final String AUTO_GRANT_FIELD = "isAutoGrant";
 
     public OAuth2ClientWriter() {
-        super(ENTITY_TYPE, OAuth2Client.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

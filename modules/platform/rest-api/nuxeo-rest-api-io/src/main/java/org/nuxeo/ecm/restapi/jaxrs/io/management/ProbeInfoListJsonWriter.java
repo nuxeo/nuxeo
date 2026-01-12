@@ -35,6 +35,6 @@ public class ProbeInfoListJsonWriter extends DefaultListJsonWriter<ProbeInfo> {
     public static final String ENTITY_TYPE = "probes";
 
     public ProbeInfoListJsonWriter() {
-        super(ENTITY_TYPE, ProbeInfo.class);
+        super(ENTITY_TYPE);
     }
 }

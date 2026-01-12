@@ -37,7 +37,7 @@ public class SchemaListJsonWriter extends DefaultListJsonWriter<Schema> {
     public static final String ENTITY_TYPE = "schemas";
 
     public SchemaListJsonWriter() {
-        super(ENTITY_TYPE, Schema.class);
+        super(ENTITY_TYPE);
     }
 
 }

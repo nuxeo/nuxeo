@@ -34,7 +34,7 @@ public class MigrationListJsonWriter extends DefaultListJsonWriter<Migration> {
     public static final String ENTITY_TYPE = "migrations";
 
     public MigrationListJsonWriter() {
-        super(ENTITY_TYPE, Migration.class);
+        super(ENTITY_TYPE);
     }
 
 }

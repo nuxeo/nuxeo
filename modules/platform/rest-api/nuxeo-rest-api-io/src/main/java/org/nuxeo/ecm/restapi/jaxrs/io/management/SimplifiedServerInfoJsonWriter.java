@@ -41,7 +41,7 @@ public class SimplifiedServerInfoJsonWriter extends ExtensibleEntityJsonWriter<S
     public static final String ENTITY_TYPE = "serverInfo";
 
     public SimplifiedServerInfoJsonWriter() {
-        super(ENTITY_TYPE, SimplifiedServerInfo.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

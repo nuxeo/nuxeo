@@ -47,7 +47,7 @@ public class ConfigurationPropertiesJsonWriter extends ExtensibleEntityJsonWrite
             Environment.SERVER_STATUS_KEY);
 
     public ConfigurationPropertiesJsonWriter() {
-        super(ENTITY_TYPE, ConfigurationProperties.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

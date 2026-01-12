@@ -106,7 +106,7 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
     private DirectoryService directoryService;
 
     public DirectoryEntryJsonWriter() {
-        super(ENTITY_TYPE, DirectoryEntry.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

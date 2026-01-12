@@ -33,6 +33,6 @@ public class NuxeoOAuth2TokenListWriter extends DefaultListJsonWriter<NuxeoOAuth
     public static final String ENTITY_TYPE = "nuxeoOAuth2Tokens";
 
     public NuxeoOAuth2TokenListWriter() {
-        super(ENTITY_TYPE, NuxeoOAuth2Token.class);
+        super(ENTITY_TYPE);
     }
 }

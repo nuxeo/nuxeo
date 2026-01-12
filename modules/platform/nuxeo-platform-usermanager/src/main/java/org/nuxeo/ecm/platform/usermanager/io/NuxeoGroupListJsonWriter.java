@@ -37,7 +37,7 @@ public class NuxeoGroupListJsonWriter extends DefaultListJsonWriter<NuxeoGroup> 
     public static final String ENTITY_TYPE = "groups";
 
     public NuxeoGroupListJsonWriter() {
-        super(ENTITY_TYPE, NuxeoGroup.class);
+        super(ENTITY_TYPE);
     }
 
 }

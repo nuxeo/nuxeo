@@ -65,7 +65,7 @@ public class FacetJsonWriter extends ExtensibleEntityJsonWriter<CompositeType> {
     public static final String ENTITY_TYPE = "facet";
 
     public FacetJsonWriter() {
-        super(ENTITY_TYPE, CompositeType.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

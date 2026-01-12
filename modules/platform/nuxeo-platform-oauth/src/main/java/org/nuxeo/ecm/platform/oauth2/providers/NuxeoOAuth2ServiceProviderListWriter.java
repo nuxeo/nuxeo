@@ -33,6 +33,6 @@ public class NuxeoOAuth2ServiceProviderListWriter extends DefaultListJsonWriter<
     public static final String ENTITY_TYPE = "nuxeoOAuth2ServiceProviders";
 
     public NuxeoOAuth2ServiceProviderListWriter() {
-        super(ENTITY_TYPE, NuxeoOAuth2ServiceProvider.class);
+        super(ENTITY_TYPE);
     }
 }

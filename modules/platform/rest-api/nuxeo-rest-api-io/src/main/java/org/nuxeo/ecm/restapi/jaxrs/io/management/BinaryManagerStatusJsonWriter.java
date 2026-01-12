@@ -38,7 +38,7 @@ public class BinaryManagerStatusJsonWriter extends ExtensibleEntityJsonWriter<Bi
     public static final String ENTITY_TYPE = "binaryManagerStatus";
 
     public BinaryManagerStatusJsonWriter() {
-        super(ENTITY_TYPE, BinaryManagerStatus.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

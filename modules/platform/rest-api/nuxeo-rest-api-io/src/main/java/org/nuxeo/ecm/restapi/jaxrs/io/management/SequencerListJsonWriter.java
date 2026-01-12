@@ -33,6 +33,6 @@ public class SequencerListJsonWriter extends DefaultListJsonWriter<Sequencer> {
     public static final String ENTITY_TYPE = "sequencers";
 
     public SequencerListJsonWriter() {
-        super(ENTITY_TYPE, Sequencer.class);
+        super(ENTITY_TYPE);
     }
 }

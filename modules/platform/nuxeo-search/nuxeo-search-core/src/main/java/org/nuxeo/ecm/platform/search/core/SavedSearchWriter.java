@@ -61,7 +61,7 @@ public class SavedSearchWriter extends ExtensibleEntityJsonWriter<SavedSearch> {
     private SchemaManager schemaManager;
 
     public SavedSearchWriter() {
-        super(ENTITY_TYPE, SavedSearch.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

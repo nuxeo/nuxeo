@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.nuxeo.common.utils.ReflectUtils;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.Enriched;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -64,9 +65,21 @@ public abstract class ExtensibleEntityJsonWriter<EntityType> extends AbstractJso
     private final Type genericType;
 
     /**
+     * @param entityType the "entity-type" Json property value
+     */
+    public ExtensibleEntityJsonWriter(String entityType) {
+        super();
+        this.entityType = entityType;
+        genericType = TypeUtils.parameterize(Enriched.class,
+                ReflectUtils.retrieveFirstParameterType(getClass(), ExtensibleEntityJsonWriter.class));
+    }
+
+    /**
      * @param entityType The "entity-type" Json property value.
      * @param entityClass The entity type.
+     * @deprecated since 2025.14, use {@link #ExtensibleEntityJsonWriter(String)} instead
      */
+    @Deprecated(since = "2025.14", forRemoval = true)
     public ExtensibleEntityJsonWriter(String entityType, Class<EntityType> entityClass) {
         super();
         this.entityType = entityType;

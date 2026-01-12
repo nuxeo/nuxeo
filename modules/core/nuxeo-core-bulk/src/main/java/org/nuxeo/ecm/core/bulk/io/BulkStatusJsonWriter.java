@@ -57,7 +57,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus> {
 
     public BulkStatusJsonWriter() {
-        super(STATUS_ENTITY_TYPE, BulkStatus.class);
+        super(STATUS_ENTITY_TYPE);
     }
 
     @Override

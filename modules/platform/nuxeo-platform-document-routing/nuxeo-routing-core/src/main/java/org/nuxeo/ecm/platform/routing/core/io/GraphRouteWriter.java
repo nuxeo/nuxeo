@@ -36,7 +36,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 public class GraphRouteWriter extends ExtensibleEntityJsonWriter<JsonGraphRoute> {
 
     public GraphRouteWriter() {
-        super(ENTITY_TYPE, JsonGraphRoute.class);
+        super(ENTITY_TYPE);
     }
 
     public static final String ENTITY_TYPE = "graph";

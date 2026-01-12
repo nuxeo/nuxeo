@@ -38,7 +38,7 @@ public class DirectoryJsonWriter extends ExtensibleEntityJsonWriter<Directory> {
     public static final String ENTITY_TYPE = "directory";
 
     public DirectoryJsonWriter() {
-        super(ENTITY_TYPE, Directory.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

@@ -39,7 +39,7 @@ public class ScheduleJsonWriter extends ExtensibleEntityJsonWriter<Schedule> {
     public static final String ENTITY_TYPE = "schedule";
 
     public ScheduleJsonWriter() {
-        super(ENTITY_TYPE, Schedule.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

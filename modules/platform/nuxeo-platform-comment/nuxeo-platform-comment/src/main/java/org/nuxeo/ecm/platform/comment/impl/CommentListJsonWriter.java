@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 public class CommentListJsonWriter extends DefaultListJsonWriter<Comment> {
 
     public CommentListJsonWriter() {
-        super(COMMENTS_ENTITY_TYPE, Comment.class);
+        super(COMMENTS_ENTITY_TYPE);
     }
 
 }

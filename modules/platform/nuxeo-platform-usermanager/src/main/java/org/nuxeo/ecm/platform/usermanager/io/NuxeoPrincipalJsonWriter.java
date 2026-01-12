@@ -105,7 +105,7 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
     private DirectoryService directoryService;
 
     public NuxeoPrincipalJsonWriter() {
-        super(ENTITY_TYPE, NuxeoPrincipal.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

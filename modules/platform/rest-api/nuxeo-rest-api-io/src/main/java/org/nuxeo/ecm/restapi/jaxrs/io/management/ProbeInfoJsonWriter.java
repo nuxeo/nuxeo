@@ -40,7 +40,7 @@ public class ProbeInfoJsonWriter extends ExtensibleEntityJsonWriter<ProbeInfo> {
     public static final String ENTITY_TYPE = "probe";
 
     public ProbeInfoJsonWriter() {
-        super(ENTITY_TYPE, ProbeInfo.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

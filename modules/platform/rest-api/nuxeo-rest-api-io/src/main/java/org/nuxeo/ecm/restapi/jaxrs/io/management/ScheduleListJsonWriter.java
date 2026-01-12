@@ -35,6 +35,6 @@ public class ScheduleListJsonWriter extends DefaultListJsonWriter<Schedule> {
     public static final String ENTITY_TYPE = "schedules";
 
     public ScheduleListJsonWriter() {
-        super(ENTITY_TYPE, Schedule.class);
+        super(ENTITY_TYPE);
     }
 }

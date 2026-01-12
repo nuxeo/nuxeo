@@ -36,7 +36,7 @@ public class DocumentRouteListWriter extends DefaultListJsonWriter<DocumentRoute
     private static final String ENTITY_TYPE = "workflows";
 
     public DocumentRouteListWriter() {
-        super(ENTITY_TYPE, DocumentRoute.class);
+        super(ENTITY_TYPE);
     }
 
 }

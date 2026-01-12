@@ -37,7 +37,7 @@ public class NuxeoPrincipalListJsonWriter extends DefaultListJsonWriter<NuxeoPri
     public static final String ENTITY_TYPE = "users";
 
     public NuxeoPrincipalListJsonWriter() {
-        super(ENTITY_TYPE, NuxeoPrincipal.class);
+        super(ENTITY_TYPE);
     }
 
 }

@@ -38,7 +38,7 @@ public class DocumentTypeListJsonWriter extends DefaultListJsonWriter<DocumentTy
     public static final String ENTITY_TYPE = "docTypes";
 
     public DocumentTypeListJsonWriter() {
-        super(ENTITY_TYPE, DocumentType.class);
+        super(ENTITY_TYPE);
     }
 
 }

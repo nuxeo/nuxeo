@@ -37,7 +37,7 @@ public class LogEntryListJsonWriter extends DefaultListJsonWriter<LogEntry> {
     public static final String ENTITY_TYPE = "logEntries";
 
     public LogEntryListJsonWriter() {
-        super(ENTITY_TYPE, LogEntry.class);
+        super(ENTITY_TYPE);
     }
 
 }

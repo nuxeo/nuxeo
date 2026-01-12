@@ -38,7 +38,7 @@ public class ConnectStatusJsonWriter extends ExtensibleEntityJsonWriter<ConnectS
     public static final String ENTITY_TYPE = "connectStatus";
 
     public ConnectStatusJsonWriter() {
-        super(ENTITY_TYPE, ConnectStatus.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

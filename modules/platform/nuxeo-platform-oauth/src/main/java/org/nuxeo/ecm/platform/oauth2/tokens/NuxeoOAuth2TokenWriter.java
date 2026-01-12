@@ -41,7 +41,7 @@ public class NuxeoOAuth2TokenWriter extends ExtensibleEntityJsonWriter<NuxeoOAut
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public NuxeoOAuth2TokenWriter() {
-        super(ENTITY_TYPE, NuxeoOAuth2Token.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

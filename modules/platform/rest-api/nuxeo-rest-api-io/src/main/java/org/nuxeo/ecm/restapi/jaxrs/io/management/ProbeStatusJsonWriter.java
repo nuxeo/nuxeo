@@ -40,7 +40,7 @@ public class ProbeStatusJsonWriter extends ExtensibleEntityJsonWriter<ProbeStatu
     public static final String ENTITY_TYPE = "probeStatus";
 
     public ProbeStatusJsonWriter() {
-        super(ENTITY_TYPE, ProbeStatus.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

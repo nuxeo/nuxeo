@@ -47,7 +47,7 @@ public class NuxeoOAuth2ServiceProviderWriter extends ExtensibleEntityJsonWriter
     public static final String ENTITY_TYPE = "nuxeoOAuth2ServiceProvider";
 
     public NuxeoOAuth2ServiceProviderWriter() {
-        super(ENTITY_TYPE, NuxeoOAuth2ServiceProvider.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

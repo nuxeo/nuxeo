@@ -41,7 +41,7 @@ public class MigrationJsonWriter extends ExtensibleEntityJsonWriter<Migration> {
     public static final String ENTITY_TYPE = "migration";
 
     public MigrationJsonWriter() {
-        super(ENTITY_TYPE, Migration.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

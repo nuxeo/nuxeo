@@ -45,7 +45,7 @@ public class DocumentModelListJsonWriter extends DefaultListJsonWriter<DocumentM
     public static final String ENTITY_DOCUMENT_LIST = "documents";
 
     public DocumentModelListJsonWriter() {
-        super(ENTITY_DOCUMENT_LIST, DocumentModel.class);
+        super(ENTITY_DOCUMENT_LIST);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class SequencerJsonWriter extends ExtensibleEntityJsonWriter<Sequencer> {
     public static final String ENTITY_TYPE = "sequencer";
 
     public SequencerJsonWriter() {
-        super(ENTITY_TYPE, Sequencer.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

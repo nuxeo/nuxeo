@@ -76,7 +76,7 @@ public class ACPJsonWriter extends ExtensibleEntityJsonWriter<ACP> {
     public static final String ENTITY_TYPE = "acls";
 
     public ACPJsonWriter() {
-        super(ENTITY_TYPE, ACP.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

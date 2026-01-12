@@ -37,7 +37,7 @@ public class FacetListJsonWriter extends DefaultListJsonWriter<CompositeType> {
     public static final String ENTITY_TYPE = "facets";
 
     public FacetListJsonWriter() {
-        super(ENTITY_TYPE, CompositeType.class);
+        super(ENTITY_TYPE);
     }
 
 }

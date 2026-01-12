@@ -56,7 +56,7 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
     public static final String ENTITY_TYPE = "annotation";
 
     public AnnotationJsonWriter() {
-        super(ANNOTATION_ENTITY_TYPE, Annotation.class);
+        super(ANNOTATION_ENTITY_TYPE);
     }
 
     @Override

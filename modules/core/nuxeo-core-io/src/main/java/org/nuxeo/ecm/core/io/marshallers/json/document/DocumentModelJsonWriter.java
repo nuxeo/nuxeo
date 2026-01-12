@@ -136,7 +136,7 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
     protected SchemaManager schemaManager;
 
     public DocumentModelJsonWriter() {
-        super(ENTITY_TYPE, DocumentModel.class);
+        super(ENTITY_TYPE);
     }
 
     @Override

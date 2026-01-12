@@ -46,7 +46,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 public class BulkCommandJsonWriter extends ExtensibleEntityJsonWriter<BulkCommand> {
 
     public BulkCommandJsonWriter() {
-        super(COMMAND_ENTITY_TYPE, BulkCommand.class);
+        super(COMMAND_ENTITY_TYPE);
     }
 
     @Override
