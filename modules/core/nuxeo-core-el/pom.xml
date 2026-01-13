@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-core-parent</artifactId>
     <groupId>org.nuxeo.ecm.core</groupId>
-    <version>2023.41-SNAPSHOT</version>
+    <version>2023.42-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
