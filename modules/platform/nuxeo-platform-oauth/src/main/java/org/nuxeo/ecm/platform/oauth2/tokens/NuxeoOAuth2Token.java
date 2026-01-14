@@ -172,6 +172,9 @@ public class NuxeoOAuth2Token {
     }
 
     public boolean isExpired() {
+        if (expirationTimeMilliseconds == null) {
+            return false;
+        }
         return creationDate != null && creationDate.getTimeInMillis()
                 + expirationTimeMilliseconds < Calendar.getInstance().getTimeInMillis();
     }

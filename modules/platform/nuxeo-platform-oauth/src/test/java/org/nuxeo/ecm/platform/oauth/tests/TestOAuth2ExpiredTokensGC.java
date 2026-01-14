@@ -68,9 +68,8 @@ public class TestOAuth2ExpiredTokensGC {
     @Inject
     protected OAuth2TokenService oauth2TokenService;
 
-    protected void storeToken(String clientId, String username, long expirationTime) {
-        final NuxeoOAuth2Token newToken = new NuxeoOAuth2Token(expirationTime, clientId);
-        tokenStore.store(username, newToken);
+    protected void storeToken(String username, NuxeoOAuth2Token token) {
+        tokenStore.store(username, token);
     }
 
     protected void assertTokensCount(int expected) {
@@ -81,23 +80,25 @@ public class TestOAuth2ExpiredTokensGC {
 
     @Test
     public void testEffectiveGC() {
-        storeToken("client1", "jdoe", 1);
-        storeToken("client2", "jsmith", 3600000);
+        storeToken("jdoe", new NuxeoOAuth2Token(1, "client1"));
+        storeToken("jsmith", new NuxeoOAuth2Token(3600000, "client1"));
+        // Create token as if Nuxeo is acting as a client without storing token expiration time
+        storeToken("marc", new NuxeoOAuth2Token("a", "b", null));
         transactionalFeature.nextTransaction();
-        assertTokensCount(2);
+        assertTokensCount(3);
         var commandId = oauth2TokenService.garbageCollectExpiredTokens();
         transactionalFeature.nextTransaction();
         var status = bulkService.getStatus(commandId);
         assertTrue(status.isCompleted());
-        assertEquals(2, status.getTotal());
-        assertEquals(1, status.getSkipCount());
-        assertTokensCount(1);
+        assertEquals(3, status.getTotal());
+        assertEquals(2, status.getSkipCount());
+        assertTokensCount(2);
     }
 
     @Test
     public void testEffectiveGCTriggeredByEvent() {
-        storeToken("client1", "jdoe", 1);
-        storeToken("client2", "jsmith", 2);
+        storeToken("jdoe", new NuxeoOAuth2Token(1, "client1"));
+        storeToken("jsmith", new NuxeoOAuth2Token(2, "client1"));
         transactionalFeature.nextTransaction();
         assertTokensCount(2);
         Event event = new EventContextImpl().newEvent(EVENT_NAME);
