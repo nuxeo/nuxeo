@@ -6,6 +6,8 @@ on:
   schedule:
     # Everyday at 01:32
     - cron: '32 1 * * *'
+  # Allow to manually trigger the workflow
+  workflow_call:
 
 jobs:
   # in uses, cannot use environment variable for {owner}/{repo} nor matrix strategy variable for {ref}
