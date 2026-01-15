@@ -35,13 +35,13 @@ import org.nuxeo.runtime.api.Framework;
 public class GroupObject extends AbstractUMObject<NuxeoGroup> {
 
     @Path("user/{username}")
-    public Object doGetUserToGroup(@PathParam("username") String username) {
+    public UserToGroupObject doGetUserToGroup(@PathParam("username") String username) {
         UserManager um = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = um.getPrincipal(username);
         if (principal == null) {
             throw new WebResourceNotFoundException("User not found");
         }
-        return newObject("userToGroup", principal, currentArtifact);
+        return newObject(UserToGroupObject.class, principal, currentArtifact);
     }
 
     @Override

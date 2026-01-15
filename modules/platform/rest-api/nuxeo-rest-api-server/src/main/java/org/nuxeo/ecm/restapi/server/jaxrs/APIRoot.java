@@ -27,7 +27,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.automation.server.jaxrs.AutomationResource;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.restapi.server.jaxrs.config.ConfigEndPoint;
+import org.nuxeo.ecm.restapi.server.jaxrs.conversion.ConversionRootObject;
+import org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectoryRootObject;
+import org.nuxeo.ecm.restapi.server.jaxrs.usermanager.GroupRootObject;
+import org.nuxeo.ecm.restapi.server.jaxrs.usermanager.UserRootObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -43,7 +49,8 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 public class APIRoot extends ModuleRoot {
 
     @Path("/")
-    public Object doGetRepository(@PathParam("repo") String repositoryParam) throws DocumentNotFoundException {
+    public RepositoryObject doGetRepository(@PathParam("repo") String repositoryParam)
+            throws DocumentNotFoundException {
         if (StringUtils.isNotBlank(repositoryParam)) {
             String repoName = repositoryParam.substring("repo/".length() + 1);
             try {
@@ -53,42 +60,42 @@ public class APIRoot extends ModuleRoot {
             }
 
         }
-        return newObject("repo");
+        return newObject(RepositoryObject.class);
     }
 
     @Path("/user")
-    public Object doGetUser() {
-        return newObject("users");
+    public UserRootObject doGetUser() {
+        return newObject(UserRootObject.class);
     }
 
     @Path("/group")
-    public Object doGetGroup() {
-        return newObject("groups");
+    public GroupRootObject doGetGroup() {
+        return newObject(GroupRootObject.class);
     }
 
     @Path("/automation")
-    public Object getAutomationEndPoint() {
-        return newObject("automation");
+    public AutomationResource getAutomationEndPoint() {
+        return newObject(AutomationResource.class);
     }
 
     @Path("/directory")
-    public Object doGetDirectory() {
-        return newObject("directory");
+    public DirectoryRootObject doGetDirectory() {
+        return newObject(DirectoryRootObject.class);
     }
 
     @Path("/query")
-    public Object doQuery() {
-        return newObject("query");
+    public QueryObject doQuery() {
+        return newObject(QueryObject.class);
     }
 
     @Path("/config")
-    public Object doGetConfig() {
-        return newObject("config");
+    public ConfigEndPoint doGetConfig() {
+        return newObject(ConfigEndPoint.class);
     }
 
     @Path("/conversion")
-    public Object doGetConversion() {
-        return newObject("conversions");
+    public ConversionRootObject doGetConversion() {
+        return newObject(ConversionRootObject.class);
     }
 
     /**
@@ -99,7 +106,7 @@ public class APIRoot extends ModuleRoot {
     // we need to handle ids matrix because matrix aren't present in path used for dispatch
     public Object bulk(@MatrixParam("id") List<String> ids) {
         if (ids.isEmpty()) {
-            return newObject("bulkActionFramework");
+            return newObject(BulkActionFrameworkObject.class);
         } else {
             return RepositoryObject.getBulkDocuments(this, ids);
         }
@@ -109,8 +116,8 @@ public class APIRoot extends ModuleRoot {
      * @since 11.5
      */
     @Path("/capabilities")
-    public Object capabilities() {
-        return newObject("capabilities");
+    public CapabilitiesObject capabilities() {
+        return newObject(CapabilitiesObject.class);
     }
 
     /**

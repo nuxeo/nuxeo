@@ -76,6 +76,9 @@ public interface Resource extends Adaptable {
 
     List<LinkDescriptor> getLinks(String category);
 
+    /** @since 2025.14 */
+    <R extends Resource> R newObject(Class<? extends R> type, Object... args);
+
     Resource newObject(String type, Object... args);
 
     AdapterResource newAdapter(String type, Object... args);

@@ -22,7 +22,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
@@ -39,9 +38,9 @@ public class BlobAdapter extends DefaultAdapter {
     protected DocumentModel doc;
 
     @Path("{fieldPath:((?:(?!/@).)*)}")
-    public Resource doGet(@PathParam("fieldPath") String fieldPath) {
+    public BlobObject doGet(@PathParam("fieldPath") String fieldPath) {
         doc = getTarget().getAdapter(DocumentModel.class);
-        return newObject("blob", fieldPath, doc);
+        return newObject(BlobObject.class, fieldPath, doc);
     }
 
 }

@@ -50,12 +50,18 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
      */
     public static final String ALLOW_EMPTY_PASSWORD_PROP = "nuxeo.user.password.empty.enabled";
 
+    public UserRootObject() {
+        super(UserObject.class);
+    }
+
     @Override
     protected NuxeoPrincipal getArtifact(String id) {
         return um.getPrincipal(id);
     }
 
     @Override
+    @SuppressWarnings("removal")
+    @Deprecated(since = "2025.14", forRemoval = true)
     protected String getArtifactType() {
         return "user";
     }

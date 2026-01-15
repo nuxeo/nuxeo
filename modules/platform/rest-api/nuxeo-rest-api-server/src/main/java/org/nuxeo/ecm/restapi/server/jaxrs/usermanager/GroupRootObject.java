@@ -49,6 +49,10 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
      */
     public static final String RESTRICT_ADMINISTRATORS_MEMBERS_PROP = "nuxeo.group.administrators.members.resticted";
 
+    public GroupRootObject() {
+        super(GroupObject.class);
+    }
+
     @Override
     protected NuxeoGroup getArtifact(String id) {
         var group = um.getGroup(id);
@@ -60,6 +64,8 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     }
 
     @Override
+    @SuppressWarnings("removal")
+    @Deprecated(since = "2025.14", forRemoval = true)
     protected String getArtifactType() {
         return "group";
     }

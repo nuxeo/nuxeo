@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.search;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,6 +59,7 @@ import org.nuxeo.ecm.platform.search.core.SavedSearch;
 import org.nuxeo.ecm.platform.search.core.SavedSearchConstants;
 import org.nuxeo.ecm.platform.search.core.SavedSearchRequest;
 import org.nuxeo.ecm.platform.search.core.SavedSearchService;
+import org.nuxeo.ecm.restapi.server.jaxrs.BulkActionObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.runtime.api.Framework;
@@ -121,12 +123,12 @@ public class SearchObject extends QueryExecutor {
      * @since 10.3
      */
     @Path("bulk")
-    public Object doBulkActionByLang(@Context UriInfo uriInfo) {
+    public BulkActionObject doBulkActionByLang(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(null, queryParams);
         String scrollName = queryParams.getFirst(SCROLL_PARAM);
         String queryLimit = queryParams.getFirst(QUERY_LIMIT_PARAM);
-        return newObject("bulkAction", query, scrollName, queryLimit);
+        return newObject(BulkActionObject.class, query, scrollName, queryLimit);
     }
 
     @GET
@@ -146,7 +148,7 @@ public class SearchObject extends QueryExecutor {
     }
 
     @Path("pp/{pageProviderName}/bulk")
-    public Object doBulkActionByPageProvider(@PathParam("pageProviderName") String pageProviderName,
+    public BulkActionObject doBulkActionByPageProvider(@PathParam("pageProviderName") String pageProviderName,
             @Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         PageProvider<?> pageProvider = getPageProvider(pageProviderName, queryParams);
@@ -160,7 +162,7 @@ public class SearchObject extends QueryExecutor {
             scrollName = scrollParam;
         }
         String queryLimit = queryParams.getFirst(QUERY_LIMIT_PARAM);
-        return newObject("bulkAction", query, scrollName, queryLimit);
+        return newObject(BulkActionObject.class, query, scrollName, queryLimit);
     }
 
     @GET
@@ -204,14 +206,14 @@ public class SearchObject extends QueryExecutor {
     }
 
     @Path("saved/{id}/bulk")
-    public Object doBulkActionBySavedSearch(@PathParam("id") String id, @Context UriInfo uriInfo) {
+    public BulkActionObject doBulkActionBySavedSearch(@PathParam("id") String id, @Context UriInfo uriInfo) {
         SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
         if (search == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new NuxeoException("Saved search not found", SC_NOT_FOUND);
         }
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(search.getPageProviderName(), queryParams);
-        return newObject("bulkAction", query);
+        return newObject(BulkActionObject.class, query);
     }
 
     @PUT

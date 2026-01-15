@@ -21,6 +21,9 @@ package org.nuxeo.ecm.restapi.server.jaxrs.config;
 
 import javax.ws.rs.Path;
 
+import org.nuxeo.ecm.restapi.server.jaxrs.config.facets.SchemaEndPoint;
+import org.nuxeo.ecm.restapi.server.jaxrs.config.schemas.FacetEndPoint;
+import org.nuxeo.ecm.restapi.server.jaxrs.config.types.DocTypeEndPoint;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
@@ -28,17 +31,17 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 public class ConfigEndPoint extends DefaultObject {
 
     @Path("types")
-    public Object getTypes() {
-        return newObject("docType");
+    public DocTypeEndPoint getTypes() {
+        return newObject(DocTypeEndPoint.class);
     }
 
     @Path("schemas")
-    public Object getSchemas() {
-        return newObject("schema");
+    public SchemaEndPoint getSchemas() {
+        return newObject(SchemaEndPoint.class);
     }
 
     @Path("facets")
-    public Object getDocFacets() {
-        return newObject("facet");
+    public FacetEndPoint getDocFacets() {
+        return newObject(FacetEndPoint.class);
     }
 }

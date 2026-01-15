@@ -44,7 +44,7 @@ public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
             throw new WebResourceNotFoundException("Group not found");
         }
 
-        return newObject("userToGroup", currentArtifact, group);
+        return newObject(UserToGroupObject.class, currentArtifact, group);
     }
 
     @Override

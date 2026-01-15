@@ -42,6 +42,7 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 
@@ -255,6 +256,19 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
             return adapter.cast(this);
         }
         return null;
+    }
+
+    @Override
+    public <R extends Resource> R newObject(Class<? extends R> type, Object... args) {
+        return (R) ctx.newObject(retrieveWebObjectType(type), args);
+    }
+
+    protected String retrieveWebObjectType(Class<? extends Resource> type) {
+        var webObjectAnnotation = type.getDeclaredAnnotation(WebObject.class);
+        if (webObjectAnnotation == null) {
+            throw new IllegalArgumentException("The given type: %s is not a WebObject".formatted(type.getName()));
+        }
+        return webObjectAnnotation.type();
     }
 
     @Override

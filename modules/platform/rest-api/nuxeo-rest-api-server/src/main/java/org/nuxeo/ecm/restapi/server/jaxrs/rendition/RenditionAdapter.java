@@ -37,8 +37,8 @@ public class RenditionAdapter extends DefaultAdapter {
     public static final String NAME = "rendition";
 
     @Path("{renditionName:((?:(?!/@).)*)}")
-    public Object doGetRendition(@Context Request request, @PathParam("renditionName") String renditionName) {
+    public RenditionObject doGetRendition(@Context Request request, @PathParam("renditionName") String renditionName) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        return newObject("rendition", doc, renditionName);
+        return newObject(RenditionObject.class, doc, renditionName);
     }
 }

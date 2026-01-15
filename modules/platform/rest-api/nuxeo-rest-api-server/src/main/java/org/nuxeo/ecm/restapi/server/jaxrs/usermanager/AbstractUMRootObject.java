@@ -31,15 +31,30 @@ import javax.ws.rs.core.Response.Status;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.server.jaxrs.PaginableObject;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
 
+    protected final Class<? extends Resource> artifactClass;
+
     protected String query;
 
     protected UserManager um;
+
+    /**
+     * @deprecated since 2025.14, use {@link #AbstractUMRootObject(Class)} instead.
+     */
+    @Deprecated(since = "2025.14", forRemoval = true)
+    public AbstractUMRootObject() {
+        this.artifactClass = null;
+    }
+
+    protected AbstractUMRootObject(Class<? extends Resource> artifactClass) {
+        this.artifactClass = artifactClass;
+    }
 
     @Override
     protected void initialize(Object... args) {
@@ -56,10 +71,11 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     @Path("{artName:((?:(?!(/@|(/user/|/group/))).)*)}")
     public Object getArtifactWebObject(@PathParam("artName") String artName) {
         T artifact = getArtifact(artName);
+        String artifactType = artifactClass == null ? getArtifactType() : retrieveWebObjectType(artifactClass);
         if (artifact == null) {
-            throw new WebResourceNotFoundException(getArtifactType() + " does not exist");
+            throw new WebResourceNotFoundException(artifactType + " does not exist");
         }
-        return newObject(getArtifactType(), artifact);
+        return newObject(artifactType, artifact);
     }
 
     @POST
@@ -87,7 +103,10 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
 
     /**
      * Returns the type of the current artifact needed for {@link #newObject(String, Object...)}.
+     *
+     * @deprecated since 2025.14
      */
+    @Deprecated(since = "2025.14", forRemoval = true)
     protected abstract String getArtifactType();
 
     /**

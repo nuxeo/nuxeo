@@ -51,21 +51,21 @@ public class RepositoryObject extends DefaultObject {
     public Object getRootPathAdapter(@PathParam("adapterName") String adapterName) {
         DocumentModel rootDocument = getContext().getCoreSession().getRootDocument();
 
-        return ctx.newAdapter(newObject("Document", rootDocument), adapterName);
+        return ctx.newAdapter(newObject(JSONDocumentObject.class, rootDocument), adapterName);
     }
 
     @Path("path{docPath:(/(?:(?!/@).)*)}")
-    public Object getDocsByPath(@PathParam("docPath") String docPath) {
+    public JSONDocumentObject getDocsByPath(@PathParam("docPath") String docPath) {
         CoreSession session = getContext().getCoreSession();
         DocumentModel doc = session.getDocument(new PathRef(docPath));
-        return newObject("Document", doc);
+        return newObject(JSONDocumentObject.class, doc);
     }
 
     @Path("id/{id}")
-    public Object getDocsById(@PathParam("id") String id) {
+    public JSONDocumentObject getDocsById(@PathParam("id") String id) {
         CoreSession session = getContext().getCoreSession();
         DocumentModel doc = session.getDocument(new IdRef(id));
-        return newObject("Document", doc);
+        return newObject(JSONDocumentObject.class, doc);
     }
 
     /**
@@ -88,12 +88,12 @@ public class RepositoryObject extends DefaultObject {
             docs.add(session.getDocument(new IdRef(loopid)));
         }
 
-        return obj.newObject("bulk", new DocumentModelListImpl(docs));
+        return obj.newObject(BulkDocumentsObject.class, new DocumentModelListImpl(docs));
     }
 
     @Path("@" + EmptyDocumentAdapter.NAME)
-    public Object getEmptyDocumentModel() {
-        return newObject("emptyDocumentAdapter");
+    public EmptyDocumentAdapter getEmptyDocumentModel() {
+        return newObject(EmptyDocumentAdapter.class);
     }
 
     /**

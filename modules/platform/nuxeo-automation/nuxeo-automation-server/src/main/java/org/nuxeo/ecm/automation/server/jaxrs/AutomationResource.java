@@ -131,7 +131,7 @@ public class AutomationResource extends ModuleRoot {
         }
         try {
             OperationType op = service.getOperation(oid);
-            return newObject("operation", op);
+            return newObject(OperationResource.class, op);
         } catch (OperationNotFoundException cause) {
             return new WebResourceNotFoundException("Failed to invoke operation: " + oid, cause);
         }

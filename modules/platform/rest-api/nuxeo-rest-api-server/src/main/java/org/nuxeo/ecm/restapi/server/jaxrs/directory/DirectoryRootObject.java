@@ -40,8 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DirectoryRootObject extends DefaultObject {
 
     @Path("{directoryName}")
-    public Object doGetDirectory(@PathParam("directoryName") String dirName) {
-        return newObject("directoryObject", dirName);
+    public DirectoryObject doGetDirectory(@PathParam("directoryName") String dirName) {
+        return newObject(DirectoryObject.class, dirName);
     }
 
     /**
