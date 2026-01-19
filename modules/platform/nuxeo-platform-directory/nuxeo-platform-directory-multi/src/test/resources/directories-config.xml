@@ -14,10 +14,12 @@
         <subDirectory name="dir1">
           <field for="thepass">password</field>
           <field for="thefoo">foo</field>
+          <field for="thetruc">truc</field>
         </subDirectory>
         <subDirectory name="dir2">
           <field for="uid">id</field> <!-- should be implicit -->
           <field for="thebar">bar</field>
+          <field for="theValues">someValues</field>
         </subDirectory>
       </source>
 

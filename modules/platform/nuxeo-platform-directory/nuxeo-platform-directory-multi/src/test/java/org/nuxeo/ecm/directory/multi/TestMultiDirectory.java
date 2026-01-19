@@ -98,7 +98,7 @@ public class TestMultiDirectory {
         desc1 = new MemoryDirectoryDescriptor();
         desc1.name = "dir1";
         desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "password", "foo"));
+        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "password", "foo", "truc"));
         desc1.idField = "uid";
         desc1.passwordField = "password";
         directoryService.registerDirectoryDescriptor(desc1);
@@ -109,11 +109,13 @@ public class TestMultiDirectory {
             e.put("uid", "1");
             e.put("password", "pw1");
             e.put("foo", "foo1");
+            e.put("truc", "truc1");
             dir1.createEntry(e);
             e = new HashMap<>();
             e.put("uid", "2");
             e.put("password", "pw2");
             e.put("foo", "foo2");
+            e.put("truc", "truc2");
             dir1.createEntry(e);
         }
 
@@ -121,7 +123,7 @@ public class TestMultiDirectory {
         desc2 = new MemoryDirectoryDescriptor();
         desc2.name = "dir2";
         desc2.schemaName = "schema2";
-        desc2.schemaSet = new HashSet<>(Arrays.asList("id", "bar"));
+        desc2.schemaSet = new HashSet<>(Arrays.asList("id", "bar", "someValues"));
         desc2.idField = "id";
         desc2.passwordField = null;
         directoryService.registerDirectoryDescriptor(desc2);
@@ -131,10 +133,12 @@ public class TestMultiDirectory {
             e = new HashMap<>();
             e.put("id", "1");
             e.put("bar", "bar1");
+            e.put("someValues", List.of("foo", "bar").toArray());
             dir2.createEntry(e);
             e = new HashMap<>();
             e.put("id", "2");
             e.put("bar", "bar2");
+            e.put("someValues", List.of("tom", "cat").toArray());
             dir2.createEntry(e);
         }
 
@@ -142,7 +146,7 @@ public class TestMultiDirectory {
         desc3 = new MemoryDirectoryDescriptor();
         desc3.name = "dir3";
         desc3.schemaName = "schema3";
-        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
+        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thepass", "thefoo", "thetruc", "thebar", "theValues"));
         desc3.idField = "uid";
         desc3.passwordField = "thepass";
         directoryService.registerDirectoryDescriptor(desc3);
@@ -837,7 +841,7 @@ public class TestMultiDirectory {
 
     // NXP-27871
     @Test
-    public void testNullifytStringProperty() {
+    public void testNullifytStringPropertyWithDefaultValue() {
         DocumentModel entry = dir.getEntry("1");
         assertNotNull(entry);
         assertEquals("foo1", entry.getProperty("schema3", "thefoo"));
@@ -847,6 +851,50 @@ public class TestMultiDirectory {
         dir.updateEntry(entry);
         entry = dir.getEntry("1");
         assertEquals("", entry.getProperty("schema3", "thefoo"));
+    }
+
+    // NXP-27871
+    @Test
+    public void testNullifytStringProperty() {
+        DocumentModel entry = dir.getEntry("1");
+        assertNotNull(entry);
+        assertEquals("truc1", entry.getProperty("schema3", "thetruc"));
+
+        // set string property to null, expect empty string after update
+        entry.setProperty("schema3", "thetruc", null);
+        dir.updateEntry(entry);
+        entry = dir.getEntry("1");
+        assertNull(entry.getProperty("schema3", "thetruc"));
+    }
+
+    // NXP-33350
+    @Test
+    public void testEmptyStringListProperty() {
+        DocumentModel entry = dir.getEntry("1");
+        assertNotNull(entry);
+        Object[] oldVal = (Object[]) entry.getProperty("schema3", "theValues");
+        assertTrue(oldVal.length > 0);
+
+        // nullify list property
+        entry.setProperty("schema3", "theValues", new String[0]);
+        dir.updateEntry(entry);
+        entry = dir.getEntry("1");
+        assertNull(entry.getProperty("schema3", "theValues"));
+    }
+
+    // NXP-33350
+    @Test
+    public void testNullifyStringListProperty() {
+        DocumentModel entry = dir.getEntry("1");
+        assertNotNull(entry);
+        Object[] oldVal = (Object[]) entry.getProperty("schema3", "theValues");
+        assertTrue(oldVal.length > 0);
+
+        // nullify list property
+        entry.setProperty("schema3", "theValues", null);
+        dir.updateEntry(entry);
+        entry = dir.getEntry("1");
+        assertNull(entry.getProperty("schema3", "theValues"));
     }
 
 }

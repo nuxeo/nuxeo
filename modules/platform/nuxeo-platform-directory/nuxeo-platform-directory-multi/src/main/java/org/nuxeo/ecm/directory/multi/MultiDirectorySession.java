@@ -521,26 +521,23 @@ public class MultiDirectorySession extends BaseSession {
                 // if entry does not exist, create it
                 session.createEntry(map);
             } else {
-                final DocumentModel entry = session.createEntryModel(id, null);
-
-                // Make sure a null string in the field map is set to an empty string in the entry property, to avoid
-                // non-dirty false detection and guarantee that setting a field to blank is actually saved.
-                // Such a null string field can be sent from the JSF UI.
-                setProperties(entry, dirInfo.dirSchemaName, map);
-                session.updateEntry(entry);
+                setProperties(dirEntry, dirInfo.dirSchemaName, map);
+                session.updateEntry(dirEntry);
             }
         }
     }
 
     /**
      * Sets the properties of the given {@code doc} and {@code schema} to the values provided by the given {@code map},
-     * ensuring that any {@code null} value gets transformed to an empty string for a string property.
+     * ensuring that any {@code null} value gets transformed to an empty string for a string property with a default
+     * value.
      */
     protected static void setProperties(DocumentModel doc, String schema, Map<String, Object> map) {
         for (Entry<String, Object> e : map.entrySet()) {
             Property property = doc.getPropertyObject(schema, e.getKey());
             Object value = e.getValue();
-            if (property instanceof StringProperty && value == null) {
+            if (value == null && property instanceof StringProperty sp && sp.getField().getDefaultValue() != null) {
+                // Let's save an empty string, or we'll fall back on the default value otherwise
                 value = "";
             }
             property.setValue(value);
