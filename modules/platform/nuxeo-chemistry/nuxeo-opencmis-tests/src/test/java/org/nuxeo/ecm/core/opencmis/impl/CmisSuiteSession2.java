@@ -263,6 +263,8 @@ public class CmisSuiteSession2 {
                 HttpEntity reqEntity = getCreateDocumentHttpEntity(files[i]);
                 request.setEntity(reqEntity);
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
+                    // Wait for async task such as fulltext indexing
+                    txFeature.nextTransaction();
                     if (okRequest) {
                         JsonNode root = checkOkContentStreamResponse(contentMD5Hex, mapper, response);
                         String objectId = root.path("succinctProperties").path("cmis:objectId").textValue();
