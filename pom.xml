@@ -83,7 +83,7 @@
     <jxls.version>1.0.6-NX02</jxls.version>
     <jxls2.version>2.14.0</jxls2.version>
     <keycloak.version>24.0.5</keycloak.version>
-    <xdocreport.version>1.0.6</xdocreport.version>
+    <xdocreport.version>2.0.4</xdocreport.version>
     <google.http.client.version>1.47.1</google.http.client.version>
     <google.oauth.client.version>1.39.0</google.oauth.client.version>
     <google.api.client.version>1.35.2</google.api.client.version>
@@ -2685,6 +2685,16 @@
         <groupId>fr.opensagres.xdocreport</groupId>
         <artifactId>fr.opensagres.xdocreport.remoting.resources</artifactId>
         <version>${xdocreport.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>jakarta.xml.ws</groupId>
+            <artifactId>jakarta.xml.ws-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jakarta.jws</groupId>
+            <artifactId>jakarta.jws-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- others -->
@@ -5048,7 +5058,9 @@
                   <exclude>jakarta.mail:jakarta.mail-api</exclude>
                   <exclude>jakarta.persistence:jakarta.persistence-api</exclude>
                   <exclude>jakarta.servlet:jakarta.servlet-api</exclude>
+                  <exclude>jakarta.xml.ws:jakarta.xml.ws-api</exclude>
                   <exclude>jakarta.xml.soap:jakarta.xml.soap-api</exclude>
+                  <exclude>jakarta.jws:jakarta.jws-api</exclude>
                   <exclude>jakarta.transaction:jakarta.transaction-api</exclude>
                   <exclude>jakarta.validation:jakarta.validation-api</exclude>
                   <exclude>jakarta.ws.rs:jakarta.ws.rs-api</exclude>
