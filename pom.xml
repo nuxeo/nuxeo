@@ -83,7 +83,7 @@
     <jxls.version>1.0.6-NX02</jxls.version>
     <jxls2.version>2.14.0</jxls2.version>
     <keycloak.version>24.0.5</keycloak.version>
-    <xdocreport.version>2.0.4</xdocreport.version>
+    <xdocreport.version>2.0.6</xdocreport.version>
     <google.http.client.version>1.47.1</google.http.client.version>
     <google.oauth.client.version>1.39.0</google.oauth.client.version>
     <google.api.client.version>1.35.2</google.api.client.version>
@@ -114,7 +114,7 @@
     <gatling-plugin.version>3.1.2</gatling-plugin.version>
     <scala.version>2.12.21</scala.version>
     <scala-logging.version>3.9.6</scala-logging.version>
-    <scala-maven-plugin.version>4.9.8</scala-maven-plugin.version>
+    <scala-maven-plugin.version>4.9.9</scala-maven-plugin.version>
 
     <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
 
@@ -2739,7 +2739,7 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.27.6</version>
+        <version>3.27.7</version>
         <scope>test</scope>
       </dependency>
       <dependency>
