@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,16 @@ import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
 import fr.opensagres.xdocreport.core.XDocReportException;
+import fr.opensagres.xdocreport.core.document.DocumentKind;
 import fr.opensagres.xdocreport.document.IXDocReport;
+import fr.opensagres.xdocreport.document.registry.TemplateEngineInitializerRegistry;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
 import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
+import fr.opensagres.xdocreport.template.freemarker.FreemarkerTemplateEngine;
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
 
 /**
  * XDocReport based {@link TemplateProcessor}
@@ -61,6 +66,21 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
     public static final String DocX_TEMPLATE_TYPE = "DocX";
 
     protected FMContextBuilder fmContextBuilder = new FMContextBuilder();
+
+    static {
+        // configure XDocReport to be safer
+        var templateEngineRegistry = TemplateEngineInitializerRegistry.getRegistry();
+        List.of(DocumentKind.DOCX, DocumentKind.ODS, DocumentKind.ODT).forEach(documentKind -> {
+            var freemarkerTemplateEngine = (FreemarkerTemplateEngine) templateEngineRegistry.getTemplateEngine(
+                    TemplateEngineKind.Freemarker, documentKind);
+            try {
+                freemarkerTemplateEngine.getFreemarkerConfiguration()
+                                        .setSetting(Configuration.NEW_BUILTIN_CLASS_RESOLVER_KEY, "safer");
+            } catch (TemplateException e) {
+                // ignore, it should not happen
+            }
+        });
+    }
 
     protected String getTemplateFormat(Blob blob) {
         String filename = blob.getFilename();
