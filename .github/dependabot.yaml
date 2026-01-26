@@ -142,6 +142,10 @@ updates:
       - dependency-name: "org.codehaus.mojo:license-maven-plugin"
         versions: ["[1.20, 1.21)"] # no update to 1.20.jbossorg-3
 
+      # Prometheus simpleclient 0.12 contains breaking change
+      - dependency-name: "io.prometheus:simpleclient"
+        versions: [">0.11"]
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     target-branch: "2025"
