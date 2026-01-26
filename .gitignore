@@ -18,6 +18,7 @@ bin
 .checkstyle
 .mylar
 .idea
+.vscode
 *.iml
 *.ipr
 *.iws
