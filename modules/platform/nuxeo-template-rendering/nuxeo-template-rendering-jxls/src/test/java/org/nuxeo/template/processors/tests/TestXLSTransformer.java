@@ -41,13 +41,13 @@ import org.jxls.util.JxlsHelper;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.template.RenderingCoreFeature;
 import org.nuxeo.template.context.SimpleContextBuilder;
 
 import net.sf.jxls.transformer.XLSTransformer;
@@ -59,11 +59,8 @@ import net.sf.jxls.transformer.XLSTransformer;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(RenderingCoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.dublincore")
-@Deploy("org.nuxeo.template.manager.api")
-@Deploy("org.nuxeo.template.manager")
 @Deploy("org.nuxeo.template.manager.jxls")
 @Deploy("org.nuxeo.template.manager.jxls.tests:OSGI-INF/testxlstransformer-config.xml")
 public class TestXLSTransformer {

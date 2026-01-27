@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.function.Function;
@@ -92,6 +93,8 @@ public class TextTemplate {
 
     private static final Logger log = LogManager.getLogger(TextTemplate.class);
 
+    private static final String DEFAULT_FREEMARKER_NEW_BUILTIN_CLASS_RESOLVER = "safer";
+
     private static final int MAX_RECURSION_LEVEL = 10;
 
     private static final String PATTERN_GROUP_DECRYPT = "decrypt";
@@ -116,6 +119,8 @@ public class TextTemplate {
     private List<String> plainTextExtensions;
 
     private List<String> freemarkerExtensions = new ArrayList<>();
+
+    private String freemarkerNewBuiltInClassResolver = DEFAULT_FREEMARKER_NEW_BUILTIN_CLASS_RESOLVER;
 
     private Configuration freemarkerConfiguration = null;
 
@@ -354,6 +359,12 @@ public class TextTemplate {
     @SuppressWarnings("unchecked")
     public void initFreeMarker() {
         freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_30);
+        try {
+            freemarkerConfiguration.setSetting(Configuration.NEW_BUILTIN_CLASS_RESOLVER_KEY, StringUtils.defaultIfBlank(
+                    freemarkerNewBuiltInClassResolver, DEFAULT_FREEMARKER_NEW_BUILTIN_CLASS_RESOLVER));
+        } catch (TemplateException e) {
+            log.debug("Unable to set new built-in class resolver setting", e);
+        }
         // declare the decrypt method to be allowed to decrypt variables in nxftl
         freemarkerConfiguration.setSharedVariable("decrypt", (TemplateMethodModelEx) arguments -> {
             String value = StringUtils.defaultIfBlank(arguments.get(0).toString(), "");
@@ -555,6 +566,19 @@ public class TextTemplate {
         while (st.hasMoreTokens()) {
             String extension = st.nextToken().toLowerCase();
             freemarkerExtensions.add(extension);
+        }
+    }
+
+    /**
+     * Sets the FreeMarker new built-in class resolver.
+     *
+     * @param freemarkerNewBuiltInClassResolver the resolver to set
+     * @since 2025.14
+     */
+    public void setFreemarkerNewResolver(String freemarkerNewBuiltInClassResolver) {
+        if (!Objects.equals(this.freemarkerNewBuiltInClassResolver, freemarkerNewBuiltInClassResolver)) {
+            this.freemarkerNewBuiltInClassResolver = freemarkerNewBuiltInClassResolver;
+            freemarkerConfiguration = null;
         }
     }
 

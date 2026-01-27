@@ -1620,6 +1620,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
         <artifactId>nuxeo-template-rendering-xdocreport</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>

@@ -23,8 +23,6 @@ import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +61,13 @@ import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.mail.MailException;
 import org.nuxeo.mail.MailMessage;
 import org.nuxeo.mail.MailService;
 import org.nuxeo.runtime.api.Framework;
 
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
@@ -82,12 +80,6 @@ import freemarker.template.TemplateException;
 public class SendMail {
 
     private static final Logger log = LogManager.getLogger(SendMail.class);
-
-    /**
-     * @deprecated since 11.1 due to its static modifier, it messes up tests, instantiate {@link Composer} instead
-     */
-    @Deprecated(since = "11.1")
-    public static final Composer COMPOSER = new Composer();
 
     public static final String ID = "Document.Mail";
 
@@ -143,7 +135,7 @@ public class SendMail {
     protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws TemplateException, OperationException, IOException {
+    public DocumentModel run(DocumentModel doc) throws RenderingException, OperationException, IOException {
         send(doc);
         return doc;
     }
@@ -164,7 +156,7 @@ public class SendMail {
         }
     }
 
-    protected void send(DocumentModel doc) throws TemplateException, OperationException, IOException {
+    protected void send(DocumentModel doc) throws RenderingException, OperationException, IOException {
         // TODO should sent one by one to each recipient? and have the template
         // rendered for each recipient? Use: "mailto" var name?
         try {
@@ -210,7 +202,7 @@ public class SendMail {
 
             // send
             Framework.getService(MailService.class).sendMail(msg);
-        } catch (NuxeoException | TemplateException | OperationException | IOException e) {
+        } catch (NuxeoException | RenderingException | OperationException | IOException e) {
             if (rollbackOnError) {
                 if (e instanceof MailException) {
                     // the Automation framework doesn't handle MailException (instance of NuxeoException) the same way
@@ -267,19 +259,13 @@ public class SendMail {
      */
     @Deprecated(since = "2023.4")
     protected Mailer.Message createMessage(DocumentModel doc, String message, Map<String, Object> map)
-            throws MessagingException, TemplateException, IOException {
+            throws MessagingException, TemplateException, IOException, RenderingException {
         var composer = new Composer();
         return composer.newMixedMessage(message, map, asHtml ? "html" : "plain", getBlobs(doc));
     }
 
-    protected String renderContent(Map<String, Object> map) throws IOException, OperationException, TemplateException {
-        var engine = new FreemarkerEngine();
-        var reader = new StringReader(getContent());
-        var template = new Template("@inline", reader, engine.getConfiguration(), "UTF-8");
-        var writer = new StringWriter();
-        var env = template.createProcessingEnvironment(map, writer, engine.getObjectWrapper());
-        env.process();
-        return writer.toString();
+    protected String renderContent(Map<String, Object> map) throws IOException, OperationException, RenderingException {
+        return new FreemarkerEngine().renderInline(getContent(), map);
     }
 
     protected <P> List<String> asStringList(List<P> inputList) {

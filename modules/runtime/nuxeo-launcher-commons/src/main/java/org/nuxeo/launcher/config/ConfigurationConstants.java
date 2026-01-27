@@ -70,6 +70,13 @@ public final class ConfigurationConstants {
     public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.freemarker_parsing_extensions";
 
     /**
+     * Allows to set the {@link freemarker.core.Configurable#NEW_BUILTIN_CLASS_RESOLVER_KEY} Freemarker settings.
+     * 
+     * @since 2025.14
+     */
+    public static final String PARAM_TEMPLATES_FREEMARKER_NEW_RESOLVER = "nuxeo.freemarker_new_resolver";
+
+    /**
      * Absolute or relative PATH to the user chosen templates (comma separated list)
      */
     public static final String PARAM_TEMPLATES_NAME = "nuxeo.templates";

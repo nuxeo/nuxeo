@@ -204,7 +204,7 @@ public class Composer {
     public Mailer.Message newTextMessage(String templateContent, Object ctx)
             throws RenderingException, MessagingException, TemplateException, IOException {
         Mailer.Message msg = mailer.newMessage();
-        msg.setText(render(templateContent, ctx), "UTF-8");
+        msg.setText(engine.renderInline(templateContent, ctx), "UTF-8");
         return msg;
     }
 
@@ -215,21 +215,21 @@ public class Composer {
     }
 
     public Mailer.Message newHtmlMessage(String templateContent, Object ctx)
-            throws MessagingException, TemplateException, IOException {
+            throws MessagingException, TemplateException, IOException, RenderingException {
         Mailer.Message msg = mailer.newMessage();
-        msg.setContent(render(templateContent, ctx), "text/html; charset=utf-8");
+        msg.setContent(engine.renderInline(templateContent, ctx), "text/html; charset=utf-8");
         return msg;
     }
 
     public Mailer.Message newMixedMessage(String templateContent, Object ctx, String textType, List<Blob> attachments)
-            throws TemplateException, IOException, MessagingException {
+            throws TemplateException, IOException, MessagingException, RenderingException {
         if (textType == null) {
             textType = "plain";
         }
         Mailer.Message msg = mailer.newMessage();
         MimeMultipart mp = new MimeMultipart();
         MimeBodyPart body = new MimeBodyPart();
-        String result = render(templateContent, ctx);
+        String result = engine.renderInline(templateContent, ctx);
         body.setText(result, "UTF-8", textType);
         mp.addBodyPart(body);
         for (Blob blob : attachments) {

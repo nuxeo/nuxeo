@@ -16,8 +16,9 @@
  * Contributors:
  *     Kevin Leturc <kevin.leturc@hyland.com>
  */
-package org.nuxeo.template.processors.xdocreport;
+package org.nuxeo.template.processors.fm;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -35,27 +36,31 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LoggerLevel;
+import org.nuxeo.template.RenderingCoreFeature;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+
+import freemarker.template.TemplateException;
 
 /**
  * @since 2025.14
  */
 @RunWith(FeaturesRunner.class)
-@Features(XDocReportFeature.class)
-public class TestXDocReportODTRendering {
+@Features(RenderingCoreFeature.class)
+public class TestFreemarkerRendering {
 
     @Inject
     protected CoreSession session;
 
     @Inject
-    protected XDocReportFeature xDocReportFeature;
+    protected RenderingCoreFeature renderingFeature;
 
+    // NXP-33482
     @Test
     @LoggerLevel(name = "freemarker.runtime", level = "FATAL") // hide inline template error
     public void testSafeRendering() throws IOException {
         // instantiate the template
-        var templateBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("data/safeDoc.odt"));
-        var templateDocument = xDocReportFeature.createTemplateDocument(session, "WhoAmI", templateBlob);
+        var templateBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("data/safeDoc.ftl"));
+        var templateDocument = renderingFeature.createTemplateDocument(session, "WhoAmI", templateBlob);
 
         // create the source document
         var sourceDocument = session.createDocumentModel("/", "sourceDocument", "TemplateBasedFile");
@@ -64,9 +69,11 @@ public class TestXDocReportODTRendering {
         templateSourceAdapter.setTemplate(templateDocument.getAdaptedDoc(), false);
 
         var exception = assertThrows(NuxeoException.class, () -> templateSourceAdapter.renderWithTemplate("WhoAmI"));
-        assertEquals("Failed to render template: WhoAmI", exception.getMessage());
+        assertTrue("Message is not the expected one: " + exception.getMessage(),
+                exception.getMessage().startsWith("Unable to render the template"));
+        assertEquals(SC_BAD_REQUEST, exception.getStatusCode());
         Throwable cause = exception.getCause();
-        assertTrue("Cause is not an IOException", cause instanceof IOException);
+        assertTrue("Cause is not a TemplateException", cause instanceof TemplateException);
         String causeMessage = cause.getMessage();
         assertTrue("Failure is not the expected one, cause: " + cause, causeMessage.contains(
                 "Instantiating freemarker.template.utility.Execute is not allowed in the template for security reasons."));

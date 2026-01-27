@@ -131,6 +131,9 @@
     <Logger name="org.apache.zookeeper" level="warn" />
     <Logger name="org.apache.kafka" level="warn" />
 
+    <!-- Hide error from freemarker to not log inline template rendering issues -->
+    <Logger name="freemarker.runtime" level="fatal" />
+
     <Logger name="org.hibernate" level="warn" />
     <Logger name="net.sf.ehcache.hibernate.EhCacheProvider" level="error" />
     <Logger name="org.hibernate.hql.internal.ast.tree.FromElementType" level="error" />

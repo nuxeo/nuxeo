@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ResourceBundle;
 
@@ -40,9 +41,40 @@ public interface RenderingEngine {
     void setSharedVariable(String key, Object value);
 
     /**
+     * Renders and returns the given template.
+     *
+     * @since 2025.14
+     */
+    default String render(String template, Object input) throws RenderingException {
+        var writer = new StringWriter();
+        render(template, input, writer);
+        return writer.toString();
+    }
+
+    /**
      * Starts the rendering for the given document context.
      */
     void render(String template, Object input, Writer writer) throws RenderingException;
+
+    /**
+     * Renders and returns the given value as inline template.
+     *
+     * @since 2025.14
+     */
+    default String renderInline(String inlineTemplate, Object input) throws RenderingException {
+        var writer = new StringWriter();
+        renderInline(inlineTemplate, input, writer);
+        return writer.toString();
+    }
+
+    /**
+     * Renders the given value as inline template.
+     * 
+     * @since 2025.14
+     */
+    default void renderInline(String inlineTemplate, Object input, Writer writer) throws RenderingException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
     View getView(String path);
 

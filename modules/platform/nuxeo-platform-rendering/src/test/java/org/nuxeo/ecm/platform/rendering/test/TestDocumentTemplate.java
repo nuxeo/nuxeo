@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -54,6 +55,7 @@ import junit.framework.Assert;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.rendering")
 public class TestDocumentTemplate {
 
     FreemarkerEngine engine;

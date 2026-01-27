@@ -21,8 +21,10 @@
 
 package org.nuxeo.ecm.platform.rendering.fm;
 
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
+import static java.util.stream.Collectors.toMap;
+
+import java.util.Map;
+
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -33,24 +35,18 @@ public class FreemarkerComponent extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName(FreemarkerComponent.class.getName());
 
-    @Override
-    public void activate(ComponentContext context) {
-    }
+    /** @since 2025.14 */
+    protected static final String SETTINGS_EXTENSION_POINT = "settings";
 
-    @Override
-    public void deactivate(ComponentContext context) {
-    }
-
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+    /** @since 2025.14 */
+    public Map<String, String> getFreemarkerSettings() {
+        return this.<FreemarkerSettingDescriptor> getDescriptors(SETTINGS_EXTENSION_POINT)
+                   .stream()
+                   .collect(toMap(FreemarkerSettingDescriptor::getName, FreemarkerSettingDescriptor::getValue));
     }
 
     public FreemarkerEngine newEngine() {
         return new FreemarkerEngine();
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
     }
 
     @Override

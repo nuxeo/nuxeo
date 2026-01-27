@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -63,6 +62,7 @@ import org.nuxeo.ecm.platform.test.UserManagerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.template.RenderingCoreFeature;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
@@ -71,7 +71,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.processors.HtmlBodyExtractor;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, UserManagerFeature.class })
+@Features({ RenderingCoreFeature.class, UserManagerFeature.class })
 @RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.convert")
@@ -89,7 +89,6 @@ import org.nuxeo.template.processors.HtmlBodyExtractor;
 @Deploy("org.nuxeo.ecm.platform.task.core")
 @Deploy("org.nuxeo.ecm.platform.task.testing")
 @Deploy("org.nuxeo.ecm.platform.rendition.publisher")
-@Deploy("org.nuxeo.template.manager")
 @Deploy("org.nuxeo.template.manager:relations-default-jena-contrib.xml")
 public class TestRenditionPublication {
 

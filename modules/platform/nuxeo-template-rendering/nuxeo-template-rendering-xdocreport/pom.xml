@@ -106,5 +106,10 @@
       <artifactId>nuxeo-platform-audit-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-core</artifactId>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 </project>

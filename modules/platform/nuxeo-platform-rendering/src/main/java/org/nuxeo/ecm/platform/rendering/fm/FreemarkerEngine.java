@@ -21,13 +21,17 @@
 
 package org.nuxeo.ecm.platform.rendering.fm;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.Writer;
 import java.net.SocketException;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -44,6 +48,7 @@ import org.nuxeo.ecm.platform.rendering.fm.extensions.MessagesMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.NewMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.SuperBlockDirective;
 import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
+import org.nuxeo.runtime.api.Framework;
 
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
@@ -79,7 +84,14 @@ public class FreemarkerEngine implements RenderingEngine {
 
     public FreemarkerEngine(Configuration cfg, ResourceLocator locator) {
         wrapper = new DocumentObjectWrapper(this);
-        this.cfg = cfg == null ? new Configuration() : cfg;
+        this.cfg = cfg == null ? new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS) : cfg;
+        Framework.getService(FreemarkerComponent.class).getFreemarkerSettings().forEach((name, value) -> {
+            try {
+                this.cfg.setSetting(name, value);
+            } catch (TemplateException e) {
+                log.info("Unable to set setting: {} with value: {}", name, value, e);
+            }
+        });
         this.cfg.setWhitespaceStripping(true);
         this.cfg.setLocalizedLookup(false);
         this.cfg.setClassicCompatible(true);
@@ -189,7 +201,31 @@ public class FreemarkerEngine implements RenderingEngine {
             bw.copyTo(writer);
         } catch (SocketException e) {
             log.debug("Output closed while rendering: {}", template);
-        } catch (IOException | TemplateException e) {
+        } catch (IOException e) {
+            throw new RenderingException(e);
+        } catch (TemplateException e) {
+            if (e.getMessageWithoutStackTop()
+                 .matches("Instantiating .* is not allowed in the template for security reasons.")) {
+                throw new NuxeoException("Unable to render the template: " + template, e, SC_BAD_REQUEST);
+            }
+            throw new RenderingException(e);
+        }
+    }
+
+    @Override
+    public void renderInline(String inlineTemplate, Object input, Writer writer) throws RenderingException {
+        try {
+            StringReader reader = new StringReader(inlineTemplate);
+            Template tpl = new Template("@inline", reader, cfg, "UTF-8");
+            Environment env = tpl.createProcessingEnvironment(input, writer, getObjectWrapper());
+            env.process();
+        } catch (IOException e) {
+            throw new RenderingException(e);
+        } catch (TemplateException e) {
+            if (e.getMessageWithoutStackTop()
+                 .matches("Instantiating .* is not allowed in the template for security reasons.")) {
+                throw new NuxeoException("Unable to render the inline template", e, SC_BAD_REQUEST);
+            }
             throw new RenderingException(e);
         }
     }

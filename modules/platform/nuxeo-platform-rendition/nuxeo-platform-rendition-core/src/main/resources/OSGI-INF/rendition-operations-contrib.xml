@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.rendition.operations">
 
+  <!-- because PublishRendition replace PublishDocument -->
+  <require>org.nuxeo.ecm.core.automation.coreContrib</require>
+
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
 

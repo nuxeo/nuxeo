@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent.contrib">
+  <extension target="org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent" point="settings">
+    <setting name="new_builtin_class_resolver">safer</setting>
+  </extension>
+</component>

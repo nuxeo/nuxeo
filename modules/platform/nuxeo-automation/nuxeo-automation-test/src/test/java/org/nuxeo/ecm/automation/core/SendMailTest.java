@@ -18,8 +18,10 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
@@ -39,6 +41,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ec.notification.NotificationFeature;
 import org.nuxeo.mail.SmtpMailServerFeature;
@@ -46,12 +49,14 @@ import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LoggerLevel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, SmtpMailServerFeature.class, AutomationFeature.class, NotificationFeature.class })
+@Deploy("org.nuxeo.ecm.platform.rendering")
 @Deploy("org.nuxeo.ecm.platform.url")
 public class SendMailTest {
 
@@ -136,5 +141,25 @@ public class SendMailTest {
                 + "<p>Doc link: <a href=\"\">Source</a>";
         String content = msg.getContent();
         assertTrue(content, content.contains(expectedContent));
+    }
+
+    // NXP-33482
+    @Test
+    @LoggerLevel(name = "freemarker.runtime", level = "FATAL") // hide inline template error
+    public void testSendMailWithExecInput() {
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(src.getRef());
+            OperationChain chain = new OperationChain("sendEMail");
+            chain.add(SendMail.ID)
+                 .set("from", "test@nuxeo.org")
+                 .set("to", "bs@nuxeo.com")
+                 .set("subject", "test mail")
+                 .set("message", "${\"freemarker.template.utility.Execute\"?new()(\"whoami\")}");
+            var exception = assertThrows(NuxeoException.class, () -> service.run(ctx, chain));
+            assertEquals(
+                    "Failed to invoke operation Document.Mail with aliases [Notification.SendMail], Unable to render the inline template",
+                    exception.getMessage());
+            assertEquals(SC_BAD_REQUEST, exception.getStatusCode());
+        }
     }
 }

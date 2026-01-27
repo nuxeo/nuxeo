@@ -65,6 +65,10 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
         });
     }
 
+    /**
+     * @deprecated since 2025.14, use {@link #renderInline(String, Object, Writer)} instead
+     */
+    @Deprecated(since = "2025.14", forRemoval = true)
     public void renderContent(String content, Object ctx, Writer writer) throws IOException, TemplateException {
         StringReader reader = new StringReader(content);
         Template tpl = new Template("@inline", reader, getConfiguration(), "UTF-8");
@@ -83,7 +87,7 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
         if (uriOrContent.startsWith(Renderer.TEMPLATE_PREFIX)) {
             render(uriOrContent, root, result);
         } else {
-            renderContent(uriOrContent, root, result);
+            renderInline(uriOrContent, root, result);
         }
         return result.getBuffer().toString();
     }

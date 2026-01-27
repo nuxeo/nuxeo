@@ -22,6 +22,7 @@ package org.nuxeo.launcher.config;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS;
+import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_FREEMARKER_NEW_RESOLVER;
 import static org.nuxeo.launcher.config.ConfigurationConstants.PARAM_TEMPLATES_PARSING_EXTENSIONS;
 
 import java.nio.file.InvalidPathException;
@@ -329,6 +330,7 @@ public class ConfigurationHolder {
                 userConfig.getProperty(PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
         templateParser.setFreemarkerParsingExtensions(
                 userConfig.getProperty(PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
+        templateParser.setFreemarkerNewResolver(userConfig.getProperty(PARAM_TEMPLATES_FREEMARKER_NEW_RESOLVER));
         return templateParser;
     }
 

@@ -37,6 +37,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Features({ RuntimeFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.runtime.management")
 @Deploy("org.nuxeo.ecm.core.management")
+@Deploy("org.nuxeo.ecm.platform.rendering")
 public class SendMailTest {
 
     protected static final String TOKEN = "ABC";

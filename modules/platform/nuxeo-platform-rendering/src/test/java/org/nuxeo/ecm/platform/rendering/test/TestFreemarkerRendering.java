@@ -55,6 +55,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.schema")
+@Deploy("org.nuxeo.ecm.platform.rendering")
 @Deploy("org.nuxeo.ecm.platform.rendering.tests:OSGI-INF/test-schema.xml")
 public class TestFreemarkerRendering {
 

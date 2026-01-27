@@ -1,6 +1,7 @@
 <component
   name="org.nuxeo.template.service.defaultContrib">
 
+  <require>org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent</require>
   <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
 
     <documentation>Freemarker based template processor</documentation>

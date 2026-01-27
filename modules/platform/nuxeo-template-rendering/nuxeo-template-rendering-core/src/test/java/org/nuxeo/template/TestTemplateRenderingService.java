@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -56,7 +55,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.context.extensions.ContextFunctions;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(RenderingCoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.convert")
 @Deploy("org.nuxeo.ecm.actions")
@@ -69,7 +68,6 @@ import org.nuxeo.template.context.extensions.ContextFunctions;
 @Deploy("org.nuxeo.ecm.platform.versioning")
 @Deploy("org.nuxeo.ecm.relations")
 @Deploy("org.nuxeo.ecm.relations.jena")
-@Deploy("org.nuxeo.template.manager")
 public class TestTemplateRenderingService {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";

@@ -59,6 +59,7 @@ nuxeo.transientstores.root=${nuxeo.binarystores.root}
 
 nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
 nuxeo.freemarker_parsing_extensions=nxftl
+nuxeo.freemarker_new_resolver=safer
 
 # Tomcat
 session.timeout=60

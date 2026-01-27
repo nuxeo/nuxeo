@@ -8,8 +8,19 @@
   </documentation>
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent" />
+    <provide interface="org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent" />
   </service>
+
+  <extension-point name="settings">
+    <documentation>
+      Extension point to define the settings applied to freemarker.
+
+      Example:
+      <code>
+        <setting name="output_encoding" value="UTF-8" />
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.rendering.fm.FreemarkerSettingDescriptor" />
+  </extension-point>
 
 </component>

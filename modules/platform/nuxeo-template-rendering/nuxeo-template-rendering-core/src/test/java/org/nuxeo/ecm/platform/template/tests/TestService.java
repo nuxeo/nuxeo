@@ -46,6 +46,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        deployBundle("org.nuxeo.ecm.platform.rendering");
         deployBundle("org.nuxeo.template.manager.api");
         deployBundle("org.nuxeo.template.manager");
     }

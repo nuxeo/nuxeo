@@ -24,11 +24,8 @@ import static org.nuxeo.ecm.user.invite.RegistrationRules.FIELD_CONFIGURATION_NA
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,10 +66,6 @@ import org.nuxeo.mail.MailService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 public class UserInvitationComponent extends DefaultComponent implements UserInvitationService {
 
@@ -504,17 +497,11 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     private String renderSubjectTemplate(String emailTitle, Map<String, Serializable> input) {
-        Configuration stringCfg = rh.getEngineConfiguration();
-        Writer out;
         try {
-            Template templ = new Template("subjectTemplate", new StringReader(emailTitle), stringCfg);
-            out = new StringWriter();
-            templ.process(input, out);
-            out.flush();
-        } catch (IOException | TemplateException e) {
+            return rh.getRenderingEngine().renderInline(emailTitle, input);
+        } catch (RenderingException e) {
             throw new NuxeoException("Error while rendering email subject: ", e);
         }
-        return out.toString();
     }
 
     protected static boolean isTestModeSet() {

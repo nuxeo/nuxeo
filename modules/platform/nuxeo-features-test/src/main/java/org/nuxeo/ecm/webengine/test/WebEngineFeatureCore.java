@@ -22,6 +22,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @Deploy("org.nuxeo.ecm.webengine.core")
+@Deploy("org.nuxeo.ecm.platform.rendering")
 @Deploy("org.nuxeo.ecm.platform.web.common")
 public class WebEngineFeatureCore implements RunnerFeature {
 
