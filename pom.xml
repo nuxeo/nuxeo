@@ -2800,11 +2800,6 @@
         <artifactId>jackson-core-asl</artifactId>
         <version>${jackson1.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-mapper-asl</artifactId>
-        <version>${jackson1.version}</version>
-      </dependency>
       <!-- jackson 2 -->
       <dependency>
         <groupId>com.fasterxml.jackson</groupId>
@@ -3055,6 +3050,13 @@
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-json</artifactId>
         <version>${jersey.version}</version>
+        <exclusions>
+          <!-- unwanted -->
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.jersey</groupId>
@@ -3353,6 +3355,11 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
           </exclusion>
+          <!-- unwanted -->
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -3604,10 +3611,6 @@
           </exclusion>
           <exclusion>
             <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
           </exclusion>
           <exclusion>
@@ -3617,6 +3620,11 @@
           <exclusion>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
+          </exclusion>
+          <!-- pulls unwanted org.codehaus.jackson:jackson-mapper-asl -->
+          <exclusion>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -3697,6 +3705,11 @@
           <exclusion>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+          </exclusion>
+          <!-- pulls unwanted org.codehaus.jackson:jackson-mapper-asl -->
+          <exclusion>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
