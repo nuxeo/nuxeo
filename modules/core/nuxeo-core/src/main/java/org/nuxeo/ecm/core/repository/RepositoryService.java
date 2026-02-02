@@ -85,6 +85,9 @@ public class RepositoryService extends DefaultComponent {
 
     protected KeyedObjectPool<String, Session> pool;
 
+    /** @since 2023.42 */
+    protected boolean sessionPoolReconnectEnabled;
+
     public void shutdown() {
         log.info("Shutting down repository manager");
         repositories.values().forEach(Repository::shutdown);
@@ -136,6 +139,9 @@ public class RepositoryService extends DefaultComponent {
 
     protected void initPool() {
         initPoolConfig();
+        sessionPoolReconnectEnabled = Boolean.parseBoolean(Framework.getProperty(
+                Session.PROP_SESSION_POOL_RECONNECT_ENABLED, Session.PROP_SESSION_POOL_RECONNECT_DEFAULT));
+        log.info("Session pool reconnect on borrow: {}", sessionPoolReconnectEnabled);
         GenericKeyedObjectPoolConfig<Session> config = new GenericKeyedObjectPoolConfig<>();
         config.setMaxTotal(poolConfig.getMaxPoolSize());
         config.setMaxTotalPerKey(poolConfig.getMaxPoolSize());
@@ -411,10 +417,13 @@ public class RepositoryService extends DefaultComponent {
 
         @Override
         public void activateObject(String repositoryName, PooledObject<Session> p) throws Exception {
-            Session session = p.getObject();
-            // Ensure the session has a valid connection when borrowed from the pool.
-            // The connect() method is safe - it only gets a new connection if the current one is stale.
-            session.connect();
+            if (sessionPoolReconnectEnabled) {
+                Session session = p.getObject();
+                // Ensure the session has a valid connection when borrowed from the pool.
+                // The connect() method releases the old connection and gets a fresh one.
+                // This fixes connection lifecycle issues with DBCP managed connections.
+                session.connect();
+            }
         }
     }
 

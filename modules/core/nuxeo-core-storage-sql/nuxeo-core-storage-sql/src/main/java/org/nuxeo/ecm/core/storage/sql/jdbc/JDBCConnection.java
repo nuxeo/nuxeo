@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
@@ -77,6 +78,9 @@ public class JDBCConnection {
 
     protected boolean setClientInfo;
 
+    /** @since 2025.15 */
+    protected boolean sessionPoolReconnectEnabled;
+
     /**
      * Creates a new Mapper.
      *
@@ -88,6 +92,8 @@ public class JDBCConnection {
         this.sqlInfo = sqlInfo;
         dialect = sqlInfo.dialect;
         setClientInfo = Boolean.parseBoolean(Framework.getProperty(SET_CLIENT_INFO_PROP, SET_CLIENT_INFO_DEFAULT));
+        sessionPoolReconnectEnabled = Boolean.parseBoolean(Framework.getProperty(
+                Session.PROP_SESSION_POOL_RECONNECT_ENABLED, Session.PROP_SESSION_POOL_RECONNECT_DEFAULT));
         connect();
     }
 
@@ -126,16 +132,20 @@ public class JDBCConnection {
     }
 
     /**
-     * Connects to the database, closing any existing connection first.
+     * Connects to the database.
      * <p>
-     * When called on a reused session (from pool), this always gets a fresh connection because the previous connection
-     * may have been returned to the DBCP pool when the previous transaction ended.
+     * When {@code org.nuxeo.session.pool.reconnect.enabled} is true, this closes any existing connection first and gets
+     * a fresh one. This is interesting to avoid stale connection returned in is DBCP see NXP-33457.
+     * <p>
+     * When the property is false, this behaves as the original code (no connection cleanup).
      */
     public void connect() {
-        // Close any existing connection first - it may be stale from a previous transaction.
-        // We can't rely on isClosed() because DBCP managed connections may not properly
-        // reflect their state after being returned to the pool.
-        closeConnection();
+        if (sessionPoolReconnectEnabled) {
+            // Close any existing connection first - it may be stale from a previous transaction.
+            // We can't rely on isClosed() because DBCP managed connections may not properly
+            // reflect their state after being returned to the pool.
+            closeConnection();
+        }
         try {
             String dataSourceName = getDataSourceName(getRepositoryName());
             connection = ConnectionHelper.getConnection(dataSourceName);

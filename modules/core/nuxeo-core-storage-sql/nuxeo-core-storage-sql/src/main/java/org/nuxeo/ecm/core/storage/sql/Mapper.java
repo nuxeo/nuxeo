@@ -105,7 +105,7 @@ public interface Mapper extends RowMapper {
      * <p>
      * This is called when a session is borrowed from the pool to ensure the connection is valid.
      *
-     * @since 2025.14
+     * @since 2025.15
      */
     void connect();
 
