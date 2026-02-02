@@ -128,9 +128,8 @@ public class JDBCConnection {
     /**
      * Connects to the database, closing any existing connection first.
      * <p>
-     * When called on a reused session (from pool), this always gets a fresh connection
-     * because the previous connection may have been returned to the DBCP pool when
-     * the previous transaction ended.
+     * When called on a reused session (from pool), this always gets a fresh connection because the previous connection
+     * may have been returned to the DBCP pool when the previous transaction ended.
      */
     public void connect() {
         // Close any existing connection first - it may be stale from a previous transaction.

@@ -195,8 +195,8 @@ public interface Mapper extends RowMapper {
      * @return a projection
      * @since 7.10-HF-25, 8.10-HF06, 9.2
      */
-    PartialList<Map<String,Serializable>> queryProjection(String query, String queryType, QueryFilter queryFilter, boolean distinctDocuments,
-            long countUpTo, Object... params);
+    PartialList<Map<String, Serializable>> queryProjection(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, long countUpTo, Object... params);
 
     /**
      * Gets the ids for all the ancestors of the given row ids.

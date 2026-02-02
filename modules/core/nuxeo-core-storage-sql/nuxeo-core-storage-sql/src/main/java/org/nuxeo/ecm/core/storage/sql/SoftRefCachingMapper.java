@@ -42,8 +42,8 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     public Mapper mapper;
 
     @Override
-    public void initialize(String repositoryName, Model model, Mapper mapper, VCSInvalidationsPropagator cachePropagator,
-            Map<String, String> properties) {
+    public void initialize(String repositoryName, Model model, Mapper mapper,
+            VCSInvalidationsPropagator cachePropagator, Map<String, String> properties) {
         super.initialize(repositoryName, model, mapper, cachePropagator, properties);
         this.mapper = mapper;
     }
