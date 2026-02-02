@@ -100,6 +100,15 @@ public interface Mapper extends RowMapper {
     // used for reflection
     String CLOSE = "close";
 
+    /**
+     * Reconnects the mapper's underlying connection if needed.
+     * <p>
+     * This is called when a session is borrowed from the pool to ensure the connection is valid.
+     *
+     * @since 2025.14
+     */
+    void connect();
+
     // TODO
     int getTableSize(String tableName);
 

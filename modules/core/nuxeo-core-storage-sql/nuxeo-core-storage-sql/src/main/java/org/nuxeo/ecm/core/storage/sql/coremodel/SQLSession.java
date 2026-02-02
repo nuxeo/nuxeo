@@ -894,4 +894,9 @@ public class SQLSession extends BaseSession {
         session.rollback();
     }
 
+    @Override
+    public void connect() {
+        session.getMapper().connect();
+    }
+
 }

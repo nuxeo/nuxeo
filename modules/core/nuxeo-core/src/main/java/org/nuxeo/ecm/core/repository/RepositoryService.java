@@ -408,6 +408,14 @@ public class RepositoryService extends DefaultComponent {
         public void destroyObject(String repositoryName, PooledObject<Session> p) throws Exception {
             p.getObject().destroy();
         }
+
+        @Override
+        public void activateObject(String repositoryName, PooledObject<Session> p) throws Exception {
+            Session session = p.getObject();
+            // Ensure the session has a valid connection when borrowed from the pool.
+            // The connect() method is safe - it only gets a new connection if the current one is stale.
+            session.connect();
+        }
     }
 
 }

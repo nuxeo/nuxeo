@@ -75,6 +75,11 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
+    public void connect() {
+        mapper.connect();
+    }
+
+    @Override
     public int getTableSize(String tableName) {
         return mapper.getTableSize(tableName);
     }

@@ -125,7 +125,18 @@ public class JDBCConnection {
         return "repository_" + repositoryName;
     }
 
+    /**
+     * Connects to the database, closing any existing connection first.
+     * <p>
+     * When called on a reused session (from pool), this always gets a fresh connection
+     * because the previous connection may have been returned to the DBCP pool when
+     * the previous transaction ended.
+     */
     public void connect() {
+        // Close any existing connection first - it may be stale from a previous transaction.
+        // We can't rely on isClosed() because DBCP managed connections may not properly
+        // reflect their state after being returned to the pool.
+        closeConnection();
         try {
             String dataSourceName = getDataSourceName(getRepositoryName());
             connection = ConnectionHelper.getConnection(dataSourceName);

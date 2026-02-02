@@ -76,6 +76,11 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
+    public void connect() {
+        mapper.connect();
+    }
+
+    @Override
     public int getTableSize(String tableName) {
         return mapper.getTableSize(tableName);
     }

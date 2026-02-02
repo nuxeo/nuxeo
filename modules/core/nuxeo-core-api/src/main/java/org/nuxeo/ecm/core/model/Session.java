@@ -345,4 +345,19 @@ public interface Session<T extends QueryFilter> {
      */
     void rollback();
 
+    /*
+     * ----- Connection management -----
+     */
+
+    /**
+     * Reconnects the session's underlying connection if needed.
+     * <p>
+     * This is called when a session is borrowed from the pool to ensure the connection is valid.
+     *
+     * @since 2025.14
+     */
+    default void connect() {
+        // default implementation does nothing
+    }
+
 }
