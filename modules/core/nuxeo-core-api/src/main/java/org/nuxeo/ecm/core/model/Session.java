@@ -364,7 +364,7 @@ public interface Session<T extends QueryFilter> {
      *
      * @since 2025.15
      */
-    String PROP_SESSION_POOL_RECONNECT_DEFAULT = "false";
+    String PROP_SESSION_POOL_RECONNECT_DEFAULT = "true";
 
     /**
      * Reconnects the session's underlying connection if needed.
