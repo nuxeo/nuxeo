@@ -24,9 +24,6 @@ updates:
           "version-update:semver-minor"
         ]
 
-      # Tomcat security and version updates, handled externally
-      - dependency-name: "org.apache.tomcat:tomcat*"
-
       # Spurious major version updates
       - dependency-name: "com.google.apis:google-api-services-drive"
         versions: [">v2-rev20201130-1.31.0"]
@@ -98,9 +95,6 @@ updates:
         versions: [">v2-rev20201130-1.31.0"]
       - dependency-name: "net.oauth.core:oauth"
         versions: [">20090531"] # 20100527 is detected as more recent but is actually older
-
-      # Tomcat version updates, handled externally
-      - dependency-name: "org.apache.tomcat:tomcat*"
 
       # Jakarta EE minor updates
       - dependency-name: "jakarta.*:*"
