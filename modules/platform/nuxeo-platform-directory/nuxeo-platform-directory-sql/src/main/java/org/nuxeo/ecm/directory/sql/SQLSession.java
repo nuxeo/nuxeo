@@ -426,15 +426,15 @@ public class SQLSession extends BaseSession {
                         // NB : remove double % in like query NXGED-833
                         String searchedValue = null;
                         switch (substringMatchType) {
-                        case subany:
-                            searchedValue = '%' + String.valueOf(value).toLowerCase() + '%';
-                            break;
-                        case subinitial:
-                            searchedValue = String.valueOf(value).toLowerCase() + '%';
-                            break;
-                        case subfinal:
-                            searchedValue = '%' + String.valueOf(value).toLowerCase();
-                            break;
+                            case subany:
+                                searchedValue = '%' + String.valueOf(value).toLowerCase() + '%';
+                                break;
+                            case subinitial:
+                                searchedValue = String.valueOf(value).toLowerCase() + '%';
+                                break;
+                            case subfinal:
+                                searchedValue = '%' + String.valueOf(value).toLowerCase();
+                                break;
                         }
                         filterMap.put(columnName, searchedValue);
                         if (dialect.supportsIlike()) {
