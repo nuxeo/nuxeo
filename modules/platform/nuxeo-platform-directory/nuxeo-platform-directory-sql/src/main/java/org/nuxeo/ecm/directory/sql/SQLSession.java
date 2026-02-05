@@ -91,12 +91,16 @@ public class SQLSession extends BaseSession {
 
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
+    // Tracks session liveness independently of JDBC connection state.
+    protected volatile boolean live;
+
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config) {
         super(directory, TableReference.class);
         table = directory.getTable();
         dialect = directory.getDialect();
         staticFilters = config.getStaticFilters();
         acquireConnection();
+        live = true;
     }
 
     @Override
@@ -1141,6 +1145,7 @@ public class SQLSession extends BaseSession {
 
     @Override
     public void close() {
+        live = false;
         try {
             if (!sqlConnection.isClosed()) {
                 sqlConnection.close();
@@ -1158,11 +1163,7 @@ public class SQLSession extends BaseSession {
      * @since 5.7.2
      */
     public boolean isLive() {
-        try {
-            return !sqlConnection.isClosed();
-        } catch (SQLException e) {
-            throw new DirectoryException("Cannot check connection status of " + this, e);
-        }
+        return live;
     }
 
     @Override
