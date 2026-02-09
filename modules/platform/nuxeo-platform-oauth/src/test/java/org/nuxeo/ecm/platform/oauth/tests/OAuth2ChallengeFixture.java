@@ -50,11 +50,11 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
-import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_AUTH;
-import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_AUTH_SUBMIT;
-import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
+import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.AUTHORIZE_ENDPOINT;
+import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.AUTHORIZE_SUBMIT_ENDPOINT;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_DESCRIPTION_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.TOKEN_ENDPOINT;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.ACCESS_DENIED;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.INVALID_CLIENT;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.INVALID_GRANT;
@@ -423,14 +423,14 @@ public class OAuth2ChallengeFixture {
 
     @Test
     public void getAuthorizeSubmitShouldReturn500() {
-        authenticatedClient.buildGetRequest(ENDPOINT_AUTH_SUBMIT)
+        authenticatedClient.buildGetRequest(AUTHORIZE_SUBMIT_ENDPOINT)
                            .executeAndConsume(new HttpStatusCodeHandler(),
                                    status -> assertEquals(SC_METHOD_NOT_ALLOWED, status.intValue()));
     }
 
     @Test
     public void getTokenShouldReturn500() {
-        client.buildGetRequest(ENDPOINT_TOKEN)
+        client.buildGetRequest(TOKEN_ENDPOINT)
               .executeAndConsume(new HttpStatusCodeHandler(),
                       status -> assertEquals(SC_METHOD_NOT_ALLOWED, status.intValue()));
     }
@@ -517,7 +517,7 @@ public class OAuth2ChallengeFixture {
         params.put(AUTHORIZATION_CODE_PARAM, code);
 
         // invalid client_id as part of the Authorization header
-        client.buildPostRequest(ENDPOINT_TOKEN)
+        client.buildPostRequest(TOKEN_ENDPOINT)
               .credentials("unknown", CLIENT_SECRET)
               .entity(params)
               .executeAndConsume(new JsonNodeHandler(SC_BAD_REQUEST), node -> {
@@ -530,7 +530,7 @@ public class OAuth2ChallengeFixture {
         initValidAuthorizeRequestCall();
         code = getAuthorizationCode();
         params.put(AUTHORIZATION_CODE_PARAM, code);
-        client.buildPostRequest(ENDPOINT_TOKEN)
+        client.buildPostRequest(TOKEN_ENDPOINT)
               .credentials(CLIENT_ID, "invalidSecret")
               .entity(params)
               .executeAndConsume(new JsonNodeHandler(SC_BAD_REQUEST), node -> {
@@ -544,7 +544,7 @@ public class OAuth2ChallengeFixture {
         initValidAuthorizeRequestCall();
         code = getAuthorizationCode();
         params.put(AUTHORIZATION_CODE_PARAM, code);
-        client.buildPostRequest(ENDPOINT_TOKEN)
+        client.buildPostRequest(TOKEN_ENDPOINT)
               .credentials(CLIENT_ID, CLIENT_SECRET)
               .entity(params)
               .executeAndConsume(new HttpStatusCodeHandler(), status -> assertEquals(SC_OK, status.intValue()));
@@ -1006,15 +1006,17 @@ public class OAuth2ChallengeFixture {
     }
 
     protected CloseableHttpResponse responseFromGetAuthorizeWith(Map<String, String> queryParams) {
-        return authenticatedClient.buildGetRequest(ENDPOINT_AUTH).addQueryParameters(queryParams).execute();
+        return authenticatedClient.buildGetRequest(AUTHORIZE_ENDPOINT).addQueryParameters(queryParams).execute();
     }
 
     protected CloseableHttpResponse responseFromPostAuthorizeWith(Map<String, String> queryParams) {
-        return authenticatedClient.buildPostRequest(ENDPOINT_AUTH_SUBMIT).addQueryParameters(queryParams).execute();
+        return authenticatedClient.buildPostRequest(AUTHORIZE_SUBMIT_ENDPOINT)
+                                  .addQueryParameters(queryParams)
+                                  .execute();
     }
 
     protected CloseableHttpResponse responseFromTokenWith(Map<String, String> params) {
-        return client.buildPostRequest(ENDPOINT_TOKEN).entity(params).execute();
+        return client.buildPostRequest(TOKEN_ENDPOINT).entity(params).execute();
     }
 
     protected void assertStoreIsEmpty() {

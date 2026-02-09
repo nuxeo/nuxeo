@@ -79,10 +79,28 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     private static final Logger log = LogManager.getLogger(NuxeoOAuth2Servlet.class);
 
+    public static final String AUTHORIZE_ENDPOINT = "/authorize";
+
+    public static final String TOKEN_ENDPOINT = "/token";
+
+    public static final String AUTHORIZE_SUBMIT_ENDPOINT = "/authorize_submit";
+
+    /**
+     * @deprecated since 2025.15, use {@link #AUTHORIZE_ENDPOINT} instead
+     */
+    @Deprecated(since = "2025.15", forRemoval = true)
     public static final String ENDPOINT_AUTH = "authorize";
 
+    /**
+     * @deprecated since 2025.15, use {@link #TOKEN_ENDPOINT} instead
+     */
+    @Deprecated(since = "2025.15", forRemoval = true)
     public static final String ENDPOINT_TOKEN = "token";
 
+    /**
+     * @deprecated since 2025.15, use {@link #AUTHORIZE_SUBMIT_ENDPOINT} instead
+     */
+    @Deprecated(since = "2025.15", forRemoval = true)
     public static final String ENDPOINT_AUTH_SUBMIT = "authorize_submit";
 
     public static final String ERROR_PARAM = "error";
@@ -111,14 +129,11 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         try {
-            if (pathInfo.endsWith(ENDPOINT_AUTH)) {
-                doGetAuthorize(request, response);
-            } else if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
-                doGetNotAllowed(ENDPOINT_AUTH_SUBMIT, request, response);
-            } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
-                doGetNotAllowed(ENDPOINT_TOKEN, request, response);
-            } else {
-                response.sendError(SC_NOT_FOUND);
+            switch (pathInfo) {
+                case AUTHORIZE_ENDPOINT -> doGetAuthorize(request, response);
+                case AUTHORIZE_SUBMIT_ENDPOINT -> doGetNotAllowed(AUTHORIZE_SUBMIT_ENDPOINT, request, response);
+                case TOKEN_ENDPOINT -> doGetNotAllowed(TOKEN_ENDPOINT, request, response);
+                default -> response.sendError(SC_NOT_FOUND);
             }
         } catch (NuxeoException e) {
             handleError(OAuth2Error.from(e), request, response);
@@ -132,14 +147,16 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         OAuth2ErrorHandler errorHandler = e -> {
         };
         try {
-            if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
-                errorHandler = e -> handleError(e, request, response);
-                doPostAuthorizeSubmit(request, response);
-            } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
-                errorHandler = e -> handleJsonError(e, response);
-                doPostToken(request, response);
-            } else {
-                response.sendError(SC_NOT_FOUND);
+            switch (pathInfo) {
+                case AUTHORIZE_SUBMIT_ENDPOINT -> {
+                    errorHandler = e -> handleError(e, request, response);
+                    doPostAuthorizeSubmit(request, response);
+                }
+                case TOKEN_ENDPOINT -> {
+                    errorHandler = e -> handleJsonError(e, response);
+                    doPostToken(request, response);
+                }
+                default -> response.sendError(SC_NOT_FOUND);
             }
         } catch (NuxeoException e) {
             errorHandler.accept(OAuth2Error.from(e));
@@ -205,7 +222,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void doGetNotAllowed(String endpoint, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         OAuth2Error error = OAuth2Error.invalidRequest(
-                String.format("The /oauth2/%s endpoint only accepts POST requests.", endpoint), SC_METHOD_NOT_ALLOWED);
+                "The /oauth2" + endpoint + " endpoint only accepts POST requests.", SC_METHOD_NOT_ALLOWED);
         handleError(error, request, response);
     }
 

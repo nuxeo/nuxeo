@@ -8,6 +8,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%
 String context = request.getContextPath();
 String productName = Framework.getProperty(Environment.PRODUCT_NAME);
@@ -93,7 +94,7 @@ String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl()
         <h4>
           <fmt:message bundle="${messages}" key="label.oauth2.invalidRequest.details.title" />
         </h4>
-        <code>${error.description}</code>
+        <code>${fn:escapeXml(error.description)}</code>
       </div>
     </div>
   </div>
