@@ -19,6 +19,7 @@ bin
 .mylar
 .idea
 .vscode
+.cursor
 *.iml
 *.ipr
 *.iws
