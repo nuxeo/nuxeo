@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,29 +31,54 @@ public record ByteSize(long bytes) {
 
     private static final Logger log = LogManager.getLogger(ByteSize.class);
 
-    public static final Pattern BYTE_SIZE_SIMPLE_FORMAT = Pattern.compile("^(\\d+ ?)([bkmgtpBKMGTP])?i?[bB]?$");
+    public static final Pattern BYTE_SIZE_SIMPLE_FORMAT = Pattern.compile("^(-?)(\\d+ ?)([bkmgtpBKMGTP])?i?[bB]?$");
+
+    protected static final ByteSize UNLIMITED = new ByteSize(-1);
+
+    /** @since 2025.15 */
+    public static ByteSize unlimited() {
+        return UNLIMITED;
+    }
 
     public static ByteSize ofBytes(long bytes) {
+        if (bytes < 0) {
+            return UNLIMITED;
+        }
         return new ByteSize(bytes);
     }
 
     public static ByteSize ofKibibytes(long kibibytes) {
+        if (kibibytes < 0) {
+            return UNLIMITED;
+        }
         return new ByteSize(Unit.KIBI.toBytes(kibibytes));
     }
 
     public static ByteSize ofMebibytes(long mebibytes) {
+        if (mebibytes < 0) {
+            return UNLIMITED;
+        }
         return new ByteSize(Unit.MEBI.toBytes(mebibytes));
     }
 
     public static ByteSize ofGibibytes(long gibibytes) {
+        if (gibibytes < 0) {
+            return UNLIMITED;
+        }
         return new ByteSize(Unit.GIBI.toBytes(gibibytes));
     }
 
     public static ByteSize ofTebibytes(long tebibytes) {
+        if (tebibytes < 0) {
+            return UNLIMITED;
+        }
         return new ByteSize(Unit.TEBI.toBytes(tebibytes));
     }
 
     public static ByteSize ofPebibytes(long pebibytes) {
+        if (pebibytes < 0) {
+            return UNLIMITED;
+        }
         return new ByteSize(Unit.PEBI.toBytes(pebibytes));
     }
 
@@ -68,7 +93,10 @@ public record ByteSize(long bytes) {
     public static ByteSize parse(String value) {
         Matcher matcher = BYTE_SIZE_SIMPLE_FORMAT.matcher(value);
         if (matcher.matches()) {
-            String sizeWithPotentialLeadingSpace = matcher.group(1);
+            if (!matcher.group(1).isEmpty()) {
+                return UNLIMITED;
+            }
+            String sizeWithPotentialLeadingSpace = matcher.group(2);
             // @deprecated since 2025.11, remove space mechanism
             if (sizeWithPotentialLeadingSpace.endsWith(" ")) {
                 sizeWithPotentialLeadingSpace = sizeWithPotentialLeadingSpace.substring(0,
@@ -79,7 +107,7 @@ public record ByteSize(long bytes) {
                         sizeWithPotentialLeadingSpace + value.substring(sizeWithPotentialLeadingSpace.length() + 1));
             }
             long amount = Long.parseLong(sizeWithPotentialLeadingSpace);
-            String group2 = matcher.group(2);
+            String group2 = matcher.group(3);
             var unit = group2 == null ? Unit.DEFAULT : switch (group2) {
                 case "b", "B" -> Unit.DEFAULT;
                 case "k", "K" -> Unit.KIBI;

@@ -39,13 +39,13 @@ import org.nuxeo.runtime.model.Descriptor;
 public class TransientStoreConfig implements Descriptor {
 
     /**
-     * @deprecated since 2025.11, not used anymore
+     * @deprecated since 2025.11, use {@link ByteSize#unlimited()} instead
      */
     @Deprecated(since = "2025.11", forRemoval = true)
     public static final int DEFAULT_TARGET_MAX_SIZE_MB = -1;
 
     /**
-     * @deprecated since 2025.11, not used anymore
+     * @deprecated since 2025.11, use {@link ByteSize#unlimited()} instead
      */
     @Deprecated(since = "2025.11", forRemoval = true)
     public static final int DEFAULT_ABSOLUTE_MAX_SIZE_MB = -1;

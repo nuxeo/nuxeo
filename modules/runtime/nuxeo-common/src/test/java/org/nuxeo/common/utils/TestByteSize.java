@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,21 @@ import org.junit.Test;
  * @since 2025.11
  */
 public class TestByteSize {
+
+    // NXP-33508
+    @Test
+    public void testUnlimited() {
+        assertEquals(ByteSize.unlimited(), ByteSize.parse("-1"));
+        assertEquals(ByteSize.unlimited(), ByteSize.parse("-10b"));
+        assertEquals(ByteSize.unlimited(), ByteSize.parse("-200B"));
+
+        assertEquals(ByteSize.unlimited(), ByteSize.ofBytes(-1));
+        assertEquals(ByteSize.unlimited(), ByteSize.ofKibibytes(-10));
+        assertEquals(ByteSize.unlimited(), ByteSize.ofMebibytes(-200));
+        assertEquals(ByteSize.unlimited(), ByteSize.ofGibibytes(-2_000));
+        assertEquals(ByteSize.unlimited(), ByteSize.ofTebibytes(-40_000));
+        assertEquals(ByteSize.unlimited(), ByteSize.ofPebibytes(-400_000));
+    }
 
     @Test
     public void testParse() {
