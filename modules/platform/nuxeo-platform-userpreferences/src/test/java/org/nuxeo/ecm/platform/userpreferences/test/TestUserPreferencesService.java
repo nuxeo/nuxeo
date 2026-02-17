@@ -42,6 +42,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
+ * @deprecated since 2025.16, use {@link org.nuxeo.user.preferences.api.UserPreferencesService} instead
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -50,6 +51,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.localconf")
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.platform.userpreferences")
+@Deprecated(since = "2025.16", forRemoval = true)
 public class TestUserPreferencesService {
 
     @Inject

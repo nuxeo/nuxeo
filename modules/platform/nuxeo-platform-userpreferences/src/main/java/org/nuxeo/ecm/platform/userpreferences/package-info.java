@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,10 @@
  * limitations under the License.
  *
  * Contributors:
- *     Quentin Lamerand <qlamerand@nuxeo.com>
+ *     Guillaume Renard
  */
-
-package org.nuxeo.ecm.platform.userpreferences;
-
-import org.nuxeo.ecm.core.api.CoreSession;
-
 /**
- * @deprecated since 2025.16, use {@link org.nuxeo.user.preferences.api.UserPreferencesService} instead
+ * Deprecated since 2025.16, use new {@code org.nuxeo.user.preferences.api.UserPreferencesService} instead.
  */
 @Deprecated(since = "2025.16", forRemoval = true)
-public interface UserPreferencesService {
-
-    SimpleUserPreferences getSimpleUserPreferences(CoreSession session);
-
-    @SuppressWarnings("rawtypes")
-    <T extends UserPreferences> T getUserPreferences(CoreSession session, Class<T> configurationClass,
-            String configurationFacet);
-
-}
+package org.nuxeo.ecm.platform.userpreferences;

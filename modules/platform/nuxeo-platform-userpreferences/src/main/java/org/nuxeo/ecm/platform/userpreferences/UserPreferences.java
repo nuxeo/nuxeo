@@ -20,13 +20,16 @@
 package org.nuxeo.ecm.platform.userpreferences;
 
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
+import org.nuxeo.user.preferences.api.UserPreferencesService;
 
 /**
  * Interface that must be extended by other interface representing user preferences.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
+ * @deprecated since 2025.16, use {@link UserPreferencesService} instead
  */
+@Deprecated(since = "2025.16", forRemoval = true)
 public interface UserPreferences<T> extends LocalConfiguration<T> {
 
 }

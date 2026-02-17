@@ -21,13 +21,16 @@ package org.nuxeo.ecm.platform.userpreferences;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.localconf.SimpleConfigurationAdapter;
+import org.nuxeo.user.preferences.api.UserPreferencesService;
 
 /**
  * An object that stores simple key/value user preferences.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
+ * @deprecated since 2025.16, use {@link UserPreferencesService} instead
  */
+@Deprecated(since = "2025.16", forRemoval = true)
 public class SimpleUserPreferences extends SimpleConfigurationAdapter {
 
     public SimpleUserPreferences(DocumentModel doc) {

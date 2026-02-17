@@ -28,6 +28,10 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * @deprecated since 2025.16, use {@link org.nuxeo.user.preferences.api.UserPreferencesService} instead
+ */
+@Deprecated(since = "2025.16", forRemoval = true)
 public class UserPreferencesServiceImpl extends DefaultComponent implements UserPreferencesService {
 
     UserWorkspaceService userWorkspaceService;
