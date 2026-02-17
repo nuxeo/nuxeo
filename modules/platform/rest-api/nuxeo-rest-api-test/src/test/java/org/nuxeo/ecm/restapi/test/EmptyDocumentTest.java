@@ -62,6 +62,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogFeature;
+import org.nuxeo.user.preferences.directory.UserPreferencesFeature;
+import org.nuxeo.user.preferences.io.DocumentUserPreferencesJsonEnricher;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -69,7 +71,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class, LogFeature.class, LogCaptureFeature.class, CollectionFeature.class })
+@Features({ RestServerFeature.class, LogFeature.class, LogCaptureFeature.class, CollectionFeature.class,
+        UserPreferencesFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-defaultvalue-docTypes.xml")
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-dummy-listener-contrib.xml")
@@ -78,11 +81,10 @@ public class EmptyDocumentTest {
     protected static final Map<String, String> HEADERS = Collections.singletonMap("properties", "*");
 
     protected static final Map<String, String> ENRICHERS_HEADERS = Collections.singletonMap("enrichers-document",
-            String.join(",",
-                    Arrays.asList(HasContentJsonEnricher.NAME, FirstAccessibleAncestorJsonEnricher.NAME,
-                            BasePermissionsJsonEnricher.NAME, BreadcrumbJsonEnricher.NAME, PublicationJsonEnricher.NAME,
-                            TagsJsonEnricher.NAME, PreviewJsonEnricher.NAME, FavoritesJsonEnricher.NAME,
-                            AuditJsonEnricher.NAME, SubtypesJsonEnricher.NAME, RenditionJsonEnricher.NAME)));
+            String.join(",", Arrays.asList(HasContentJsonEnricher.NAME, FirstAccessibleAncestorJsonEnricher.NAME,
+                    BasePermissionsJsonEnricher.NAME, BreadcrumbJsonEnricher.NAME, PublicationJsonEnricher.NAME,
+                    TagsJsonEnricher.NAME, PreviewJsonEnricher.NAME, FavoritesJsonEnricher.NAME, AuditJsonEnricher.NAME,
+                    SubtypesJsonEnricher.NAME, RenditionJsonEnricher.NAME, DocumentUserPreferencesJsonEnricher.NAME)));
 
     @Inject
     protected CoreSession session;
