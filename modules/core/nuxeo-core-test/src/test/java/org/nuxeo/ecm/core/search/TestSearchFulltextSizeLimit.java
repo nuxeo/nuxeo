@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.CoreSearchFeature;
+import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -49,6 +50,7 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 @RunWith(FeaturesRunner.class)
 @Features(CoreSearchFeature.class)
 @WithFrameworkProperty(name = MAX_FULLTEXT_SIZE_FIELD, value = "21")
+@ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
 public class TestSearchFulltextSizeLimit {
 
     @Inject

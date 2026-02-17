@@ -49,6 +49,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @Features(FulltextStoredInBlobFeature.class)
+@ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
 public class TestSearchFulltextStoredInBlob extends TestSearchFulltextEnabled {
 
     @Inject
