@@ -101,6 +101,7 @@
     <module>nuxeo-theme-styling</module>
     <module>nuxeo-thumbnail</module>
     <module>nuxeo-tree-snapshot-core</module>
+    <module>nuxeo-user-preferences</module>
     <module>nuxeo-user-profile</module>
     <module>nuxeo-usermapper</module>
     <module>nuxeo-web-resources-api</module>

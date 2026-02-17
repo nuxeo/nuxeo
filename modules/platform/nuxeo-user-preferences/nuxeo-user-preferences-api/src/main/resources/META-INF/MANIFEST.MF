@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo User Prefs API
+Bundle-SymbolicName: org.nuxeo.platform.user.preferences.api;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/user-prefs-stream-contrib.xml,
+ OSGI-INF/user-prefs-listener-contrib.xml,
+ OSGI-INF/user-prefs-io-contrib.xml

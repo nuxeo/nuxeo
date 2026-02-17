@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/userPreferences">
+  <xs:include schemaLocation="core-types.xsd"/>
+  <xs:element name="id" type="xs:integer" />
+  <xs:element name="repository" type="xs:string" />
+  <xs:element name="userId" type="xs:string"/>
+  <xs:element name="docId" type="xs:string"/>
+  <xs:element name="key" type="xs:string" />
+  <xs:element name="value" type="xs:string" />
+</xs:schema>

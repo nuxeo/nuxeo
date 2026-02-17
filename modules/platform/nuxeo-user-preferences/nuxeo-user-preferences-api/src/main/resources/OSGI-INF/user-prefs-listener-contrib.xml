@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.user.preferences.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+    <listener name="userDeletedPreferencesListener" async="true" postCommit="true"
+              enabled="${nuxeo.user.preferences.listeners.userDeleted.enabled:=true}"
+              class="org.nuxeo.user.preferences.listeners.UserDeletedListener">
+      <event>user_deleted</event>
+    </listener>
+  </extension>
+
+</component>

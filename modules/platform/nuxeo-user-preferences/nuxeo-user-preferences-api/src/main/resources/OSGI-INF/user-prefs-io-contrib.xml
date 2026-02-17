@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.user.preferences.io" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+
+    <!-- Writer -->
+    <register class="org.nuxeo.user.preferences.io.UserPreferenceJsonWriter" enable="true" />
+    <register class="org.nuxeo.user.preferences.io.UserPreferencesJsonWriter" enable="true" />
+
+    <!-- Reader -->
+    <register class="org.nuxeo.user.preferences.io.UserPreferencesJsonReader" enable="true" />
+
+    <!-- Enrichers -->
+    <register class="org.nuxeo.user.preferences.io.DocumentUserPreferencesJsonEnricher" enable="true" />
+
+  </extension>
+
+</component>

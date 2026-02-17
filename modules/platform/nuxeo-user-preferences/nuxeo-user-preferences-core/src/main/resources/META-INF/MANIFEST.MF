@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo User Prefs Core
+Bundle-SymbolicName: org.nuxeo.platform.user.preferences.core;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/user-prefs-directory-impl-contrib.xml

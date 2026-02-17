@@ -112,6 +112,11 @@ nuxeo.picture.views.transaction.timeout.seconds=300
 nuxeo.video.transaction.timeout.seconds=600
 
 ###
+# User Preferences
+nuxeo.user.preferences.max=2000
+nuxeo.user.preferences.sanitizeValues.enabled=true
+nuxeo.user.preferences.listeners.userDeleted.enabled=true
+
 # Collections
 nuxeo.collection.max.size=100000
 
@@ -455,6 +460,9 @@ nuxeo.bulk.action.unholdDocumentsAction.defaultConcurrency=2
 nuxeo.bulk.action.unholdDocumentsAction.defaultPartitions=4
 nuxeo.bulk.action.updateReadAcls.defaultConcurrency=1
 nuxeo.bulk.action.updateReadAcls.defaultPartitions=1
+nuxeo.bulk.action.userPreferencesGC.enabled=true
+nuxeo.bulk.action.userPreferencesGC.defaultConcurrency=1
+nuxeo.bulk.action.userPreferencesGC.defaultPartitions=1
 
 # OAuth2 GC
 nuxeo.oauth2.garbageCollectExpiredTokens.enabled=true

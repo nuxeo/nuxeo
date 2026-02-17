@@ -1379,6 +1379,23 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-user-preferences-api</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-user-preferences-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-user-preferences-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-user-profile</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>

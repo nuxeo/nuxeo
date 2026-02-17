@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.user.preferences.stream">
+
+  <require>org.nuxeo.ecm.core.bulk</require>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="userPreferencesGC"
+                     defaultCodec="avro" class="org.nuxeo.user.preferences.stream.StreamUserDocPreferencesGC"
+                     defaultConcurrency="${nuxeo.bulk.action.userPreferencesGC.defaultConcurrency:=1}"
+                     defaultPartitions="${nuxeo.bulk.action.userPreferencesGC.defaultPartitions:=1}"
+                     enabled="${nuxeo.bulk.action.userPreferencesGC.enabled:=true}">
+      <policy name="default" maxRetries="3" delay="3s" maxDelay="60s" continueOnFailure="true" />
+    </streamProcessor>
+  </extension>
+
+</component>
+
