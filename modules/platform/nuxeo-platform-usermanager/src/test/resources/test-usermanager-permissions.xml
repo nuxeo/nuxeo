@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.tests.permissions">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+             point="permissions">
+
+    <permission name="Permission1" />
+    <permission name="Permission2" />
+    <permission name="Permission3" />
+    <permission name="Permission4" />
+    <permission name="Permission5" />
+    <permission name="Permission2">
+      <include>Permission1</include>
+      <include>Permission3</include>
+      <include>Permission5</include>
+    </permission>
+    <permission name="Permission1">
+      <include>Permission2</include>
+      <include>Permission3</include>
+      <include>Permission4</include>
+    </permission>
+
+  </extension>
+
+</component>

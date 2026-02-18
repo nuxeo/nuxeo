@@ -1043,6 +1043,18 @@ public class TestUserManager extends UserManagerTestCase {
         userManager.createGroup(g3);
     }
 
+    // NXP-33500
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-permissions.xml")
+    public void testGetLeafPermissionsWithCircularDependency() {
+        if (userManager instanceof UserManagerImpl userManagerImpl) {
+            assertEquals(List.of("Permission3", "Permission4", "Permission5"),
+                    userManagerImpl.getLeafPermissions("Permission2"));
+        } else {
+            fail("Expected UserManagerImpl implementation.");
+        }
+    }
+
     /**
      * Testing the method getUsernamesForPermission for a simple case.
      */

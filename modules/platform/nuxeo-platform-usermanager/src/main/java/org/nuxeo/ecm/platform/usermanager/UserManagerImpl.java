@@ -1055,6 +1055,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected List<String> getLeafPermissions(String perm) {
+        return getLeafPermissions(perm, new HashSet<>());
+    }
+
+    protected List<String> getLeafPermissions(String perm, Set<String> visited) {
+        if (!visited.add(perm)) {
+            return List.of();
+        }
         List<String> permissions = new ArrayList<>();
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         String[] subpermissions = permissionProvider.getSubPermissions(perm);
@@ -1064,7 +1071,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             return permissions;
         }
         for (String subperm : subpermissions) {
-            permissions.addAll(getLeafPermissions(subperm));
+            permissions.addAll(getLeafPermissions(subperm, visited));
         }
         return permissions;
     }
