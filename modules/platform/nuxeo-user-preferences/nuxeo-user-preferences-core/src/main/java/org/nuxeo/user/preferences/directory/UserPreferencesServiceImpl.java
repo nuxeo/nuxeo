@@ -161,9 +161,9 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     public UserPreferences create(CoreSession session, @Nonnull DocumentRef docRef,
             @Nonnull Map<String, String> preferences) {
         Objects.requireNonNull(docRef, "The document reference can not be null");
-        var sanitizedPreferences = validateAndSanitize(preferences);
+        validatePreferences(preferences);
         return withDirectorySession(dirSession -> {
-            return doCreate(session, dirSession, docRef, sanitizedPreferences);
+            return doCreate(session, dirSession, docRef, preferences);
         });
     }
 
@@ -202,31 +202,32 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     @Override
     public UserPreferences update(CoreSession session, @Nonnull DocumentRef docRef,
             @Nonnull UserPreferences docPreferences) {
-        var sanitizedPreferences = validateAndSanitize(docPreferences.preferences());
+        validatePreferences(docPreferences.preferences());
         var idRef = getDocId(session, docRef);
         return withDirectorySession(dirSession -> {
             var toBeDeleted = retrieveAllDocPreferences(session, dirSession, idRef);
             if (toBeDeleted.isEmpty()) {
                 throw new UserPreferencesNotFound(idRef);
             }
-            checkMaxPreferences(session, dirSession, sanitizedPreferences.size() - toBeDeleted.size());
+            checkMaxPreferences(session, dirSession, docPreferences.preferences().size() - toBeDeleted.size());
             toBeDeleted.forEach(dirSession::deleteEntry);
-            return doCreate(session, dirSession, idRef, sanitizedPreferences);
+            return doCreate(session, dirSession, idRef, docPreferences.preferences());
         });
     }
 
     @Override
     public UserPreferences putAll(CoreSession session, @Nonnull DocumentRef docRef,
             @Nonnull UserPreferences docPreferences) {
+        validatePreferences(docPreferences.preferences());
         var idRef = getDocId(session, docRef);
         return withDirectorySession(dirSession -> {
             List<DocumentModel> toBeUpdated = new ArrayList<>();
             List<Map<String, Object>> toBeCreated = new ArrayList<>();
-            validateAndSanitize(docPreferences.preferences()).forEach((key, value) -> {
+            docPreferences.preferences().forEach((key, value) -> {
                 Optional<DocumentModel> optionalPreference = retrieveDocPreferenceForKey(session, dirSession, idRef,
                         key);
                 optionalPreference.ifPresentOrElse(doc -> {
-                    doc.setPropertyValue("value", value);
+                    doc.setPropertyValue("value", sanitizeValue(value));
                     toBeUpdated.add(doc);
                 }, () -> toBeCreated.add(getFieldMap(session, idRef, key, value)));
             });
@@ -363,17 +364,14 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
         return queryPreferences(session, dirSession, idRef, key, 1).stream().findFirst();
     }
 
-    protected static Map<String, String> validateAndSanitize(Map<String, String> preferences) {
+    protected static void validatePreferences(Map<String, String> preferences) {
         if (MapUtils.isEmpty(preferences)) {
             throw new NullPointerException("The preferences can not be null or empty");
         }
-        Map<String, String> result = new HashMap<>();
         preferences.forEach((key, value) -> {
             validateKey(key);
             Objects.requireNonNull(value, "The preference: %s can not be null".formatted(key));
-            result.put(key, sanitizeValue(value));
         });
-        return result;
     }
 
     protected static <R> R withDirectorySession(Function<Session, R> function) {

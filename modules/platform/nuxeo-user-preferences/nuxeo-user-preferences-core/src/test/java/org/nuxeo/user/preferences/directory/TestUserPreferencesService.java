@@ -515,6 +515,8 @@ public class TestUserPreferencesService {
         assertEquals("otherAttempt", pref.value());
         prefs = ups.putAll(session, doc.getRef(), newUserDocPreferences("key", xss));
         assertEquals("otherAttempt", prefs.getPreference("key"));
+        prefs = ups.putAll(session, doc.getRef(), newUserDocPreferences("otherKey", xss));
+        assertEquals("otherAttempt", prefs.getPreference("otherKey"));
     }
 
     @Test
