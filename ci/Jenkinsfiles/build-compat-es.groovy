@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-library identifier: "platform-ci-shared-library@v0.0.75"
+library identifier: "platform-ci-shared-library@v0.0.77"
 
 boolean isNuxeoTag() {
   return NUXEO_BRANCH =~ /^v.*$/
