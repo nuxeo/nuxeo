@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.buildSAMLObject;
+import static org.nuxeo.ecm.platform.auth.saml.key.KeyDescriptor.DEFAULT_NAME;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.auth.saml.key.KeyHolder;
 import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
 import org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding;
 import org.nuxeo.ecm.platform.auth.saml.user.AbstractUserResolver;
@@ -119,6 +121,8 @@ public class SAMLConfiguration {
     protected static final String PARAMETER_LOGIN_SCREEN_ICON = "icon";
 
     protected static final String PARAMETER_LOGIN_SCREEN_LABEL = "label";
+
+    protected static final String PARAMETER_KEY_HOLDER_NAME = "keyHolderName";
 
     protected static final String PARAMETER_USER_RESOLVER_CLASS = "userResolverClass";
 
@@ -219,6 +223,26 @@ public class SAMLConfiguration {
     /**
      * @since 2023.44
      */
+    public Optional<KeyHolder> getSPKeyHolder() {
+        if (isDefault()) {
+            // fallback to the default KeyHolder configuration if the current SAML authentication provider is the
+            // default one for backward compatibility
+            String keyHolderName = parameters.getOrDefault(PARAMETER_KEY_HOLDER_NAME, DEFAULT_NAME);
+            return Framework.getService(KeyManager.class).getKeyHolder(keyHolderName);
+        } else if (parameters.containsKey(PARAMETER_KEY_HOLDER_NAME)) {
+            return Optional.of(
+                    Framework.getService(KeyManager.class)
+                             .getKeyHolder(parameters.get(PARAMETER_KEY_HOLDER_NAME))
+                             .orElseThrow(() -> new IllegalStateException(
+                                     "The KeyHolder referenced by the SAML plugin: " + this + " does not exist")));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @since 2023.44
+     */
     @Nonnull
     public EntityDescriptor createSPEntityDescriptor(String baseURL) {
         // Entity Descriptor
@@ -245,23 +269,16 @@ public class SAMLConfiguration {
         spDescriptor.getNameIDFormats().addAll(buildNameIDFormats(nameID));
 
         // Generate key info
-        // TODO several key manager
-        KeyManager keyManager = Framework.getService(KeyManager.class);
-        if (keyManager.getSigningCredential() != null) {
-            spDescriptor.getKeyDescriptors()
-                        .add(buildKeyDescriptor(UsageType.SIGNING,
-                                generateKeyInfoForCredential(keyManager.getSigningCredential())));
-        }
-        if (keyManager.getEncryptionCredential() != null) {
-            spDescriptor.getKeyDescriptors()
-                        .add(buildKeyDescriptor(UsageType.ENCRYPTION,
-                                generateKeyInfoForCredential(keyManager.getEncryptionCredential())));
-        }
-        if (keyManager.getTlsCredential() != null) {
-            spDescriptor.getKeyDescriptors()
-                        .add(buildKeyDescriptor(UsageType.UNSPECIFIED,
-                                generateKeyInfoForCredential(keyManager.getTlsCredential())));
-        }
+        var keyHolder = getSPKeyHolder();
+        keyHolder.flatMap(KeyHolder::getSigningCredential)
+                 .map(credential -> buildKeyDescriptor(UsageType.SIGNING, generateKeyInfoForCredential(credential)))
+                 .ifPresent(spDescriptor.getKeyDescriptors()::add);
+        keyHolder.flatMap(KeyHolder::getEncryptionCredential)
+                 .map(credential -> buildKeyDescriptor(UsageType.ENCRYPTION, generateKeyInfoForCredential(credential)))
+                 .ifPresent(spDescriptor.getKeyDescriptors()::add);
+        keyHolder.flatMap(KeyHolder::getTlsCredential)
+                 .map(credential -> buildKeyDescriptor(UsageType.UNSPECIFIED, generateKeyInfoForCredential(credential)))
+                 .ifPresent(spDescriptor.getKeyDescriptors()::add);
 
         // LOGIN
         int index = 0;

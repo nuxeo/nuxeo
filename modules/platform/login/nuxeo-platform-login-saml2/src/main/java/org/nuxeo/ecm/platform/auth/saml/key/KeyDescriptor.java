@@ -18,15 +18,25 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.key;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("configuration")
-public class KeyDescriptor {
+public class KeyDescriptor implements Descriptor {
+
+    /** @since 2023.44 */
+    public static final String DEFAULT_NAME = "default";
+
+    /** @since 2023.44 */
+    @XNode("name")
+    protected String name;
 
     @XNode("keystoreFilePath")
     protected String keystoreFilePath;
@@ -45,6 +55,12 @@ public class KeyDescriptor {
 
     @XNodeMap(value = "passwords/password", key = "@key", type = HashMap.class, componentType = String.class)
     protected Map<String, String> passwords;
+
+    @Override
+    public String getId() {
+        // empty name will turn into default configuration to preserve backward compatibility
+        return defaultIfBlank(name, DEFAULT_NAME);
+    }
 
     public String getKeystoreFilePath() {
         return keystoreFilePath;

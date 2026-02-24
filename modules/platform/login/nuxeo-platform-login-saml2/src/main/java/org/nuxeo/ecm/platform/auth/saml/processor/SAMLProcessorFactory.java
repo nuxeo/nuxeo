@@ -32,12 +32,11 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
-import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
+import org.nuxeo.ecm.platform.auth.saml.key.KeyHolder;
 import org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLInboundBinding;
 import org.nuxeo.ecm.platform.auth.saml.processor.binding.SAMLOutboundBinding;
 import org.nuxeo.ecm.platform.auth.saml.processor.handler.PopulateDecryptionParametersHandler;
 import org.nuxeo.ecm.platform.auth.saml.processor.messaging.SAMLObjectIssuerFunction;
-import org.nuxeo.runtime.api.Framework;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.handler.MessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
@@ -221,12 +220,9 @@ public class SAMLProcessorFactory {
     }
 
     protected SignatureSigningConfiguration instantiateSigningConfiguration(SAMLConfiguration configuration) {
-        if (Framework.getService(KeyManager.class).getSigningCredential() == null) {
-            return null;
-        } else {
+        return configuration.getSPKeyHolder().flatMap(KeyHolder::getSigningCredential).map(credential -> {
             var signingConfiguration = DefaultSecurityConfigurationBootstrap.buildDefaultSignatureSigningConfiguration();
-            signingConfiguration.setSigningCredentials(
-                    List.of(Framework.getService(KeyManager.class).getSigningCredential()));
+            signingConfiguration.setSigningCredentials(List.of(credential));
             configuration.getSPDigestAlgorithm()
                          .ifPresent(algorithm -> signingConfiguration.setSignatureReferenceDigestMethods(
                                  List.of(algorithm)));
@@ -235,7 +231,7 @@ public class SAMLProcessorFactory {
                 signingConfiguration.setSignatureAlgorithms(algorithms);
             }
             return signingConfiguration;
-        }
+        }).orElse(null);
     }
 
     protected SignatureValidationConfiguration instantiateValidationConfiguration(MetadataResolver idpMetadataResolver)
@@ -255,21 +251,16 @@ public class SAMLProcessorFactory {
     }
 
     protected DecryptionConfiguration instantiateDecryptionConfiguration() {
-        if (Framework.getService(KeyManager.class).getEncryptionCredential() == null) {
-            return null;
-        } else {
-            var encryptionCredential = Framework.getService(KeyManager.class).getEncryptionCredential();
-
+        return configuration.getSPKeyHolder().flatMap(KeyHolder::getEncryptionCredential).map(credential -> {
             var decryptionConfiguration = DefaultSecurityConfigurationBootstrap.buildDefaultDecryptionConfiguration();
             decryptionConfiguration.setEncryptedKeyResolver(new ChainingEncryptedKeyResolver(List.of( //
                     new InlineEncryptedKeyResolver(), //
                     new EncryptedElementTypeEncryptedKeyResolver(), //
                     new SimpleRetrievalMethodEncryptedKeyResolver() //
             )));
-            decryptionConfiguration.setKEKKeyInfoCredentialResolver(
-                    new StaticKeyInfoCredentialResolver(encryptionCredential));
+            decryptionConfiguration.setKEKKeyInfoCredentialResolver(new StaticKeyInfoCredentialResolver(credential));
             return decryptionConfiguration;
-        }
+        }).orElse(null);
     }
 
     /**
