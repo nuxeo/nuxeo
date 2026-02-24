@@ -61,4 +61,55 @@ public class MetadataServletTest {
                 """;
         assertEquals(expected, formatXML(responseHandler.getResponseAsString()));
     }
+
+    @Test
+    public void testDoGetWithPluginName() throws IOException {
+        var requestHandler = MockHttpServletRequest.init("GET", "http://localhost:8080/nuxeo/saml/metadata")
+                                                   .whenGetParameterThenReturn("pluginName", "SAML_SECONDARY_AUTH");
+        var responseHandler = MockHttpServletResponse.init();
+
+        new MetadataServlet().doGet(requestHandler.mock(), responseHandler.mock());
+
+        var expected = """
+                <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://localhost:8080/secondary">
+                  <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+                    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8080/nuxeo/home.html"/>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</md:NameIDFormat>
+                    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost:8080/nuxeo/home.html" index="0" isDefault="true"/>
+                    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8080/nuxeo/home.html" index="1" isDefault="false"/>
+                  </md:SPSSODescriptor>
+                </md:EntityDescriptor>
+                """;
+        assertEquals(expected, formatXML(responseHandler.getResponseAsString()));
+    }
+
+    @Test
+    public void testDoGetWithEntityId() throws IOException {
+        var requestHandler = MockHttpServletRequest.init("GET", "http://localhost:8080/nuxeo/saml/metadata")
+                                                   .whenGetParameterThenReturn("entityId",
+                                                           "http://localhost:8080/secondary");
+        var responseHandler = MockHttpServletResponse.init();
+
+        new MetadataServlet().doGet(requestHandler.mock(), responseHandler.mock());
+
+        var expected = """
+                <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://localhost:8080/secondary">
+                  <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+                    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8080/nuxeo/home.html"/>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+                    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</md:NameIDFormat>
+                    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost:8080/nuxeo/home.html" index="0" isDefault="true"/>
+                    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8080/nuxeo/home.html" index="1" isDefault="false"/>
+                  </md:SPSSODescriptor>
+                </md:EntityDescriptor>
+                """;
+        assertEquals(expected, formatXML(responseHandler.getResponseAsString()));
+    }
 }

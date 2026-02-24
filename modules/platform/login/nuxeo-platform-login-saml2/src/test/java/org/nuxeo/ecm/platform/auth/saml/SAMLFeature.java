@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.auth.saml;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration.ENTITY_ID;
+import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.SAML_SECONDARY_ENTITY_ID_PARAMETER;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,6 +35,7 @@ import java.util.function.Function;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import com.google.inject.Provider;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
@@ -50,6 +52,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.UserManagerFeature;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -66,6 +69,7 @@ import org.opensaml.saml.common.SAMLObject;
 import org.w3c.dom.Node;
 
 import com.google.inject.Binder;
+import com.google.inject.name.Names;
 
 import net.shibboleth.utilities.java.support.codec.Base64Support;
 import net.shibboleth.utilities.java.support.codec.DecodingException;
@@ -78,10 +82,16 @@ import net.shibboleth.utilities.java.support.codec.EncodingException;
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.login.saml2")
 @Deploy("org.nuxeo.ecm.platform.web.common")
+// Primary SP configuration
 @WithFrameworkProperty(name = ENTITY_ID, value = "http://localhost:8080/login")
+// Secondary SP configuration
+@WithFrameworkProperty(name = SAML_SECONDARY_ENTITY_ID_PARAMETER, value = "http://localhost:8080/secondary")
 public class SAMLFeature implements RunnerFeature {
 
     public static final String ALGORITHM_SIGNATURE_RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+
+    /** @since 2023.44 */
+    public static final String SAML_SECONDARY_ENTITY_ID_PARAMETER = "nuxeo.test.saml.secondary.entity.id";
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
@@ -93,17 +103,31 @@ public class SAMLFeature implements RunnerFeature {
             metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
         }
         Framework.getProperties().put("nuxeo.test.saml.authenticator.metadata", metadata);
+        String secondaryMetadata = getClass().getResource("/secondary-idp-meta.xml").toURI().getPath();
+        Framework.getProperties().put("nuxeo.test.saml.secondary.authenticator.metadata", secondaryMetadata);
         // deploy saml authenticator contrib
         RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
         harness.deployContrib("org.nuxeo.ecm.platform.login.saml2.test",
                 "OSGI-INF/saml-authenticator-test-contrib.xml");
+        // deploy saml secondary authenticator contrib
+        harness.deployContrib("org.nuxeo.ecm.platform.login.saml2.test",
+                "OSGI-INF/secondary-saml-authenticator-test-contrib.xml");
     }
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(SAMLAuthenticationProvider.class)
-              .toProvider(() -> (SAMLAuthenticationProvider) Framework.getService(PluggableAuthenticationService.class)
-                                                                      .getPlugin("SAML_AUTH"));
+        var authenticationService = Framework.getService(PluggableAuthenticationService.class);
+        bindNamedProvider(binder, "SAML_AUTH", authenticationService::getPlugin, true);
+        bindNamedProvider(binder, "SAML_SECONDARY_AUTH", authenticationService::getPlugin, false);
+    }
+
+    protected void bindNamedProvider(Binder binder, String name, Function<String, NuxeoAuthenticationPlugin> provider,
+            boolean isDefault) {
+        Provider<? extends SAMLAuthenticationProvider> finalProvider = () -> (SAMLAuthenticationProvider) provider.apply(name);
+        if (isDefault) {
+            binder.bind(SAMLAuthenticationProvider.class).toProvider(finalProvider);
+        }
+        binder.bind(SAMLAuthenticationProvider.class).annotatedWith(Names.named(name)).toProvider(finalProvider);
     }
 
     public static <O extends SAMLObject> void assertSAMLMessage(ExpectedSAMLMessage<O> expectedMessage,

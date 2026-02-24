@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.web;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.getStartPageURL;
 
 import java.io.IOException;
@@ -28,7 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.platform.auth.saml.SAMLAuthenticationProvider;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.runtime.api.Framework;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -47,12 +51,45 @@ public class MetadataServlet extends HttpServlet {
 
     private static final Logger log = LogManager.getLogger(MetadataServlet.class);
 
+    protected static final String PARAMETER_PLUGIN_NAME = "pluginName";
+
+    protected static final String PARAMETER_ENTITY_ID = "entityId";
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String baseURL = getStartPageURL(request);
 
-        EntityDescriptor descriptor = SAMLConfiguration.getEntityDescriptor(baseURL);
+        // retrieve the requested SAML authenticator
+        // - one asked with the pluginName query parameter
+        // - one asked with the SAML SP entityId query parameter
+        // - the default one if none parameter is provided
+        String pluginNameParameter = request.getParameter(PARAMETER_PLUGIN_NAME);
+        String entityIdParameter = request.getParameter(PARAMETER_ENTITY_ID);
+        SAMLConfiguration configuration;
+        if (isNotBlank(pluginNameParameter)) {
+            var plugin = Framework.getService(PluggableAuthenticationService.class).getPlugin(pluginNameParameter);
+            if (!(plugin instanceof SAMLAuthenticationProvider samlPlugin)) {
+                throw new IllegalArgumentException("Plugin: " + pluginNameParameter + " not found or not a SAML one");
+            }
+            configuration = samlPlugin.getConfiguration();
+        } else if (isNotBlank(entityIdParameter)) {
+            configuration = Framework.getService(PluggableAuthenticationService.class)
+                                     .getAuthenticatorPlugins()
+                                     .stream()
+                                     .<SAMLAuthenticationProvider> mapMulti((plugin, downstream) -> {
+                                         if (plugin instanceof SAMLAuthenticationProvider samlPlugin) {
+                                             downstream.accept(samlPlugin);
+                                         }
+                                     })
+                                     .map(SAMLAuthenticationProvider::getConfiguration)
+                                     .findFirst()
+                                     .orElseThrow(() -> new IllegalArgumentException(
+                                             "SAML Plugin with entityId: " + entityIdParameter + " not found"));
+        } else {
+            configuration = SAMLConfiguration.retrieveDefaultPluginConfiguration();
+        }
+        EntityDescriptor descriptor = configuration.createSPEntityDescriptor(baseURL);
 
         try {
             var marshaller = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(descriptor);

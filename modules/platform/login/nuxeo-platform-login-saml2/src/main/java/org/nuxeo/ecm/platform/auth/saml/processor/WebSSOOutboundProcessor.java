@@ -61,11 +61,29 @@ public class WebSSOOutboundProcessor extends AbstractSAMLProcessor {
 
     protected final SAMLOutboundBinding outboundBinding;
 
+    protected final String entityId;
+
+    /**
+     * @deprecated since 2023.44, use
+     *             {@link WebSSOOutboundProcessor#WebSSOOutboundProcessor(MessageHandler, MessageHandler, SAMLOutboundBinding, SAMLConfiguration)}
+     *             instead.
+     */
+    @Deprecated(since = "2023.44", forRemoval = true)
     public WebSSOOutboundProcessor(MessageHandler initInboundHandler, MessageHandler outboundHandler,
             SAMLOutboundBinding outboundBinding) {
+        this(initInboundHandler, outboundHandler, outboundBinding,
+                SAMLConfiguration.retrieveDefaultPluginConfiguration());
+    }
+
+    /**
+     * @since 2023.44
+     */
+    public WebSSOOutboundProcessor(MessageHandler initInboundHandler, MessageHandler outboundHandler,
+            SAMLOutboundBinding outboundBinding, SAMLConfiguration configuration) {
         this.initInboundHandler = initInboundHandler;
         this.outboundHandler = outboundHandler;
         this.outboundBinding = outboundBinding;
+        this.entityId = configuration.getSPEntityId();
     }
 
     @Override
@@ -96,7 +114,7 @@ public class WebSSOOutboundProcessor extends AbstractSAMLProcessor {
         authnRequest.setAssertionConsumerServiceURL(getStartPageURL(request));
 
         Issuer issuer = buildSAMLObject(Issuer.DEFAULT_ELEMENT_NAME);
-        issuer.setValue(SAMLConfiguration.getEntityId());
+        issuer.setValue(entityId);
         authnRequest.setIssuer(issuer);
 
         NameIDPolicy nameIDPolicy = buildSAMLObject(NameIDPolicy.DEFAULT_ELEMENT_NAME);

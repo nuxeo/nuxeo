@@ -65,11 +65,29 @@ public class SLOOutboundProcessor extends AbstractSAMLProcessor {
 
     protected final SAMLOutboundBinding outboundBinding;
 
+    protected final String entityId;
+
+    /**
+     * @deprecated since 2023.44, use
+     *             {@link SLOOutboundProcessor#SLOOutboundProcessor(MessageHandler, MessageHandler, SAMLOutboundBinding, SAMLConfiguration)}
+     *             instead.
+     */
+    @Deprecated(since = "2023.44", forRemoval = true)
     public SLOOutboundProcessor(MessageHandler initInboundHandler, MessageHandler outboundHandler,
             SAMLOutboundBinding outboundBinding) {
+        this(initInboundHandler, outboundHandler, outboundBinding,
+                SAMLConfiguration.retrieveDefaultPluginConfiguration());
+    }
+
+    /**
+     * @since 2023.44
+     */
+    public SLOOutboundProcessor(MessageHandler initInboundHandler, MessageHandler outboundHandler,
+            SAMLOutboundBinding outboundBinding, SAMLConfiguration configuration) {
         this.initInboundHandler = initInboundHandler;
         this.outboundHandler = outboundHandler;
         this.outboundBinding = outboundBinding;
+        this.entityId = configuration.getSPEntityId();
     }
 
     @Override
@@ -97,7 +115,7 @@ public class SLOOutboundProcessor extends AbstractSAMLProcessor {
         logoutRequest.setDestination(endpoint.getLocation());
 
         Issuer issuer = buildSAMLObject(Issuer.DEFAULT_ELEMENT_NAME);
-        issuer.setValue(SAMLConfiguration.getEntityId());
+        issuer.setValue(entityId);
         logoutRequest.setIssuer(issuer);
         logoutRequest.setNameID(buildNameID(samlSessionCookie));
 

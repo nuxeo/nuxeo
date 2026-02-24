@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2023 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2023-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,8 +93,11 @@ public class DecodeInboundRequestAction extends AbstractProfileAction {
             messageHandler.invoke(msgContext);
 
             profileRequestContext.setInboundMessageContext(msgContext);
-        } catch (MessageDecodingException | ComponentInitializationException | MessageHandlerException e) {
-            log.error("{} Unable to decode inbound response", getLogPrefix(), e);
+        } catch (ComponentInitializationException e) { // mainly configuration issues
+            log.error("{} Unable to initialize the decoder", getLogPrefix(), e);
+            ActionSupport.buildEvent(profileRequestContext, EventIds.RUNTIME_EXCEPTION);
+        } catch (MessageDecodingException | MessageHandlerException e) { // mainly bad requests
+            log.info("{} Unable to decode inbound response", getLogPrefix(), e);
             ActionSupport.buildEvent(profileRequestContext, EventIds.UNABLE_TO_DECODE);
         } finally {
             decoder.destroy();

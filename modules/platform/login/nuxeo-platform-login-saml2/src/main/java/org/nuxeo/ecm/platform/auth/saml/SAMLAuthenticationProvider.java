@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_ATTRIBUTE_SAML_CREDENTIAL;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLConstants.HTTP_ATTRIBUTE_SAML_LOGOUT;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLUtils.getSAMLHttpCookie;
@@ -47,9 +46,6 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.auth.saml.processor.SAMLProcessorFactory;
 import org.nuxeo.ecm.platform.auth.saml.processor.SLOOutboundProcessor;
 import org.nuxeo.ecm.platform.auth.saml.processor.WebSSOOutboundProcessor;
-import org.nuxeo.ecm.platform.auth.saml.user.AbstractUserResolver;
-import org.nuxeo.ecm.platform.auth.saml.user.EmailBasedUserResolver;
-import org.nuxeo.ecm.platform.auth.saml.user.UserMapperBasedResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.UserResolver;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -57,7 +53,6 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.usermapper.service.UserMapperService;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.xml.config.GlobalParserPoolInitializer;
 import org.opensaml.xmlsec.config.DecryptionParserPoolInitializer;
@@ -88,10 +83,7 @@ public class SAMLAuthenticationProvider
      */
     public static final String ERROR_USER = "error.saml.userMapping";
 
-    // User Resolver
-    protected static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
-
-    protected static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
+    protected SAMLConfiguration configuration;
 
     protected UserResolver userResolver;
 
@@ -100,41 +92,21 @@ public class SAMLAuthenticationProvider
 
     @Override
     public void initPlugin(Map<String, String> parameters) {
+        this.configuration = new SAMLConfiguration(parameters);
 
         // Initialize the User Resolver
-        String userResolverClassname = parameters.get("userResolverClass");
-        Class<? extends UserResolver> userResolverClass = null;
-        if (isBlank(userResolverClassname)) {
-            UserMapperService ums = Framework.getService(UserMapperService.class);
-            if (ums != null) {
-                userResolverClass = USERMAPPER_USER_RESOLVER_CLASS;
-            } else {
-                userResolverClass = DEFAULT_USER_RESOLVER_CLASS;
-            }
-        } else {
-            try {
-                userResolverClass = Class.forName(userResolverClassname).asSubclass(AbstractUserResolver.class);
-            } catch (ClassNotFoundException e) {
-                throw new NuxeoException("Failed get user resolver class " + userResolverClassname, e);
-            }
-
-        }
-        try {
-            userResolver = userResolverClass.getConstructor().newInstance();
-            userResolver.init(parameters);
-        } catch (ReflectiveOperationException e) {
-            log.error("Failed to initialize user resolver {}", userResolverClassname);
-        }
+        userResolver = configuration.instantiateUserResolver();
 
         // Initialize the OpenSAML library
         initOpenSAML();
 
-        processorFactory = new SAMLProcessorFactory(parameters);
+        processorFactory = new SAMLProcessorFactory(configuration);
 
         // contribute icon and link to the Login Screen
-        if (StringUtils.isNotBlank(parameters.get("name"))) {
-            LoginScreenHelper.registerSingleProviderLoginScreenConfig(parameters.get("name"), parameters.get("icon"),
-                    null, parameters.get("label"), parameters.get("description"), this);
+        if (configuration.isLoginScreenButtonEnabled()) {
+            LoginScreenHelper.registerSingleProviderLoginScreenConfig(configuration.getLoginScreenName(),
+                    configuration.getLoginScreenIcon(), null, configuration.getLoginScreenLabel(),
+                    configuration.getLoginScreenDescription(), this);
         }
     }
 
@@ -311,5 +283,12 @@ public class SAMLAuthenticationProvider
 
     protected Optional<String> findOrCreateNuxeoUser(UserResolver userResolver, SAMLCredential credential) {
         return Optional.ofNullable(Framework.doPrivileged(() -> userResolver.findOrCreateNuxeoUser(credential)));
+    }
+
+    /**
+     * @since 2023.44
+     */
+    public SAMLConfiguration getConfiguration() {
+        return configuration;
     }
 }

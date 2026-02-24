@@ -20,7 +20,9 @@ package org.nuxeo.ecm.platform.auth.saml.processor;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
 import org.nuxeo.ecm.platform.auth.saml.processor.action.DecodeInboundRequestAction;
@@ -42,6 +44,7 @@ import org.opensaml.saml.saml2.assertion.impl.BearerSubjectConfirmationValidator
 import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.LogoutResponse;
 import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.metadata.RoleDescriptor;
 import org.opensaml.saml.saml2.profile.impl.DecryptAssertions;
 import org.opensaml.saml.saml2.profile.impl.DecryptAttributes;
 import org.opensaml.saml.saml2.profile.impl.DefaultAssertionValidationContextBuilder;
@@ -63,11 +66,31 @@ public class InboundProcessor extends AbstractSAMLProcessor {
 
     protected final boolean signatureMandatory;
 
+    protected final Duration skewTime;
+
+    /**
+     * @deprecated since 2023.44, use
+     *             {@link InboundProcessor#InboundProcessor(SAMLInboundBinding, MessageHandler, SAMLConfiguration)}
+     *             instead.
+     */
+    @Deprecated(since = "2023.44", forRemoval = true)
     public InboundProcessor(SAMLInboundBinding inboundBinding, MessageHandler inboundHandler,
             boolean signatureMandatory) {
         this.inboundBinding = inboundBinding;
         this.inboundHandler = inboundHandler;
         this.signatureMandatory = signatureMandatory;
+        this.skewTime = SAMLConfiguration.retrieveDefaultPluginConfiguration().getSPSkewTime();
+    }
+
+    /**
+     * @since 2023.44
+     */
+    public InboundProcessor(SAMLInboundBinding inboundBinding, MessageHandler inboundHandler,
+            SAMLConfiguration configuration) {
+        this.inboundBinding = inboundBinding;
+        this.inboundHandler = inboundHandler;
+        this.signatureMandatory = configuration.isIdPSignatureMandatory();
+        this.skewTime = configuration.getSPSkewTime();
     }
 
     @Override
@@ -101,14 +124,17 @@ public class InboundProcessor extends AbstractSAMLProcessor {
         var validationContextBuilder = new DefaultAssertionValidationContextBuilder();
         validationContextBuilder.setCheckAddress(prc -> false);
         validationContextBuilder.setSignatureRequired(prc -> {
-            var peerEntityContext = prc.getInboundMessageContext().getSubcontext(SAMLPeerEntityContext.class);
+            var peerEntityContext = Optional.ofNullable(
+                    prc.getInboundMessageContext().getSubcontext(SAMLPeerEntityContext.class));
             // authenticated field is filled by the response signature validation, in such case don't require assertion
             // signature, nevertheless validate the signature if present in assertion
-            return signatureMandatory && !peerEntityContext.isAuthenticated()
-                    && peerEntityContext.getSubcontext(SAMLMetadataContext.class)
-                                        .getRoleDescriptor()
-                                        .getKeyDescriptors()
+            return signatureMandatory
+                    && peerEntityContext.filter(Predicate.not(SAMLPeerEntityContext::isAuthenticated))
+                                        .map(context -> context.getSubcontext(SAMLMetadataContext.class))
+                                        .map(SAMLMetadataContext::getRoleDescriptor)
+                                        .map(RoleDescriptor::getKeyDescriptors)
                                         .stream()
+                                        .flatMap(List::stream)
                                         .anyMatch(keyDescriptor -> keyDescriptor.getUse() == UsageType.SIGNING);
         });
         validationContextBuilder.setInResponseToRequired(prc -> false);
@@ -116,7 +142,7 @@ public class InboundProcessor extends AbstractSAMLProcessor {
         // validation
         validationContextBuilder.setInResponseTo(
                 prc -> ((Response) prc.getInboundMessageContext().getMessage()).getInResponseTo());
-        validationContextBuilder.setClockSkew(Duration.ofMillis(SAMLConfiguration.getSkewTimeMillis()));
+        validationContextBuilder.setClockSkew(skewTime);
         validationContextBuilder.setValidIssuers(prc -> {
             var entityID = new SAMLEntityIDFunction().compose(new ChildContextLookup<>(SAMLPeerEntityContext.class))
                                                      .apply(prc.getInboundMessageContext());
