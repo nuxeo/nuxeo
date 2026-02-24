@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.search.client.opensearch1.IgnoreIfNotOpenSearchSearchClient;
+import org.nuxeo.ecm.core.search.client.opensearch1.IgnoreIfNotOpenSearchBasedSearchClient;
 import org.nuxeo.ecm.core.test.CoreSearchFeature;
 import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
@@ -152,7 +152,7 @@ public class TestSearchReindexing {
     }
 
     @Test
-    @ConditionalIgnore(condition = IgnoreIfNotOpenSearchSearchClient.class)
+    @ConditionalIgnore(condition = IgnoreIfNotOpenSearchBasedSearchClient.class)
     public void shouldReindexAndCountErrors() {
         DocumentModel folder = session.createDocumentModel("/", "section", "Folder");
         // dynamic mapping will autodetect a date format for dc:coverage field

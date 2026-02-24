@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.search.IgnoreIfSearchClientDoesNotHaveAggregateCapability;
 import org.nuxeo.ecm.core.search.SearchQuery;
 import org.nuxeo.ecm.core.search.SearchResponse;
+import org.nuxeo.ecm.core.search.client.opensearch1.IgnoreIfNotOpenSearchBasedSearchClient;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
@@ -91,6 +92,7 @@ public class TestSearchClientAggregates extends AbstractTestSearchClient {
     }
 
     @Test
+    @ConditionalIgnore(condition = IgnoreIfNotOpenSearchBasedSearchClient.class)
     public void testAggregateTermNumeric() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("terms");
@@ -241,6 +243,10 @@ public class TestSearchClientAggregates extends AbstractTestSearchClient {
 
         assertTrue(response.getTotal() > 0);
         assertEquals(1, response.getAggregates().size());
+        if (response.isMissingCapabilities()) {
+            // search client doesn't support this aggregate
+            return;
+        }
         var resultAgg = response.getAggregates().getFirst();
         assertEquals(1, resultAgg.getBuckets().size());
         assertEquals(2112020200, resultAgg.getBuckets().getFirst().getValue(), 0.1);
@@ -258,6 +264,10 @@ public class TestSearchClientAggregates extends AbstractTestSearchClient {
         assertTrue(response.getTotal() > 0);
         assertEquals(5, response.getAggregates().size());
         var r = response.getAggregates();
+        if (response.isMissingCapabilities()) {
+            // search client doesn't support this aggregate
+            return;
+        }
         assertEquals(100, r.get(0).getBuckets().getFirst().getValue(), 0.1);
         assertEquals(1000000000, r.get(1).getBuckets().getFirst().getValue(), 0.1);
         assertEquals(211202020, r.get(2).getBuckets().getFirst().getValue(), 0.1);
