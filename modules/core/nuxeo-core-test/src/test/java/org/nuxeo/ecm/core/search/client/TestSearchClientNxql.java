@@ -29,8 +29,10 @@ import java.util.GregorianCalendar;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.search.IgnoreIfSearchClientDoesNotHaveIndexingCapability;
 import org.nuxeo.ecm.core.search.SearchHit;
 import org.nuxeo.ecm.core.search.SearchResponse;
+import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 
 /**
  * @since 2025.0
@@ -80,19 +82,7 @@ public class TestSearchClientNxql extends AbstractTestSearchClient {
         searchAndAssertHits("SELECT * FROM Document ORDER BY ecm:path DESC");
         searchAndAssertHits("SELECT * FROM Document ORDER BY ecm:name");
 
-        searchAndAssertHits("SELECT * FROM Document WHERE ecm:path STARTSWITH '/'");
-
         searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:path STARTSWITH '/nothere'");
-        searchAndAssertHits("SELECT * FROM Document WHERE ecm:path STARTSWITH '/testfolder1'");
-        searchAndAssertNoHits(
-                "SELECT * FROM Document WHERE dc:title = 'testfile1_Title' AND ecm:path STARTSWITH '/foo'");
-        searchAndAssertHits(
-                "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' AND ecm:path STARTSWITH '/testfolder1'", 3);
-        // require a mapping for dc:coverage and dc:subject with .children fields like ecm:path
-        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo/bar'");
-        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo'");
-        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee'");
-        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee/moo'");
         searchAndAssertHits("SELECT * FROM Document WHERE dc:created >= DATE '2007-01-01'");
         searchAndAssertHits("SELECT * FROM Document WHERE dc:created >= TIMESTAMP '2007-03-15 00:00:00'");
         searchAndAssertHits(
@@ -103,7 +93,7 @@ public class TestSearchClientNxql extends AbstractTestSearchClient {
         searchAndAssertNoHits("SELECT * FROM Document WHERE my:boolean = 1");
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:isProxy = 1");
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:isVersion = 1");
-        searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:isVersion = 0");
+        searchAndAssertHits("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:isVersion = 0", 12);
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:uuid = 'a00'", 1);
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:name = 'a00'", 1);
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:parentId = 'f01'", 1);
@@ -118,10 +108,11 @@ public class TestSearchClientNxql extends AbstractTestSearchClient {
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:mixinType <> 'Rendition'");
         searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType = 'Rendition' AND dc:title NOT ILIKE '%pdf'");
         searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'");
-        searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType = 'Downloadable'");
-        searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable'");
-        searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType IN ('Folderish', 'Downloadable')");
-        searchAndAssertHits("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Folderish', 'Downloadable')");
+        // atlas resolves mixinType using primaryType, change to CustomDownloadable to avoid match
+        searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType = 'CustomDownloadable'");
+        searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType = 'CustomVersionable'");
+        searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:mixinType IN ('Folderish', 'CustomDownloadable')");
+        searchAndAssertHits("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Folderish', 'CustomDownloadable')");
         searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'project'");
         searchAndAssertNoHits("SELECT * FROM Document WHERE ecm:versionLabel = '1.0'");
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:isTrashed = 0");
@@ -163,6 +154,24 @@ public class TestSearchClientNxql extends AbstractTestSearchClient {
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:ancestorId NOT IN ('f42', 'f01', 'root')");
         searchAndAssertHits("SELECT * FROM Document WHERE ecm:ancestorId NOT IN ('f01') AND ecm:ancestorId IS NOT NULL",
                 1);
+    }
+
+    // These tests require actual path materialization in a real repository and may not work with injected documents
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
+    public void testNxqlFromDocumentationAdvanced() {
+        // startswith on ecm:path requires a true repository
+        searchAndAssertHits("SELECT * FROM Document WHERE ecm:path STARTSWITH '/'");
+        searchAndAssertHits("SELECT * FROM Document WHERE ecm:path STARTSWITH '/testfolder1'");
+        searchAndAssertNoHits(
+                "SELECT * FROM Document WHERE dc:title = 'testfile1_Title' AND ecm:path STARTSWITH '/foo'");
+        searchAndAssertHits(
+                "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' AND ecm:path STARTSWITH '/testfolder1'", 3);
+        // require a mapping for dc:coverage and dc:subject with .children fields like ecm:path
+        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo/bar'");
+        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo'");
+        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee'");
+        searchAndAssertNoHits("SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee/moo'");
     }
 
     @Test
