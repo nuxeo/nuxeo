@@ -93,8 +93,11 @@ public class SearchServiceScroll extends RepositoryScroll {
     public void close() {
         super.close();
         if (response != null) {
-            SearchService service = Framework.getService(SearchService.class);
-            service.clearSearchScroll(response.getScrollContext());
+            var scrollContext = response.getScrollContext();
+            if (scrollContext != null) {
+                SearchService service = Framework.getService(SearchService.class);
+                service.clearSearchScroll(scrollContext);
+            }
         }
         response = null;
     }
