@@ -151,9 +151,12 @@ public class TestSearchHighlight {
                 highlights.get("ecm:binarytext").get(0));
         assertEquals("Proin ac libero <em>vehicula</em>, mollis turpis quis, tempus sem.",
                 highlights.get("ecm:binarytext").get(1));
-        assertEquals(
-                "Donec <em>vehicula</em>, ante eget porttitor hendrerit, orci nibh rhoncus turpis, vel tempor turpis dui eget turpis",
-                highlights.get("ecm:binarytext").get(2));
+        // mongo atlas search returns a larger context
+        assertTrue(highlights.get("ecm:binarytext").get(2),
+                highlights.get("ecm:binarytext")
+                          .get(2)
+                          .startsWith(
+                                  "Donec <em>vehicula</em>, ante eget porttitor hendrerit, orci nibh rhoncus turpis, vel tempor turpis dui eget turpis"));
         assertEquals(
                 "Nam auctor, enim vel lacinia <em>vehicula</em>, leo leo porttitor massa, in blandit tortor ante quis ligula.",
                 highlights.get("ecm:binarytext").get(3));
