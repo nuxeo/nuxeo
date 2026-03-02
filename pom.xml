@@ -69,8 +69,8 @@
 
     <tomcat.version>9.0.115</tomcat.version>
     <opensearch.version>1.3.20</opensearch.version>
-    <netty.version>4.2.9.Final</netty.version>
-    <netty.boringssl.version>2.0.74.Final</netty.boringssl.version>
+    <netty.version>4.2.10.Final</netty.version>
+    <netty.boringssl.version>2.0.75.Final</netty.boringssl.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <guice.version>3.0</guice.version>
@@ -149,7 +149,7 @@
     <mongo.java.driver.version>4.11.5</mongo.java.driver.version>
     <quartz.mongodb.version>2.3.0</quartz.mongodb.version>
 
-    <kafka.version>3.9.1</kafka.version>
+    <kafka.version>3.9.2</kafka.version>
     <confluent.version>6.2.15</confluent.version>
     <metrics.version>5.0.0-rc3</metrics.version>
     <amqp.client.version>5.25.0</amqp.client.version>
@@ -2871,7 +2871,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.9</version>
+        <version>42.7.10</version>
       </dependency>
       <!-- fix transitive dependency of org.postgresql:postgresql to avoid multiple versions in dependency graph -->
       <dependency>
