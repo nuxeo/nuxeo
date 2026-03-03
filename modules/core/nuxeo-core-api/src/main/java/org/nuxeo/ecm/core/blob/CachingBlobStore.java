@@ -127,7 +127,7 @@ public class CachingBlobStore extends AbstractBlobStore {
     @Override
     protected String writeBlobGeneric(BlobWriteContext blobWriteContext) throws IOException {
         // write the blob to a temporary file
-        String tmpKey = cacheStore.writeBlob(blobWriteContext.copyWithKey(randomString()));
+        String tmpKey = cacheStore.writeBlobGeneric(blobWriteContext.copyWithKey(randomString()));
         // get the final key
         String key = blobWriteContext.getKey(); // may depend on write observer, for example for digests
 

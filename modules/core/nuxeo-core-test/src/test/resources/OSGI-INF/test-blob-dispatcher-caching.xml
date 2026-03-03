@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.test-blob-dispatcher-caching" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.core.blob.LocalBlobProvider</class>
+    </blobprovider>
+    <blobprovider name="other">
+      <class>org.nuxeo.ecm.core.blob.InMemoryBlobProvider</class>
+      <property name="test-caching">true</property>
+    </blobprovider>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
+    <blobdispatcher>
+      <property name="dc:description=other">other</property>
+      <property name="default">test</property>
+    </blobdispatcher>
+  </extension>
+</component>
