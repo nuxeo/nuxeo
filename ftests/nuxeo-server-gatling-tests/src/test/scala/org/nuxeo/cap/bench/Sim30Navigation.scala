@@ -31,15 +31,29 @@ object ScnNavigation {
         feed(Feeders.users).repeat(5) {
           feed(documents)
             .randomSwitch(
-              30.0 -> NuxeoRest.getDocument("Get document"),
+              13.0 -> NuxeoRest.getDocument("Get document"),
               10.0 -> NuxeoRest.getParentFolderOfCurrentDocument("Get document folder"),
               10.0 -> NuxeoRest.getDocument("Get document dc only", schemas = "dublincore"),
-              10.0 -> NuxeoRest.getDocument("Get document with acl", enrichers = "acl"),
-              10.0 -> NuxeoRest.getDocument("Get document with breadcrumb", enrichers = "breadcrumb"),
-              10.0 -> NuxeoRest.getDocument("Get document with thumbnail", enrichers = "thumbnail"),
+              3.0 -> NuxeoRest.getDocument("Get document with acl", enrichers = "acl"),
+              3.0 -> NuxeoRest.getDocument("Get document with audit", enrichers = "audit"),
+              3.0 -> NuxeoRest.getDocument("Get document with breadcrumb", enrichers = "breadcrumb"),
+              3.0 -> NuxeoRest.getDocument("Get document with collections and favorites", enrichers = "collections,favorites"),
+              3.0 -> NuxeoRest.getDocument("Get document with firstAccessibleAncestor", enrichers = "firstAccessibleAncestor"),
+              3.0 -> NuxeoRest.getParentFolderOfCurrentDocument("Get document folder with hasContent", enrichers = "hasContent"),
+              3.0 -> NuxeoRest.getParentFolderOfCurrentDocument("Get document folder with hasFolderishChild", enrichers = "hasFolderishChild"),
+              3.0 -> NuxeoRest.getDocument("Get document with pendingTasks, runnableWorkflows and runningWorkflows", enrichers = "pendingTasks,runnableWorkflows,runningWorkflows"),
+              3.0 -> NuxeoRest.getDocument("Get document with permissions", enrichers = "permissions"),
+              3.0 -> NuxeoRest.getDocument("Get document with preview", enrichers = "preview"),
+              3.0 -> NuxeoRest.getDocument("Get document with publications", enrichers = "publications"),
+              3.0 -> NuxeoRest.getDocument("Get document with renditions", enrichers = "renditions"),
+              3.0 -> NuxeoRest.getDocument("Get document with subscribedNotifications", enrichers = "subscribedNotifications"),
+              3.0 -> NuxeoRest.getDocument("Get document with subtypes", enrichers = "subtypes"),
+              3.0 -> NuxeoRest.getDocument("Get document with tags", enrichers = "tags"),
+              3.0 -> NuxeoRest.getDocument("Get document with thumbnail", enrichers = "thumbnail"),
+              3.0 -> NuxeoRest.getParentFolderOfCurrentDocument("Get document folder with userPreferences", enrichers = "userPreferences"),
               10.0 -> NuxeoRest.getDocument("Get document with properties", parts = "properties"),
-              5.0 -> NuxeoRest.getDocument("Get document with versionLabel", parts = "versionLabel"),
-              5.0 -> NuxeoRest.getDocument("Get document with lock", parts = "lock")
+              3.0 -> NuxeoRest.getDocument("Get document with versionLabel", parts = "versionLabel"),
+              3.0 -> NuxeoRest.getDocument("Get document with lock", parts = "lock")
             )
             .pause(pause)
         }

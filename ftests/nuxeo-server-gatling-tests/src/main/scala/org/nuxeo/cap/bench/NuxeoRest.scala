@@ -64,6 +64,17 @@ object NuxeoRest {
     )
   }
 
+  /** Add a user preference on the parent document  */
+  def addPreferencesOnParent() = {
+    http("Add user preferences")
+      .put(Constants.GAT_API_PATH + "/#{parentPath}/@preferences")
+      .headers(Headers.base)
+      .header("Content-Type", "application/json")
+      .basicAuth("#{user}", "#{password}")
+      .body(StringBody("""{ "entity-type": "userPreferences","preferences": {"#{user}Key": "#{user}Value"}}"""))
+      .check(status.in(200, 201))
+  }
+
   /** Create a document that may already exists, in this case Nuxeo will change the doc name */
   def createAgainDocument() = {
     createDocument()
