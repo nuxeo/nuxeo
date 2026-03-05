@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +36,7 @@ import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.extractQueryParam;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.format;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -42,6 +45,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -391,5 +395,76 @@ public class SAMLAuthenticatorTest {
 
         UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(requestHandler.mock(), responseHandler.mock());
         assertNull(info);
+    }
+
+    // NXP-33506
+    @Test
+    public void testAuthRequestWithRequestedUrlParameter() {
+        var requestHandler = MockHttpServletRequest.init()
+                                                   .whenGetParameterThenReturn(NXAuthConstants.REQUESTED_URL, "ui/");
+
+        var loginURL = samlAuth.computeUrl(requestHandler.mock(), null);
+
+        assertTrue(loginURL.startsWith("http://dummy/SSORedirect"));
+        // Verify that RelayState contains the requested URL
+        var relayState = extractQueryParam(loginURL, "RelayState");
+        assertEquals("ui/", relayState);
+    }
+
+    // NXP-33506
+    @Test
+    public void testAuthRequestParameterOverridesSession() {
+        var requestHandler = MockHttpServletRequest.init()
+                                                   .whenGetParameterThenReturn(NXAuthConstants.REQUESTED_URL, "ui/new")
+                                                   .whenGetSessionAttributeThenReturn(
+                                                           NXAuthConstants.START_PAGE_SAVE_KEY, "ui/old");
+
+        var loginURL = samlAuth.computeUrl(requestHandler.mock(), null);
+
+        var relayState = extractQueryParam(loginURL, "RelayState");
+        assertEquals("ui/new", relayState); // Should use parameter, not session
+    }
+
+    // NXP-33506
+    @Test
+    public void testAuthRequestAttributeOverridesSession() {
+        var requestHandler = MockHttpServletRequest.init()
+                                                   .whenGetAttributeThenReturn(NXAuthConstants.REQUESTED_URL,
+                                                           "ui/attribute")
+                                                   .whenGetSessionAttributeThenReturn(
+                                                           NXAuthConstants.START_PAGE_SAVE_KEY, "ui/session");
+
+        var loginURL = samlAuth.computeUrl(requestHandler.mock(), null);
+
+        var relayState = extractQueryParam(loginURL, "RelayState");
+        assertEquals("ui/attribute", relayState); // Should use attribute, not session
+    }
+
+    // NXP-33506
+    @Test
+    public void testAuthRequestFallsBackToSession() {
+        var requestHandler = MockHttpServletRequest.init()
+                                                   .whenGetSessionAttributeThenReturn(
+                                                           NXAuthConstants.START_PAGE_SAVE_KEY, "ui/session");
+
+        var loginURL = samlAuth.computeUrl(requestHandler.mock(), null);
+
+        var relayState = extractQueryParam(loginURL, "RelayState");
+        assertEquals("ui/session", relayState); // Should fall back to session
+    }
+
+    // NXP-33506
+    @Test
+    public void testAuthRequestWithNoRequestedUrl() {
+        var requestHandler = MockHttpServletRequest.init();
+
+        var loginURL = samlAuth.computeUrl(requestHandler.mock(), null);
+
+        assertTrue(loginURL.startsWith("http://dummy/SSORedirect"));
+        // Verify that there's no RelayState in the URL
+        var relayStatePresent = URLEncodedUtils.parse(URI.create(loginURL), UTF_8)
+                                               .stream()
+                                               .anyMatch(param -> "RelayState".equals(param.getName()));
+        assertFalse(relayStatePresent);
     }
 }

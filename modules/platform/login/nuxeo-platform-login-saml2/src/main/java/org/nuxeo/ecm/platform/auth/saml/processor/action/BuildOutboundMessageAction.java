@@ -60,8 +60,14 @@ public class BuildOutboundMessageAction extends AbstractProfileAction {
     }
 
     protected String getRequestedUrl(HttpServletRequest request) {
-        String requestedUrl = (String) request.getAttribute(NXAuthConstants.REQUESTED_URL);
+        // Check URL parameter first (explicit user intent from URL like ?requestedUrl=ui/)
+        String requestedUrl = request.getParameter(NXAuthConstants.REQUESTED_URL);
         if (requestedUrl == null) {
+            // Fall back to request attribute (programmatic setting)
+            requestedUrl = (String) request.getAttribute(NXAuthConstants.REQUESTED_URL);
+        }
+        if (requestedUrl == null) {
+            // Finally check session (cached value from previous request)
             HttpSession session = request.getSession(false);
             if (session != null) {
                 requestedUrl = (String) session.getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
