@@ -22,13 +22,21 @@ import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.UserPreferencesAdapter;
@@ -37,6 +45,7 @@ import org.nuxeo.http.test.handler.HttpStatusCodeHandler;
 import org.nuxeo.http.test.handler.StringHandler;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.user.preferences.directory.UserPreferencesFeature;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -53,15 +62,33 @@ public class UserPreferencesAdapterTest {
     protected CoreSession session;
 
     @Inject
+    protected TransactionalFeature txFeature;
+
+    @Inject
     protected RestServerFeature restServerFeature;
 
+    protected DocumentModel note;
+
     @Rule
-    public final HttpClientTestRule httpClient = HttpClientTestRule.defaultJsonClient(
-            () -> restServerFeature.getRestApiUrl());
+    public final HttpClientTestRule httpClient = HttpClientTestRule.builder()
+                                                                   .url(() -> restServerFeature.getRestApiUrl())
+                                                                   .credentials("user1", "user1")
+                                                                   .accept(MediaType.APPLICATION_JSON)
+                                                                   .build();
+
+    @Before
+    public void setup() {
+        note = RestServerInit.getNote(1, session);
+        ACE ace = ACE.builder("user1", READ).creator(session.getPrincipal().getName()).isGranted(true).build();
+        ACP acp = new ACPImpl();
+        acp.addACE(ACL.LOCAL_ACL, ace);
+        session.setACP(note.getRef(), acp, false);
+        session.save();
+        txFeature.nextTransaction();
+    }
 
     @Test
     public void testUserPreferencesAdapterCRUD() {
-        var note = RestServerInit.getNote(1, session);
         // Create
         httpClient.buildPutRequest("/id/" + note.getId() + "/@" + UserPreferencesAdapter.NAME).entity("""
                 {

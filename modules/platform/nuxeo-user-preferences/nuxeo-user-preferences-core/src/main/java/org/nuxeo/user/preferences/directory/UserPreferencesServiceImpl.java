@@ -85,7 +85,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     @Override
     public Optional<UserPreference> get(CoreSession session, @Nonnull String key) {
         Objects.requireNonNull(key, "The key can not be null");
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return doGet(session, dirSession, key).map(UserPreferencesServiceImpl::newUserPreference);
         });
     }
@@ -98,7 +98,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     public UserPreferences get(CoreSession session, @Nonnull DocumentRef docRef) {
         Objects.requireNonNull(docRef, "The document reference can not be null");
         var idRef = getDocId(session, docRef);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return doGet(session, dirSession, idRef);
         });
     }
@@ -114,7 +114,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
         Objects.requireNonNull(key, "The key can not be null");
         Objects.requireNonNull(docRef, "The document reference can not be null");
         var idRef = getDocId(session, docRef);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return retrieveDocPreferenceForKey(session, dirSession, idRef, key).map(
                     UserPreferencesServiceImpl::newUserPreference);
         });
@@ -122,7 +122,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
 
     @Override
     public UserPreferences list(CoreSession session) {
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return newUserDocPreferences(retrieveAllPreferencesForUser(session,
                     dirSession).stream().map(UserPreferencesServiceImpl::newUserPreference).toList());
         });
@@ -133,7 +133,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
         Objects.requireNonNull(key, "The key can not be null");
         Objects.requireNonNull(value, "The value can not be null");
         validateKey(key);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return doCreate(session, dirSession, key, value);
         });
     }
@@ -151,7 +151,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
         Objects.requireNonNull(key, "The key can not be null");
         Objects.requireNonNull(value, "The value can not be null");
         validateKey(key);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return doGet(session, dirSession, key).map(docModel -> doUpdate(dirSession, docModel, value))
                                                   .orElseGet(() -> doCreate(session, dirSession, key, value));
         });
@@ -162,7 +162,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
             @Nonnull Map<String, String> preferences) {
         Objects.requireNonNull(docRef, "The document reference can not be null");
         validatePreferences(preferences);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return doCreate(session, dirSession, docRef, preferences);
         });
     }
@@ -186,7 +186,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     public UserPreference update(CoreSession session, @Nonnull String key, @Nonnull String value) {
         Objects.requireNonNull(key, "The key can not be null");
         Objects.requireNonNull(value, "The value can not be null");
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             return doGet(session, dirSession, key).map(docModel -> doUpdate(dirSession, docModel, value))
                                                   .orElseThrow(() -> new UserPreferencesNotFound(key));
         });
@@ -204,7 +204,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
             @Nonnull UserPreferences docPreferences) {
         validatePreferences(docPreferences.preferences());
         var idRef = getDocId(session, docRef);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             var toBeDeleted = retrieveAllDocPreferences(session, dirSession, idRef);
             if (toBeDeleted.isEmpty()) {
                 throw new UserPreferencesNotFound(idRef);
@@ -220,7 +220,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
             @Nonnull UserPreferences docPreferences) {
         validatePreferences(docPreferences.preferences());
         var idRef = getDocId(session, docRef);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             List<DocumentModel> toBeUpdated = new ArrayList<>();
             List<Map<String, Object>> toBeCreated = new ArrayList<>();
             docPreferences.preferences().forEach((key, value) -> {
@@ -242,7 +242,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     public UserPreferences remove(CoreSession session, @Nonnull DocumentRef docRef, @Nonnull String key) {
         Objects.requireNonNull(key, "The key can not be null");
         var idRef = getDocId(session, docRef);
-        return withDirectorySession(dirSession -> {
+        return withSystemDirectorySession(dirSession -> {
             retrieveDocPreferenceForKey(session, dirSession, idRef, key).ifPresent(dirSession::deleteEntry);
             return doGet(session, dirSession, idRef);
         });
@@ -250,7 +250,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
 
     @Override
     public void delete(CoreSession session, @Nonnull String key) {
-        withDirectorySession(dirSession -> {
+        withSystemDirectorySession(dirSession -> {
             doGet(session, dirSession, key).ifPresent(dirSession::deleteEntry);
         });
     }
@@ -258,7 +258,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     @Override
     public void delete(CoreSession session, @Nonnull DocumentRef docRef) {
         var idRef = getDocId(session, docRef);
-        withDirectorySession(dirSession -> {
+        withSystemDirectorySession(dirSession -> {
             retrieveAllDocPreferences(session, dirSession, idRef).forEach(dirSession::deleteEntry);
         });
     }
@@ -284,7 +284,7 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
     protected void doBatchDelete(QueryBuilder queryBuilder) {
         log.debug("Deleting all preferences for query: {}", queryBuilder);
         queryBuilder.limit(100);
-        withDirectorySession(dirSession -> {
+        withSystemDirectorySession(dirSession -> {
             List<String> ids;
             do {
                 ids = dirSession.queryIds(queryBuilder);
@@ -374,15 +374,19 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
         });
     }
 
-    protected static <R> R withDirectorySession(Function<Session, R> function) {
-        try (Session dirSession = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
-            return function.apply(dirSession);
-        }
+    protected static <R> R withSystemDirectorySession(Function<Session, R> function) {
+        return Framework.doPrivileged(() -> {
+            try (Session dirSession = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
+                return function.apply(dirSession);
+            }
+        });
     }
 
-    protected static void withDirectorySession(Consumer<Session> consumer) {
-        try (Session dirSession = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
-            consumer.accept(dirSession);
-        }
+    protected static void withSystemDirectorySession(Consumer<Session> consumer) {
+        Framework.doPrivileged(() -> {
+            try (Session dirSession = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
+                consumer.accept(dirSession);
+            }
+        });
     }
 }

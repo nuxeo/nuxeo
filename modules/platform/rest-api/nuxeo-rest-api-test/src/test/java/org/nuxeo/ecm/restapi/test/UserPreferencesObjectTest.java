@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,8 +56,11 @@ public class UserPreferencesObjectTest {
     protected RestServerFeature restServerFeature;
 
     @Rule
-    public final HttpClientTestRule httpClient = HttpClientTestRule.defaultJsonClient(
-            () -> restServerFeature.getRestApiUrl());
+    public final HttpClientTestRule httpClient = HttpClientTestRule.builder()
+                                                                   .url(() -> restServerFeature.getRestApiUrl())
+                                                                   .credentials("user1", "user1")
+                                                                   .accept(MediaType.APPLICATION_JSON)
+                                                                   .build();
 
     @Test
     public void testUserPreferenceCRUD() {
