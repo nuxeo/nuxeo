@@ -114,7 +114,7 @@
     <gatling-plugin.version>3.1.2</gatling-plugin.version>
     <scala.version>2.12.21</scala.version>
     <scala-logging.version>3.9.6</scala-logging.version>
-    <scala-maven-plugin.version>4.9.9</scala-maven-plugin.version>
+    <scala-maven-plugin.version>4.9.10</scala-maven-plugin.version>
 
     <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
 
@@ -4745,7 +4745,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.6.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
