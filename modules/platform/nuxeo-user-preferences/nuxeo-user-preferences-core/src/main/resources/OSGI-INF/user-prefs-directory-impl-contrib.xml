@@ -28,6 +28,11 @@
       <types>
         <type>system</type>
       </types>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
   </extension>
 
