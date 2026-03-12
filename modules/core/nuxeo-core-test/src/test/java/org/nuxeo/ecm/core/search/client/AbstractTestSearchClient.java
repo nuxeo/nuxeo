@@ -33,7 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.search.BulkIndexingRequest;
-import org.nuxeo.ecm.core.search.IgnoreIfSearchClientDoesNotHaveIndexingCapability;
+import org.nuxeo.ecm.core.search.IgnoreIfSearchClientDoesNotHaveInitIndexCapability;
 import org.nuxeo.ecm.core.search.IndexingRequest;
 import org.nuxeo.ecm.core.search.SearchClient;
 import org.nuxeo.ecm.core.search.SearchIndex;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreSearchFeature.class)
-@ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
+@ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveInitIndexCapability.class)
 public abstract class AbstractTestSearchClient {
 
     @Inject
