@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2024-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class SearchResponseImpl implements SearchResponse {
 
     protected final List<SearchHit> hits;
 
-    protected final List<SearchClient.Capability> missingCapabilities;
+    protected final List<SearchLimitation> limitations;
 
     protected final long total;
 
@@ -70,7 +70,7 @@ public class SearchResponseImpl implements SearchResponse {
 
     protected SearchResponseImpl(Builder builder) {
         this.hits = builder.hits;
-        this.missingCapabilities = builder.missingCapabilities;
+        this.limitations = builder.limitations;
         this.total = builder.total;
         this.totalAccurate = builder.totalAccurate;
         this.scrollContext = builder.scrollContext;
@@ -78,8 +78,8 @@ public class SearchResponseImpl implements SearchResponse {
     }
 
     @Override
-    public List<SearchClient.Capability> getMissingCapabilities() {
-        return missingCapabilities;
+    public List<SearchLimitation> getLimitations() {
+        return limitations;
     }
 
     @Override
@@ -216,7 +216,7 @@ public class SearchResponseImpl implements SearchResponse {
 
         protected final List<SearchHit> hits;
 
-        protected List<SearchClient.Capability> missingCapabilities = List.of();
+        protected List<SearchLimitation> limitations = List.of();
 
         protected long total = -1;
 
@@ -250,8 +250,28 @@ public class SearchResponseImpl implements SearchResponse {
             return this;
         }
 
+        /**
+         * @apiNote This method will set {@code limitations}, in case both {@link #missingCapabilities(List)} and
+         *          {@link #limitations(List)} are called, only the latter will be taken into account.
+         * @deprecated since 2025.17, use {@link #limitations(List)} instead
+         */
+        @Deprecated(since = "2025.17", forRemoval = true)
         public Builder missingCapabilities(List<SearchClient.Capability> missingCapabilities) {
-            this.missingCapabilities = Collections.unmodifiableList(missingCapabilities);
+            this.limitations = missingCapabilities.stream()
+                                                  .map(capability -> SearchLimitation.of(LimitationKind.UNSUPPORTED,
+                                                          capability, "Client does not support " + capability))
+                                                  .toList();
+            return this;
+        }
+
+        /**
+         * Sets structured limitations. When non-empty, {@link #missingCapabilities(List)} is ignored and missing
+         * capabilities are derived from limitations.
+         *
+         * @since 2025.17
+         */
+        public Builder limitations(List<SearchLimitation> limitations) {
+            this.limitations = Collections.unmodifiableList(limitations);
             return this;
         }
 
@@ -261,5 +281,6 @@ public class SearchResponseImpl implements SearchResponse {
     }
 
     public record Error(int code, String message) {
+
     }
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,24 @@ public abstract class AbstractSearchResponseTransformer<R> implements SearchResp
 
     protected AbstractSearchResponseTransformer(Set<SearchClient.Capability> supportedCapabilities) {
         this.supportedCapabilities = supportedCapabilities;
+    }
+
+    /**
+     * Returns limitations encountered for the query. Default implementation derives from
+     * {@link #getMissingCapabilities(SearchQuery)} for backward compatibility. Override to provide structured
+     * limitations.
+     *
+     * @since 2025.17
+     */
+    protected List<SearchLimitation> getLimitations(SearchQuery query) {
+        var missing = getMissingCapabilities(query);
+        if (missing.isEmpty()) {
+            return List.of();
+        }
+        return missing.stream()
+                      .map(cap -> SearchLimitation.of(LimitationKind.UNSUPPORTED, cap,
+                              "Client does not support " + cap))
+                      .toList();
     }
 
     protected List<SearchClient.Capability> getMissingCapabilities(SearchQuery query) {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2024-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class RepositorySearchResponseTransformer
         return SearchResponse.builder(makeSearchHits(searchQuery, projections))
                              .total(projections.totalSize())
                              .totalAccurate(!limitedResults || projections.totalSize() < 0)
-                             .missingCapabilities(getMissingCapabilities(searchQuery))
+                             .limitations(getLimitations(searchQuery))
                              .build();
     }
 

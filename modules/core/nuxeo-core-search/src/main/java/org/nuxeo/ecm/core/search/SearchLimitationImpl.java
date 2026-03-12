@@ -18,26 +18,26 @@
  */
 package org.nuxeo.ecm.core.search;
 
-import static org.nuxeo.ecm.core.search.SearchClient.Capability.INIT_INDEX;
-
-import jakarta.inject.Inject;
-
-import org.nuxeo.runtime.test.runner.ConditionalIgnore;
-
 /**
- * @since 2025.0
+ * Default implementation of {@link SearchLimitation}.
+ *
+ * @since 2025.17
  */
-public class IgnoreIfSearchClientDoesNotHaveInitIndexCapability implements ConditionalIgnore.Condition {
-
-    @Inject
-    protected SearchService searchService;
-
-    @Inject
-    protected SearchIndexingService searchIndexingService;
+record SearchLimitationImpl(LimitationKind kind, SearchClient.Capability affectedCapability, String message)
+        implements SearchLimitation {
 
     @Override
-    public boolean shouldIgnore() {
-        var searchIndex = searchService.getSearchIndex(searchService.getDefaultIndexName());
-        return !searchIndexingService.getClient(searchIndex.client()).hasCapability(INIT_INDEX);
+    public LimitationKind getKind() {
+        return kind;
+    }
+
+    @Override
+    public SearchClient.Capability getAffectedCapability() {
+        return affectedCapability;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 }

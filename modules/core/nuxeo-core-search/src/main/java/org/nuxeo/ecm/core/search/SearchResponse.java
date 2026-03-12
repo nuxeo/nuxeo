@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2024-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,13 +74,29 @@ public interface SearchResponse {
      * Returns {@code true} if the response is provided but search client lacks some search capabilities.
      */
     default boolean isMissingCapabilities() {
-        return !getMissingCapabilities().isEmpty();
+        return !getLimitations().isEmpty();
     }
 
     /**
      * Returns the list of {@link SearchClient.Capability} that are missing to fully perform the SearchQuery.
      */
-    List<SearchClient.Capability> getMissingCapabilities();
+    default List<SearchClient.Capability> getMissingCapabilities() {
+        return getLimitations().stream().map(SearchLimitation::getAffectedCapability).distinct().toList();
+    }
+
+    /**
+     * Returns structured limitations encountered during search execution. Enables consumers to distinguish root causes
+     * (e.g. client unsupported vs. index mapping vs. operator not supported) and take appropriate action.
+     * <p>
+     * When non-empty, these limitations are the source of truth and {@link #getMissingCapabilities()} is derived from
+     * the unique {@link SearchLimitation#getAffectedCapability()} values.
+     *
+     * @since 2025.17
+     */
+    // deprecated since 2021.x, turn into abstract method on deprecation removal
+    default List<SearchLimitation> getLimitations() {
+        return List.of();
+    }
 
     /**
      * Returns a scroll context to use in {@link SearchService#searchScroll(SearchScrollContext)} to fetch the next
