@@ -18,7 +18,7 @@
  */
 package org.nuxeo.user.preferences.api;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 /**
  * A {@code key} / {@code value} user preference.

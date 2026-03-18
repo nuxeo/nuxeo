@@ -18,7 +18,7 @@
  */
 package org.nuxeo.user.preferences.exception;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.nuxeo.user.preferences.api.UserPreferencesUtil.PREFERENCE_KEY_REGEX;
 
 import org.nuxeo.ecm.core.api.NuxeoException;

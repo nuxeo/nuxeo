@@ -24,8 +24,8 @@ import static org.junit.Assert.assertThrows;
 import java.util.Map;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.io.CoreIOFeature;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonReaderTest;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.user.preferences.api.UserPreferences;
@@ -34,7 +34,7 @@ import org.nuxeo.user.preferences.api.UserPreferences;
  * @since 2025.16
  */
 @Deploy("org.nuxeo.platform.user.preferences.api:OSGI-INF/user-prefs-io-contrib.xml")
-@Features(CoreIOFeature.class)
+@Features(CoreFeature.class)
 public class TestUserPreferencesJsonReader
         extends AbstractJsonReaderTest.Local<UserPreferencesJsonReader, UserPreferences> {
 

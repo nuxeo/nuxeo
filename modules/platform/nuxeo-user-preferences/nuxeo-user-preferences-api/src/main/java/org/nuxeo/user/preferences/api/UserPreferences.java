@@ -20,7 +20,7 @@ package org.nuxeo.user.preferences.api;
 
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 /**
  * A collection of {@link UserPreference}.

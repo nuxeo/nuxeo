@@ -20,7 +20,7 @@ package org.nuxeo.user.preferences.directory.io;
 
 import java.util.Map;
 
-import jakarta.inject.Inject;
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;

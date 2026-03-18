@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
 import org.nuxeo.runtime.api.Framework;

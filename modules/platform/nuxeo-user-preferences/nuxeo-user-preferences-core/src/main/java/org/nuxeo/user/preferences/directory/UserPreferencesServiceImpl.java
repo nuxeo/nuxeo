@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;

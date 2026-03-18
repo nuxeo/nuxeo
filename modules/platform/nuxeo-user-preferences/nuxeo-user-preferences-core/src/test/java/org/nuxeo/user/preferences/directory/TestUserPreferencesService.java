@@ -31,8 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
+import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,9 +46,9 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.MultiRepositoryFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -66,7 +65,8 @@ import org.nuxeo.user.preferences.exception.UserPreferencesNotFound;
  * @since 2025.16
  */
 @RunWith(FeaturesRunner.class)
-@Features({ UserPreferencesFeature.class, MultiRepositoryFeature.class })
+@Features(UserPreferencesFeature.class)
+@Deploy("org.nuxeo.platform.user.preferences.core.test:OSGI-INF/test-other-repository-contrib.xml")
 public class TestUserPreferencesService {
 
     protected final static String JACK_USER = "Jack";
@@ -81,10 +81,6 @@ public class TestUserPreferencesService {
 
     @Inject
     protected CoreSession session;
-
-    @Inject
-    @Named("other")
-    protected CoreSession otherSession;
 
     @Inject
     protected UserPreferencesService ups;
@@ -425,6 +421,7 @@ public class TestUserPreferencesService {
 
         // As system, I create a preference in both default and other repository
         ups.create(session, "system", "1");
+        var otherSession = CoreInstance.getCoreSession("other");
         ups.create(otherSession, "system", "2");
         assertEquals(2, numberOfUserPreferences());
         // As JOHN, I create a bunch of preferences in default repository
@@ -471,6 +468,7 @@ public class TestUserPreferencesService {
         // Create a global preference in default repository
         ups.create(session, "foo", "value1");
         // Create a global preference in other repository with same key
+        var otherSession = CoreInstance.getCoreSession("other");
         ups.create(otherSession, "foo", "value2");
 
         var optPref = ups.get(session, "foo");

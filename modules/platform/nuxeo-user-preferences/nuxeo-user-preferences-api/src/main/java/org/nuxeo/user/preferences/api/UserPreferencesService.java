@@ -21,7 +21,7 @@ package org.nuxeo.user.preferences.api;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;

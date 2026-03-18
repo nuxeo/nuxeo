@@ -18,7 +18,7 @@
  */
 package org.nuxeo.user.preferences.exception;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;

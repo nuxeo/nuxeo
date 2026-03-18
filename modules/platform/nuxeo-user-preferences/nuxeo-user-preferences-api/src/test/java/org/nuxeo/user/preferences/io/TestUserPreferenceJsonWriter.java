@@ -21,7 +21,7 @@ package org.nuxeo.user.preferences.io;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
 import static org.nuxeo.user.preferences.api.UserPreferencesUtil.newUserPreference;
 
-import jakarta.inject.Inject;
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;

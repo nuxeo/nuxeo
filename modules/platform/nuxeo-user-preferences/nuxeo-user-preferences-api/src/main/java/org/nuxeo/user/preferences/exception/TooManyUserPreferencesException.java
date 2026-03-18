@@ -18,7 +18,7 @@
  */
 package org.nuxeo.user.preferences.exception;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE;
+import static javax.servlet.http.HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE;
 import static org.nuxeo.user.preferences.api.UserPreferencesUtil.PROP_MAX_PREFERENCES;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
