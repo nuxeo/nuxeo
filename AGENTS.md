@@ -13,6 +13,7 @@ nuxeo-ecm (root)
 │   ├── runtime/             # ~27 modules - Core runtime, OSGi, streams, Kafka, MongoDB driver, KV store
 │   ├── core/                # ~29 modules - Document model, storage engines (SQL, MongoDB, DBS, mem), bulk ops, binary managers
 │   └── platform/            # ~96 modules - High-level services: REST API, audit, auth, automation, workflows, Drive, CMIS
+├── parent/                  # Re-exportable parent POM for out-of-tree builds (addons, customer projects)
 ├── server/                  # Server distribution (Tomcat-based launcher, NXR assembly)
 ├── packages/                # ~43 Nuxeo marketplace packages
 ├── ftests/                  # ~35 functional test modules (tiered: Tier5, Tier6, Tier7)
@@ -24,6 +25,7 @@ nuxeo-ecm (root)
 
 ```
 nuxeo-ecm (root, org.nuxeo)             # All dependency versions managed here
+├── nuxeo-parent (org.nuxeo)             # Re-exportable parent for external projects
 └── nuxeo-modules (org.nuxeo)
       ├── nuxeo-runtime-parent           # Parent for all runtime modules
       ├── nuxeo-core-parent              # Parent for all core modules
