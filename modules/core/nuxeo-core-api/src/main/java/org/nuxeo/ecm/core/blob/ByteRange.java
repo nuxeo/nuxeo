@@ -79,7 +79,7 @@ public class ByteRange {
             stream.close();
             throw e;
         }
-        return new BoundedInputStream(stream, getLength());
+        return BoundedInputStream.builder().setInputStream(stream).setMaxCount(getLength()).get();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ByteRange {
     /**
      * Gets the byte range usable as HTTP Range header.
      * <p>
-     * See https://www.rfc-editor.org/rfc/rfc9110.html#name-byte-ranges
+     * See <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-byte-ranges">RFC specifications</a>
      *
      * @since 2025.0
      */
