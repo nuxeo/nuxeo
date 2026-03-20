@@ -343,6 +343,16 @@ public abstract class TestAbstractBlobStore {
     }
 
     @Test
+    public void testByteRangeStream() throws IOException {
+        String key = bs.writeBlob(blobContext(ID1, "Hello World!"));
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = key;
+        ManagedBlob blob = (ManagedBlob) bp.readBlob(blobInfo);
+        var byteRange = new ByteRange(6, 10);
+        assertEquals("World", IOUtils.toString(byteRange.forStream(blob.getStream()), UTF_8));
+    }
+
+    @Test
     public void testDirectDownload() throws IOException {
         assumeTrue(bp.allowDirectDownload());
 

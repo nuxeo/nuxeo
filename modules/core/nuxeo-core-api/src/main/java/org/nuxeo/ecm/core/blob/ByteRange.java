@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -75,17 +74,7 @@ public class ByteRange {
     public InputStream forStream(InputStream stream) throws IOException {
         try {
             // avoid using IOUtils.skipFully, which uses read() under the hood
-            long remain = getStart();
-            while (remain > 0) {
-                long n = stream.skip(remain);
-                if (n < 0) {
-                    throw new EOFException();
-                }
-                if (n == 0) {
-                    throw new IOException("Failed to skip in stream");
-                }
-                remain -= n;
-            }
+            stream.skipNBytes(getStart());
         } catch (IOException e) {
             stream.close();
             throw e;
