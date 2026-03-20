@@ -79,7 +79,7 @@ public class ByteRange {
             stream.close();
             throw e;
         }
-        return new BoundedInputStream(stream, getLength());
+        return BoundedInputStream.builder().setInputStream(stream).setMaxCount(getLength()).get();
     }
 
     @Override

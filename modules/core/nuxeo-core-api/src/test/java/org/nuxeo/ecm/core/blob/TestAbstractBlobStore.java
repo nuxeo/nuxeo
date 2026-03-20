@@ -356,7 +356,7 @@ public abstract class TestAbstractBlobStore {
     public void testDirectDownload() throws IOException {
         assumeTrue(bp.allowDirectDownload());
 
-        int testExpiration = Integer.valueOf(bp.getProperties().get(DIRECTDOWNLOAD_EXPIRE_PROPERTY));
+        int testExpiration = Integer.parseInt(bp.getProperties().get(DIRECTDOWNLOAD_EXPIRE_PROPERTY));
         assertEquals(60, testExpiration);
         URL urlOneMinute = storeBlobAndGetDirectDownloadURL("test");
         // direct download link of provider "test" expires in 60 seconds
@@ -369,7 +369,7 @@ public abstract class TestAbstractBlobStore {
 
         BlobProvider otherProvider = blobManager.getBlobProvider("other");
         assumeTrue("Define a 'other' provider with directdownload.expire=1 (seconds)", otherProvider != null);
-        int otherExpiration = Integer.valueOf(otherProvider.getProperties().get(DIRECTDOWNLOAD_EXPIRE_PROPERTY));
+        int otherExpiration = Integer.parseInt(otherProvider.getProperties().get(DIRECTDOWNLOAD_EXPIRE_PROPERTY));
         assertEquals(1, otherExpiration);
         URL urlOneSecond = storeBlobAndGetDirectDownloadURL("other");
         // direct download link of "other" provider expires in 1 second
