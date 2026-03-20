@@ -178,7 +178,7 @@ public class NuxeoCorsFilterDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (NuxeoCorsFilterDescriptor) o;
         var merged = new NuxeoCorsFilterDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.allowGenericHttpRequests = getIfNull(other.allowGenericHttpRequests, allowGenericHttpRequests);
         merged.allowOrigin = defaultIfEmpty(other.allowOrigin, allowOrigin);

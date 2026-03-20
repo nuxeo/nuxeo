@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.web.resources.core;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class ResourceBundleDescriptor implements ResourceBundle {
     public Descriptor merge(Descriptor o) {
         var other = (ResourceBundleDescriptor) o;
         var merged = new ResourceBundleDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.resources = new ArrayList<>();
         if (other.isAppend()) {
             merged.resources.addAll(emptyIfNull(resources));

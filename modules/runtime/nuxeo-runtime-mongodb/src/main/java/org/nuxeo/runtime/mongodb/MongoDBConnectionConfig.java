@@ -95,7 +95,7 @@ public class MongoDBConnectionConfig implements Descriptor {
     public MongoDBConnectionConfig merge(Descriptor o) {
         MongoDBConnectionConfig other = (MongoDBConnectionConfig) o;
         MongoDBConnectionConfig merged = new MongoDBConnectionConfig();
-        merged.id = id;
+        merged.id = getIfNull(other.id, id);
         merged.server = defaultString(other.server, server);
         merged.ssl = getIfNull(other.ssl, ssl);
         merged.trustStorePath = defaultString(other.trustStorePath, trustStorePath);

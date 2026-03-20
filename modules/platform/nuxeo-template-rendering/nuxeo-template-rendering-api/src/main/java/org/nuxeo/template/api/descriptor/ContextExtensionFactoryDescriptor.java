@@ -84,7 +84,7 @@ public class ContextExtensionFactoryDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (ContextExtensionFactoryDescriptor) o;
         var merged = new ContextExtensionFactoryDescriptor();
-        merged.name = name; // we merge based on name, so no need for merging it
+        merged.name = getIfNull(other.name, name);
         merged.factoryClass = getIfNull(other.factoryClass, factoryClass);
         merged.enabled = other.enabled;
         merged.aliasNames = new ArrayList<>(aliasNames);

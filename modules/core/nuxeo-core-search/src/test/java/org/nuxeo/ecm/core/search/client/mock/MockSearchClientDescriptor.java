@@ -54,7 +54,7 @@ public class MockSearchClientDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (MockSearchClientDescriptor) o;
         var merged = new MockSearchClientDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         return merged;
     }

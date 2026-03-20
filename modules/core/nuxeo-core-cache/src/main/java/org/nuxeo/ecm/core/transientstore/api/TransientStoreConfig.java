@@ -111,7 +111,7 @@ public class TransientStoreConfig implements Descriptor {
     public TransientStoreConfig merge(Descriptor o) {
         TransientStoreConfig other = (TransientStoreConfig) o;
         TransientStoreConfig merged = new TransientStoreConfig();
-        merged.name = other.name;
+        merged.name = getIfNull(other.name, name);
         merged.path = getIfNull(other.path, path);
         merged.targetMaxSize = getIfNull(other.targetMaxSize, targetMaxSize);
         merged.absoluteMaxSize = getIfNull(other.absoluteMaxSize, absoluteMaxSize);

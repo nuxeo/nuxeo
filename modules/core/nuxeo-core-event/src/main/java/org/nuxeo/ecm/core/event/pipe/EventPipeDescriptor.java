@@ -92,7 +92,7 @@ public class EventPipeDescriptor implements Descriptor {
     public EventPipeDescriptor merge(Descriptor o) {
         var other = (EventPipeDescriptor) o;
         var merged = new EventPipeDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.priority = getIfNull(other.priority, priority);
         merged.clazz = getIfNull(other.clazz, clazz);
         merged.parameters.putAll(getParameters());

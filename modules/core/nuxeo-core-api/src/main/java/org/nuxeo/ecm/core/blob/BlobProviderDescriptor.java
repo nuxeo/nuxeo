@@ -152,7 +152,7 @@ public class BlobProviderDescriptor implements Descriptor {
     public BlobProviderDescriptor merge(Descriptor o) {
         var other = (BlobProviderDescriptor) o;
         var merged = new BlobProviderDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.klass = getIfNull(other.klass, klass);
         merged.properties.putAll(properties);
         merged.properties.putAll(other.properties);

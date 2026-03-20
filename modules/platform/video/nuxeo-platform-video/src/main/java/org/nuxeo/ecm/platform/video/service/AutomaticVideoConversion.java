@@ -88,7 +88,7 @@ public class AutomaticVideoConversion implements Cloneable, Comparable<Automatic
     public AutomaticVideoConversion merge(Descriptor o) {
         var other = (AutomaticVideoConversion) o;
         var merged = new AutomaticVideoConversion();
-        merged.name = name; // we merged based on name, so no need for merging name
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.order = getIfNull(other.order, order);
         return merged;

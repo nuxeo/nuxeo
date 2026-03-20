@@ -285,7 +285,7 @@ public class RenditionDefinition implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (RenditionDefinition) o;
         var merged = new RenditionDefinition();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.cmisName = defaultIfBlank(other.cmisName, cmisName);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.label = defaultIfBlank(other.label, label);

@@ -251,7 +251,7 @@ import static org.apache.commons.collections4.ListUtils.union;
 public MyDescriptor merge(Descriptor o) {
     var other = (MyDescriptor) o;
     var merged = new MyDescriptor();
-    merged.name = name;                                          // identity field - keep from this
+    merged.name = getIfNull(other.name, name);                   // identity field - prefer other if non-null
     merged.label = defaultIfBlank(other.label, label);           // String: take other if non-blank
     merged.enabled = getIfNull(other.enabled, enabled);          // Object/Boolean: take other if non-null
     merged.items = union(items, other.items);                    // Lists (primitives): concatenation

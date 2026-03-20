@@ -103,8 +103,8 @@ public class ExtendedInfoDescriptor implements Descriptor {
     public ExtendedInfoDescriptor merge(Descriptor o) {
         var other = (ExtendedInfoDescriptor) o;
         var merged = new ExtendedInfoDescriptor();
-        merged.event = event; // we merge based on event + key, so no event merging needed
-        merged.key = key; // we merge based on event + key, so no key merging needed
+        merged.event = getIfNull(other.event, event);
+        merged.key = getIfNull(other.key, key);
         merged.expression = defaultIfBlank(other.expression, expression);
         merged.enabled = getIfNull(other.enabled, enabled);
         return merged;

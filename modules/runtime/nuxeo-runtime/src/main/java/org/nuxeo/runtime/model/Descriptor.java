@@ -38,6 +38,32 @@ public interface Descriptor {
     String getId();
 
     /**
+     * Returns the descriptor id to copy for the current descriptor.
+     * <p>
+     * The method returns null by default, this disables the copy mechanism.
+     *
+     * @return the descriptor id to copy
+     * @since 2025.18
+     */
+    default String getCopyId() {
+        return null;
+    }
+
+    /**
+     * @param other the descriptor to copy, its id is the one returned by {@link #getCopyId()} of the current descriptor
+     * @return a descriptor representing {@code other} copied into {@code this}
+     * @since 2025.18
+     * @implNote The default implementation delegates to {@link #merge(Descriptor)} by calling
+     *           {@code other.merge(this)}. Since {@link #merge(Descriptor)} treats its argument as taking precedence
+     *           over the receiver, this uses {@code other} as the base and overlays {@code this} on top. As a
+     *           consequence, {@link #merge(Descriptor)} implementations must handle the id field (e.g. with
+     *           {@code getIfNull}) so the returned descriptor retains {@code this}'s id rather than {@code other}'s.
+     */
+    default Descriptor copy(Descriptor other) {
+        return other.merge(this);
+    }
+
+    /**
      * Returns a descriptor representing {@code other} merged into {@code this}
      * <p>
      * Default implementation returns {@code other}.

@@ -87,7 +87,7 @@ public class PostContentCreationHandlerDescriptor
     public Descriptor merge(Descriptor o) {
         var other = (PostContentCreationHandlerDescriptor) o;
         var merged = new PostContentCreationHandlerDescriptor();
-        merged.name = name; // we merge based on name, so no need for merging it
+        merged.name = getIfNull(other.name, name);
         merged.clazz = getIfNull(other.clazz, clazz);
         merged.order = other.order > 0 ? other.order : order;
         merged.enabled = other.enabled;

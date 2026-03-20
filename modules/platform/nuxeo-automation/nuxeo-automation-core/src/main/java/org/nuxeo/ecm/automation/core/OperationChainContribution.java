@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.nuxeo.ecm.automation.core.Constants.T_BOOLEAN;
 import static org.nuxeo.ecm.automation.core.Constants.T_DATE;
@@ -349,7 +350,7 @@ public class OperationChainContribution implements OperationDescriptor {
         var other = (OperationChainContribution) o;
         var merged = new OperationChainContribution();
         // support merge only for description boolean
-        merged.id = id; // we merge based on id, so no name merging needed
+        merged.id = getIfNull(other.id, id);
         merged.replace = other.replace;
         merged.enabled = other.enabled;
         merged.description = defaultIfBlank(other.description, description);

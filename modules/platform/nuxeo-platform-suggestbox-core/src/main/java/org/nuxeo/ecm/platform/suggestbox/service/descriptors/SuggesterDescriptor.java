@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service.descriptors;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.nuxeo.runtime.model.XContextValues.CONTRIBUTING_COMPONENT;
 
@@ -83,7 +84,7 @@ public class SuggesterDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (SuggesterDescriptor) o;
         var merged = new SuggesterDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         // merge className and related contributingComponent
         if (StringUtils.isNotBlank(other.className)) {
             merged.className = other.className;

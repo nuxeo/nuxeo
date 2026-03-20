@@ -61,7 +61,7 @@ public class RepositorySearchClientDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (RepositorySearchClientDescriptor) o;
         var merged = new RepositorySearchClientDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.searchIndex = defaultIfBlank(other.searchIndex, searchIndex);
         merged.repository = defaultIfBlank(other.repository, repository);

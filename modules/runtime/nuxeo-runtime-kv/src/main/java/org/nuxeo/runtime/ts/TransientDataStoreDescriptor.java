@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public class TransientDataStoreDescriptor implements Descriptor {
     public TransientDataStoreDescriptor merge(Descriptor o) {
         TransientDataStoreDescriptor other = (TransientDataStoreDescriptor) o;
         TransientDataStoreDescriptor merged = new TransientDataStoreDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.ttl = getIfNull(other.ttl, ttl);
         merged.ttlPolicy = getIfNull(other.ttlPolicy, ttlPolicy);
         merged.provider = getIfNull(other.provider, provider); // no merge on provider

@@ -175,7 +175,7 @@ public class PictureConversion implements Descriptor, Comparable<PictureConversi
     public Descriptor merge(Descriptor o) {
         var other = (PictureConversion) o;
         var merged = new PictureConversion();
-        merged.id = id; // we merge based on id, so no name merging needed
+        merged.id = getIfNull(other.id, id);
         merged.order = getIfNull(other.order, order);
         merged.description = getIfNull(other.description, description);
         merged.enabled = getIfNull(other.enabled, enabled);

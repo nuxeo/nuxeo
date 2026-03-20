@@ -110,7 +110,7 @@ public class TemplateProcessorDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (TemplateProcessorDescriptor) o;
         var merged = new TemplateProcessorDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.label = defaultIfBlank(other.label, label);
         merged.className = getIfNull(other.className, className);
         merged.defaultProcessor = other.defaultProcessor;

@@ -58,7 +58,7 @@ public class TestDescriptorRegistry {
         public Descriptor merge(Descriptor o) {
             TestDescriptor other = (TestDescriptor) o;
             TestDescriptor merged = new TestDescriptor();
-            merged.id = id;
+            merged.id = getIfNull(other.id, id);
             merged.name = getIfNull(other.name, name);
             merged.desc = getIfNull(other.desc, desc);
             return merged;
@@ -95,6 +95,32 @@ public class TestDescriptorRegistry {
         assertValues(registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc1");
         registry.register(TARGET, EP, new TestDescriptor("id1", null, "desc2"));
         assertValues(registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc2");
+    }
+
+    // NXP-33535
+    @Test
+    public void testGetDescriptorWithCopy() {
+        DescriptorRegistry registry = new DescriptorRegistry();
+        registry.register(TARGET, EP, new TestDescriptor("id1", "name1", "desc1"));
+        registry.register(TARGET, EP, new TestDescriptor("id2", "name2", null) {
+            @Override
+            public String getCopyId() {
+                return "id1";
+            }
+        });
+        assertValues(registry.getDescriptor(TARGET, EP, "id2"), "id2", "name2", "desc1");
+        // register a descriptor for id1 that would impact id2 (without having to re-register id2)
+        registry.register(TARGET, EP, new TestDescriptor("id1", "name1", "desc1-2"));
+        assertValues(registry.getDescriptor(TARGET, EP, "id2"), "id2", "name2", "desc1-2");
+        // finally register a descriptor for id2 and id1 and check that id2 has the highest priority
+        registry.register(TARGET, EP, new TestDescriptor("id1", "name1", "desc1-3"));
+        registry.register(TARGET, EP, new TestDescriptor("id2", "name2", "desc2-1") {
+            @Override
+            public String getCopyId() {
+                return "id1";
+            }
+        });
+        assertValues(registry.getDescriptor(TARGET, EP, "id2"), "id2", "name2", "desc2-1");
     }
 
     @Test

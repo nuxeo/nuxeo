@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.platform.oauth2.openid;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -199,7 +200,7 @@ public class OpenIDConnectProviderDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         OpenIDConnectProviderDescriptor other = (OpenIDConnectProviderDescriptor) o;
         OpenIDConnectProviderDescriptor merged = new OpenIDConnectProviderDescriptor();
-        merged.name = name;
+        merged.name = getIfNull(other.name, name);
         merged.enabled = other.enabled;
         merged.authorizationServerURL = defaultIfBlank(other.authorizationServerURL, authorizationServerURL);
         merged.clientId = defaultIfBlank(other.clientId, clientId);

@@ -135,7 +135,7 @@ public class OpenSearchClientConfig implements Descriptor {
     public OpenSearchClientConfig merge(Descriptor o) {
         var other = (OpenSearchClientConfig) o;
         var merged = new OpenSearchClientConfig();
-        merged.id = id;
+        merged.id = getIfNull(other.id, id);
         merged.servers.addAll(other.servers.isEmpty() ? servers : other.servers);
         merged.connectionTimeout = getIfNull(other.connectionTimeout, connectionTimeout);
         merged.socketTimeout = getIfNull(other.socketTimeout, socketTimeout);

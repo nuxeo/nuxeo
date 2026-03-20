@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import static org.apache.commons.lang3.ArrayUtils.nullToEmpty;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -85,7 +86,7 @@ public class PageProviderClassReplacerDescriptor implements PageProviderClassRep
     public Descriptor merge(Descriptor o) {
         var other = (PageProviderClassReplacerDescriptor) o;
         var merged = new PageProviderClassReplacerDescriptor();
-        merged.providerClass = providerClass; // we merge based on providerClass, so no name merging needed
+        merged.providerClass = getIfNull(other.providerClass, providerClass);
         merged.enabled = other.enabled;
         // merge names
         var namesSet = new LinkedHashSet<>(Set.of(nullToEmpty(names)));

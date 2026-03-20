@@ -67,7 +67,7 @@ public class SessionManagerDescriptor implements Descriptor {
     public SessionManagerDescriptor merge(Descriptor o) {
         var other = (SessionManagerDescriptor) o;
         var merged = new SessionManagerDescriptor();
-        merged.name = name; // we merge based on name, so no need for merging it
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.className = getIfNull(other.className, className);
         return merged;

@@ -103,7 +103,7 @@ public class WorkQueueDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         WorkQueueDescriptor other = (WorkQueueDescriptor) o;
         WorkQueueDescriptor merged = new WorkQueueDescriptor();
-        merged.id = id;
+        merged.id = getIfNull(other.id, id);
         merged.name = getIfNull(other.name, name);
         merged.queuing = getIfNull(other.queuing, queuing);
         merged.capacity = getIfNull(other.capacity, capacity);

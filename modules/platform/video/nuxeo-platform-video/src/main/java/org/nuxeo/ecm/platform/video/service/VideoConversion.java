@@ -139,7 +139,7 @@ public class VideoConversion implements Cloneable, Descriptor {
     public VideoConversion merge(Descriptor o) {
         var other = (VideoConversion) o;
         var merged = new VideoConversion();
-        merged.name = name; // we merged based on name, so no need for merging name
+        merged.name = getIfNull(other.name, name);
         merged.converter = getIfNull(other.converter, converter);
         merged.height = getIfNull(other.height, height);
         merged.enabled = getIfNull(other.enabled, enabled);

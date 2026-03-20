@@ -98,7 +98,7 @@ public class EventDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (EventDescriptor) o;
         var merged = new EventDescriptor();
-        merged.name = name;
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.extendedInfoDescriptors = Stream.concat(extendedInfoDescriptors.stream(),
                 other.extendedInfoDescriptors.stream())

@@ -78,7 +78,7 @@ public class QuotaStatsUpdaterDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (QuotaStatsUpdaterDescriptor) o;
         var merged = new QuotaStatsUpdaterDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = other.enabled;
         merged.quotaStatsUpdaterClass = getIfNull(other.quotaStatsUpdaterClass, quotaStatsUpdaterClass);
         merged.label = defaultIfBlank(other.label, label);

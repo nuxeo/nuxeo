@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class OpenSearchSearchClientDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (OpenSearchSearchClientDescriptor) o;
         var merged = new OpenSearchSearchClientDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.clientId = defaultIfBlank(other.clientId, clientId);
         merged.searchIndexes = new HashMap<>(searchIndexes);

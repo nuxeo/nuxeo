@@ -78,6 +78,12 @@ public class KafkaConfigDescriptor implements Descriptor {
         return name;
     }
 
+    /** @since 2025.18 */
+    @Override
+    public String getCopyId() {
+        return copy;
+    }
+
     // initialize copied properties
     public void init(KafkaConfigDescriptor source) {
         if (source == null) {

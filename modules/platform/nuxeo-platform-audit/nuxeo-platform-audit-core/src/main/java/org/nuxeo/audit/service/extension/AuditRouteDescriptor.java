@@ -89,7 +89,7 @@ public class AuditRouteDescriptor implements Descriptor {
     public AuditRouteDescriptor merge(Descriptor o) {
         var other = (AuditRouteDescriptor) o;
         var merged = new AuditRouteDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.backendName = defaultIfBlank(other.backendName, backendName);
         merged.predicates = merge(other.predicates, predicates);
         merged.events = merge(events, other.events);
@@ -156,7 +156,7 @@ public class AuditRouteDescriptor implements Descriptor {
         public PredicateDescriptor merge(Descriptor o) {
             var other = (PredicateDescriptor) o;
             var merged = new PredicateDescriptor();
-            merged.name = name; // we merge based on name, so no name merging needed
+            merged.name = getIfNull(other.name, name);
             merged.predicateClass = getIfNull(other.predicateClass, predicateClass);
             merged.properties = new HashMap<>(properties);
             merged.properties.putAll(other.properties);
@@ -190,7 +190,7 @@ public class AuditRouteDescriptor implements Descriptor {
         public EventDescriptor merge(Descriptor o) {
             var other = (EventDescriptor) o;
             var merged = new EventDescriptor();
-            merged.name = name; // we merge based on name, so no name merging needed
+            merged.name = getIfNull(other.name, name);
             merged.enabled = getIfNull(other.enabled, enabled);
             return merged;
         }

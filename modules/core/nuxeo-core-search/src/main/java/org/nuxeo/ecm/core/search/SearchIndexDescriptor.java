@@ -93,7 +93,7 @@ public class SearchIndexDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (SearchIndexDescriptor) o;
         var merged = new SearchIndexDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.isDefault = getIfNull(other.isDefault, isDefault);
         merged.client = defaultIfBlank(other.client, client);

@@ -128,7 +128,7 @@ public class AuthenticationPluginDescriptor implements Descriptor {
     public AuthenticationPluginDescriptor merge(Descriptor o) {
         var other = (AuthenticationPluginDescriptor) o;
         var merged = new AuthenticationPluginDescriptor();
-        merged.name = name; // we merge based on name, so no need for merging it
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.className = getIfNull(other.className, className);
         merged.needStartingURLSaving = getIfNull(other.needStartingURLSaving, needStartingURLSaving);

@@ -18,6 +18,9 @@
  */
 package org.nuxeo.runtime.model;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,19 +52,30 @@ public class DescriptorRegistry {
     protected Map<String, Map<String, Map<String, List<Descriptor>>>> descriptors = new HashMap<>();
 
     public <T extends Descriptor> T getDescriptor(String target, String xp, String id) {
-        return (T) merge(
-                descriptors.getOrDefault(target, Map.of()).getOrDefault(xp, Map.of()).getOrDefault(id, List.of()));
-
+        Function<String, T> descriptorFetcher = //
+                descriptorId -> (T) merge(descriptors.getOrDefault(target, Map.of())
+                                                     .getOrDefault(xp, Map.of())
+                                                     .getOrDefault(descriptorId, List.of()));
+        T descriptor = descriptorFetcher.apply(id);
+        return copy(target, xp, descriptor, descriptorFetcher);
     }
 
     public <T extends Descriptor> List<T> getDescriptors(String target, String xp) {
-        return (List<T>) descriptors.getOrDefault(target, Map.of())
-                                    .getOrDefault(xp, Map.of())
-                                    .values()
-                                    .stream()
-                                    .map(this::merge)
-                                    .filter(Objects::nonNull)
-                                    .collect(Collectors.toList());
+        Map<String, T> descriptors = this.descriptors.getOrDefault(target, Map.of())
+                                                     .getOrDefault(xp, Map.of())
+                                                     .values()
+                                                     .stream()
+                                                     .map(this::merge)
+                                                     .map(descriptor -> (T) descriptor)
+                                                     .filter(Objects::nonNull)
+                                                     .collect(toMap(Descriptor::getId, Function.identity(),
+                                                             (v1, v2) -> v1, LinkedHashMap::new));
+        return descriptors.values()
+                          .stream()
+                          .map(descriptor -> copy(target, xp, descriptor, descriptors::get))
+                          // deprecated since 2021.x, some code path made modification to the returned list
+                          // use Collectors.toList for that, on deprecation removal switch the call to toList
+                          .collect(toList());
     }
 
     public boolean register(String target, String xp, Descriptor descriptor) {
@@ -91,6 +105,28 @@ public class DescriptorRegistry {
             }
         }
         return descriptor;
+    }
+
+    protected <T extends Descriptor> T copy(String target, String xp, T descriptor, Function<String, T> getDescriptor) {
+        if (descriptor == null || descriptor.getCopyId() == null) {
+            log.trace("Descriptor: {} on {}/{} does not copy any descriptor",
+                    () -> descriptor == null ? "null" : descriptor.getId(), () -> target, () -> xp);
+            return descriptor;
+        } else if (Objects.equals(descriptor.getId(), descriptor.getCopyId())) {
+            log.warn("Descriptor: {} on {}/{} is copying itself", descriptor.getId(), target, xp);
+            return descriptor;
+        } else {
+            T toCopyDescriptor = getDescriptor.apply(descriptor.getCopyId());
+            if (toCopyDescriptor == null) {
+                log.warn("Descriptor: {} on {}/{} copy the descriptor: {} which does not exist", descriptor.getId(),
+                        target, xp, descriptor.getCopyId());
+                return descriptor;
+            } else {
+                log.trace("Descriptor: {} on {}/{} is copying descriptor: {}", descriptor.getId(), target, xp,
+                        descriptor.getCopyId());
+                return (T) descriptor.copy(toCopyDescriptor);
+            }
+        }
     }
 
     public void clear() {

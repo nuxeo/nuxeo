@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -287,7 +287,7 @@ public class Type implements Descriptor {
     public Type merge(Descriptor o) {
         var other = (Type) o;
         var merged = new Type();
-        merged.id = id; // we merge based on id, so no need for merging it
+        merged.id = getIfNull(other.id, id);
         merged.icon = defaultIfBlank(other.icon, icon);
         merged.iconExpanded = defaultIfBlank(other.iconExpanded, iconExpanded);
         merged.bigIcon = defaultIfBlank(other.bigIcon, bigIcon);

@@ -55,7 +55,7 @@ public class LockManagerDescriptor implements Descriptor {
     public LockManagerDescriptor merge(Descriptor o) {
         var other = (LockManagerDescriptor) o;
         var merged = new LockManagerDescriptor(this);
-        // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.klass = getIfNull(other.klass, klass);
         return merged;
     }

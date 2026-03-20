@@ -72,7 +72,7 @@ public class OpenSearchHintDescriptor implements Descriptor {
     public OpenSearchHintDescriptor merge(Descriptor o) {
         var other = (OpenSearchHintDescriptor) o;
         var merged = new OpenSearchHintDescriptor();
-        merged.name = name; // we merge based on name, so no need for merging it
+        merged.name = getIfNull(other.name, name);
         merged.klass = getIfNull(other.klass, klass);
         merged.remove = other.remove;
         return merged;

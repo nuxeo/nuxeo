@@ -88,7 +88,7 @@ public class CacheDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         CacheDescriptor other = (CacheDescriptor) o;
         CacheDescriptor merged = new CacheDescriptor();
-        merged.name = name;
+        merged.name = getIfNull(other.name, name);
         merged.remove = other.remove;
         merged.ttl = getIfNull(other.ttl, ttl);
         merged.klass = getIfNull(other.klass, klass);

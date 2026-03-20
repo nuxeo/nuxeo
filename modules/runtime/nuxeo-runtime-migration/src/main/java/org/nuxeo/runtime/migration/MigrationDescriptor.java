@@ -156,7 +156,7 @@ public class MigrationDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         MigrationDescriptor other = (MigrationDescriptor) o;
         MigrationDescriptor merged = new MigrationDescriptor();
-        merged.id = id;
+        merged.id = getIfNull(other.id, id);
         merged.klass = getIfNull(other.klass, klass);
         merged.description = getIfNull(other.description, description);
         merged.defaultState = getIfNull(other.defaultState, defaultState);

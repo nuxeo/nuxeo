@@ -174,7 +174,7 @@ public class TargetDescriptor implements Descriptor {
     }
 
     protected void doMerge(TargetDescriptor merged, TargetDescriptor other) {
-        merged.id = id;
+        merged.id = getIfNull(other.id, id);
         // support merge only for enabled boolean
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.restricted = restricted;

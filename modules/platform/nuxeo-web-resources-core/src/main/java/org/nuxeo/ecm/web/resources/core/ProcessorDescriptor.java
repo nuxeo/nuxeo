@@ -100,7 +100,7 @@ public class ProcessorDescriptor implements Processor {
     public Descriptor merge(Descriptor o) {
         var other = (ProcessorDescriptor) o;
         var merged = new ProcessorDescriptor();
-        merged.name = name;
+        merged.name = getIfNull(other.name, name);
         // support merge only for enabled boolean
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.klass = klass;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -517,7 +517,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action>, Desc
     public Action merge(Descriptor o) {
         var other = (Action) o;
         var merged = new Action();
-        merged.id = id;
+        merged.id = getIfNull(other.id, id);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.icon = getIfNull(other.icon, icon);
         var categoriesSet = new LinkedHashSet<>(List.of(getIfNull(categories, () -> new String[] {})));

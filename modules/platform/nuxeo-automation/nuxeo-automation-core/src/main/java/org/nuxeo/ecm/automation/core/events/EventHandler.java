@@ -279,7 +279,7 @@ public class EventHandler implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (EventHandler) o;
         var merged = new EventHandler();
-        merged.id = id; // we merge based on id, so no name merging needed
+        merged.id = getIfNull(other.id, id);
         merged.chainId = defaultIfBlank(other.chainId, chainId);
         merged.isPostCommit = other.isPostCommit;
         merged.events = union(emptyIfNull(events), emptyIfNull(other.events));

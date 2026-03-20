@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  *     Olivier Grisel
  */
 package org.nuxeo.ecm.platform.suggestbox.service.descriptors;
+
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,7 +61,7 @@ public class SuggesterGroupDescriptor implements Descriptor {
         var other = (SuggesterGroupDescriptor) o;
         var merged = new SuggesterGroupDescriptor();
         log.info("Merging suggester group: {}", name);
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         // merge the suggesters
         merged.suggesters = new ArrayList<>(suggesters);
         for (var otherSuggesters : other.getSuggesters()) {

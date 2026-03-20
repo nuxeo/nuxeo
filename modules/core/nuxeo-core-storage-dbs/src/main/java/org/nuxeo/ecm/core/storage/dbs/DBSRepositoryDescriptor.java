@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,7 +192,7 @@ public class DBSRepositoryDescriptor implements Cloneable, Descriptor {
     public DBSRepositoryDescriptor merge(Descriptor o) {
         var other = (DBSRepositoryDescriptor) o;
         var merged = clone(); // for implementations to get the right new instance
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.cacheConcurrencyLevel = getIfNull(other.cacheConcurrencyLevel, cacheConcurrencyLevel);
         merged.cacheEnabled = getIfNull(other.cacheEnabled, cacheEnabled);
         merged.cacheMaxSize = getIfNull(other.cacheMaxSize, cacheMaxSize);

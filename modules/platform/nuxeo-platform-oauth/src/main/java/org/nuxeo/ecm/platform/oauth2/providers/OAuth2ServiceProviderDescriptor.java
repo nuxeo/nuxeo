@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.oauth2.providers;
 
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -132,7 +133,7 @@ public class OAuth2ServiceProviderDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (OAuth2ServiceProviderDescriptor) o;
         var merged = new OAuth2ServiceProviderDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = other.enabled;
         merged.tokenServerURL = defaultIfEmpty(other.tokenServerURL, tokenServerURL);
         merged.authorizationServerURL = defaultIfEmpty(other.authorizationServerURL, tokenServerURL);

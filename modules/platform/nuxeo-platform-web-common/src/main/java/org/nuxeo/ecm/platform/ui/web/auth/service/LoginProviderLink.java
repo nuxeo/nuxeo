@@ -141,7 +141,7 @@ public class LoginProviderLink implements Descriptor {
     public LoginProviderLink merge(Descriptor o) {
         var other = (LoginProviderLink) o;
         var merged = new LoginProviderLink();
-        merged.name = name; // we merge based on name, so no need for merging it
+        merged.name = getIfNull(other.name, name);
         merged.label = getIfNull(other.label, label);
         merged.remove = other.remove;
         merged.iconPath = getIfNull(other.iconPath, iconPath);

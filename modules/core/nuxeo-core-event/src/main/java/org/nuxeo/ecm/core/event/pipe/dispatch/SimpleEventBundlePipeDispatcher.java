@@ -42,13 +42,13 @@ public class SimpleEventBundlePipeDispatcher implements EventBundleDispatcher {
 
         this.parameters = parameters;
 
-        pipeDescriptors.sort((o1, o2) -> o1.getPriority().compareTo(o2.getPriority()));
-
-        for (EventPipeDescriptor descriptor : pipeDescriptors) {
-            EventBundlePipe pipe = descriptor.getInstance();
-            pipe.initPipe(descriptor.getName(), descriptor.getParameters());
-            pipes.add(pipe);
-        }
+        pipeDescriptors.stream()
+                       .sorted((o1, o2) -> o1.getPriority().compareTo(o2.getPriority()))
+                       .forEach(descriptor -> {
+                           EventBundlePipe pipe = descriptor.getInstance();
+                           pipe.initPipe(descriptor.getName(), descriptor.getParameters());
+                           pipes.add(pipe);
+                       });
     }
 
     @Override

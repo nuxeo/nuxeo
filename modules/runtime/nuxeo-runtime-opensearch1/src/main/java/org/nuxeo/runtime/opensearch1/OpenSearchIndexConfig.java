@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,7 +177,7 @@ public class OpenSearchIndexConfig implements Descriptor {
     public OpenSearchIndexConfig merge(Descriptor o) {
         var other = (OpenSearchIndexConfig) o;
         var merged = new OpenSearchIndexConfig();
-        merged.name = name;
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.create = getIfNull(other.create, create);
         merged.clientIds = getIfNull(other.clientIds, clientIds);

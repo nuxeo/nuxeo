@@ -123,8 +123,8 @@ public class PropertyDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         PropertyDescriptor other = (PropertyDescriptor) o;
         PropertyDescriptor merged = new PropertyDescriptor();
-        merged.schema = schema;
-        merged.name = name;
+        merged.schema = getIfNull(other.schema, schema);
+        merged.name = getIfNull(other.name, name);
         merged.secured = getIfNull(other.secured, secured);
         merged.retainable = getIfNull(other.retainable, retainable);
         merged.deprecation = getIfNull(other.deprecation, deprecation);

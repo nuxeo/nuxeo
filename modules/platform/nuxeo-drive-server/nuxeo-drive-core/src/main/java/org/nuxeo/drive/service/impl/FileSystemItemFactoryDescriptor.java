@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ public class FileSystemItemFactoryDescriptor
         var other = (FileSystemItemFactoryDescriptor) o;
         var merged = new FileSystemItemFactoryDescriptor();
 
-        merged.name = name; // we merge based on name, so no need for merging it
+        merged.name = getIfNull(other.name, name);
         merged.order = other.order > 0 ? other.order : order;
         merged.docType = defaultIfEmpty(other.docType, docType);
         merged.facet = defaultIfEmpty(other.facet, facet);

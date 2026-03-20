@@ -117,7 +117,7 @@ public class LifeCycleDescriptor implements Descriptor {
     public LifeCycleDescriptor merge(Descriptor o) {
         var other = (LifeCycleDescriptor) o;
         var merged = new LifeCycleDescriptor();
-        merged.name = name; // we merge based on name, so no name merging needed
+        merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.initialStateName = getIfNull(other.initialStateName, initialStateName);
         merged.defaultInitialStateName = getIfNull(other.defaultInitialStateName, defaultInitialStateName);
