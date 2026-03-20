@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.search.client.opensearch1;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -73,7 +73,7 @@ public class OpenSearchHintDescriptor implements Descriptor {
         var other = (OpenSearchHintDescriptor) o;
         var merged = new OpenSearchHintDescriptor();
         merged.name = name; // we merge based on name, so no need for merging it
-        merged.klass = defaultIfNull(other.klass, klass);
+        merged.klass = getIfNull(other.klass, klass);
         merged.remove = other.remove;
         return merged;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.video.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -141,11 +140,11 @@ public class VideoConversion implements Cloneable, Descriptor {
         var other = (VideoConversion) o;
         var merged = new VideoConversion();
         merged.name = name; // we merged based on name, so no need for merging name
-        merged.converter = defaultIfNull(other.converter, converter);
-        merged.height = defaultIfNull(other.height, height);
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.rendition = defaultIfNull(other.rendition, rendition);
-        merged.renditionVisible = defaultIfNull(other.renditionVisible, renditionVisible);
+        merged.converter = getIfNull(other.converter, converter);
+        merged.height = getIfNull(other.height, height);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.rendition = getIfNull(other.rendition, rendition);
+        merged.renditionVisible = getIfNull(other.renditionVisible, renditionVisible);
 
         return merged;
     }

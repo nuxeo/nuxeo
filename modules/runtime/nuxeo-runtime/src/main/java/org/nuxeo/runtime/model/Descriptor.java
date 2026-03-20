@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public interface Descriptor {
      * <p>
      * To forbid multiple descriptors use UNIQUE_DESCRIPTOR_ID.
      * <p>
-     * To forbid merge use a unique value, non-overriden {@code toString()} for exemple.
+     * To forbid merge use a unique value, non-overridden {@code toString()} for example.
      */
     String getId();
 

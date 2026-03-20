@@ -18,6 +18,7 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.io.Serializable;
@@ -171,7 +172,7 @@ public class FileSystemItemFactoryDescriptor
         merged.order = other.order > 0 ? other.order : order;
         merged.docType = defaultIfEmpty(other.docType, docType);
         merged.facet = defaultIfEmpty(other.facet, facet);
-        merged.factoryClass = other.factoryClass != null ? other.factoryClass : factoryClass;
+        merged.factoryClass = getIfNull(other.factoryClass, factoryClass);
         merged.parameters.putAll(parameters);
         merged.parameters.putAll(other.parameters);
         return merged;

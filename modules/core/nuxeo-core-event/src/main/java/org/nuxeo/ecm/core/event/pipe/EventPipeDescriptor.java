@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -93,8 +93,8 @@ public class EventPipeDescriptor implements Descriptor {
         var other = (EventPipeDescriptor) o;
         var merged = new EventPipeDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.priority = defaultIfNull(other.priority, priority);
-        merged.clazz = defaultIfNull(other.clazz, clazz);
+        merged.priority = getIfNull(other.priority, priority);
+        merged.clazz = getIfNull(other.clazz, clazz);
         merged.parameters.putAll(getParameters());
         merged.parameters.putAll(other.getParameters());
         return merged;

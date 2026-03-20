@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  *
  * Contributors:
  *     Maxime Hilaire
- *
  */
 package org.nuxeo.ecm.core.cache;
+
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class CacheDescriptor implements Descriptor {
     }
 
     public long getTTL() {
-        return ttl == null ? DEFAULT_TTL : ttl.longValue();
+        return getIfNull(ttl, DEFAULT_TTL);
     }
 
     public void setTTL(Long value) {
@@ -89,8 +90,8 @@ public class CacheDescriptor implements Descriptor {
         CacheDescriptor merged = new CacheDescriptor();
         merged.name = name;
         merged.remove = other.remove;
-        merged.ttl = other.ttl != null ? other.ttl : ttl;
-        merged.klass = other.klass != null ? other.klass : klass;
+        merged.ttl = getIfNull(other.ttl, ttl);
+        merged.klass = getIfNull(other.klass, klass);
         merged.options.putAll(options);
         merged.options.putAll(other.options);
         return merged;

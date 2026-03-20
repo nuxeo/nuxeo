@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@
  */
 package org.nuxeo.template.api.descriptor;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -84,7 +85,7 @@ public class ContextExtensionFactoryDescriptor implements Descriptor {
         var other = (ContextExtensionFactoryDescriptor) o;
         var merged = new ContextExtensionFactoryDescriptor();
         merged.name = name; // we merge based on name, so no need for merging it
-        merged.factoryClass = ObjectUtils.defaultIfNull(other.factoryClass, factoryClass);
+        merged.factoryClass = getIfNull(other.factoryClass, factoryClass);
         merged.enabled = other.enabled;
         merged.aliasNames = new ArrayList<>(aliasNames);
         merged.aliasNames.addAll(other.aliasNames);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -153,7 +153,7 @@ public class BlobProviderDescriptor implements Descriptor {
         var other = (BlobProviderDescriptor) o;
         var merged = new BlobProviderDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.klass = defaultIfNull(other.klass, klass);
+        merged.klass = getIfNull(other.klass, klass);
         merged.properties.putAll(properties);
         merged.properties.putAll(other.properties);
         return merged;

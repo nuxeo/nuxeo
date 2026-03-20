@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.lock;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -56,7 +56,7 @@ public class LockManagerDescriptor implements Descriptor {
         var other = (LockManagerDescriptor) o;
         var merged = new LockManagerDescriptor(this);
         // we merge based on name, so no name merging needed
-        merged.klass = defaultIfNull(other.klass, klass);
+        merged.klass = getIfNull(other.klass, klass);
         return merged;
     }
 

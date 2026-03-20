@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.opensearch1.client;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -136,12 +137,12 @@ public class OpenSearchClientConfig implements Descriptor {
         var merged = new OpenSearchClientConfig();
         merged.id = id;
         merged.servers.addAll(other.servers.isEmpty() ? servers : other.servers);
-        merged.connectionTimeout = ObjectUtils.firstNonNull(other.connectionTimeout, connectionTimeout);
-        merged.socketTimeout = ObjectUtils.firstNonNull(other.socketTimeout, socketTimeout);
-        merged.username = ObjectUtils.firstNonNull(other.username, username);
-        merged.password = ObjectUtils.firstNonNull(other.password, password);
-        merged.trustStore = ObjectUtils.firstNonNull(other.trustStore, trustStore);
-        merged.keyStore = ObjectUtils.firstNonNull(other.keyStore, keyStore);
+        merged.connectionTimeout = getIfNull(other.connectionTimeout, connectionTimeout);
+        merged.socketTimeout = getIfNull(other.socketTimeout, socketTimeout);
+        merged.username = getIfNull(other.username, username);
+        merged.password = getIfNull(other.password, password);
+        merged.trustStore = getIfNull(other.trustStore, trustStore);
+        merged.keyStore = getIfNull(other.keyStore, keyStore);
         return merged;
     }
 

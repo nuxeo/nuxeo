@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.commandline.executor.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.util.HashMap;
@@ -93,8 +93,8 @@ public class EnvironmentDescriptor implements Descriptor {
         var other = (EnvironmentDescriptor) o;
         var merged = new EnvironmentDescriptor();
         // special case, as we reduce a list in the component with an identity that doesn't have a name
-        merged.name = defaultIfNull(other.name, name);
-        merged.workingDirectory = defaultIfNull(other.workingDirectory, workingDirectory);
+        merged.name = getIfNull(other.name, name);
+        merged.workingDirectory = getIfNull(other.workingDirectory, workingDirectory);
         merged.parameters = new HashMap<>(parameters);
         merged.parameters.putAll(other.parameters);
         return merged;

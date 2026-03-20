@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  *     Florent Guillaume
  */
 package org.nuxeo.runtime.migration;
+
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -155,10 +157,10 @@ public class MigrationDescriptor implements Descriptor {
         MigrationDescriptor other = (MigrationDescriptor) o;
         MigrationDescriptor merged = new MigrationDescriptor();
         merged.id = id;
-        merged.klass = other.klass != null ? other.klass : klass;
-        merged.description = other.description != null ? other.description : description;
-        merged.defaultState = other.defaultState != null ? other.defaultState : defaultState;
-        merged.descriptionLabel = other.descriptionLabel != null ? other.descriptionLabel : descriptionLabel;
+        merged.klass = getIfNull(other.klass, klass);
+        merged.description = getIfNull(other.description, description);
+        merged.defaultState = getIfNull(other.defaultState, defaultState);
+        merged.descriptionLabel = getIfNull(other.descriptionLabel, descriptionLabel);
         merged.steps.putAll(steps);
         merged.steps.putAll(other.steps);
         merged.states.putAll(states);

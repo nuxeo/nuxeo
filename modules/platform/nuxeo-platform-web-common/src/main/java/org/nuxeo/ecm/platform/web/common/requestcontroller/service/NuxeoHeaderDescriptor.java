@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -64,8 +64,8 @@ public class NuxeoHeaderDescriptor implements Descriptor {
         var other = (NuxeoHeaderDescriptor) o;
         var merged = new NuxeoHeaderDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.value = defaultIfNull(other.value, value);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.value = getIfNull(other.value, value);
         return merged;
     }
 }

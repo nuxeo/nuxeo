@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -63,7 +64,7 @@ public class ChangeFinderDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (ChangeFinderDescriptor) o;
         var merged = new ChangeFinderDescriptor();
-        merged.changeFinderClass = ObjectUtils.defaultIfNull(other.changeFinderClass, changeFinderClass);
+        merged.changeFinderClass = getIfNull(other.changeFinderClass, changeFinderClass);
         merged.parameters = new HashMap<>(parameters);
         merged.parameters.putAll(other.parameters);
         return merged;

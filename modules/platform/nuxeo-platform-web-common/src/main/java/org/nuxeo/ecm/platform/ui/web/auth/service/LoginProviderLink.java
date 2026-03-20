@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -142,12 +142,12 @@ public class LoginProviderLink implements Descriptor {
         var other = (LoginProviderLink) o;
         var merged = new LoginProviderLink();
         merged.name = name; // we merge based on name, so no need for merging it
-        merged.label = defaultIfNull(other.label, label);
+        merged.label = getIfNull(other.label, label);
         merged.remove = other.remove;
-        merged.iconPath = defaultIfNull(other.iconPath, iconPath);
-        merged.link = defaultIfNull(other.link, link);
-        merged.urlComputerClass = defaultIfNull(other.urlComputerClass, urlComputerClass);
-        merged.description = defaultIfNull(other.description, description);
+        merged.iconPath = getIfNull(other.iconPath, iconPath);
+        merged.link = getIfNull(other.link, link);
+        merged.urlComputerClass = getIfNull(other.urlComputerClass, urlComputerClass);
+        merged.description = getIfNull(other.description, description);
         return merged;
     }
 

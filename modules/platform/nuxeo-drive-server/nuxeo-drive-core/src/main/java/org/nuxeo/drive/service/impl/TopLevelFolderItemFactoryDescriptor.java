@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +106,7 @@ public class TopLevelFolderItemFactoryDescriptor implements Descriptor {
         var other = (TopLevelFolderItemFactoryDescriptor) o;
         var merged = new TopLevelFolderItemFactoryDescriptor();
 
-        merged.factoryClass = defaultIfNull(other.factoryClass, factoryClass);
+        merged.factoryClass = getIfNull(other.factoryClass, factoryClass);
         merged.parameters.putAll(parameters);
         merged.parameters.putAll(other.parameters);
         return merged;

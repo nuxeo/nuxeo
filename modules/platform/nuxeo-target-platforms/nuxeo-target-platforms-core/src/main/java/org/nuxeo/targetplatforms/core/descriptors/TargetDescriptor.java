@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@
  */
 package org.nuxeo.targetplatforms.core.descriptors;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
@@ -175,7 +176,7 @@ public class TargetDescriptor implements Descriptor {
     protected void doMerge(TargetDescriptor merged, TargetDescriptor other) {
         merged.id = id;
         // support merge only for enabled boolean
-        merged.enabled = ObjectUtils.defaultIfNull(other.enabled, enabled);
+        merged.enabled = getIfNull(other.enabled, enabled);
         merged.restricted = restricted;
         merged.deprecated = deprecated;
         merged.parent = parent;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.core.event.pipe.dispatch;
 
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
-import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
+import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 
 /**
  * Basic implementation that simply forwards {@link EventBundle} to all underlying {@link EventBundlePipe}
@@ -38,7 +38,7 @@ public class SimpleEventBundlePipeDispatcher implements EventBundleDispatcher {
     protected Map<String, String> parameters;
 
     @Override
-    public void init(List<EventPipeDescriptor> pipeDescriptors,  Map<String, String> parameters) {
+    public void init(List<EventPipeDescriptor> pipeDescriptors, Map<String, String> parameters) {
 
         this.parameters = parameters;
 

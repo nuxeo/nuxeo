@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.io.download;
+
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -55,8 +57,8 @@ public class DownloadPermissionDescriptor implements Descriptor {
         DownloadPermissionDescriptor other = (DownloadPermissionDescriptor) o;
         DownloadPermissionDescriptor merged = new DownloadPermissionDescriptor();
         merged.name = name;
-        merged.script = other.script != null ? other.script : script;
-        merged.scriptLanguage = other.scriptLanguage != null ? other.scriptLanguage : scriptLanguage;
+        merged.script = getIfNull(other.script, script);
+        merged.scriptLanguage = getIfNull(other.scriptLanguage, scriptLanguage);
         return merged;
     }
 

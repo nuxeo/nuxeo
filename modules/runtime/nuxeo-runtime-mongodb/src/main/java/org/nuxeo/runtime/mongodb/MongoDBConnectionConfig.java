@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.mongodb;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
 import java.time.Duration;
@@ -96,7 +97,7 @@ public class MongoDBConnectionConfig implements Descriptor {
         MongoDBConnectionConfig merged = new MongoDBConnectionConfig();
         merged.id = id;
         merged.server = defaultString(other.server, server);
-        merged.ssl = other.ssl != null ? other.ssl : ssl;
+        merged.ssl = getIfNull(other.ssl, ssl);
         merged.trustStorePath = defaultString(other.trustStorePath, trustStorePath);
         merged.trustStorePassword = defaultString(other.trustStorePassword, trustStorePassword);
         merged.trustStoreType = defaultString(other.trustStoreType, trustStoreType);
@@ -104,8 +105,8 @@ public class MongoDBConnectionConfig implements Descriptor {
         merged.keyStorePassword = defaultString(other.keyStorePassword, keyStorePassword);
         merged.keyStoreType = defaultString(other.keyStoreType, keyStoreType);
         merged.dbname = defaultString(other.dbname, dbname);
-        merged.maxTime = other.maxTime != null ? other.maxTime : maxTime;
-        merged.countMaxTime = other.countMaxTime != null ? other.countMaxTime : countMaxTime;
+        merged.maxTime = getIfNull(other.maxTime, maxTime);
+        merged.countMaxTime = getIfNull(other.countMaxTime, countMaxTime);
         merged.properties.putAll(properties);
         merged.properties.putAll(other.properties);
         return merged;

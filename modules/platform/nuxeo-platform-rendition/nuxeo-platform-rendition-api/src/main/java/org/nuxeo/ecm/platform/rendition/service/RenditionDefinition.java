@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ package org.nuxeo.ecm.platform.rendition.service;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.util.ArrayList;
@@ -287,20 +287,20 @@ public class RenditionDefinition implements Descriptor {
         var merged = new RenditionDefinition();
         merged.name = name; // we merge based on name, so no name merging needed
         merged.cmisName = defaultIfBlank(other.cmisName, cmisName);
-        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.enabled = getIfNull(other.enabled, enabled);
         merged.label = defaultIfBlank(other.label, label);
         merged.icon = defaultIfBlank(other.icon, icon);
         merged.kind = defaultIfBlank(other.kind, kind);
         merged.operationChain = defaultIfBlank(other.operationChain, operationChain);
-        merged.allowEmptyBlob = defaultIfNull(other.allowEmptyBlob, allowEmptyBlob);
-        merged.visible = defaultIfNull(other.visible, visible);
-        merged.providerClass = defaultIfNull(other.providerClass, providerClass);
+        merged.allowEmptyBlob = getIfNull(other.allowEmptyBlob, allowEmptyBlob);
+        merged.visible = getIfNull(other.visible, visible);
+        merged.providerClass = getIfNull(other.providerClass, providerClass);
         merged.contentType = defaultIfBlank(other.contentType, contentType);
         merged.filterIds = new ArrayList<>(emptyIfNull(filterIds));
         merged.filterIds.addAll(emptyIfNull(other.filterIds));
         merged.sourceDocumentModificationDatePropertyName = defaultIfBlank(
                 other.sourceDocumentModificationDatePropertyName, sourceDocumentModificationDatePropertyName);
-        merged.storeByDefault = defaultIfNull(other.storeByDefault, storeByDefault);
+        merged.storeByDefault = getIfNull(other.storeByDefault, storeByDefault);
         merged.variantPolicy = defaultIfBlank(other.variantPolicy, variantPolicy);
         return merged;
     }

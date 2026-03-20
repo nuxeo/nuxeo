@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.search.client.opensearch1;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public class OpenSearchSearchClientDescriptor implements Descriptor {
     }
 
     public String getClientId() {
-        return defaultIfNull(clientId, "search/" + name);
+        return getIfNull(clientId, "search/" + name);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class OpenSearchSearchClientDescriptor implements Descriptor {
         var other = (OpenSearchSearchClientDescriptor) o;
         var merged = new OpenSearchSearchClientDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.enabled = getIfNull(other.enabled, enabled);
         merged.clientId = defaultIfBlank(other.clientId, clientId);
         merged.searchIndexes = new HashMap<>(searchIndexes);
         other.searchIndexes.forEach((k, v) -> merged.searchIndexes.merge(k, v, SearchIndex::merge));

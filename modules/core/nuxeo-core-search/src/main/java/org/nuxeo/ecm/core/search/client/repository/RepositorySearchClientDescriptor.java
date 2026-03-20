@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.search.client.repository;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -62,7 +62,7 @@ public class RepositorySearchClientDescriptor implements Descriptor {
         var other = (RepositorySearchClientDescriptor) o;
         var merged = new RepositorySearchClientDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.enabled = getIfNull(other.enabled, enabled);
         merged.searchIndex = defaultIfBlank(other.searchIndex, searchIndex);
         merged.repository = defaultIfBlank(other.repository, repository);
         return merged;

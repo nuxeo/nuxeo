@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 import static org.apache.commons.collections4.ListUtils.union;
 import static org.apache.commons.collections4.SetUtils.emptyIfNull;
 import static org.apache.commons.collections4.SetUtils.union;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.getIfBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -285,11 +285,11 @@ public class EventHandler implements Descriptor {
         merged.events = union(emptyIfNull(events), emptyIfNull(other.events));
         merged.doctypes = union(emptyIfNull(doctypes), emptyIfNull(other.doctypes));
         merged.facet = defaultIfBlank(other.facet, facet);
-        merged.lifeCycle = defaultIfNull(other.lifeCycle, lifeCycle);
+        merged.lifeCycle = getIfNull(other.lifeCycle, lifeCycle);
         merged.pathStartsWith = defaultIfBlank(other.pathStartsWith, pathStartsWith);
-        merged.attribute = defaultIfNull(other.attribute, attribute);
+        merged.attribute = getIfNull(other.attribute, attribute);
         merged.memberOf = union(emptyIfNull(memberOf), emptyIfNull(other.memberOf));
-        merged.isAdministrator = defaultIfNull(other.isAdministrator, isAdministrator);
+        merged.isAdministrator = getIfNull(other.isAdministrator, isAdministrator);
         merged.condition = defaultIfBlank(other.condition, condition);
         merged.enabled = other.enabled;
         return merged;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.quota;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -80,7 +80,7 @@ public class QuotaStatsUpdaterDescriptor implements Descriptor {
         var merged = new QuotaStatsUpdaterDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
         merged.enabled = other.enabled;
-        merged.quotaStatsUpdaterClass = defaultIfNull(other.quotaStatsUpdaterClass, quotaStatsUpdaterClass);
+        merged.quotaStatsUpdaterClass = getIfNull(other.quotaStatsUpdaterClass, quotaStatsUpdaterClass);
         merged.label = defaultIfBlank(other.label, label);
         merged.descriptionLabel = defaultIfBlank(other.descriptionLabel, descriptionLabel);
         return merged;

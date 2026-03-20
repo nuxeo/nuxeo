@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  */
 package org.nuxeo.ecm.core.opencmis.bindings;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -53,7 +54,7 @@ public class NuxeoCmisServiceFactoryDescriptor implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (NuxeoCmisServiceFactoryDescriptor) o;
         var merged = new NuxeoCmisServiceFactoryDescriptor();
-        merged.factoryClass = ObjectUtils.defaultIfNull(other.factoryClass, factoryClass);
+        merged.factoryClass = getIfNull(other.factoryClass, factoryClass);
         merged.factoryParameters.putAll(factoryParameters);
         merged.factoryParameters.putAll(other.factoryParameters);
         return merged;

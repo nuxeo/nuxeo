@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.video.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -90,8 +89,8 @@ public class AutomaticVideoConversion implements Cloneable, Comparable<Automatic
         var other = (AutomaticVideoConversion) o;
         var merged = new AutomaticVideoConversion();
         merged.name = name; // we merged based on name, so no need for merging name
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.order = defaultIfNull(other.order, order);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.order = getIfNull(other.order, order);
         return merged;
     }
 }

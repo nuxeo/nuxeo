@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.nuxeo.runtime.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,15 +49,14 @@ public class DescriptorRegistry {
     protected Map<String, Map<String, Map<String, List<Descriptor>>>> descriptors = new HashMap<>();
 
     public <T extends Descriptor> T getDescriptor(String target, String xp, String id) {
-        return (T) merge(descriptors.getOrDefault(target, Collections.emptyMap())
-                                    .getOrDefault(xp, Collections.emptyMap())
-                                    .getOrDefault(id, Collections.emptyList()));
+        return (T) merge(
+                descriptors.getOrDefault(target, Map.of()).getOrDefault(xp, Map.of()).getOrDefault(id, List.of()));
 
     }
 
     public <T extends Descriptor> List<T> getDescriptors(String target, String xp) {
-        return (List<T>) descriptors.getOrDefault(target, Collections.emptyMap())
-                                    .getOrDefault(xp, Collections.emptyMap())
+        return (List<T>) descriptors.getOrDefault(target, Map.of())
+                                    .getOrDefault(xp, Map.of())
                                     .values()
                                     .stream()
                                     .map(this::merge)
@@ -77,9 +75,9 @@ public class DescriptorRegistry {
 
     public boolean unregister(String target, String xp, Descriptor descriptor) {
         log.debug("Unregister {} from {}/{}", descriptor.getId(), target, xp);
-        return descriptors.getOrDefault(target, Collections.emptyMap())
-                          .getOrDefault(xp, Collections.emptyMap())
-                          .getOrDefault(descriptor.getId(), Collections.emptyList())
+        return descriptors.getOrDefault(target, Map.of())
+                          .getOrDefault(xp, Map.of())
+                          .getOrDefault(descriptor.getId(), List.of())
                           .remove(descriptor);
     }
 

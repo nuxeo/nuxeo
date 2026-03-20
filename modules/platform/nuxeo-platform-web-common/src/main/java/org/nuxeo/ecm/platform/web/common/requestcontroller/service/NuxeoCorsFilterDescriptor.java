@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  */
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -179,15 +179,15 @@ public class NuxeoCorsFilterDescriptor implements Descriptor {
         var other = (NuxeoCorsFilterDescriptor) o;
         var merged = new NuxeoCorsFilterDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.allowGenericHttpRequests = defaultIfNull(other.allowGenericHttpRequests, allowGenericHttpRequests);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.allowGenericHttpRequests = getIfNull(other.allowGenericHttpRequests, allowGenericHttpRequests);
         merged.allowOrigin = defaultIfEmpty(other.allowOrigin, allowOrigin);
         merged.allowSubdomains = other.allowSubdomains;
         merged.supportedMethods = defaultIfEmpty(other.supportedMethods, supportedMethods);
         merged.supportedHeaders = defaultIfEmpty(other.supportedHeaders, supportedHeaders);
         merged.exposedHeaders = defaultIfEmpty(other.exposedHeaders, exposedHeaders);
         merged.maxAge = maxAge == -1 ? other.maxAge : maxAge;
-        merged.pattern = defaultIfNull(other.pattern, pattern);
+        merged.pattern = getIfNull(other.pattern, pattern);
         return merged;
     }
 }

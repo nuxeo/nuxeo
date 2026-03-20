@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.rendition.service;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,8 +111,8 @@ public class RenditionDefinitionProviderDescriptor implements Descriptor {
         var other = (RenditionDefinitionProviderDescriptor) o;
         var merged = new RenditionDefinitionProviderDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.providerClass = defaultIfNull(other.providerClass, providerClass);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.providerClass = getIfNull(other.providerClass, providerClass);
         merged.filterIds = new ArrayList<>(filterIds);
         merged.filterIds.addAll(other.filterIds);
         return merged;

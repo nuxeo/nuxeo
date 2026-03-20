@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -58,9 +58,9 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
     public MongoDBRepositoryDescriptor merge(Descriptor o) {
         var other = (MongoDBRepositoryDescriptor) o;
         var merged = (MongoDBRepositoryDescriptor) super.merge(other);
-        merged.nativeId = defaultIfNull(other.nativeId, nativeId);
-        merged.sequenceBlockSize = defaultIfNull(other.sequenceBlockSize, sequenceBlockSize);
-        merged.childNameUniqueConstraintEnabled = defaultIfNull(other.childNameUniqueConstraintEnabled,
+        merged.nativeId = getIfNull(other.nativeId, nativeId);
+        merged.sequenceBlockSize = getIfNull(other.sequenceBlockSize, sequenceBlockSize);
+        merged.childNameUniqueConstraintEnabled = getIfNull(other.childNameUniqueConstraintEnabled,
                 childNameUniqueConstraintEnabled);
         return merged;
     }

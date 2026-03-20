@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 package org.nuxeo.ecm.core.lifecycle.extensions;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.Collection;
 
@@ -118,12 +118,12 @@ public class LifeCycleDescriptor implements Descriptor {
         var other = (LifeCycleDescriptor) o;
         var merged = new LifeCycleDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.initialStateName = defaultIfNull(other.initialStateName, initialStateName);
-        merged.defaultInitialStateName = defaultIfNull(other.defaultInitialStateName, defaultInitialStateName);
-        merged.description = defaultIfNull(other.description, description);
-        merged.states = defaultIfNull(other.states, states);
-        merged.transitions = defaultIfNull(other.transitions, transitions);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.initialStateName = getIfNull(other.initialStateName, initialStateName);
+        merged.defaultInitialStateName = getIfNull(other.defaultInitialStateName, defaultInitialStateName);
+        merged.description = getIfNull(other.description, description);
+        merged.states = getIfNull(other.states, states);
+        merged.transitions = getIfNull(other.transitions, transitions);
         return merged;
     }
 }

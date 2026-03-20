@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.jwt;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -50,15 +50,15 @@ public class JWTServiceConfigurationDescriptor implements Descriptor {
     }
 
     public int getDefaultTTL() {
-        return defaultIfNull(defaultTTL, DEFAULT_DEFAULT_TTL);
+        return getIfNull(defaultTTL, DEFAULT_DEFAULT_TTL);
     }
 
     @Override
     public Descriptor merge(Descriptor o) {
         var other = (JWTServiceConfigurationDescriptor) o;
         var merged = new JWTServiceConfigurationDescriptor();
-        merged.secret = defaultIfNull(other.secret, secret);
-        merged.defaultTTL = defaultIfNull(other.defaultTTL, defaultTTL);
+        merged.secret = getIfNull(other.secret, secret);
+        merged.defaultTTL = getIfNull(other.defaultTTL, defaultTTL);
         return merged;
     }
 }

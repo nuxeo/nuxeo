@@ -19,7 +19,7 @@
 package org.nuxeo.audit.service.extension;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -157,7 +157,7 @@ public class AuditRouteDescriptor implements Descriptor {
             var other = (PredicateDescriptor) o;
             var merged = new PredicateDescriptor();
             merged.name = name; // we merge based on name, so no name merging needed
-            merged.predicateClass = firstNonNull(other.predicateClass, predicateClass);
+            merged.predicateClass = getIfNull(other.predicateClass, predicateClass);
             merged.properties = new HashMap<>(properties);
             merged.properties.putAll(other.properties);
             return merged;
@@ -191,7 +191,7 @@ public class AuditRouteDescriptor implements Descriptor {
             var other = (EventDescriptor) o;
             var merged = new EventDescriptor();
             merged.name = name; // we merge based on name, so no name merging needed
-            merged.enabled = firstNonNull(other.enabled, enabled);
+            merged.enabled = getIfNull(other.enabled, enabled);
             return merged;
         }
 

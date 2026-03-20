@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019-2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -125,11 +125,11 @@ public class PropertyDescriptor implements Descriptor {
         PropertyDescriptor merged = new PropertyDescriptor();
         merged.schema = schema;
         merged.name = name;
-        merged.secured = firstNonNull(other.secured, secured);
-        merged.retainable = firstNonNull(other.retainable, retainable);
-        merged.deprecation = firstNonNull(other.deprecation, deprecation);
-        merged.fallback = firstNonNull(other.fallback, fallback);
-        merged.indexOrder = firstNonNull(other.indexOrder, indexOrder);
+        merged.secured = getIfNull(other.secured, secured);
+        merged.retainable = getIfNull(other.retainable, retainable);
+        merged.deprecation = getIfNull(other.deprecation, deprecation);
+        merged.fallback = getIfNull(other.fallback, fallback);
+        merged.indexOrder = getIfNull(other.indexOrder, indexOrder);
         return merged;
     }
 

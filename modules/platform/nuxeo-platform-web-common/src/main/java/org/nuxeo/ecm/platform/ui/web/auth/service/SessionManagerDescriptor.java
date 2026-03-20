@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -68,8 +68,8 @@ public class SessionManagerDescriptor implements Descriptor {
         var other = (SessionManagerDescriptor) o;
         var merged = new SessionManagerDescriptor();
         merged.name = name; // we merge based on name, so no need for merging it
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.className = defaultIfNull(other.className, className);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.className = getIfNull(other.className, className);
         return merged;
     }
 }

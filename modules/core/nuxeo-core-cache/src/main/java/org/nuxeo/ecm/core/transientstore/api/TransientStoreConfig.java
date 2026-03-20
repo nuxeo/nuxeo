@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.transientstore.api;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -110,19 +112,15 @@ public class TransientStoreConfig implements Descriptor {
         TransientStoreConfig other = (TransientStoreConfig) o;
         TransientStoreConfig merged = new TransientStoreConfig();
         merged.name = other.name;
-        merged.path = defaultValue(other.path, path);
-        merged.targetMaxSize = defaultValue(other.targetMaxSize, targetMaxSize);
-        merged.absoluteMaxSize = defaultValue(other.absoluteMaxSize, absoluteMaxSize);
-        merged.firstLevelTTL = defaultValue(other.firstLevelTTL, firstLevelTTL);
-        merged.secondLevelTTL = defaultValue(other.secondLevelTTL, secondLevelTTL);
-        merged.implClass = defaultValue(other.implClass, implClass);
+        merged.path = getIfNull(other.path, path);
+        merged.targetMaxSize = getIfNull(other.targetMaxSize, targetMaxSize);
+        merged.absoluteMaxSize = getIfNull(other.absoluteMaxSize, absoluteMaxSize);
+        merged.firstLevelTTL = getIfNull(other.firstLevelTTL, firstLevelTTL);
+        merged.secondLevelTTL = getIfNull(other.secondLevelTTL, secondLevelTTL);
+        merged.implClass = getIfNull(other.implClass, implClass);
         merged.properties.putAll(properties);
         merged.properties.putAll(other.properties);
         return merged;
-    }
-
-    protected static <T> T defaultValue(T value, T defaultValue) {
-        return value == null ? defaultValue : value;
     }
 
     @Override

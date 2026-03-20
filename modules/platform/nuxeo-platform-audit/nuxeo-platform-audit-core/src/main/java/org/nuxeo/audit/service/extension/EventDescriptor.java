@@ -20,6 +20,7 @@ package org.nuxeo.audit.service.extension;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +99,7 @@ public class EventDescriptor implements Descriptor {
         var other = (EventDescriptor) o;
         var merged = new EventDescriptor();
         merged.name = name;
-        merged.enabled = other.enabled == null ? enabled : other.enabled;
+        merged.enabled = getIfNull(other.enabled, enabled);
         merged.extendedInfoDescriptors = Stream.concat(extendedInfoDescriptors.stream(),
                 other.extendedInfoDescriptors.stream())
                                                .collect(collectingAndThen(

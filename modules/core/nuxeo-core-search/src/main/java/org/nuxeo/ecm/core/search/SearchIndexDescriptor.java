@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2024-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2024-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.core.search;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -78,7 +78,7 @@ public class SearchIndexDescriptor implements Descriptor {
     }
 
     public Class<? extends IndexingJsonWriter> getWriterClass() {
-        return defaultIfNull(writerClass, DefaultIndexingJsonWriter.class);
+        return getIfNull(writerClass, DefaultIndexingJsonWriter.class);
     }
 
     public IndexingJsonWriter newWriterInstance() {
@@ -94,11 +94,11 @@ public class SearchIndexDescriptor implements Descriptor {
         var other = (SearchIndexDescriptor) o;
         var merged = new SearchIndexDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.isDefault = defaultIfNull(other.isDefault, isDefault);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.isDefault = getIfNull(other.isDefault, isDefault);
         merged.client = defaultIfBlank(other.client, client);
         merged.repository = defaultIfBlank(other.repository, repository);
-        merged.writerClass = defaultIfNull(other.writerClass, writerClass);
+        merged.writerClass = getIfNull(other.writerClass, writerClass);
         return merged;
     }
 }

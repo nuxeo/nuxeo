@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -58,8 +59,8 @@ public class TestDescriptorRegistry {
             TestDescriptor other = (TestDescriptor) o;
             TestDescriptor merged = new TestDescriptor();
             merged.id = id;
-            merged.name = other.name != null ? other.name : name;
-            merged.desc = other.desc != null ? other.desc : desc;
+            merged.name = getIfNull(other.name, name);
+            merged.desc = getIfNull(other.desc, desc);
             return merged;
         }
 
@@ -89,11 +90,11 @@ public class TestDescriptorRegistry {
     public void testGetSingleDescriptor() {
         DescriptorRegistry registry = new DescriptorRegistry();
         registry.register(TARGET, EP, new TestDescriptor("id1", "name1", "desc1"));
-        assertValues((TestDescriptor) registry.getDescriptor(TARGET, EP, "id1"), "id1", "name1", "desc1");
+        assertValues(registry.getDescriptor(TARGET, EP, "id1"), "id1", "name1", "desc1");
         registry.register(TARGET, EP, new TestDescriptor("id1", "name2", "desc1"));
-        assertValues((TestDescriptor) registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc1");
+        assertValues(registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc1");
         registry.register(TARGET, EP, new TestDescriptor("id1", null, "desc2"));
-        assertValues((TestDescriptor) registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc2");
+        assertValues(registry.getDescriptor(TARGET, EP, "id1"), "id1", "name2", "desc2");
     }
 
     @Test

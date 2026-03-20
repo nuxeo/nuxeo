@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@
  */
 package org.nuxeo.ecm.web.resources.core;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -101,7 +102,7 @@ public class ProcessorDescriptor implements Processor {
         var merged = new ProcessorDescriptor();
         merged.name = name;
         // support merge only for enabled boolean
-        merged.enabled = ObjectUtils.defaultIfNull(other.enabled, enabled);
+        merged.enabled = getIfNull(other.enabled, enabled);
         merged.klass = klass;
         merged.order = order;
         merged.type = type;

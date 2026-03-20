@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.types;
 import static org.apache.commons.lang3.ArrayUtils.addAll;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.apache.commons.lang3.ArrayUtils.nullToEmpty;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.util.ArrayList;
@@ -304,13 +304,13 @@ public class Type implements Descriptor {
         merged.createView = defaultIfBlank(other.createView, createView);
         merged.editView = defaultIfBlank(other.editView, editView);
         // merge views
-        merged.views = new HashMap<>(defaultIfNull(views, Map.of()));
-        merged.views.putAll(defaultIfNull(other.views, Map.of()));
+        merged.views = new HashMap<>(getIfNull(views, Map.of()));
+        merged.views.putAll(getIfNull(other.views, Map.of()));
 
         merged.actions = isNotEmpty(other.actions) ? other.actions : nullToEmpty(actions);
         // merge contentViews
-        merged.contentViews = new HashMap<>(defaultIfNull(contentViews, Map.of()));
-        for (var entry : defaultIfNull(other.contentViews, Map.<String, DocumentContentViews> of()).entrySet()) {
+        merged.contentViews = new HashMap<>(getIfNull(contentViews, Map.of()));
+        for (var entry : getIfNull(other.contentViews, Map.<String, DocumentContentViews> of()).entrySet()) {
             if (merged.contentViews.containsKey(entry.getKey()) && entry.getValue().getAppend()) {
                 merged.contentViews.merge(entry.getKey(), entry.getValue(), (inLayouts, otherInLayouts) -> {
                     var mergedContentViews = new DocumentContentViews();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@
  */
 package org.nuxeo.ecm.core.search.client.mock;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
@@ -54,7 +55,7 @@ public class MockSearchClientDescriptor implements Descriptor {
         var other = (MockSearchClientDescriptor) o;
         var merged = new MockSearchClientDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
-        merged.enabled = ObjectUtils.defaultIfNull(other.enabled, enabled);
+        merged.enabled = getIfNull(other.enabled, enabled);
         return merged;
     }
 }

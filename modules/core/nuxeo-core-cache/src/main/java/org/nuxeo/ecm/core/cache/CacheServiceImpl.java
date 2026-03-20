@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -171,8 +171,9 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public int getApplicationStartedOrder() {
-        ComponentInstance repositoryComponent = Framework.getRuntime().getComponentInstance(
-                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
+        ComponentInstance repositoryComponent = Framework.getRuntime()
+                                                         .getComponentInstance(
+                                                                 "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
         if (repositoryComponent == null || repositoryComponent.getInstance() == null) {
             return super.getApplicationStartedOrder();
         }

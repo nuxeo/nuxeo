@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.picture.api;
 import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 import static org.apache.commons.collections4.ListUtils.union;
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public class PictureConversion implements Descriptor, Comparable<PictureConversi
     }
 
     public int getOrder() {
-        return defaultIfNull(order, DEFAULT_ORDER);
+        return getIfNull(order, DEFAULT_ORDER);
     }
 
     public String getDescription() {
@@ -176,15 +176,15 @@ public class PictureConversion implements Descriptor, Comparable<PictureConversi
         var other = (PictureConversion) o;
         var merged = new PictureConversion();
         merged.id = id; // we merge based on id, so no name merging needed
-        merged.order = defaultIfNull(other.order, order);
-        merged.description = defaultIfNull(other.description, description);
-        merged.enabled = defaultIfNull(other.enabled, enabled);
+        merged.order = getIfNull(other.order, order);
+        merged.description = getIfNull(other.description, description);
+        merged.enabled = getIfNull(other.enabled, enabled);
         merged.chainId = defaultIfBlank(other.chainId, chainId);
         merged.tag = defaultIfBlank(other.tag, tag);
-        merged.maxSize = defaultIfNull(other.maxSize, maxSize);
+        merged.maxSize = getIfNull(other.maxSize, maxSize);
         merged.filterIds = union(emptyIfNull(filterIds), emptyIfNull(other.filterIds));
-        merged.rendition = defaultIfNull(other.rendition, rendition);
-        merged.renditionVisible = defaultIfNull(other.renditionVisible, renditionVisible);
+        merged.rendition = getIfNull(other.rendition, rendition);
+        merged.renditionVisible = getIfNull(other.renditionVisible, renditionVisible);
         return merged;
     }
 

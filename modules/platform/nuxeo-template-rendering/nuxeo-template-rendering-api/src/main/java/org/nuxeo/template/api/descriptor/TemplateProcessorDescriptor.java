@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.template.api.descriptor;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.util.ArrayList;
@@ -112,7 +112,7 @@ public class TemplateProcessorDescriptor implements Descriptor {
         var merged = new TemplateProcessorDescriptor();
         merged.name = name; // we merge based on name, so no name merging needed
         merged.label = defaultIfBlank(other.label, label);
-        merged.className = defaultIfNull(other.className, className);
+        merged.className = getIfNull(other.className, className);
         merged.defaultProcessor = other.defaultProcessor;
         merged.enabled = other.enabled;
         merged.supportedMimeTypes = !other.supportedMimeTypes.isEmpty() ? other.supportedMimeTypes : supportedMimeTypes;

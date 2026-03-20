@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import static org.apache.commons.collections4.MapUtils.emptyIfNull;
 import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.net.URLDecoder;
@@ -290,7 +289,7 @@ public class LoginScreenConfig implements Descriptor {
     }
 
     protected String internalGetNewsIframeUrl() {
-        return firstNonNull(newsIframeUrl, NUXEO_NEWS_URL);
+        return getIfNull(newsIframeUrl, NUXEO_NEWS_URL);
     }
 
     public String getNewsIframeUrl() {
@@ -350,24 +349,24 @@ public class LoginScreenConfig implements Descriptor {
     public Descriptor merge(Descriptor o) {
         var other = (LoginScreenConfig) o;
         var merged = new LoginScreenConfig();
-        merged.newsIframeUrl = defaultIfNull(other.newsIframeUrl, newsIframeUrl);
-        merged.headerStyle = defaultIfNull(other.headerStyle, headerStyle);
-        merged.footerStyle = defaultIfNull(other.footerStyle, footerStyle);
-        merged.bodyBackgroundStyle = defaultIfNull(other.bodyBackgroundStyle, bodyBackgroundStyle);
-        merged.loginBoxBackgroundStyle = defaultIfNull(other.loginBoxBackgroundStyle, loginBoxBackgroundStyle);
-        merged.loginBoxWidth = defaultIfNull(other.loginBoxWidth, loginBoxWidth);
-        merged.disableBackgroundSizeCover = defaultIfNull(other.disableBackgroundSizeCover, disableBackgroundSizeCover);
-        merged.logoAlt = defaultIfNull(other.logoAlt, logoAlt);
-        merged.logoHeight = defaultIfNull(other.logoHeight, logoHeight);
-        merged.logoUrl = defaultIfNull(other.logoUrl, logoUrl);
-        merged.logoWidth = defaultIfNull(other.logoWidth, logoWidth);
-        merged.fieldAutocomplete = defaultIfNull(other.fieldAutocomplete, fieldAutocomplete);
-        merged.videos = defaultIfNull(other.videos, videos);
-        merged.loop = defaultIfNull(other.loop, loop);
-        merged.removeNews = defaultIfNull(other.removeNews, removeNews);
-        merged.muted = defaultIfNull(other.muted, muted);
-        merged.loginButtonBackgroundColor = defaultIfNull(other.loginButtonBackgroundColor, loginButtonBackgroundColor);
-        merged.backgroundImage = defaultIfNull(other.backgroundImage, backgroundImage);
+        merged.newsIframeUrl = getIfNull(other.newsIframeUrl, newsIframeUrl);
+        merged.headerStyle = getIfNull(other.headerStyle, headerStyle);
+        merged.footerStyle = getIfNull(other.footerStyle, footerStyle);
+        merged.bodyBackgroundStyle = getIfNull(other.bodyBackgroundStyle, bodyBackgroundStyle);
+        merged.loginBoxBackgroundStyle = getIfNull(other.loginBoxBackgroundStyle, loginBoxBackgroundStyle);
+        merged.loginBoxWidth = getIfNull(other.loginBoxWidth, loginBoxWidth);
+        merged.disableBackgroundSizeCover = getIfNull(other.disableBackgroundSizeCover, disableBackgroundSizeCover);
+        merged.logoAlt = getIfNull(other.logoAlt, logoAlt);
+        merged.logoHeight = getIfNull(other.logoHeight, logoHeight);
+        merged.logoUrl = getIfNull(other.logoUrl, logoUrl);
+        merged.logoWidth = getIfNull(other.logoWidth, logoWidth);
+        merged.fieldAutocomplete = getIfNull(other.fieldAutocomplete, fieldAutocomplete);
+        merged.videos = getIfNull(other.videos, videos);
+        merged.loop = getIfNull(other.loop, loop);
+        merged.removeNews = getIfNull(other.removeNews, removeNews);
+        merged.muted = getIfNull(other.muted, muted);
+        merged.loginButtonBackgroundColor = getIfNull(other.loginButtonBackgroundColor, loginButtonBackgroundColor);
+        merged.backgroundImage = getIfNull(other.backgroundImage, backgroundImage);
 
         // handle providers merge
         var providersMap = new HashMap<String, LoginProviderLink>();
@@ -389,7 +388,7 @@ public class LoginScreenConfig implements Descriptor {
         emptyIfNull(other.startupPages).forEach(
                 (key, value) -> merged.startupPages.merge(key, value, LoginStartupPage::merge));
 
-        merged.defaultLocale = defaultIfNull(other.defaultLocale, defaultLocale);
+        merged.defaultLocale = getIfNull(other.defaultLocale, defaultLocale);
 
         var supportedLocalesSet = new HashSet<String>();
         if (!Boolean.FALSE.equals(other.isAppendSupportedLocales())) { // true by default

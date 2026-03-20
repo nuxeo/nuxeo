@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@
  */
 package org.nuxeo.ecm.platform.content.template.service;
 
-import org.apache.commons.lang3.ObjectUtils;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
@@ -87,7 +88,7 @@ public class PostContentCreationHandlerDescriptor
         var other = (PostContentCreationHandlerDescriptor) o;
         var merged = new PostContentCreationHandlerDescriptor();
         merged.name = name; // we merge based on name, so no need for merging it
-        merged.clazz = ObjectUtils.defaultIfNull(other.clazz, clazz);
+        merged.clazz = getIfNull(other.clazz, clazz);
         merged.order = other.order > 0 ? other.order : order;
         merged.enabled = other.enabled;
         return merged;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -129,12 +129,12 @@ public class AuthenticationPluginDescriptor implements Descriptor {
         var other = (AuthenticationPluginDescriptor) o;
         var merged = new AuthenticationPluginDescriptor();
         merged.name = name; // we merge based on name, so no need for merging it
-        merged.enabled = defaultIfNull(other.enabled, enabled);
-        merged.className = defaultIfNull(other.className, className);
-        merged.needStartingURLSaving = defaultIfNull(other.needStartingURLSaving, needStartingURLSaving);
+        merged.enabled = getIfNull(other.enabled, enabled);
+        merged.className = getIfNull(other.className, className);
+        merged.needStartingURLSaving = getIfNull(other.needStartingURLSaving, needStartingURLSaving);
         merged.parameters = new HashMap<>(parameters);
         merged.parameters.putAll(other.parameters);
-        merged.stateful = defaultIfNull(other.stateful, stateful);
+        merged.stateful = getIfNull(other.stateful, stateful);
         return merged;
     }
 }
