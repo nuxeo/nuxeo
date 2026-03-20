@@ -84,21 +84,25 @@ public class KafkaConfigDescriptor implements Descriptor {
         return copy;
     }
 
-    // initialize copied properties
-    public void init(KafkaConfigDescriptor source) {
-        if (source == null) {
-            return;
-        }
+    /** @since 2025.18 */
+    @Override
+    public Descriptor copy(Descriptor other) {
+        var source = (KafkaConfigDescriptor) other;
         if (source.copy != null) {
             throw new IllegalArgumentException(
                     "KafkaConfigDescriptor: " + getId() + " cannot copy another copied configuration");
         }
-        topicPrefix = requireNonNullElse(topicPrefix, source.topicPrefix);
-        adminProperties.properties = mergeProperties(source.adminProperties.properties, adminProperties.properties);
-        consumerProperties.properties = mergeProperties(source.consumerProperties.properties,
+        var copied = new KafkaConfigDescriptor();
+        copied.name = name;
+        copied.topicPrefix = requireNonNullElse(topicPrefix, source.topicPrefix);
+        copied.randomPrefix = randomPrefix;
+        copied.adminProperties.properties = mergeProperties(source.adminProperties.properties,
+                adminProperties.properties);
+        copied.consumerProperties.properties = mergeProperties(source.consumerProperties.properties,
                 consumerProperties.properties);
-        producerProperties.properties = mergeProperties(source.producerProperties.properties,
+        copied.producerProperties.properties = mergeProperties(source.producerProperties.properties,
                 producerProperties.properties);
+        return copied;
     }
 
     protected Properties mergeProperties(Properties source, Properties update) {
