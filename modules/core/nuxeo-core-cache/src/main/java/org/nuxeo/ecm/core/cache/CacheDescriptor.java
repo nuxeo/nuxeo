@@ -43,7 +43,9 @@ public class CacheDescriptor implements Descriptor {
      * Default max size
      *
      * @since 9.3
+     * @deprecated since 2025.18, the default is now given by contribution
      */
+    @Deprecated(since = "2025.18", forRemoval = true)
     public static final long DEFAULT_MAX_SIZE = 100;
 
     /**
@@ -58,6 +60,9 @@ public class CacheDescriptor implements Descriptor {
 
     @XNode("@name")
     public String name;
+
+    @XNode("@copy")
+    protected String copy;
 
     @XNode("@remove")
     public boolean remove;
@@ -76,6 +81,11 @@ public class CacheDescriptor implements Descriptor {
         return name;
     }
 
+    @Override
+    public String getCopyId() {
+        return copy;
+    }
+
     public long getTTL() {
         return getIfNull(ttl, DEFAULT_TTL);
     }
@@ -89,6 +99,7 @@ public class CacheDescriptor implements Descriptor {
         CacheDescriptor other = (CacheDescriptor) o;
         CacheDescriptor merged = new CacheDescriptor();
         merged.name = getIfNull(other.name, name);
+        merged.copy = getIfNull(other.copy, copy);
         merged.remove = other.remove;
         merged.ttl = getIfNull(other.ttl, ttl);
         merged.klass = getIfNull(other.klass, klass);

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.cache.contrib">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+    <cache name="default-cache">
+      <ttl>${nuxeo.cache.ttl:=1}</ttl><!-- minutes -->
+      <option name="maxSize">${nuxeo.cache.maxsize:=100}</option>
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel:=10}</option>
+    </cache>
+  </extension>
+
+</component>

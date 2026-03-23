@@ -1,74 +1,19 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.cache.config">
 
-  <extension target="org.nuxeo.ecm.core.cache.CacheService"
-    point="caches">
-    <cache name="default-cache">
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="user-entry-cache">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="user-entry-cache-without-references">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="group-entry-cache">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="group-entry-cache-without-references">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="digestauth-entry-cache">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="digestauth-entry-cache-without-references">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="ldap-user-entry-cache">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="ldap-user-entry-cache-without-references">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="ldap-group-entry-cache">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="ldap-group-entry-cache-without-references">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+    <cache name="user-entry-cache" copy="default-cache" />
+    <cache name="user-entry-cache-without-references" copy="default-cache" />
+    <cache name="group-entry-cache" copy="default-cache" />
+    <cache name="group-entry-cache-without-references" copy="default-cache" />
+    <cache name="digestauth-entry-cache" copy="default-cache" />
+    <cache name="digestauth-entry-cache-without-references" copy="default-cache" />
+<#if "${nuxeo.directory.type}" != "default">
+    <cache name="ldap-user-entry-cache" copy="default-cache" />
+    <cache name="ldap-user-entry-cache-without-references" copy="default-cache" />
+    <cache name="ldap-group-entry-cache" copy="default-cache" />
+    <cache name="ldap-group-entry-cache-without-references" copy="default-cache" />
+</#if>
   </extension>
 
 </component>

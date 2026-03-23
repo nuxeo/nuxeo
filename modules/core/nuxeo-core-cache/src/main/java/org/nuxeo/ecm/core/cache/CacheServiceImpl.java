@@ -20,8 +20,6 @@
 package org.nuxeo.ecm.core.cache;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_MAX_SIZE;
-import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -154,17 +152,11 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public void registerCache(String name) {
-        CacheDescriptor defaultDescriptor = getCacheDescriptor(DEFAULT_CACHE_ID);
-        if (defaultDescriptor == null) {
-            defaultDescriptor = new CacheDescriptor();
-            defaultDescriptor.name = DEFAULT_CACHE_ID;
-            defaultDescriptor.options.put(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE));
-            register(XP_CACHES, defaultDescriptor);
-        }
-        CacheDescriptor newDescriptor = (CacheDescriptor) new CacheDescriptor().merge(defaultDescriptor);
-        newDescriptor.name = name;
+        var descriptor = new CacheDescriptor();
+        descriptor.name = name;
+        descriptor.copy = DEFAULT_CACHE_ID;
         // add to registry (merging if needed)
-        register(XP_CACHES, newDescriptor);
+        register(XP_CACHES, descriptor);
         // start if needed
         maybeStart(name);
     }
