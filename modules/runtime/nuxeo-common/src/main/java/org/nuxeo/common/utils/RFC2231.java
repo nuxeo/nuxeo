@@ -32,11 +32,8 @@ import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
  */
 public class RFC2231 {
 
-    // RFC 2045
-    private static final String MIME_SPECIALS = "()<>@,;:\\\"/[]?=\t ";
-
-    // RFC 2231
-    private static final String RFC2231_SPECIALS = "*'%" + MIME_SPECIALS;
+    // RFC 2231 attr-char: ALPHA / DIGIT / "!" / "#" / "$" / "&" / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
+    private static final String ATTR_CHARS = "!#$&+-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~";
 
     private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
@@ -67,40 +64,41 @@ public class RFC2231 {
     }
 
     /**
-     * Encodes a MIME parameter per RFC 2231.
-     * <p>
-     * This implementation always uses UTF-8 and no language.
+     * Encodes a value per RFC 2231, percent-encoding all non-attr-char bytes of the UTF-8 representation.
      *
-     * @param sb the buffer to fill
+     * @param sb the buffer to append the encoded value to
      * @param value the value to encode
      */
     protected static void encodeRFC2231(StringBuilder sb, String value) {
-        int originalLength = sb.length();
-        sb.append("*=UTF-8''"); // no language
         byte[] bytes = value.getBytes(UTF_8);
-        boolean encoded = false;
-        for (int i = 0; i < bytes.length; i++) {
-            int c = bytes[i] & 0xff;
-            if (c <= 32 || c >= 127 || RFC2231_SPECIALS.indexOf(c) != -1) {
+        for (byte b : bytes) {
+            int c = b & 0xff;
+            if (ATTR_CHARS.indexOf(c) != -1) {
+                sb.append((char) c);
+            } else {
                 sb.append('%');
                 sb.append(HEX_DIGITS[c >> 4]);
                 sb.append(HEX_DIGITS[c & 0xf]);
-                encoded = true;
-            } else {
-                sb.append((char) c);
             }
         }
-        if (!encoded) {
-            // undo and use basic format
-            sb.setLength(originalLength);
-            sb.append('=');
-            sb.append(value);
+    }
+
+    private static boolean needsEncoding(String value) {
+        byte[] bytes = value.getBytes(UTF_8);
+        for (byte b : bytes) {
+            if (ATTR_CHARS.indexOf(b & 0xff) == -1) {
+                return true;
+            }
         }
+        return false;
     }
 
     /**
      * Encodes a {@code Content-Disposition} header. For some user agents the full RFC-2231 encoding won't be performed
      * as they don't understand it.
+     * <p>
+     * Following RFC 6266 best practice, when encoding is needed, both {@code filename} (raw fallback) and
+     * {@code filename*} (RFC 2231 encoded) parameters are included.
      *
      * @param filename the filename
      * @param inline {@code true} for an inline disposition, {@code false} for an attachment
@@ -110,17 +108,20 @@ public class RFC2231 {
     public static String encodeContentDisposition(String filename, boolean inline, String userAgent) {
         StringBuilder sb = new StringBuilder();
         sb.append(inline ? "inline" : "attachment");
-        sb.append("; filename");
         if (userAgent == null) {
             userAgent = "";
         }
         if (isMSIE6or7(userAgent)) {
             // MSIE understands straight %-encoding
-            sb.append("=");
+            sb.append("; filename=");
             percentEscape(sb, filename);
         } else {
-            // proper RFC2231
-            encodeRFC2231(sb, filename);
+            sb.append("; filename=").append(filename);
+            if (needsEncoding(filename)) {
+                // RFC 6266: also include filename* for proper RFC 2231 encoding
+                sb.append("; filename*=UTF-8''");
+                encodeRFC2231(sb, filename);
+            }
         }
         return sb.toString();
     }
