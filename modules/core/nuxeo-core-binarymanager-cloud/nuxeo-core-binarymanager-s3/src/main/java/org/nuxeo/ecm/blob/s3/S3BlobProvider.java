@@ -271,7 +271,7 @@ public class S3BlobProvider extends CloudBlobProvider<S3BlobStoreConfiguration> 
         if (servletRequest != null) {
             return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
         } else {
-            return RFC2231.encodeContentDisposition(blob.getFilename(), false, null);
+            return RFC2231.encodeContentDisposition(blob.getFilename(), false);
         }
     }
 

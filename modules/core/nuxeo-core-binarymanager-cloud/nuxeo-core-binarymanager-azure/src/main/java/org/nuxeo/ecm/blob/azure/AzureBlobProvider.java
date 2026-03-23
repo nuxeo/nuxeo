@@ -124,7 +124,7 @@ public class AzureBlobProvider extends CloudBlobProvider<AzureBlobStoreConfigura
      * Gets a URI for the given blob for direct download.
      */
     protected URI getURIAzure(AzureBlobKey key, ManagedBlob blob, long downloadExpireSeconds) throws IOException {
-        String sasUrl = generateSASUrl(key, encodeContentDisposition(blob.getFilename(), false, null),
+        String sasUrl = generateSASUrl(key, encodeContentDisposition(blob.getFilename(), false),
                 getContentTypeHeader(blob), downloadExpireSeconds);
         return URI.create(sasUrl);
     }

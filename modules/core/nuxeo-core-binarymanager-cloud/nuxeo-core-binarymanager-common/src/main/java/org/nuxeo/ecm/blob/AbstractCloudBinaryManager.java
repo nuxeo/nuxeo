@@ -268,7 +268,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     protected String getContentDispositionHeader(Blob blob, HttpServletRequest servletRequest) {
         if (servletRequest == null) {
-            return RFC2231.encodeContentDisposition(blob.getFilename(), false, null);
+            return RFC2231.encodeContentDisposition(blob.getFilename(), false);
         } else {
             return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
         }

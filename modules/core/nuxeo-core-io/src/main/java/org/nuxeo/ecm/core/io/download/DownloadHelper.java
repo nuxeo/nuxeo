@@ -120,7 +120,6 @@ public class DownloadHelper {
      * @since 7.10
      */
     public static String getRFC2231ContentDisposition(HttpServletRequest request, String filename, Boolean inline) {
-        String userAgent = request.getHeader("User-Agent");
         boolean binline;
         if (inline == null) {
             String inlineParam = request.getParameter(INLINE);
@@ -131,7 +130,7 @@ public class DownloadHelper {
         } else {
             binline = inline.booleanValue();
         }
-        return RFC2231.encodeContentDisposition(filename, binline, userAgent);
+        return RFC2231.encodeContentDisposition(filename, binline);
     }
 
     /**
