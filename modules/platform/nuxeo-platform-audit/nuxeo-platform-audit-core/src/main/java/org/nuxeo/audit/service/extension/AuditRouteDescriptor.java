@@ -50,6 +50,9 @@ public class AuditRouteDescriptor implements Descriptor {
     @XNode("@name")
     protected String name;
 
+    @XNode("@copy")
+    protected String copy;
+
     @XNode("backend@name")
     protected String backendName;
 
@@ -62,6 +65,11 @@ public class AuditRouteDescriptor implements Descriptor {
     @Override
     public String getId() {
         return name;
+    }
+
+    @Override
+    public String getCopyId() {
+        return copy;
     }
 
     public String getName() {
@@ -90,6 +98,7 @@ public class AuditRouteDescriptor implements Descriptor {
         var other = (AuditRouteDescriptor) o;
         var merged = new AuditRouteDescriptor();
         merged.name = getIfNull(other.name, name);
+        merged.copy = getIfNull(other.copy, copy);
         merged.backendName = defaultIfBlank(other.backendName, backendName);
         merged.predicates = merge(other.predicates, predicates);
         merged.events = merge(events, other.events);
