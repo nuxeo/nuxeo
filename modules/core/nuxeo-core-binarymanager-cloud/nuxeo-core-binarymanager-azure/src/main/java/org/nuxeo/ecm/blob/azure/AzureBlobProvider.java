@@ -122,7 +122,7 @@ public class AzureBlobProvider extends BlobStoreBlobProvider {
      */
     protected URI getURIAzure(String key, ManagedBlob blob, long downloadExpireSeconds) throws IOException {
         BlobClient blobClient = config.client.getBlobClient(key);
-        String sasUrl = generateSASUrl(blobClient, encodeContentDisposition(blob.getFilename(), false, null),
+        String sasUrl = generateSASUrl(blobClient, encodeContentDisposition(blob.getFilename(), false),
                 getContentTypeHeader(blob), downloadExpireSeconds);
         return URI.create(sasUrl);
     }

@@ -342,7 +342,7 @@ public class S3BlobStore extends AbstractBlobStore {
             Blob blob = blobContext.blob;
             String filename = blob.getFilename();
             if (filename != null) {
-                String contentDisposition = RFC2231.encodeContentDisposition(filename, false, null);
+                String contentDisposition = RFC2231.encodeContentDisposition(filename, false);
                 objectMetadata.setContentDisposition(contentDisposition);
             }
             String contentType = DownloadHelper.getContentTypeHeader(blob);

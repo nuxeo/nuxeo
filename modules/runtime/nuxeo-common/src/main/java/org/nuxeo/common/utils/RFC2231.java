@@ -22,7 +22,6 @@
 package org.nuxeo.common.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
 
 /**
  * RFC-2231 specifies how a MIME parameter value, like {@code Content-Disposition}'s {@code filename}, can be encoded to
@@ -42,11 +41,9 @@ public class RFC2231 {
     }
 
     /**
-     * Does a simple %-escaping of the UTF-8 bytes of the value. Keep only some know safe characters.
-     *
-     * @param sb the builder to which escaped chars are appended
-     * @param value the value to escape
+     * @deprecated since 2025.18, not used anymore
      */
+    @Deprecated(since = "2025.18", forRemoval = true)
     public static void percentEscape(StringBuilder sb, String value) {
         byte[] bytes = value.getBytes(UTF_8);
         for (byte b : bytes) {
@@ -94,36 +91,31 @@ public class RFC2231 {
     }
 
     /**
-     * Encodes a {@code Content-Disposition} header. For some user agents the full RFC-2231 encoding won't be performed
-     * as they don't understand it.
-     * <p>
-     * Following RFC 6266 best practice, when encoding is needed, both {@code filename} (raw fallback) and
-     * {@code filename*} (RFC 2231 encoded) parameters are included.
+     * Encodes a {@code Content-Disposition} header following RFC 6266 best practice. When encoding is needed, both
+     * {@code filename} (raw fallback) and {@code filename*} (RFC 2231 encoded) parameters are included.
      *
      * @param filename the filename
      * @param inline {@code true} for an inline disposition, {@code false} for an attachment
-     * @param userAgent the userAgent
      * @return a full string to set as value of a {@code Content-Disposition} header
+     * @since 2025.18
      */
-    public static String encodeContentDisposition(String filename, boolean inline, String userAgent) {
-        StringBuilder sb = new StringBuilder();
+    public static String encodeContentDisposition(String filename, boolean inline) {
+        var sb = new StringBuilder();
         sb.append(inline ? "inline" : "attachment");
-        if (userAgent == null) {
-            userAgent = "";
-        }
-        if (isMSIE6or7(userAgent)) {
-            // MSIE understands straight %-encoding
-            sb.append("; filename=");
-            percentEscape(sb, filename);
-        } else {
-            sb.append("; filename=").append(filename);
-            if (needsEncoding(filename)) {
-                // RFC 6266: also include filename* for proper RFC 2231 encoding
-                sb.append("; filename*=UTF-8''");
-                encodeRFC2231(sb, filename);
-            }
+        sb.append("; filename=").append(filename);
+        if (needsEncoding(filename)) {
+            sb.append("; filename*=UTF-8''");
+            encodeRFC2231(sb, filename);
         }
         return sb.toString();
+    }
+
+    /**
+     * @deprecated since 2025.18, use {@link #encodeContentDisposition(String, boolean)} instead
+     */
+    @Deprecated(since = "2025.18", forRemoval = true)
+    public static String encodeContentDisposition(String filename, boolean inline, String userAgent) {
+        return encodeContentDisposition(filename, inline);
     }
 
 }

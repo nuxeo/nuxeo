@@ -30,6 +30,7 @@ import org.junit.Test;
  */
 public class TestRFC2231 {
 
+    @SuppressWarnings("removal")
     @Test
     public void testEncodeWithPercent() {
         StringBuilder sb = new StringBuilder();
@@ -45,28 +46,24 @@ public class TestRFC2231 {
 
     @Test
     public void testEncodeContentDisposition() throws Exception {
-        assertEquals("inline; filename=cafe", RFC2231.encodeContentDisposition("cafe", true, null));
-        assertEquals("inline; filename=mydoc2.txt", RFC2231.encodeContentDisposition("mydoc2.txt", true, null));
+        assertEquals("inline; filename=cafe", RFC2231.encodeContentDisposition("cafe", true));
+        assertEquals("inline; filename=mydoc2.txt", RFC2231.encodeContentDisposition("mydoc2.txt", true));
         assertEquals("inline; filename=caf\u00e9; filename*=UTF-8''caf%C3%A9",
-                RFC2231.encodeContentDisposition("caf\u00e9", true, TestUserAgent.FF_30));
-        assertEquals("attachment; filename=caf%C3%A9",
-                RFC2231.encodeContentDisposition("caf\u00e9", false, TestUserAgent.MSIE7_UA));
+                RFC2231.encodeContentDisposition("caf\u00e9", true));
         assertEquals("attachment; filename=caf\u00e9; filename*=UTF-8''caf%C3%A9",
-                RFC2231.encodeContentDisposition("caf\u00e9", false, null));
+                RFC2231.encodeContentDisposition("caf\u00e9", false));
         assertEquals(
                 "attachment; filename=R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).; filename*=UTF-8''R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire%2Fdraft%29.",
-                RFC2231.encodeContentDisposition("R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).", false,
-                        TestUserAgent.FF_30));
+                RFC2231.encodeContentDisposition("R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).", false));
         assertEquals(
                 "attachment; filename=\u5e73\u4eee\u540d - good.txt; filename*=UTF-8''%E5%B9%B3%E4%BB%AE%E5%90%8D%20-%20good.txt",
-                RFC2231.encodeContentDisposition("\u5e73\u4eee\u540d - good.txt", false, TestUserAgent.MSIE11));
+                RFC2231.encodeContentDisposition("\u5e73\u4eee\u540d - good.txt", false));
         assertEquals(
                 "attachment; filename=\u30cc\u30af\u30bb\u30aa\u30fb\u30b7\u3099\u30e3\u30cf\u309a\u30f3.txt; filename*=UTF-8''%E3%83%8C%E3%82%AF%E3%82%BB%E3%82%AA%E3%83%BB%E3%82%B7%E3%82%99%E3%83%A3%E3%83%8F%E3%82%9A%E3%83%B3.txt",
                 RFC2231.encodeContentDisposition(
-                        "\u30cc\u30af\u30bb\u30aa\u30fb\u30b7\u3099\u30e3\u30cf\u309a\u30f3.txt", false,
-                        TestUserAgent.SAFARI11));
+                        "\u30cc\u30af\u30bb\u30aa\u30fb\u30b7\u3099\u30e3\u30cf\u309a\u30f3.txt", false));
         assertEquals("inline; filename=test{test}.txt; filename*=UTF-8''test%7Btest%7D.txt",
-                RFC2231.encodeContentDisposition("test{test}.txt", true, TestUserAgent.SAFARI11));
+                RFC2231.encodeContentDisposition("test{test}.txt", true));
     }
 
 }
