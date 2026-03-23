@@ -263,12 +263,9 @@ pipeline {
           """
           sh """
             # root POM
-            mvn ${MAVEN_CLI_ARGS} -Pdistrib,docker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
+            mvn ${MAVEN_CLI_ARGS} -Pdistrib,docker,parent versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
             perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
             perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
-
-            # nuxeo-parent POM
-            perl -i -pe 's|<version>.*?</version>|<version>${VERSION}</version>|' parent/pom.xml
 
             # nuxeo-promote-packages POM
             # only replace the first <version> occurence
@@ -710,8 +707,7 @@ pipeline {
               sh './prepare-patches'
             }
             sh """
-              mvn ${MAVEN_CLI_ARGS} -Pdistrib -DskipTests deploy
-              mvn ${MAVEN_CLI_ARGS} -f parent/pom.xml deploy
+              mvn ${MAVEN_CLI_ARGS} -Pdistrib,parent -DskipTests deploy
 
               # update back nuxeo-parent version to CURRENT_VERSION version
               mvn ${MAVEN_CLI_ARGS} -f parent/pom.xml versions:set -DnewVersion=${CURRENT_VERSION} -DgenerateBackupPoms=false

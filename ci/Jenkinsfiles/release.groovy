@@ -164,12 +164,9 @@ pipeline {
             """
             sh """
               # root POM
-              mvn ${MAVEN_CLI_ARGS} -Pdistrib,docker versions:set -DnewVersion=${nextVersion} -DgenerateBackupPoms=false
+              mvn ${MAVEN_CLI_ARGS} -Pdistrib,docker,parent versions:set -DnewVersion=${nextVersion} -DgenerateBackupPoms=false
               perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${nextVersion}</nuxeo.platform.version>|' pom.xml
               perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${nextVersion}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
-
-              # nuxeo-parent POM
-              perl -i -pe 's|<version>.*?</version>|<version>${nextVersion}</version>|' parent/pom.xml
 
               # nuxeo-promote-packages POM
               perl -i -pe 's|<version>.*?</version>|<version>${nextVersion}</version>|' ci/release/pom.xml
