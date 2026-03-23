@@ -5894,6 +5894,14 @@
         <module>docker</module>
       </modules>
     </profile>
+
+    <!-- Used to include the parent module, in particular when developing external addons -->
+    <profile>
+      <id>parent</id>
+      <modules>
+        <module>parent</module>
+      </modules>
+    </profile>
   </profiles>
 
   <developers>
