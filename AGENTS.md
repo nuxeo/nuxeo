@@ -259,16 +259,11 @@ public MyDescriptor merge(Descriptor o) {
 }
 ```
 
-For lists of nested `Descriptor` objects, use a map-based merge on `getId()` to recursively merge matching entries:
+For lists or maps of nested `Descriptor` objects, use the static `Descriptor.merge()` helpers, which handle id-based recursive merging and `doesRemove()`:
 
 ```java
-@SuppressWarnings("unchecked")
-protected <D extends Descriptor> List<D> merge(List<D> first, List<D> second) {
-    var map = new HashMap<String, D>();
-    first.forEach(d -> map.put(d.getId(), d));
-    second.forEach(d -> map.merge(d.getId(), d, (prev, cur) -> (D) prev.merge(cur)));
-    return new ArrayList<>(map.values());
-}
+merged.children = Descriptor.merge(other.children, children);              // List<D extends Descriptor>
+merged.childrenByKey = Descriptor.merge(other.childrenByKey, childrenByKey); // Map<String, D extends Descriptor>
 ```
 
 ### Extension Contributions (XML)

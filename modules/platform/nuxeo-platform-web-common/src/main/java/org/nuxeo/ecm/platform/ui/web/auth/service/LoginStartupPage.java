@@ -18,21 +18,33 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import org.apache.commons.lang3.StringUtils;
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 8.4
  */
 @XObject("startupPage")
-public class LoginStartupPage implements Comparable<LoginStartupPage> {
+public class LoginStartupPage implements Comparable<LoginStartupPage>, Descriptor {
+
+    /** @since 2025.18 */
+    @XNode("@id")
+    protected String id;
 
     @XNode("@priority")
     protected int priority;
 
     @XNode("path")
     protected String path;
+
+    @Override
+    public String getId() {
+        return id;
+    }
 
     public String getPath() {
         return path;
@@ -42,11 +54,14 @@ public class LoginStartupPage implements Comparable<LoginStartupPage> {
         return priority;
     }
 
-    public LoginStartupPage merge(LoginStartupPage newStartupPage) {
+    @Override
+    public LoginStartupPage merge(Descriptor o) {
+        var other = (LoginStartupPage) o;
         var merged = new LoginStartupPage();
-        merged.path = StringUtils.defaultIfEmpty(newStartupPage.path, path);
+        merged.id = getIfNull(other.id, id);
+        merged.path = defaultIfEmpty(other.path, path);
         // Keep the highest priority
-        merged.priority = newStartupPage.compareTo(this) > 0 ? newStartupPage.priority : priority;
+        merged.priority = other.compareTo(this) > 0 ? other.priority : priority;
         return merged;
     }
 

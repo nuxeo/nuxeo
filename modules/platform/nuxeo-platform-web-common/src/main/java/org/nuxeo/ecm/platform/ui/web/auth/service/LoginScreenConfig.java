@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
-import static org.apache.commons.collections4.MapUtils.emptyIfNull;
 import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
@@ -369,24 +368,10 @@ public class LoginScreenConfig implements Descriptor {
         merged.backgroundImage = getIfNull(other.backgroundImage, backgroundImage);
 
         // handle providers merge
-        var providersMap = new HashMap<String, LoginProviderLink>();
-        emptyIfNull(providers).forEach(provider -> providersMap.put(provider.getName(), provider));
-        emptyIfNull(other.providers).forEach(
-                provider -> providersMap.compute(provider.getName(), (name, previousProvider) -> {
-                    if (previousProvider == null) {
-                        return provider;
-                    } else if (provider.remove) {
-                        return null;
-                    } else {
-                        return previousProvider.merge(provider);
-                    }
-                }));
-        merged.providers = new ArrayList<>(providersMap.values());
+        merged.providers = Descriptor.merge(other.providers, providers);
 
         // handle startupPages merge
-        merged.startupPages = new HashMap<>(emptyIfNull(startupPages));
-        emptyIfNull(other.startupPages).forEach(
-                (key, value) -> merged.startupPages.merge(key, value, LoginStartupPage::merge));
+        merged.startupPages = Descriptor.merge(other.startupPages, startupPages);
 
         merged.defaultLocale = getIfNull(other.defaultLocale, defaultLocale);
 

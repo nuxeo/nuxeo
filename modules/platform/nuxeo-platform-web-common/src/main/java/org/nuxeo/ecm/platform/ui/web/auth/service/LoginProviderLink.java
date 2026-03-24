@@ -152,6 +152,11 @@ public class LoginProviderLink implements Descriptor {
     }
 
     @Override
+    public boolean doesRemove() {
+        return remove;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof LoginProviderLink && name != null) {
             return name.equals(((LoginProviderLink) obj).getName());

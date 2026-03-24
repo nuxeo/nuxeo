@@ -18,6 +18,14 @@
  */
 package org.nuxeo.runtime.model;
 
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
+import static org.apache.commons.collections4.MapUtils.emptyIfNull;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Descriptors implementing this interface will automatically be registered within the default registry in
  * {@code DefaultComponent}.
@@ -84,4 +92,40 @@ public interface Descriptor {
         return false;
     }
 
+    /**
+     * Merges two lists of {@link Descriptor}.
+     *
+     * @since 2025.18
+     */
+    @SuppressWarnings("unchecked")
+    static <D extends Descriptor> List<D> merge(List<D> other, List<D> current) {
+        var map = new LinkedHashMap<String, D>();
+        emptyIfNull(current).forEach(descriptor -> map.put(descriptor.getId(), descriptor));
+        emptyIfNull(other).forEach(descriptor -> map.merge(descriptor.getId(), descriptor, (v1, v2) -> {
+            if (v2.doesRemove()) {
+                return null;
+            } else {
+                return (D) v1.merge(v2);
+            }
+        }));
+        return new ArrayList<>(map.values());
+    }
+
+    /**
+     * Merges two maps of {@link Descriptor}.
+     *
+     * @since 2025.18
+     */
+    @SuppressWarnings("unchecked")
+    static <D extends Descriptor> Map<String, D> merge(Map<String, D> other, Map<String, D> current) {
+        var map = new LinkedHashMap<>(emptyIfNull(current));
+        emptyIfNull(other).forEach((key, descriptor) -> map.merge(key, descriptor, (v1, v2) -> {
+            if (v2.doesRemove()) {
+                return null;
+            } else {
+                return (D) v1.merge(v2);
+            }
+        }));
+        return map;
+    }
 }

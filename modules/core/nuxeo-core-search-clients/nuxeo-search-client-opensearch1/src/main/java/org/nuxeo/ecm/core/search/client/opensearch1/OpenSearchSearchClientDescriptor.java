@@ -76,8 +76,7 @@ public class OpenSearchSearchClientDescriptor implements Descriptor {
         merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.clientId = defaultIfBlank(other.clientId, clientId);
-        merged.searchIndexes = new HashMap<>(searchIndexes);
-        other.searchIndexes.forEach((k, v) -> merged.searchIndexes.merge(k, v, SearchIndex::merge));
+        merged.searchIndexes = Descriptor.merge(other.searchIndexes, searchIndexes);
         return merged;
     }
 

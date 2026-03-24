@@ -161,10 +161,8 @@ public class MigrationDescriptor implements Descriptor {
         merged.description = getIfNull(other.description, description);
         merged.defaultState = getIfNull(other.defaultState, defaultState);
         merged.descriptionLabel = getIfNull(other.descriptionLabel, descriptionLabel);
-        merged.steps.putAll(steps);
-        merged.steps.putAll(other.steps);
-        merged.states.putAll(states);
-        merged.states.putAll(other.states);
+        merged.steps = Descriptor.merge(other.steps, steps);
+        merged.states = Descriptor.merge(other.states, states);
         return merged;
     }
 

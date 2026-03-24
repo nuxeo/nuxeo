@@ -18,14 +18,10 @@
  */
 package org.nuxeo.audit.service.extension;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.nuxeo.audit.service.AuditComponent;
@@ -100,12 +96,7 @@ public class EventDescriptor implements Descriptor {
         var merged = new EventDescriptor();
         merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
-        merged.extendedInfoDescriptors = Stream.concat(extendedInfoDescriptors.stream(),
-                other.extendedInfoDescriptors.stream())
-                                               .collect(collectingAndThen(
-                                                       toMap(ExtendedInfoDescriptor::getKey, Function.identity(),
-                                                               ExtendedInfoDescriptor::merge),
-                                                       map -> new ArrayList<>(map.values())));
+        merged.extendedInfoDescriptors = Descriptor.merge(other.extendedInfoDescriptors, extendedInfoDescriptors);
         return merged;
     }
 

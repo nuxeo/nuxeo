@@ -22,7 +22,9 @@ import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.runtime.model.Descriptor;
@@ -139,6 +141,43 @@ public class TestDescriptorRegistry {
         assertNull(registry.getDescriptor(TARGET, EP, "id0"));
         registry.register(TARGET, EP, new TestDescriptor("id0", "final", null));
         assertValues(registry.getDescriptor(TARGET, EP, "id0"), "id0", "final", null);
+    }
+
+    @Test
+    public void testMergeMap() {
+        var current = new LinkedHashMap<String, TestDescriptor>();
+        current.put("id1", new TestDescriptor("id1", "name1", "desc1"));
+        current.put("id2", new TestDescriptor("id2", "name2", "desc2"));
+        var other = new LinkedHashMap<String, TestDescriptor>();
+        other.put("id1", new TestDescriptor("id1", null, "desc1-2"));
+        other.put("id3", new TestDescriptor("id3", "name3", "desc3"));
+
+        Map<String, TestDescriptor> merged = Descriptor.merge(other, current);
+
+        assertEquals(3, merged.size());
+        assertValues(merged.get("id1"), "id1", "name1", "desc1-2");
+        assertValues(merged.get("id2"), "id2", "name2", "desc2");
+        assertValues(merged.get("id3"), "id3", "name3", "desc3");
+    }
+
+    @Test
+    public void testMergeMapWithRemove() {
+        var current = new LinkedHashMap<String, TestDescriptor>();
+        current.put("id1", new TestDescriptor("id1", "name1", "desc1"));
+        current.put("id2", new TestDescriptor("id2", "name2", "desc2"));
+        var other = new LinkedHashMap<String, TestDescriptor>();
+        other.put("id1", new TestDescriptor("id1", null, null) {
+            @Override
+            public boolean doesRemove() {
+                return true;
+            }
+        });
+
+        Map<String, TestDescriptor> merged = Descriptor.merge(other, current);
+
+        assertEquals(1, merged.size());
+        assertNull(merged.get("id1"));
+        assertValues(merged.get("id2"), "id2", "name2", "desc2");
     }
 
     protected void assertValues(TestDescriptor d, String id, String name, String desc) {
