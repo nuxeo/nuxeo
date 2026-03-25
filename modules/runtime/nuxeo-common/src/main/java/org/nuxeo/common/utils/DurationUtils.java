@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,20 +32,20 @@ import java.util.regex.Pattern;
 public final class DurationUtils {
 
     public static final Pattern DURATION_SIMPLE_FORMAT = Pattern.compile(
-            "(?:(\\d+)d)?(?:(\\d+)h)?(?:(\\d+)m)?(?:(\\d+)s)?(?:(\\d+)ms)?");
+            "(?:(\\d+)d)?(?:(\\d+)h)?(?:(\\d+)m)?(?:(\\d+)s)?(?:(\\d+)ms)?(?:(\\d+)ns)?");
 
     private DurationUtils() {
         // utility class
     }
 
     /**
-     * Obtains a {@code Duration} from a text string such as {@code PnDTnHnMn.nS} or {@code _d_h_m_s_ms}.
+     * Obtains a {@code Duration} from a text string such as {@code PnDTnHnMn.nS} or {@code _d_h_m_s_ms_ns}.
      * <p>
      * See {@link Duration#parse(CharSequence)} for {@code PnDTnHnMn.nS} format.
      * <p>
-     * For {@code _d_h_m_s_ms}, there are five sections, each consisting of a number and a suffix. The suffixes are "d",
-     * "h", "m", "s" and "ms" for days, hours, minutes, seconds and milliseconds. The suffixes must occur in order and
-     * at least one of them must be present.
+     * For {@code _d_h_m_s_ms_ns}, there are five sections, each consisting of a number and a suffix. The suffixes are
+     * "d", "h", "m", "s", "ms" and "ns" for days, hours, minutes, seconds, milliseconds, and nanoseconds. The suffixes
+     * must occur in order and at least one of them must be present.
      *
      * @throws DateTimeParseException if the text cannot be parsed to a duration
      * @see Duration#parse(CharSequence)
@@ -62,6 +63,7 @@ public final class DurationUtils {
             long minutes = 0;
             long seconds = 0;
             long millis = 0;
+            long nanos = 0;
             if (matcher.group(1) != null) {
                 days = Long.parseLong(matcher.group(1));
             }
@@ -77,7 +79,15 @@ public final class DurationUtils {
             if (matcher.group(5) != null) {
                 millis = Long.parseLong(matcher.group(5));
             }
-            return Duration.ofDays(days).plusHours(hours).plusMinutes(minutes).plusSeconds(seconds).plusMillis(millis);
+            if (matcher.group(6) != null) {
+                nanos = Long.parseLong(matcher.group(6));
+            }
+            return Duration.ofDays(days)
+                           .plusHours(hours)
+                           .plusMinutes(minutes)
+                           .plusSeconds(seconds)
+                           .plusMillis(millis)
+                           .plusNanos(nanos);
         }
         throw new DateTimeParseException("Text cannot be parsed to a Duration", value, 0);
     }
@@ -107,4 +117,24 @@ public final class DurationUtils {
         }
     }
 
+    /**
+     * Formats the given {@code duration} to a human readable String such as {@code _d_h_m_s_ms_ns}.
+     *
+     * @since 2025.18
+     */
+    public static String format(Duration duration) {
+        var builder = new StringBuilder();
+        BiConsumer<Long, String> printPartAndUnit = (part, unit) -> {
+            if (part > 0) {
+                builder.append(part).append(unit);
+            }
+        };
+        printPartAndUnit.accept(duration.toDaysPart(), "d");
+        printPartAndUnit.accept((long) duration.toHoursPart(), "h");
+        printPartAndUnit.accept((long) duration.toMinutesPart(), "m");
+        printPartAndUnit.accept((long) duration.toSecondsPart(), "s");
+        printPartAndUnit.accept((long) duration.toMillisPart(), "ms");
+        printPartAndUnit.accept(duration.toNanosPart() - 1_000_000 * (long) duration.toMillisPart(), "ns");
+        return builder.toString();
+    }
 }
