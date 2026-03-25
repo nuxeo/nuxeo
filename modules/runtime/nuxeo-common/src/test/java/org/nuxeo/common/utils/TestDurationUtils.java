@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2020-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,10 @@ import org.junit.Test;
 
 public class TestDurationUtils {
 
+    protected static final String format(Duration duration) {
+        return DurationUtils.format(duration);
+    }
+
     protected static final Duration parse(String s) {
         return DurationUtils.parse(s);
     }
@@ -48,6 +52,7 @@ public class TestDurationUtils {
         assertEquals(Duration.ofHours(-6).plusMinutes(-3), parse("-PT6H3M"));
         assertEquals(Duration.ofHours(6).plusMinutes(-3), parse("-PT-6H+3M"));
         // custom format
+        assertEquals(Duration.ofNanos(876), parse("876ns"));
         assertEquals(Duration.ofMillis(123), parse("123ms"));
         assertEquals(Duration.ofSeconds(88), parse("88s"));
         assertEquals(Duration.ofMinutes(15), parse("15m"));
@@ -75,4 +80,27 @@ public class TestDurationUtils {
         assertEquals(Duration.ofDays(-123), parsePositive("1 day")); // bad format
     }
 
+    @Test
+    public void testFormat() {
+        assertEquals("876ns", format(Duration.ofNanos(876)));
+        assertEquals("123ms", format(Duration.ofMillis(123)));
+        assertEquals("1m28s", format(Duration.ofSeconds(88)));
+        assertEquals("15m", format(Duration.ofMinutes(15)));
+        assertEquals("10h", format(Duration.ofHours(10)));
+        assertEquals("2d", format(Duration.ofDays(2)));
+        assertEquals("2d3h4m5s6ms7ns",
+                format(Duration.ofDays(2).plusHours(3).plusMinutes(4).plusSeconds(5).plusMillis(6).plusNanos(7)));
+    }
+
+    @Test
+    public void testIdempotent() {
+        assertEquals(Duration.ofNanos(876), parse(format(Duration.ofNanos(876))));
+        assertEquals(Duration.ofMillis(123), parse(format(Duration.ofMillis(123))));
+        assertEquals(Duration.ofSeconds(88), parse(format(Duration.ofSeconds(88))));
+        assertEquals(Duration.ofMinutes(15), parse(format(Duration.ofMinutes(15))));
+        assertEquals(Duration.ofHours(10), parse(format(Duration.ofHours(10))));
+        assertEquals(Duration.ofDays(2), parse(format(Duration.ofDays(2))));
+        assertEquals(Duration.ofDays(2).plusHours(3).plusMinutes(4).plusSeconds(5).plusMillis(6).plusNanos(7), parse(
+                format(Duration.ofDays(2).plusHours(3).plusMinutes(4).plusSeconds(5).plusMillis(6).plusNanos(7))));
+    }
 }
