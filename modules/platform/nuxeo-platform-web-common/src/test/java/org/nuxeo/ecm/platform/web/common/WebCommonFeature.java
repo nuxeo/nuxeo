@@ -18,10 +18,10 @@
  */
 package org.nuxeo.ecm.platform.web.common;
 
+import org.nuxeo.ecm.core.event.CoreEventFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test feature that deploys the {@code nuxeo-platform-web-common} bundle.
@@ -29,6 +29,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @since 2025.18
  */
 @Deploy("org.nuxeo.ecm.platform.web.common")
-@Features(RuntimeFeature.class)
+@Features(CoreEventFeature.class)
 public class WebCommonFeature implements RunnerFeature {
 }

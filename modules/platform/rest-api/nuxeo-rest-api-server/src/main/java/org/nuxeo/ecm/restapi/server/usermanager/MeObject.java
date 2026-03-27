@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.restapi.server.usermanager;
 
+import static org.nuxeo.ecm.platform.usermanager.UserManager.USER_HTTP_SESSION_ID_KEY;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -75,7 +77,13 @@ public class MeObject extends DefaultObject {
         UserManager userManager = Framework.getService(UserManager.class);
         if (userManager.checkUsernamePassword(currentUser.getName(), oldPassword)) {
             currentUser.setPassword(newPassword);
-            Framework.doPrivileged(() -> userManager.updateUser(currentUser.getModel()));
+            // Pass the current session ID via contextData so the listener can preserve it
+            var userModel = currentUser.getModel();
+            var httpSession = getContext().getRequest().getSession(false);
+            if (httpSession != null) {
+                userModel.putContextData(USER_HTTP_SESSION_ID_KEY, httpSession.getId());
+            }
+            Framework.doPrivileged(() -> userManager.updateUser(userModel));
             return Response.ok(currentUser).build();
         } else {
             return Response.status(Status.UNAUTHORIZED).build();

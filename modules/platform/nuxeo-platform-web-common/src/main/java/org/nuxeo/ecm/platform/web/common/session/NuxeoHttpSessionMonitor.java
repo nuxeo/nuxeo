@@ -26,11 +26,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.management.counters.CounterHelper;
 
 /**
@@ -41,6 +46,8 @@ import org.nuxeo.runtime.management.counters.CounterHelper;
  * @since 5.4.2
  */
 public class NuxeoHttpSessionMonitor {
+
+    private static final Logger log = LogManager.getLogger(NuxeoHttpSessionMonitor.class);
 
     public static final String REQUEST_COUNTER = "org.nuxeo.web.requests";
 
@@ -136,12 +143,34 @@ public class NuxeoHttpSessionMonitor {
      */
     public void removeEntry(String sid, boolean invalidate) {
         SessionInfo si = sessionTracker.remove(sid);
+        if (si == null) {
+            return;
+        }
         if (invalidate && si.sInvalidator != null) {
             si.sInvalidator.run();
         }
-        if (si != null && si.getLoginName() != null) {
+        if (si.getLoginName() != null) {
             CounterHelper.decreaseCounter(SESSION_COUNTER);
         }
+    }
+
+    /**
+     * Invalidates all HTTP sessions for the given user, optionally excluding a specific session.
+     *
+     * @param loginName the login name of the user whose sessions should be invalidated
+     * @param excludeSessionId a session id to exclude from invalidation (typically the current session), or
+     *            {@code null} to invalidate all sessions
+     * @since 2025.18
+     */
+    public void invalidateSessionsForUser(@Nonnull String loginName, @Nullable String excludeSessionId) {
+        Objects.requireNonNull(loginName, "loginName must not be null");
+        getTrackedSessions().stream()
+                            .filter(si -> loginName.equals(si.getLoginName()))
+                            .filter(si -> !si.getSessionId().equals(excludeSessionId))
+                            .peek(si -> log.debug("Invalidating session: {} for user: {}", si.getSessionId(),
+                                    loginName))
+                            .map(SessionInfo::getSessionId)
+                            .forEach(sid -> removeEntry(sid, true));
     }
 
     public Collection<SessionInfo> getTrackedSessions() {
