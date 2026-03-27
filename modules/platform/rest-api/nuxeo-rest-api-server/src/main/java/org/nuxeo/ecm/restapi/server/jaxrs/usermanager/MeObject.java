@@ -39,6 +39,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.user.preferences.api.UserPreferences;
 import org.nuxeo.user.preferences.api.UserPreferencesService;
 
+import static org.nuxeo.ecm.platform.usermanager.UserManager.USER_HTTP_SESSION_ID_KEY;
+
 /**
  * @since 9.1
  */
@@ -75,8 +77,14 @@ public class MeObject extends DefaultObject {
         UserManager userManager = Framework.getService(UserManager.class);
         if (userManager.checkUsernamePassword(currentUser.getName(), oldPassword)) {
             currentUser.setPassword(newPassword);
-            Framework.doPrivileged(() -> userManager.updateUser(currentUser.getModel()));
-            return currentUser;
+            // Pass the current session ID via contextData so the listener can preserve it
+            var userModel = currentUser.getModel();
+            var httpSession = getContext().getRequest().getSession(false);
+            if (httpSession != null) {
+                userModel.putContextData(USER_HTTP_SESSION_ID_KEY, httpSession.getId());
+            }
+            Framework.doPrivileged(() -> userManager.updateUser(userModel));
+            return Response.ok(currentUser).build();
         } else {
             return Response.status(Status.UNAUTHORIZED).build();
         }

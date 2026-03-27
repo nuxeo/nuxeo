@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.session.invalidation">
+
+  <documentation>
+    Listener that invalidates HTTP sessions for a user when the user's password is changed.
+
+    @since 2025.18
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="userPasswordChangedListener"
+              class="org.nuxeo.ecm.platform.web.common.session.UserPasswordChangedListener"
+              postCommit="false" synchronous="true">
+      <event>user_password_changed</event>
+    </listener>
+  </extension>
+
+</component>
