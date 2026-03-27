@@ -29,9 +29,9 @@ import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 import java.util.Collections;
 import java.util.Locale;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.LinkRedactor;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -125,9 +125,9 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
                     DocumentModel entry = session.getEntry(id);
                     if (entry != null) {
                         String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
+                        // NXP-32526: redact URLs and emails to prevent content spoofing via email auto-linking
+                        comment = LinkRedactor.redactLinks(comment);
                         if (comment != null) {
-                            comment = StringEscapeUtils.escapeHtml4(comment);
-                            comment = comment.replaceAll("\n", "<br/>");
                             ctx.put("comment", comment);
                         }
                     }
