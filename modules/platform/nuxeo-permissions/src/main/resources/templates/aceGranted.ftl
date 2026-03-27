@@ -24,7 +24,7 @@
                 <p style="margin:0;font-size:14px;">
                   ${aceCreator} says:
                 </p>
-                <p style="margin:5px 0;font-size:14px;padding: 10px; background-color: #f7f7f7;">
+                <p style="margin:5px 0;font-size:14px;padding: 10px; background-color: #f7f7f7; white-space: pre-line;">
                   <span style="margin: 0 3px;font-weight:bold;font-size:18px; color:#888;">&#8220;</span>
                   ${comment}
                   <span style="margin: 0 3px;font-weight:bold;font-size:18px; color:#888;">&#8221;</span>

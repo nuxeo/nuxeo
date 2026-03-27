@@ -36,6 +36,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.LinkRedactor;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -466,7 +467,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             documentTitle = (String) registrationDoc.getPropertyValue("docinfo:documentTitle");
         }
         input.put("documentTitle", documentTitle);
-        input.put("comment", registrationDoc.getPropertyValue("registration:comment"));
+        // NXP-32526: redact URLs and emails to prevent content spoofing via email auto-linking
+        input.put("comment",
+                LinkRedactor.redactLinks((String) registrationDoc.getPropertyValue("registration:comment")));
         input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, configuration.getName());
         input.put("userinfo", (Serializable) userinfo);
         input.put("info", (Serializable) additionnalInfo);
