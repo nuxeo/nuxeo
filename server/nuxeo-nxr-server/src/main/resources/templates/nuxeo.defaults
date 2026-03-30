@@ -23,7 +23,7 @@ nuxeo.allowed.hosts=
 org.nuxeo.ecm.contextPath=/nuxeo
 
 org.nuxeo.ecm.product.name=Nuxeo Platform
-org.nuxeo.ecm.product.version=2025.17-SNAPSHOT
+org.nuxeo.ecm.product.version=2025.18-SNAPSHOT
 
 # Various other default values
 #nuxeo.db.host=
