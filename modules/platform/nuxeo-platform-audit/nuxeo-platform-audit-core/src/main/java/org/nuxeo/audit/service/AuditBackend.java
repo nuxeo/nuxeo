@@ -57,6 +57,7 @@ public interface AuditBackend extends org.nuxeo.ecm.platform.audit.service.Audit
      * @since 2025.16
      * @apiNote This API won't generate the log entry ids, the caller is responsible for setting them.
      */
+    // deprecated since 2021.x, turn this method abstract on deprecation removal
     default void insertLogs(Collection<LogEntry> entries) {
         // let the backend generate the id and log date, as it was the case for addLogEntries
         addLogEntries(entries.stream().map(entry -> entry.builder().id(null).logDate(null).build()).toList());

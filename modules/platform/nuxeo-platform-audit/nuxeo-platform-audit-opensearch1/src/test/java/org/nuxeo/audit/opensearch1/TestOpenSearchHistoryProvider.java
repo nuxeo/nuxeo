@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.nuxeo.audit.opensearch1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -37,7 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.api.LogEntry;
-import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.audit.api.Route;
+import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -71,7 +73,7 @@ public class TestOpenSearchHistoryProvider {
     protected TransactionalFeature transactionalFeature;
 
     @Inject
-    protected AuditBackend auditBackend;
+    protected AuditRouter auditRouter;
 
     protected DocumentModel folder;
 
@@ -175,11 +177,9 @@ public class TestOpenSearchHistoryProvider {
                                         .repositoryId("test")
                                         .extended("reason", "test")
                                         .build();
-        auditBackend.addLogEntries(List.of(createdEntry));
+        auditRouter.routeToBackends(List.of(createdEntry), List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
         transactionalFeature.nextTransaction();
-        List<LogEntry> logs = auditBackend.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
-        logs.forEach(entry -> log.trace("LogEntry: {}", entry));
     }
 
     @Test

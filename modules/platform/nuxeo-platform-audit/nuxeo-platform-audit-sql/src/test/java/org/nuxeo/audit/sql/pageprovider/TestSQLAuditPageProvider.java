@@ -21,6 +21,7 @@ package org.nuxeo.audit.sql.pageprovider;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.audit.provider.LatestCreatedUsersOrGroupsPageProvider.LATEST_CREATED_USERS_OR_GROUPS_PROVIDER;
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 import static org.nuxeo.audit.sql.pageprovider.SQLAuditPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -36,8 +37,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.api.LogEntry;
+import org.nuxeo.audit.api.Route;
 import org.nuxeo.audit.provider.LatestCreatedUsersOrGroupsPageProvider;
-import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.audit.service.AuditRouter;
+import org.nuxeo.audit.service.AuditService;
 import org.nuxeo.audit.sql.SQLAuditFeature;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -70,9 +73,6 @@ public class TestSQLAuditPageProvider {
     protected static final Calendar testDate = Calendar.getInstance();
 
     @Inject
-    protected AuditBackend backend;
-
-    @Inject
     protected CoreSession session;
 
     @Inject
@@ -95,9 +95,12 @@ public class TestSQLAuditPageProvider {
                                 .build());
         }
 
-        backend.addLogEntries(entries);
+        Framework.getService(AuditRouter.class)
+                 .routeToBackends(entries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
-        List<?> res = backend.nativeQuery("select count(log.eventId) from LogEntry log", 1, 20);
+        List<?> res = Framework.getService(AuditService.class)
+                               .getAuditBackend(DEFAULT_AUDIT_BACKEND)
+                               .nativeQuery("select count(log.eventId) from LogEntry log", 1, 20);
         int count = ((Long) res.getFirst()).intValue();
         assertEquals(entries.size(), count);
 

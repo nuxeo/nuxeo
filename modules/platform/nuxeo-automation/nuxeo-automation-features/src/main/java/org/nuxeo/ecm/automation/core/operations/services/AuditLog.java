@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,15 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.audit.api.LogEntry;
-import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.audit.api.Route;
+import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -43,10 +46,13 @@ public class AuditLog {
     public static final String ID = "Audit.LogEvent";
 
     @Context
-    protected AuditBackend backend;
+    protected AuditRouter router;
 
     @Context
     protected OperationContext ctx;
+
+    @Param(name = "backendName", required = false, values = { DEFAULT_AUDIT_BACKEND })
+    protected String backendName = DEFAULT_AUDIT_BACKEND;
 
     @Param(name = "event", widget = Constants.W_AUDIT_EVENT)
     protected String event;
@@ -61,7 +67,7 @@ public class AuditLog {
     public DocumentModel run(DocumentModel doc) {
         String uname = ctx.getPrincipal().getActingUser();
         LogEntry entry = newEntry(doc, uname, new Date());
-        backend.addLogEntries(List.of(entry));
+        router.routeToBackends(List.of(entry), List.of(Route.allEventsTo(backendName)));
         return doc;
     }
 
@@ -73,7 +79,7 @@ public class AuditLog {
         for (DocumentModel doc : docs) {
             entries.add(newEntry(doc, uname, date));
         }
-        backend.addLogEntries(entries);
+        router.routeToBackends(entries, List.of(Route.allEventsTo(backendName)));
         return docs;
     }
 

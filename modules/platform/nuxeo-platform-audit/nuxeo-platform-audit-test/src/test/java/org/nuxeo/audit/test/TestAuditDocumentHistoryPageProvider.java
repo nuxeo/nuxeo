@@ -21,6 +21,7 @@ package org.nuxeo.audit.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_ID;
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -32,7 +33,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.api.LogEntry;
-import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.audit.api.Route;
+import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -58,7 +60,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 public class TestAuditDocumentHistoryPageProvider {
 
     @Inject
-    protected AuditBackend backend;
+    protected AuditRouter router;
 
     @Inject
     protected CoreSession session;
@@ -140,7 +142,7 @@ public class TestAuditDocumentHistoryPageProvider {
                                         .docPath(doc.getPathAsString())
                                         .repositoryId("test")
                                         .build();
-        backend.addLogEntries(List.of(createdEntry));
+        router.routeToBackends(List.of(createdEntry), List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
         transactionalFeature.nextTransaction();
     }

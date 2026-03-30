@@ -36,8 +36,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.api.LogEntry;
+import org.nuxeo.audit.api.Route;
 import org.nuxeo.audit.service.AuditBackend;
-import org.nuxeo.audit.service.AuditService;
+import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.audit.test.AuditFeature;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -102,8 +103,6 @@ public class TestDocumentAuditPageProviderOperation {
 
         @Override
         public void populate(CoreSession session) {
-            var auditBackend = Framework.getService(AuditService.class).getAuditBackend(DEFAULT_AUDIT_BACKEND);
-
             DocumentModel section = session.createDocumentModel("/", "section", "Folder");
             section = session.createDocument(section);
 
@@ -156,7 +155,8 @@ public class TestDocumentAuditPageProviderOperation {
                                      .build();
 
             newEntries.add(entry);
-            auditBackend.addLogEntries(newEntries);
+            Framework.getService(AuditRouter.class)
+                     .routeToBackends(newEntries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
         }
 
     }

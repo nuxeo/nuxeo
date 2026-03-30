@@ -26,7 +26,9 @@ import java.util.List;
 
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.api.LogEntryBuilder;
+import org.nuxeo.audit.api.Route;
 import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.audit.service.AuditService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -79,7 +81,8 @@ public class JobHistoryHelper {
         LogEntry entry = getNewLogEntry(jobStartedEventId);
         List<LogEntry> entries = new ArrayList<>();
         entries.add(entry);
-        getAuditBackend().addLogEntries(entries);
+        Framework.getService(AuditRouter.class)
+                 .routeToBackends(entries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
     }
 
     /**
@@ -89,7 +92,8 @@ public class JobHistoryHelper {
         LogEntry entry = getNewLogEntry(jobEndedEventId);
         List<LogEntry> entries = new ArrayList<>();
         entries.add(entry);
-        getAuditBackend().addLogEntries(entries);
+        Framework.getService(AuditRouter.class)
+                 .routeToBackends(entries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
     }
 
     /**
@@ -99,7 +103,8 @@ public class JobHistoryHelper {
         LogEntry entry = getNewLogEntryBuilder(jobFailedEventId).comment(errMessage).build();
         List<LogEntry> entries = new ArrayList<>();
         entries.add(entry);
-        getAuditBackend().addLogEntries(entries);
+        Framework.getService(AuditRouter.class)
+                 .routeToBackends(entries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
     }
 
     protected Date getLastRunWithStatus(String status) {

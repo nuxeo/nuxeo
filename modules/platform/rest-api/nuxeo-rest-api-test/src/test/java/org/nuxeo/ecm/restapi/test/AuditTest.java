@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2020-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2020-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_EVENT_ID;
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
 import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_CSV;
 
@@ -46,8 +47,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.audit.api.LogEntry;
+import org.nuxeo.audit.api.Route;
 import org.nuxeo.audit.io.LogEntryCSVWriter;
-import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.audit.test.AuditFeature;
 import org.nuxeo.common.function.ThrowableConsumer;
 import org.nuxeo.common.utils.DateUtils;
@@ -78,7 +80,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class AuditTest {
 
     @Inject
-    protected AuditBackend auditBackend;
+    protected AuditRouter auditRouter;
 
     @Inject
     protected CoreSession session;
@@ -199,7 +201,7 @@ public class AuditTest {
         logEntries.add(buildLogEntry(doc, "One", "firstEvent", null, null));
         logEntries.add(buildLogEntry(doc, "One", "secondEvent", null, null));
         logEntries.add(buildLogEntry(doc, "Two", "firstEvent", null, null));
-        auditBackend.addLogEntries(logEntries);
+        auditRouter.routeToBackends(logEntries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
         transactionalFeature.nextTransaction();
 
@@ -224,7 +226,7 @@ public class AuditTest {
         logEntries.add(buildLogEntry(doc, "One", "firstEvent", null, firstDate));
         logEntries.add(buildLogEntry(doc, "One", "secondEvent", null, firstDate));
         logEntries.add(buildLogEntry(doc, "One", "firstEvent", null, secondDate));
-        auditBackend.addLogEntries(logEntries);
+        auditRouter.routeToBackends(logEntries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
         transactionalFeature.nextTransaction();
 
@@ -258,7 +260,7 @@ public class AuditTest {
         logEntries.add(buildLogEntry(doc, "One", "secondEvent", "leela", firstDate));
         logEntries.add(buildLogEntry(doc, "One", "firstEvent", "leela", secondDate));
         logEntries.add(buildLogEntry(doc, "One", "thirdEvent", "leela", secondDate));
-        auditBackend.addLogEntries(logEntries);
+        auditRouter.routeToBackends(logEntries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
         transactionalFeature.nextTransaction();
 
@@ -294,7 +296,7 @@ public class AuditTest {
         logEntries.add(buildLogEntry(doc, "One", "fourthEvent", null, date.plusSeconds(3)));
         logEntries.add(buildLogEntry(doc, "One", "fifthEvent", null, date.plusSeconds(4)));
         logEntries.add(buildLogEntry(doc, "One", "sixthEvent", null, date.plusSeconds(5)));
-        auditBackend.addLogEntries(logEntries);
+        auditRouter.routeToBackends(logEntries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
         transactionalFeature.nextTransaction();
 
@@ -378,7 +380,7 @@ public class AuditTest {
         logEntries.add(buildLogEntry(doc, "One", "firstEvent", "james", null));
         logEntries.add(buildLogEntry(doc, "One", "thirdEvent", "james", null));
         logEntries.add(buildLogEntry(doc, "One", "firstEvent", "james", null));
-        auditBackend.addLogEntries(logEntries);
+        auditRouter.routeToBackends(logEntries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
 
         transactionalFeature.nextTransaction();
 

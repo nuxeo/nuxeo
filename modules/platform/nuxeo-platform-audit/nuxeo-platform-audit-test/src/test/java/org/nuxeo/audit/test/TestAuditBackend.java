@@ -269,15 +269,14 @@ public class TestAuditBackend {
     // NXP-30511
     @Test
     public void testSupportNullExtendedInfos() {
-        var logEntry = LogEntry.builder("documentModified", new Date())
-                               .category("cat")
-                               .docUUID("testSupportNullExtendedInfos")
-                               .repositoryId("test")
-                               .extended("nullValue", null)
-                               .build();
-        backend.addLogEntries(List.of(logEntry));
-
-        transactionalFeature.nextTransaction();
+        auditFeature.generateLogEntries(1,
+                i -> LogEntry.builder("documentModified", new Date())
+                             .category("cat")
+                             .docUUID("testSupportNullExtendedInfos")
+                             .repositoryId("test")
+                             .extended("idx", i)
+                             .extended("nullValue", null)
+                             .build());
 
         var logEntries = backend.queryLogs(
                 new AuditQueryBuilder().predicate(eq(LOG_DOC_UUID, "testSupportNullExtendedInfos"))

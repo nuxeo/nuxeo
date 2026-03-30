@@ -27,7 +27,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.audit.api.LogEntry;
-import org.nuxeo.audit.service.AuditService;
+import org.nuxeo.audit.api.Route;
+import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -54,9 +55,8 @@ public class NuxeoDriveVirtualEventLogger implements PostCommitFilteringEventLis
 
     @Override
     public void handleEvent(EventBundle events) {
-        var auditService = Framework.getService(AuditService.class);
-        if (auditService != null) {
-            var auditBackend = auditService.getAuditBackend(DEFAULT_AUDIT_BACKEND);
+        var auditRouter = Framework.getService(AuditRouter.class);
+        if (auditRouter != null) {
             for (Event event : events) {
                 EventContext ctx = event.getContext();
                 Object[] args = ctx.getArguments();
@@ -70,7 +70,7 @@ public class NuxeoDriveVirtualEventLogger implements PostCommitFilteringEventLis
                     }
                 }
                 if (!logEntries.isEmpty()) {
-                    auditBackend.addLogEntries(logEntries);
+                    auditRouter.routeToBackends(logEntries, List.of(Route.allEventsTo(DEFAULT_AUDIT_BACKEND)));
                 }
             }
         } else {
