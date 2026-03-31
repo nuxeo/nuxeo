@@ -30,6 +30,7 @@ import static org.opensearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -111,7 +112,8 @@ import org.opensearch.search.sort.SortOrder;
  *
  * @author tiry
  */
-public class OpenSearchAuditBackend extends AbstractAuditBackend {
+public class OpenSearchAuditBackend extends AbstractAuditBackend
+        implements AuditBackend.CursorServiceScroll<Iterator<SearchHit>, SearchHit> {
 
     private static final Logger log = LogManager.getLogger(OpenSearchAuditBackend.class);
 
@@ -126,6 +128,8 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend {
 
     protected final CursorService<Iterator<SearchHit>, SearchHit, String> cursorService;
 
+    protected final CursorService<Iterator<SearchHit>, SearchHit, String> storageCursorService;
+
     // @since 2021.21
     protected String latestLogIdAfterDate;
 
@@ -133,7 +137,8 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend {
         this.client = client;
         this.indexName = indexName;
         initUIDSequencer(client, indexName);
-        this.cursorService = new CursorService<>(SearchHit::getSourceAsString);
+        this.cursorService = new CursorService<>(SearchHit::getId);
+        this.storageCursorService = new CursorService<>(SearchHit::getSourceAsString);
     }
 
     @Override
@@ -187,6 +192,26 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend {
         }
 
         return logEntries;
+    }
+
+    /** @since 2025.18 */
+    @Override
+    public CursorResult<Iterator<SearchHit>, SearchHit> scrollLogIdsAsCursor(
+            org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder, int batchSize, Duration keepAlive) {
+        // prepare parameters
+        MultiExpression predicate = builder.predicate();
+        OrderByList orders = builder.orders();
+
+        // create source
+        SearchSourceBuilder source = createSearchRequestSource(predicate, orders);
+        source.fetchSource(false);
+        source.size(batchSize);
+        // create request
+        SearchRequest request = createSearchRequest();
+        request.source(source).scroll(TimeValue.timeValueSeconds(keepAlive.toSeconds()));
+        SearchResponse response = runRequest(request);
+        // register cursor
+        return new ESCursorResult(response, batchSize, (int) keepAlive.toSeconds());
     }
 
     protected void clearScrollContext(SearchResponse response) {
@@ -633,13 +658,14 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend {
         request.source(source).scroll(TimeValue.timeValueSeconds(keepAliveSeconds));
         SearchResponse response = runRequest(request);
         // register cursor
-        String scrollId = cursorService.registerCursorResult(new ESCursorResult(response, batchSize, keepAliveSeconds));
+        String scrollId = storageCursorService.registerCursorResult(
+                new ESCursorResult(response, batchSize, keepAliveSeconds));
         return scroll(scrollId);
     }
 
     @Override
     public ScrollResult<String> scroll(String scrollId) {
-        return cursorService.scroll(scrollId);
+        return storageCursorService.scroll(scrollId);
     }
 
     public class ESCursorResult extends CursorResult<Iterator<SearchHit>, SearchHit> {
@@ -758,5 +784,10 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend {
             case EXTENDED_INFO_SEARCH -> true;
             case STARTS_WITH_PARTIAL_MATCH -> false;
         };
+    }
+
+    @Override
+    public CursorService<Iterator<SearchHit>, SearchHit, String> getCursorService() {
+        return cursorService;
     }
 }

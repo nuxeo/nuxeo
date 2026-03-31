@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * The result of a {@link CoreSession#scroll} call, giving access to result and the scroll id.
@@ -45,4 +46,12 @@ public interface ScrollResult<T> {
      */
     List<T> getResults();
 
+    /**
+     * Returns the list of results converted with given function.
+     *
+     * @since 2025.18
+     */
+    default <R> List<R> getResults(Function<T, R> function) {
+        return getResults().stream().map(function).toList();
+    }
 }

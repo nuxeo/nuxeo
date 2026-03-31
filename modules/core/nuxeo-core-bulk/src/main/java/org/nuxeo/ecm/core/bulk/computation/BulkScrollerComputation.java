@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Funsho David
  */
-
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.scroll.QueryBuilderScrollRequest;
 import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
 import org.nuxeo.ecm.core.scroll.EmptyScrollRequest;
 import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
@@ -272,6 +272,13 @@ public class BulkScrollerComputation extends AbstractComputation {
                                           .size(scrollSize)
                                           .reference(command.getId())
                                           .build();
+
+        } else if (command.useQueryBuilderScroller()) {
+            request = QueryBuilderScrollRequest.builder(command.getScroller(), query)
+                                               .size(scrollSize)
+                                               .timeout(Duration.ofSeconds(scrollKeepAliveSeconds))
+                                               .reference(command.getId())
+                                               .build();
 
         } else {
             request = DocumentScrollRequest.builder(query)

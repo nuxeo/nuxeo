@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.core.query.scroll.QueryBuilderScrollRequest;
 import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
 import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.lib.stream.computation.Record;
@@ -221,6 +222,11 @@ public class BulkServiceImpl implements BulkService, Synchronization {
             if (!scrollService.exists(
                     GenericScrollRequest.builder(command.getScroller(), command.getQuery()).build())) {
                 throw new IllegalArgumentException("Unknown Generic Scroller for command: " + command);
+            }
+        } else if (command.useQueryBuilderScroller()) {
+            if (!scrollService.exists(
+                    QueryBuilderScrollRequest.builder(command.getScroller(), command.getQuery()).build())) {
+                throw new IllegalArgumentException("Unknown QueryBuilder Scroller for command: " + command);
             }
         } else if (!scrollService.exists(
                 DocumentScrollRequest.builder(command.getQuery()).name(command.getScroller()).build())) {

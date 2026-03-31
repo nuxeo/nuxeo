@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BulkCommand implements Serializable {
 
-    private static final long serialVersionUID = 20200904L;
+    private static final long serialVersionUID = 20260331L;
 
     protected String id;
 
@@ -73,6 +73,10 @@ public class BulkCommand implements Serializable {
     // @since 11.1
     @Nullable
     protected String scroller;
+
+    /** @since 2025.18 */
+    @AvroDefault("false")
+    protected boolean queryBuilderScroller;
 
     // @since 11.1
     @AvroDefault("false")
@@ -113,6 +117,7 @@ public class BulkCommand implements Serializable {
         this.batchTransactionTimeout = builder.batchTransactionTimeout;
         this.params = builder.params;
         this.scroller = builder.scroller;
+        this.queryBuilderScroller = BooleanUtils.toBoolean(builder.queryBuilderScroller);
         this.genericScroller = BooleanUtils.toBoolean(builder.genericScroller);
         this.externalScroller = BooleanUtils.toBoolean(builder.externalScroller);
         this.sequentialScroll = builder.sequentialScroll;
@@ -153,6 +158,15 @@ public class BulkCommand implements Serializable {
     // @since 2023.4
     public Boolean getExclusive() {
         return exclusive;
+    }
+
+    /**
+     * True if the command uses a queryBuilder scroller.
+     *
+     * @since 2025.18
+     */
+    public boolean useQueryBuilderScroller() {
+        return queryBuilderScroller;
     }
 
     /**
@@ -274,6 +288,8 @@ public class BulkCommand implements Serializable {
         protected Long batchTransactionTimeout;
 
         protected String scroller;
+
+        protected Boolean queryBuilderScroller;
 
         protected Boolean genericScroller;
 
@@ -446,6 +462,17 @@ public class BulkCommand implements Serializable {
         }
 
         /**
+         * Uses a queryBuilder scroller, the query must be a valid NXQL query.
+         *
+         * @since 2025.18
+         */
+        public Builder useQueryBuilderScroller() {
+            checkScrollerType();
+            this.queryBuilderScroller = true;
+            return this;
+        }
+
+        /**
          * Uses a generic scroller, the query syntax depends on scroller implementation.
          *
          * @since 11.1
@@ -479,7 +506,7 @@ public class BulkCommand implements Serializable {
         }
 
         protected void checkScrollerType() {
-            if (this.genericScroller != null || this.externalScroller != null) {
+            if (this.queryBuilderScroller != null || this.genericScroller != null || this.externalScroller != null) {
                 throw new IllegalArgumentException("Only one useScroller method should be called");
             }
         }

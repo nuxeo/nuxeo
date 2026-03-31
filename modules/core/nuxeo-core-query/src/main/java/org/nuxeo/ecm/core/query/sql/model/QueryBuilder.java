@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.query.sql.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,6 +56,20 @@ public class QueryBuilder {
         offset = other.offset;
         limit = other.limit;
         countTotal = other.countTotal;
+    }
+
+    /** @since 2025.18 */
+    public QueryBuilder(SQLQuery sqlQuery) {
+        // we're only interested in the where clause, offset, limit and order as select/groupBy/having are not supported
+        filter = Optional.ofNullable(sqlQuery.getWhereClause())
+                         .map(clause -> clause.predicate)
+                         .map(QueryBuilder::flattenPredicateToMultiExpression)
+                         .orElseGet(() -> new MultiExpression(Operator.AND, List.of()));
+        orders = Optional.ofNullable(sqlQuery.getOrderByClause())
+                         .map(clause -> clause.elements)
+                         .orElseGet(OrderByList::new);
+        offset = sqlQuery.getOffset();
+        limit = sqlQuery.getLimit();
     }
 
     public MultiExpression predicate() {
@@ -185,4 +200,40 @@ public class QueryBuilder {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    protected static MultiExpression flattenPredicateToMultiExpression(Predicate predicate) {
+        if (predicate instanceof MultiExpression filter) {
+            return filter;
+        } else if (predicate.operator == Operator.OR || predicate.operator == Operator.AND) {
+            return flattenPredicateToMultiExpression(predicate.operator, predicate);
+        } else {
+            return flattenPredicateToMultiExpression(Operator.AND, predicate);
+        }
+    }
+
+    protected static MultiExpression flattenPredicateToMultiExpression(Operator operator, Predicate predicate) {
+        assert operator == Operator.AND || operator == Operator.OR;
+        var predicates = new ArrayList<Predicate>();
+        if (predicate.operator == operator) {
+            flattenPredicate(predicates, operator, (Predicate) predicate.lvalue);
+            flattenPredicate(predicates, operator, (Predicate) predicate.rvalue);
+        } else {
+            // simple predicate such as =
+            predicates.add(predicate);
+        }
+        return new MultiExpression(operator, predicates);
+    }
+
+    protected static void flattenPredicate(List<Predicate> predicates, Operator operator, Predicate predicate) {
+        assert operator == Operator.AND || operator == Operator.OR;
+        if (predicate.operator == operator) {
+            flattenPredicate(predicates, operator, (Predicate) predicate.lvalue);
+            flattenPredicate(predicates, operator, (Predicate) predicate.rvalue);
+        } else if (predicate.operator == Operator.OR || predicate.operator == Operator.AND) {
+            // here we have operator = AND + predicate.operator = OR or the opposite
+            predicates.add(flattenPredicateToMultiExpression(predicate.operator, predicate));
+        } else {
+            // simple predicate such as =
+            predicates.add(predicate);
+        }
+    }
 }

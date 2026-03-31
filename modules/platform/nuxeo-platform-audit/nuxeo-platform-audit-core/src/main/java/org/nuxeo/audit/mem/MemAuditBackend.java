@@ -21,6 +21,7 @@ package org.nuxeo.audit.mem;
 import static org.nuxeo.audit.io.LogEntryJsonWriter.isJsonContent;
 import static org.nuxeo.common.utils.DateUtils.toZonedDateTime;
 
+import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +42,10 @@ import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.api.LogEntryConstants;
 import org.nuxeo.audit.api.LogEntryList;
 import org.nuxeo.audit.service.AbstractAuditBackend;
+import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.common.utils.DateUtils;
+import org.nuxeo.ecm.core.api.CursorResult;
+import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.query.sql.model.Literals;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
@@ -55,11 +60,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @since 2025.0
  */
-public class MemAuditBackend extends AbstractAuditBackend {
+public class MemAuditBackend extends AbstractAuditBackend
+        implements AuditBackend.CursorServiceScroll<Iterator<LogEntry>, LogEntry> {
 
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     protected final CircularFifoQueue<LogEntry> entries = new CircularFifoQueue<>(10_000);
+
+    protected final CursorService<Iterator<LogEntry>, LogEntry, String> cursorService = new CursorService<>(
+            entry -> String.valueOf(entry.getId()));
 
     @Override
     public Long getEventsCount(String eventId) {
@@ -115,6 +124,24 @@ public class MemAuditBackend extends AbstractAuditBackend {
         var result = entries.stream().filter(predicate).sorted(comparator).skip(queryOffset).limit(queryLimit).toList();
         long totalCount = entries.stream().filter(predicate).count();
         return new LogEntryList(result, totalCount);
+    }
+
+    /** @since 2025.18 */
+    @Override
+    public CursorResult<Iterator<LogEntry>, LogEntry> scrollLogIdsAsCursor(QueryBuilder builder, int batchSize,
+            Duration keepAlive) {
+        // prepare parameters
+        var queryPredicate = builder.predicate();
+        var queryOrders = builder.orders();
+
+        // create Predicate filter
+        Predicate<LogEntry> predicate = createPredicate(queryPredicate);
+
+        // create Comparator order
+        Comparator<LogEntry> comparator = createComparator(queryOrders);
+
+        var iterator = entries.stream().filter(predicate).sorted(comparator).iterator();
+        return new CursorResult<>(iterator, batchSize, (int) keepAlive.toSeconds());
     }
 
     @SuppressWarnings("unchecked")
@@ -265,6 +292,11 @@ public class MemAuditBackend extends AbstractAuditBackend {
             case EXTENDED_INFO_SEARCH -> true;
             case STARTS_WITH_PARTIAL_MATCH -> true;
         };
+    }
+
+    @Override
+    public CursorService<Iterator<LogEntry>, LogEntry, String> getCursorService() {
+        return cursorService;
     }
 
     @Override

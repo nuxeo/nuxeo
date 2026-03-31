@@ -19,6 +19,7 @@
 package org.nuxeo.audit.sql;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,24 @@ public class SQLAuditBackend extends AbstractAuditBackend {
                          .map(FROM_LOG_ENTRY_SQL_MAPPER)
                          .collect(Collectors.collectingAndThen(Collectors.toList(),
                                  list -> new LogEntryList(list, totalSize)));
+    }
+
+    /** @since 2025.18 */
+    @Override
+    public ScrollResult<String> scrollLogIds(QueryBuilder builder, int batchSize, Duration keepAlive) {
+        return backend.scrollLogIds(builder, batchSize, keepAlive);
+    }
+
+    /** @since 2025.18 */
+    @Override
+    public ScrollResult<String> scrollLogIds(String scrollId) {
+        return backend.scrollLogIds(scrollId);
+    }
+
+    /** @since 2025.18 */
+    @Override
+    public void clearScrollLogIds(String scrollId) {
+        backend.clearScroll(scrollId);
     }
 
     @Override

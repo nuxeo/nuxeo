@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,14 @@ package org.nuxeo.ecm.directory.scroll;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
+import org.nuxeo.ecm.core.query.scroll.AbstractQueryBuilderScroll;
+import org.nuxeo.ecm.core.query.scroll.QueryBuilderScrollRequest;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -43,7 +42,7 @@ import org.nuxeo.runtime.api.login.NuxeoLoginContext;
  *
  * @since 2025.1
  */
-public class DirectoryScroll implements Scroll {
+public class DirectoryScroll extends AbstractQueryBuilderScroll.Query implements Scroll {
 
     public static final String SCROLL_NAME = "directory";
 
@@ -51,30 +50,33 @@ public class DirectoryScroll implements Scroll {
 
     protected Session session;
 
-    protected long offset;
-
-    protected int size;
-
-    protected boolean hasNext;
-
-    protected OrderByExpr orderBy;
-
     @Override
     public void init(ScrollRequest request, Map<String, String> options) {
-        if (!(request instanceof GenericScrollRequest scrollRequest)) {
+        String directoryName;
+        if (request instanceof QueryBuilderScrollRequest scrollRequest) {
+            super.init(request, options);
+            if (scrollRequest.getFroms().size() != 1) {
+                throw new IllegalArgumentException(
+                        "Scroll on multiple directories is not supported, command: " + scrollRequest.getQueryBuilder());
+            }
+            directoryName = scrollRequest.getFroms().getFirst();
+        } else if (request instanceof GenericScrollRequest scrollRequest) {
+            // usage of this type of request is deprecated since 2025.18
+            hasNext = true;
+            var sqlQuery = SQLQueryParser.parse(scrollRequest.getQuery());
+            if (sqlQuery.getFromClause().count() != 1) {
+                throw new IllegalArgumentException(
+                        "Scroll on multiple directories is not supported, command: " + scrollRequest.getQuery());
+            }
+            queryBuilder = new QueryBuilder().offset(0L).limit(scrollRequest.getSize() + 1);
+            size = scrollRequest.getSize();
+            directoryName = sqlQuery.getFromClause().get(0);
+        } else {
             throw new IllegalArgumentException(
-                    "Requires a GenericScrollRequest, got a " + request.getClass().getCanonicalName());
+                    "Request: " + request.getClass().getCanonicalName() + " is not supported");
         }
-        offset = 0L;
-        hasNext = true;
-        size = scrollRequest.getSize();
-        SQLQuery sqlQuery = SQLQueryParser.parse(scrollRequest.getQuery());
-        if (sqlQuery.getFromClause().count() != 1) {
-            throw new IllegalArgumentException("Invalid query:" + scrollRequest.getQuery());
-        }
-        var directoryName = sqlQuery.getFromClause().get(0);
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        orderBy = OrderByExprs.asc(ds.getDirectoryIdField(directoryName));
+        queryBuilder.order(OrderByExprs.asc(ds.getDirectoryIdField(directoryName)));
         loginContext = Framework.loginSystem();
         session = ds.open(directoryName);
     }
@@ -92,24 +94,7 @@ public class DirectoryScroll implements Scroll {
     }
 
     @Override
-    public boolean hasNext() {
-        return hasNext;
-    }
-
-    @Override
-    public List<String> next() {
-        if (!hasNext) {
-            throw new NoSuchElementException();
-        }
-        QueryBuilder queryBuilder = new QueryBuilder().offset(offset).limit(size + 1).order(orderBy);
-        offset += size;
-        List<String> entries = session.queryIds(queryBuilder);
-        if (entries.size() <= size) {
-            hasNext = false;
-            return entries;
-        } else {
-            hasNext = true; // explicit
-            return entries.subList(0, size);
-        }
+    protected List<String> queryIds(QueryBuilder queryBuilder) {
+        return session.queryIds(queryBuilder);
     }
 }

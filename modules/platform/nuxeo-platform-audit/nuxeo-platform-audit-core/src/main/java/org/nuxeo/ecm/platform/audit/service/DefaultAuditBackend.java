@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -70,6 +71,9 @@ public class DefaultAuditBackend extends AbstractAuditBackend<LogEntry> {
     protected PersistenceProvider persistenceProvider;
 
     protected CursorService<Iterator<LogEntry>, LogEntry, String> cursorService = new CursorService<>(
+            entry -> String.valueOf(entry.getId()));
+
+    protected CursorService<Iterator<LogEntry>, LogEntry, String> storageCursorService = new CursorService<>(
             ThrowableFunction.asFunction(
                     entry -> MarshallerHelper.objectToJson(entry, RenderingContext.CtxBuilder.get())));
 
@@ -277,19 +281,39 @@ public class DefaultAuditBackend extends AbstractAuditBackend<LogEntry> {
         accept(false, provider -> provider.append(entries));
     }
 
+    /** @since 2025.18 */
+    public ScrollResult<String> scrollLogIds(QueryBuilder builder, int batchSize, Duration keepAlive) {
+        cursorService.checkForTimedOutScroll();
+        // as we're using pages to scroll audit, we need to add an order to make results across pages deterministic
+        builder.orders(OrderByExprs.asc(LOG_ID), builder.orders().toArray(new OrderByExpr[0]));
+        String scrollId = cursorService.registerCursorResult(
+                new SQLAuditCursorResult(builder, batchSize, (int) keepAlive.toSeconds()));
+        return scrollLogIds(scrollId);
+    }
+
+    /** @since 2025.18 */
+    public ScrollResult<String> scrollLogIds(String scrollId) {
+        return cursorService.scroll(scrollId);
+    }
+
+    /** @since 2025.18 */
+    public void clearScroll(String scrollId) {
+        cursorService.unregisterCursor(scrollId);
+    }
+
     @SuppressWarnings("resource") // CursorResult is being registered, must not be closed
     @Override
     public ScrollResult<String> scroll(QueryBuilder builder, int batchSize, int keepAliveSeconds) {
         // as we're using pages to scroll audit, we need to add an order to make results across pages deterministic
         builder.orders(OrderByExprs.asc(LOG_ID), builder.orders().toArray(new OrderByExpr[0]));
-        String scrollId = cursorService.registerCursorResult(
+        String scrollId = storageCursorService.registerCursorResult(
                 new SQLAuditCursorResult(builder, batchSize, keepAliveSeconds));
         return scroll(scrollId);
     }
 
     @Override
     public ScrollResult<String> scroll(String scrollId) {
-        return cursorService.scroll(scrollId);
+        return storageCursorService.scroll(scrollId);
     }
 
     public class SQLAuditCursorResult extends CursorResult<Iterator<LogEntry>, LogEntry> {

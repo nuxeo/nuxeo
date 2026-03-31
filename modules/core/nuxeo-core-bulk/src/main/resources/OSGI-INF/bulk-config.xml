@@ -6,6 +6,8 @@
   <!-- ======================================================================================= -->
   <!-- Ensure backward/forward compatibility by registering schema evolution -->
   <extension point="schema" target="org.nuxeo.runtime.avro">
+    <schema name="BulkCommand-2025.18" file="avro/BulkCommand-0xEBC575C72508AD0B.avsc" />
+
     <schema name="Record-2023.0" file="avro/Record-0x5D82F1387F01C58B.avsc" />
     <schema name="BulkCommand-2023.0" file="avro/BulkCommand-0xF032C4AB0AF8B906.avsc" />
     <schema name="BulkCommand-2023.4" file="avro/BulkCommand-0xDF8D62C9EE6F08F9.avsc" />

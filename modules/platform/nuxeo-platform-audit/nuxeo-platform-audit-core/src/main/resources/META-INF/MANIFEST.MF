@@ -7,6 +7,7 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/audit-contrib.xml,
  OSGI-INF/audit-pageprovider-contrib.xml,
+ OSGI-INF/audit-scroll-contrib.xml,
  OSGI-INF/audit-service.xml,
  OSGI-INF/audit-stream-contrib.xml,
  OSGI-INF/nxaudit-service.xml,

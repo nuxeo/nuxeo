@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,64 +14,54 @@
  * limitations under the License.
  *
  * Contributors:
- *     Guillaume Renard
+ *     Kevin Leturc <kevin.leturc@hyland.com>
  */
-package org.nuxeo.directory.test;
+package org.nuxeo.audit.test.scroll;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 
 import jakarta.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.audit.api.LogEntry;
+import org.nuxeo.audit.test.AuditFeature;
 import org.nuxeo.ecm.core.api.scroll.Scroll;
-import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.query.scroll.QueryBuilderScrollRequest;
-import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * @since 2025.1
+ * @since 2025.18
  */
 @RunWith(FeaturesRunner.class)
-@Features(DirectoryFeature.class)
-@Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.directory.tests:test-directory-continent-config.xml")
-public class TestDirectoryScroll {
+@Features(AuditFeature.class)
+public class TestAuditScroll {
+
+    @Inject
+    protected AuditFeature auditFeature;
 
     @Inject
     protected ScrollService scrollService;
 
     @Test
     public void testScroll() {
-        var request = QueryBuilderScrollRequest.builder("directory", "SELECT * FROM continent").size(2).build();
-        scrollAndAssert(request);
-    }
+        auditFeature.generateLogEntries(50, idx -> LogEntry.builder("test", new Date()).build());
 
-    /**
-     * @deprecated since 2025.18
-     */
-    @Test
-    @Deprecated(since = "2025.18", forRemoval = true)
-    public void testGenericScroll() {
-        var request = GenericScrollRequest.builder("directory", "SELECT * FROM continent").size(2).build();
-        scrollAndAssert(request);
-    }
-
-    protected void scrollAndAssert(ScrollRequest request) {
-        List<String> expectedIds = List.of("africa", "antarctica", "asia", "europe", "north-america", "oceania",
-                "south-america");
+        var request = QueryBuilderScrollRequest.builder("audit", "SELECT * FROM " + DEFAULT_AUDIT_BACKEND).build();
+        List<String> expectedIds = IntStream.rangeClosed(1, 50).mapToObj(String::valueOf).toList();
         assertTrue(scrollService.exists(request));
         try (Scroll scroll = scrollService.scroll(request)) {
             List<String> actualIds = new ArrayList<>();

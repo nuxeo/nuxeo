@@ -92,7 +92,7 @@ public class OAuth2TokenServiceImpl extends DefaultComponent implements OAuth2To
         checkPermission(requireNonNull(NuxeoPrincipal.getCurrent()));
         BulkService bulkService = Framework.getService(BulkService.class);
         BulkCommand.Builder builder = new BulkCommand.Builder(ACTION_NAME, String.format("SELECT * FROM %s", TOKEN_DIR),
-                SYSTEM_USERNAME).useGenericScroller().setExclusive(true).scroller(DirectoryScroll.SCROLL_NAME);
+                SYSTEM_USERNAME).useQueryBuilderScroller().setExclusive(true).scroller(DirectoryScroll.SCROLL_NAME);
         BulkCommand command = builder.build();
         log.info("Starting Expired OAuth2 Tokens GC: {}", command);
         return bulkService.submit(command);

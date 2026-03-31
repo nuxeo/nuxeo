@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.audit.scroll.config" version="1.0.0">
+  <extension point="scroll" target="org.nuxeo.ecm.core.scroll.service">
+    <scroll type="queryBuilder" name="audit" class="org.nuxeo.audit.scroll.AuditScroll" />
+  </extension>
+</component>

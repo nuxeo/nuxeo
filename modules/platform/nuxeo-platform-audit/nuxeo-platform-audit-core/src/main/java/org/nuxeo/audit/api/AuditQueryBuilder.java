@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
  *
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
- *
  */
 package org.nuxeo.audit.api;
 
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
  * Query builder for querying audit.
@@ -28,6 +28,15 @@ import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
  * @since 9.3
  */
 public class AuditQueryBuilder extends QueryBuilder {
+
+    public AuditQueryBuilder() {
+        super();
+    }
+
+    /** @since 2025.18 */
+    public AuditQueryBuilder(SQLQuery sqlQuery) {
+        super(sqlQuery);
+    }
 
     @Override
     public QueryBuilder defaultOrder() {

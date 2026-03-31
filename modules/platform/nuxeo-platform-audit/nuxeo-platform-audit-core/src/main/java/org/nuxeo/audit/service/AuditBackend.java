@@ -23,12 +23,16 @@ import static org.nuxeo.audit.api.LogEntryConstants.LOG_EVENT_ID;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_ID;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_REPOSITORY_ID;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.audit.api.AuditQueryBuilder;
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.api.LogEntryList;
+import org.nuxeo.ecm.core.api.CursorResult;
+import org.nuxeo.ecm.core.api.CursorService;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
@@ -83,6 +87,37 @@ public interface AuditBackend extends org.nuxeo.ecm.platform.audit.service.Audit
     LogEntryList queryLogs(QueryBuilder builder);
 
     /**
+     * @param builder the query builder to scroll log entry ids
+     * @param batchSize the size of batches to scroll
+     * @param keepAlive the scroll keep alive duration
+     * @return the scroll result
+     * @since 2025.18
+     */
+    // deprecated since 2021.x, turn method abstract on deprecation removal
+    default ScrollResult<String> scrollLogIds(QueryBuilder builder, int batchSize, Duration keepAlive) {
+        throw new UnsupportedOperationException("scrollLogIds not yet implemented");
+    }
+
+    /**
+     * @param scrollId the scroll id
+     * @return the scroll result
+     * @since 2025.18
+     */
+    // deprecated since 2021.x, turn method abstract on deprecation removal
+    default ScrollResult<String> scrollLogIds(String scrollId) {
+        throw new UnsupportedOperationException("scrollLogIds not yet implemented");
+    }
+
+    /**
+     * @param scrollId the scroll id to clear
+     * @since 2025.18
+     */
+    // deprecated since 2021.x, turn method abstract on deprecation removal
+    default void clearScrollLogIds(String scrollId) {
+        throw new UnsupportedOperationException("clearScroll not yet implemented");
+    }
+
+    /**
      * Returns the logs given a doc uuid and a repository id.
      *
      * @param uuid the document uuid
@@ -119,5 +154,41 @@ public interface AuditBackend extends org.nuxeo.ecm.platform.audit.service.Audit
 
         /** @since 2025.4 */
         STARTS_WITH_PARTIAL_MATCH;
+    }
+
+    /**
+     * Interface adding the cursor service capabilities to the audit backend. The cursor service is used to scroll large
+     * result sets of log entries
+     *
+     * @param <C> The cursor type, for instance {@link java.util.Iterator}
+     * @param <O> The object type, for instance {@link LogEntry} or third party type
+     * @since 2025.18
+     */
+    interface CursorServiceScroll<C, O> extends AuditBackend {
+
+        /**
+         * @return the {@link CursorService} to use when scrolling elements, the service must be a singleton
+         */
+        CursorService<C, O, String> getCursorService();
+
+        CursorResult<C, O> scrollLogIdsAsCursor(QueryBuilder builder, int batchSize, Duration keepAlive);
+
+        @Override
+        default ScrollResult<String> scrollLogIds(QueryBuilder builder, int batchSize, Duration keepAlive) {
+            getCursorService().checkForTimedOutScroll();
+            CursorResult<C, O> cursorResult = scrollLogIdsAsCursor(builder, batchSize, keepAlive);
+            String scrollId = getCursorService().registerCursorResult(cursorResult);
+            return scrollLogIds(scrollId);
+        }
+
+        @Override
+        default ScrollResult<String> scrollLogIds(String scrollId) {
+            return getCursorService().scroll(scrollId);
+        }
+
+        @Override
+        default void clearScrollLogIds(String scrollId) {
+            getCursorService().unregisterCursor(scrollId);
+        }
     }
 }
