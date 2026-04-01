@@ -4,15 +4,11 @@
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
-
-    <operation
-      class="org.nuxeo.ecm.automation.test.helpers.TestOperation" />
-    <operation
-      class="org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray" />
-    <operation
-            class="org.nuxeo.ecm.automation.server.test.TestContextReaderOperation" />
-    <operation
-      class="org.nuxeo.ecm.automation.server.test.operations.UpdateMailOperation" />
+    <operation class="org.nuxeo.ecm.automation.test.helpers.TestOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray" />
+    <operation class="org.nuxeo.ecm.automation.server.test.TestContextReaderOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.operations.GenerateBlobOperation" />
+    <operation class="org.nuxeo.ecm.automation.server.test.operations.UpdateMailOperation" />
   </extension>
 
   <extension point="chains"
