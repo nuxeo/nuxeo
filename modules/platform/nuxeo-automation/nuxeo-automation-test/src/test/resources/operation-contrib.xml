@@ -7,6 +7,7 @@
     <operation class="org.nuxeo.ecm.automation.server.test.TestContextReaderOperation" />
     <operation class="org.nuxeo.ecm.automation.server.test.TestDataCapsule" />
     <operation class="org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray" />
+    <operation class="org.nuxeo.ecm.automation.server.test.operations.GenerateBlobOperation" />
     <operation class="org.nuxeo.ecm.automation.server.test.operations.UpdateMailOperation" />
     <operation class="org.nuxeo.ecm.automation.test.helpers.TestOperation" />
   </extension>

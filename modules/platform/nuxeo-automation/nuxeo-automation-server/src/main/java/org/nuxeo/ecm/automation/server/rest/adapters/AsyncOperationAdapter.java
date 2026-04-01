@@ -103,6 +103,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     protected static final String STATUS_STORE_NAME = "automation";
 
+    protected static final String TRANSIENT_STORE_INITIATOR = "initiator";
+
     protected static final String TRANSIENT_STORE_SERVICE = "service";
 
     protected static final String TRANSIENT_STORE_TASK_ID = "taskId";
@@ -157,6 +159,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         String executionId = UUID.randomUUID().toString();
         ts.remove(executionId);
         ts.setCompleted(executionId, false);
+        ts.putParameter(executionId, TRANSIENT_STORE_INITIATOR, session.getPrincipal().getName());
 
         // session will be set in the task thread
         // ExecutionRequest's OperationContext not owned by us, don't close it
@@ -235,7 +238,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @GET
     @Path("{executionId}/status")
     public Response status(@PathParam("executionId") String executionId) throws IOException, MessagingException {
-        if (!ts.exists(executionId)) {
+        if (!ts.exists(executionId) || isCurrentUserNotInitiator(executionId)) {
             return ResponseHelper.notFound();
         }
         if (isCompleted(executionId)) {
@@ -257,7 +260,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @Path("{executionId}")
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Response result(@PathParam("executionId") String executionId) throws IOException, MessagingException {
-        if (!ts.exists(executionId)) {
+        if (!ts.exists(executionId) || isCurrentUserNotInitiator(executionId)) {
             return ResponseHelper.notFound();
         }
         if (isCompleted(executionId)) {
@@ -299,7 +302,10 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @DELETE
     @Path("{executionId}")
     public Response abort(@PathParam("executionId") String executionId) throws IOException {
-        if (exists(executionId) && !isCompleted(executionId)) {
+        if (!exists(executionId) || isCurrentUserNotInitiator(executionId)) {
+            return ResponseHelper.notFound();
+        }
+        if (!isCompleted(executionId)) {
             // TODO NXP-26304: support aborting any execution
             Serializable taskId = getAsyncTaskId(executionId);
             if (taskId != null) {
@@ -476,6 +482,11 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     protected boolean exists(String executionId) {
         return ts.exists(executionId);
+    }
+
+    protected boolean isCurrentUserNotInitiator(String executionId) {
+        String initiator = (String) ts.getParameter(executionId, TRANSIENT_STORE_INITIATOR);
+        return initiator == null || !session.getPrincipal().getName().equals(initiator);
     }
 
     protected void cleanup(String executionId) {
