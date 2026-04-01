@@ -138,6 +138,13 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @Context
     protected AutomationServer srv;
 
+    protected TransientStore ts;
+
+    @Override
+    protected void initialize(Object... args) {
+        ts = Framework.getService(TransientStoreService.class).getStore(STATUS_STORE_NAME);
+    }
+
     @SuppressWarnings("resource") // ExecutionRequest's OperationContext not owned by us, don't close it
     @POST
     public Object doPost(ExecutionRequest xreq) {
@@ -148,8 +155,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             return ResponseHelper.notFound();
         }
         String executionId = UUID.randomUUID().toString();
-        getTransientStore().remove(executionId);
-        getTransientStore().setCompleted(executionId, false);
+        ts.remove(executionId);
+        ts.setCompleted(executionId, false);
 
         // session will be set in the task thread
         // ExecutionRequest's OperationContext not owned by us, don't close it
@@ -228,7 +235,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @GET
     @Path("{executionId}/status")
     public Object status(@PathParam("executionId") String executionId) throws IOException, MessagingException {
-        if (!getTransientStore().exists(executionId)) {
+        if (!ts.exists(executionId)) {
             return ResponseHelper.notFound();
         }
         if (isCompleted(executionId)) {
@@ -248,8 +255,11 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     @GET
     @Path("{executionId}")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Object result(@PathParam("executionId") String executionId) throws IOException, MessagingException {
-
+        if (!ts.exists(executionId)) {
+            return ResponseHelper.notFound();
+        }
         if (isCompleted(executionId)) {
             Object output = getResult(executionId);
 
@@ -264,10 +274,9 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             }
 
             // if output is a map let's return as json
-            if (output instanceof Map) {
-                Map map = (Map) output;
+            if (output instanceof Map map) {
                 // if output has a "url" key make it absolute
-                Object url = ((Map<?, ?>) output).get(RESULT_URL_KEY);
+                Object url = map.get(RESULT_URL_KEY);
                 if (url instanceof String) {
                     map = new HashMap(map);
                     try {
@@ -301,14 +310,10 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         throw new WebResourceNotFoundException("Execution with id=" + executionId + " has completed");
     }
 
-    protected TransientStore getTransientStore() {
-        return Framework.getService(TransientStoreService.class).getStore(STATUS_STORE_NAME);
-    }
-
     protected void enterMethod(String executionId, InvokableMethod method) {
         // AsyncService.class is default => not async
         if (!AsyncService.class.equals(method.getAsyncService())) {
-            getTransientStore().putParameter(executionId, TRANSIENT_STORE_SERVICE, method.getAsyncService().getName());
+            ts.putParameter(executionId, TRANSIENT_STORE_SERVICE, method.getAsyncService().getName());
         }
     }
 
@@ -334,13 +339,13 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         } else {
             error = "Internal Server Error";
         }
-        getTransientStore().putParameter(executionId, TRANSIENT_STORE_ERROR_STATUS, (long) status);
-        getTransientStore().putParameter(executionId, TRANSIENT_STORE_ERROR, error);
+        ts.putParameter(executionId, TRANSIENT_STORE_ERROR_STATUS, (long) status);
+        ts.putParameter(executionId, TRANSIENT_STORE_ERROR, error);
         setCompleted(executionId);
     }
 
     public int getErrorStatus(String executionId) {
-        Long status = (Long) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR_STATUS);
+        Long status = (Long) ts.getParameter(executionId, TRANSIENT_STORE_ERROR_STATUS);
         if (status != null) {
             return status.intValue();
         }
@@ -358,7 +363,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     public String getError(String executionId) {
-        String error = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR);
+        String error = (String) ts.getParameter(executionId, TRANSIENT_STORE_ERROR);
         if (StringUtils.isNotEmpty(error)) {
             return error;
         }
@@ -376,7 +381,6 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected void setOutput(String executionId, Serializable output) {
-        TransientStore ts = getTransientStore();
         // store only taskId for async tasks
         if (isAsync(executionId)) {
             if (output instanceof AsyncStatus) {
@@ -404,8 +408,6 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected Object getResult(String executionId) {
-        TransientStore ts = getTransientStore();
-
         Serializable taskId = getAsyncTaskId(executionId);
         if (taskId != null) {
             return getAsyncService(executionId).getResult(taskId);
@@ -436,18 +438,18 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected boolean isAsync(String executionId) {
-        return getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE) != null;
+        return ts.getParameter(executionId, TRANSIENT_STORE_SERVICE) != null;
     }
 
     protected Serializable getAsyncTaskId(String executionId) {
         if (isAsync(executionId)) {
-            return getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+            return ts.getParameter(executionId, TRANSIENT_STORE_TASK_ID);
         }
         return null;
     }
 
     protected AsyncService<Serializable, ?, ?> getAsyncService(String executionId) {
-        String serviceClass = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE);
+        String serviceClass = (String) ts.getParameter(executionId, TRANSIENT_STORE_SERVICE);
         try {
             @SuppressWarnings("unchecked")
             AsyncService<Serializable, ?, ?> asyncService = (AsyncService<Serializable, ?, ?>) Framework.getService(
@@ -460,7 +462,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected void setCompleted(String executionId) {
-        getTransientStore().setCompleted(executionId, true);
+        ts.setCompleted(executionId, true);
     }
 
     protected boolean isCompleted(String executionId) {
@@ -468,14 +470,14 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         if (taskId != null) {
             return getAsyncService(executionId).getStatus(taskId).isCompleted();
         }
-        return getTransientStore().isCompleted(executionId);
+        return ts.isCompleted(executionId);
     }
 
     protected boolean exists(String executionId) {
-        return getTransientStore().exists(executionId);
+        return ts.exists(executionId);
     }
 
     protected void cleanup(String executionId) {
-        getTransientStore().release(executionId);
+        ts.release(executionId);
     }
 }
