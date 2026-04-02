@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -57,11 +58,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @author Benjamin JALON
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, MockitoFeature.class })
+@Features({ RuntimeFeature.class, MockitoFeature.class, WebCommonFeature.class })
 // Mock the event producer (we don't want to pull all nuxeo framework) NuxeoAuthenticationFilter sends events
 @Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/mock-event-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 public abstract class AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";

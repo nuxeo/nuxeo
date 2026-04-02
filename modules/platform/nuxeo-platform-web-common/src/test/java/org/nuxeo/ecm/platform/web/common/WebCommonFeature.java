@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,21 @@
  * limitations under the License.
  *
  * Contributors:
- *     Funsho David
+ *     Thomas Roger <thomas.roger@hyland.com>
  */
-package org.nuxeo.ecm.jwt;
+package org.nuxeo.ecm.platform.web.common;
 
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
- * @since 11.1
+ * Test feature that deploys the {@code nuxeo-platform-web-common} bundle.
+ *
+ * @since 2025.18
  */
-@Deploy("org.nuxeo.ecm.jwt")
-@Deploy("org.nuxeo.ecm.jwt.tests:OSGI-INF/test-jwt-config.xml")
-@Features({ PlatformFeature.class, WebCommonFeature.class })
-public class JWTFeature implements RunnerFeature {
-
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Features(RuntimeFeature.class)
+public class WebCommonFeature implements RunnerFeature {
 }

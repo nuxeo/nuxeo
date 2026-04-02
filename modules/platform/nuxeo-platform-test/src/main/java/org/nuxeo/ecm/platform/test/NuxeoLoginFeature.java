@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.test;
 
 import org.nuxeo.ecm.core.api.local.DummyLoginFeature;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -32,9 +33,8 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  *
  * @since 11.1
  */
-@Features(UserManagerFeature.class)
+@Features({ UserManagerFeature.class, WebCommonFeature.class })
 @Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 public class NuxeoLoginFeature implements RunnerFeature {
 
     @Override

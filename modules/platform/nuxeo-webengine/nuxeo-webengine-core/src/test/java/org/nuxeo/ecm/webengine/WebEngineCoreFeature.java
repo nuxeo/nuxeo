@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.webengine;
 
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -27,8 +28,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @since 2025.0
  */
 @Deploy("org.nuxeo.ecm.platform.rendering")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.webengine.core")
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, WebCommonFeature.class })
 public class WebEngineCoreFeature implements RunnerFeature {
 }

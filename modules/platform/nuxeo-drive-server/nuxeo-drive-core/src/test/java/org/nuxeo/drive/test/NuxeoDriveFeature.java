@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStoreFeature;
 import org.nuxeo.ecm.platform.filemanager.FileManagerFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -35,7 +36,6 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 @Deploy("org.nuxeo.drive.core")
 @Deploy("org.nuxeo.ecm.platform.search.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.webapp.types")
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml")
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
@@ -46,7 +46,8 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
         CollectionFeature.class, //
         FileManagerFeature.class, //
         KeyValueBlobTransientStoreFeature.class, //
-        PlatformFeature.class })
+        PlatformFeature.class, //
+        WebCommonFeature.class })
 @WithFrameworkProperty(name = AuditComponent.STREAM_AUDIT_VIRTUAL_EVENTS_ENABLED_PROP, value = "true")
 public class NuxeoDriveFeature implements RunnerFeature {
 

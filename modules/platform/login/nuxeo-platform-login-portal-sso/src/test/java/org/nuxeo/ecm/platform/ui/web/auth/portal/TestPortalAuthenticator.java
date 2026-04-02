@@ -26,15 +26,15 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, WebCommonFeature.class })
 @Deploy("org.nuxeo.ecm.platform.login.portal")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 public class TestPortalAuthenticator {
 
     private static final String SOME_TS = "1538167025822";

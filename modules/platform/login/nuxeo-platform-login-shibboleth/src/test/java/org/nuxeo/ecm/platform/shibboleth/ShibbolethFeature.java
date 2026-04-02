@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.shibboleth;
 
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.platform.test.UserManagerFeature;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -31,7 +32,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.platform.el")
 @Deploy("org.nuxeo.ecm.platform.login.shibboleth")
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Features({ DirectoryFeature.class, UserManagerFeature.class })
+@Features({ DirectoryFeature.class, UserManagerFeature.class, WebCommonFeature.class })
 public class ShibbolethFeature implements RunnerFeature {
 }

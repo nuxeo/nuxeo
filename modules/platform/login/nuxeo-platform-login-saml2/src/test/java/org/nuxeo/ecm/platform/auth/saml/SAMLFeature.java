@@ -50,6 +50,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.nuxeo.ecm.platform.test.UserManagerFeature;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -75,8 +76,7 @@ import net.shibboleth.shared.codec.EncodingException;
  * @since 2023.0
  */
 @Deploy("org.nuxeo.ecm.platform.login.saml2")
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Features(UserManagerFeature.class)
+@Features({ UserManagerFeature.class, WebCommonFeature.class })
 // Primary SP configuration
 @WithFrameworkProperty(name = ENTITY_ID, value = "http://localhost:8080/login")
 // Secondary SP configuration

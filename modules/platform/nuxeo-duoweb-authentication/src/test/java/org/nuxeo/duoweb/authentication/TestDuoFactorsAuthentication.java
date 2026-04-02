@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.MockHttpServletRequest;
 import org.nuxeo.ecm.platform.web.common.MockHttpServletResponse;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
@@ -66,10 +67,9 @@ import com.duosecurity.model.Token;
  * @since 2025.5
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, MockitoFeature.class })
+@Features({ RuntimeFeature.class, MockitoFeature.class, WebCommonFeature.class })
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.duoweb.authentication")
 @Deploy("org.nuxeo.duoweb.authentication.test:OSGI-INF/duo-authentication-test-config.xml")
 public class TestDuoFactorsAuthentication {

@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import jakarta.inject.Inject;
 
 import org.nuxeo.ecm.core.test.ServletContainerTransactionalFeature;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -42,10 +43,9 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 /**
  * @since 9.2
  */
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.oauth.test:OSGI-INF/servletcontainer-config.xml")
 @Deploy("org.nuxeo.ecm.platform.oauth.test:OSGI-INF/test-oauth2-authentication-contrib.xml")
-@Features(ServletContainerTransactionalFeature.class)
+@Features({ ServletContainerTransactionalFeature.class, WebCommonFeature.class })
 public class OAuth2ServletContainerFeature implements RunnerFeature, WorkingDirectoryConfigurator {
 
     @Inject

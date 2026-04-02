@@ -24,14 +24,14 @@ import static org.nuxeo.ecm.platform.oauth2.events.GarbageCollectExpiredOAuth2To
 import org.nuxeo.ecm.core.api.local.DummyLoginFeature;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @Deploy("org.nuxeo.ecm.platform.oauth")
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Features({ DummyLoginFeature.class, PlatformFeature.class })
+@Features({ DummyLoginFeature.class, PlatformFeature.class, WebCommonFeature.class })
 public class OAuthFeature implements RunnerFeature {
 
     @Override

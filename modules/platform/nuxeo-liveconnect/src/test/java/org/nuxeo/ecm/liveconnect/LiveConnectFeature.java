@@ -24,6 +24,7 @@ import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -34,11 +35,10 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.oauth")
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.liveconnect")
 @Deploy("org.nuxeo.ecm.liveconnect.test:OSGI-INF/test-box-config.xml")
 @Deploy("org.nuxeo.ecm.liveconnect.test:OSGI-INF/test-googledrive-config.xml")
-@Features({ CoreFeature.class, DirectoryFeature.class })
+@Features({ CoreFeature.class, DirectoryFeature.class, WebCommonFeature.class })
 public class LiveConnectFeature implements RunnerFeature {
 
     // same as in test XML contrib
