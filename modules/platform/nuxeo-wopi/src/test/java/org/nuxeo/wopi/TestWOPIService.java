@@ -112,6 +112,17 @@ public class TestWOPIService {
         assertNotNull(wopiServiceImpl.oldProofKey);
     }
 
+    // NXP-33568
+    @Test
+    public void testDiscoveryLoadedWithEmptyOldProofKey() throws IOException {
+        var wopiServiceImpl = (WOPIServiceImpl) wopiService;
+        File discoveryFile = FileUtils.getResourceFileFromContext("test-discovery-no-old-proof-key.xml");
+        assertTrue(wopiServiceImpl.loadDiscovery(org.apache.commons.io.FileUtils.readFileToByteArray(discoveryFile)));
+        assertTrue(wopiService.isEnabled());
+        assertNotNull(wopiServiceImpl.proofKey);
+        assertNull(wopiServiceImpl.oldProofKey);
+    }
+
     @Test
     public void testGetActionURL() {
         Blob blob = Blobs.createBlob("content");

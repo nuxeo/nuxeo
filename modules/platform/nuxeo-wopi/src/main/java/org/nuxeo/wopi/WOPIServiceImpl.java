@@ -195,9 +195,15 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
         WOPIDiscovery.ProofKey pk = discovery.getProofKey();
         proofKey = ProofKeyHelper.getPublicKey(pk.getModulus(), pk.getExponent());
-        oldProofKey = ProofKeyHelper.getPublicKey(pk.getOldModulus(), pk.getOldExponent());
         log.debug("Registered proof key: {}", proofKey);
-        log.debug("Registered old proof key: {}", oldProofKey);
+        // old proof key may not be available on a fresh Office Online Server that hasn't undergone key rotation
+        if (isNotBlank(pk.getOldModulus()) && isNotBlank(pk.getOldExponent())) {
+            oldProofKey = ProofKeyHelper.getPublicKey(pk.getOldModulus(), pk.getOldExponent());
+            log.debug("Registered old proof key: {}", oldProofKey);
+        } else {
+            oldProofKey = null;
+            log.debug("No old proof key available in WOPI discovery");
+        }
         return true;
     }
 
@@ -288,7 +294,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         boolean res = ProofKeyHelper.verifyProofKey(proofKey, proofKeyHeader, expectedProofBytes);
         if (!res && isNotBlank(oldProofKeyHeader)) {
             res = ProofKeyHelper.verifyProofKey(proofKey, oldProofKeyHeader, expectedProofBytes);
-            if (!res) {
+            if (!res && oldProofKey != null) {
                 res = ProofKeyHelper.verifyProofKey(oldProofKey, proofKeyHeader, expectedProofBytes);
             }
         }
