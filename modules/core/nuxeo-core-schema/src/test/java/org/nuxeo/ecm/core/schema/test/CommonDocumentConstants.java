@@ -35,6 +35,9 @@ public final class CommonDocumentConstants {
 
     public static final String COMMON_COMPLEX_SCHEMA = "testCommonComplex";
 
+    /** @since 2025.18 */
+    public static final String COMMON_UNPREFIXED_SCHEMA = "testCommonUnprefixed";
+
     // Schema tcs / testCommonScalar Property
 
     public static final String COMMON_BOOLEAN_PROP = "tcs:boolean";
@@ -100,6 +103,14 @@ public final class CommonDocumentConstants {
     public static final String COMMON_COMPLEXES_PROP = "tcc:complexes";
 
     public static final String COMMON_COMPLEX2_PROP = "tcc:complex2";
+
+    // Schema testCommonUnprefixed Property
+
+    /** @since 2025.18 */
+    public static final String COMMON_UNPREFIXED_STRING = "testCommonUnprefixed:common_unprefixed_string";
+
+    /** @since 2025.18 */
+    public static final String COMMON_UNPREFIXED_STRING_SHORT = "common_unprefixed_string";
 
     private CommonDocumentConstants() {
         // constants class

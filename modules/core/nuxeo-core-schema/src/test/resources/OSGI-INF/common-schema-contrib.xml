@@ -5,12 +5,15 @@
     <schema name="testCommonScalar" src="schema/_common-scalar.xsd" prefix="tcs" />
     <schema name="testCommonComplex" src="schema/_common-complex.xsd" prefix="tcc" />
     <schema name="testCommonAdditionalComplex" src="schema/_common-complex.xsd" prefix="tcac" />
+    <!-- this is not something we want to support, but we want to make sure it doesn't break anything -->
+    <schema name="testCommonUnprefixed" src="schema/_common-unprefixed.xsd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
     <doctype name="CommonDocument" extends="Document">
       <schema name="testCommonScalar" />
       <schema name="testCommonComplex" />
+      <schema name="testCommonUnprefixed" />
       <facet name="CommonFacet" />
     </doctype>
     <facet name="CommonFacet" />
