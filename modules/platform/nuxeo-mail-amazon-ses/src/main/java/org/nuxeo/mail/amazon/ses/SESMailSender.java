@@ -20,7 +20,6 @@ import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_FROM;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -39,10 +38,11 @@ import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
-import software.amazon.awssdk.services.ses.SesClient;
-import software.amazon.awssdk.services.ses.model.RawMessage;
-import software.amazon.awssdk.services.ses.model.SendRawEmailRequest;
-import software.amazon.awssdk.services.ses.model.SesException;
+import software.amazon.awssdk.services.sesv2.SesV2Client;
+import software.amazon.awssdk.services.sesv2.model.EmailContent;
+import software.amazon.awssdk.services.sesv2.model.RawMessage;
+import software.amazon.awssdk.services.sesv2.model.SendEmailRequest;
+import software.amazon.awssdk.services.sesv2.model.SesV2Exception;
 
 /**
  * Implementation of {@link MailSender} building {@link RawMessage}s and sending them via Amazon SES.
@@ -57,7 +57,7 @@ public class SESMailSender implements MailSender {
 
     protected final String defaultMailFrom;
 
-    protected final SesClient client;
+    protected final SesV2Client client;
 
     public SESMailSender(MailSenderDescriptor descriptor) {
         var configurationId = descriptor.getProperties().get(AWS_CONFIGURATION_ID_KEY);
@@ -68,11 +68,11 @@ public class SESMailSender implements MailSender {
         var awsConfigurationService = Framework.getService(AWSConfigurationService.class);
         awsConfigurationService.configureSSL(httpClientBuilder);
         awsConfigurationService.configureProxy(httpClientBuilder);
-        client = SesClient.builder()
-                          .httpClient(httpClientBuilder.build())
-                          .credentialsProvider(credentialsProvider)
-                          .region(regionProvider.getRegion())
-                          .build();
+        client = SesV2Client.builder()
+                            .httpClient(httpClientBuilder.build())
+                            .credentialsProvider(credentialsProvider)
+                            .region(regionProvider.getRegion())
+                            .build();
     }
 
     @Override
@@ -82,13 +82,13 @@ public class SESMailSender implements MailSender {
 
             var outputStream = new ByteArrayOutputStream();
             mimeMessage.writeTo(outputStream);
-            var rawMessage = RawMessage.builder()
-                                       .data(SdkBytes.fromByteBuffer(ByteBuffer.wrap(outputStream.toByteArray())))
-                                       .build();
-            var sendRawEmailRequest = SendRawEmailRequest.builder().rawMessage(rawMessage).build();
-            var response = client.sendRawEmail(sendRawEmailRequest);
+            var emailContent = EmailContent.builder()
+                                           .raw(b -> b.data(SdkBytes.fromByteArray(outputStream.toByteArray())))
+                                           .build();
+            var sendEmailRequest = SendEmailRequest.builder().content(emailContent).build();
+            var response = client.sendEmail(sendEmailRequest);
             log.debug("Successfully sent mail with Amazon SES, messageId: {}", response.messageId());
-        } catch (MessagingException | IOException | SesException e) {
+        } catch (MessagingException | IOException | SesV2Exception e) {
             throw new MailException("An error occurred while sending a mail with Amazon SES", e);
         }
     }

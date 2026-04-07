@@ -31,7 +31,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import software.amazon.awssdk.services.ses.model.SesException;
+import software.amazon.awssdk.services.sesv2.model.SesV2Exception;
 
 /**
  * @since 2023.4
@@ -85,6 +85,6 @@ public class TestSESMailSender {
     protected void assertSESFail(MailMessage mailMessage) {
         var t = assertThrows("An error occurred while sending a mail", MailException.class,
                 () -> mailService.sendMail(mailMessage));
-        assertTrue(t.getCause() instanceof SesException);
+        assertTrue(t.getCause() instanceof SesV2Exception);
     }
 }
