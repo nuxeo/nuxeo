@@ -25,4 +25,11 @@ public interface MailSender {
 
     void sendMail(MailMessage message);
 
+    /**
+     * @since 2025.18
+     */
+    default void close() {
+        // Do nothing
+    }
+
 }

@@ -58,6 +58,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
         super.stop(context);
+        senders.values().forEach(MailSender::close);
         senders.clear();
     }
 

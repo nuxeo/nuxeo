@@ -114,4 +114,11 @@ public class SESMailSender implements MailSender {
         return message;
     }
 
+    @Override
+    public void close() {
+        if (client != null) {
+            client.close();
+        }
+    }
+
 }
