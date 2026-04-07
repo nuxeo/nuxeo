@@ -42,6 +42,7 @@ import jakarta.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.Timestamp;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -189,7 +190,7 @@ public class TestSearchIndexing {
             doc = session.createDocument(doc);
             docs.add(doc.getId());
         }
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         docs.forEach(doc -> assertIndexedSince(doc, t1));
 
@@ -201,7 +202,7 @@ public class TestSearchIndexing {
             updatedDocs.add(doc.getId());
             docs.remove(doc.getId());
         }
-        final long t2 = System.currentTimeMillis();
+        final long t2 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         updatedDocs.forEach(doc -> assertIndexedSince(doc, t2));
         docs.forEach(doc -> assertIndexedBefore(doc, t2));
@@ -214,7 +215,7 @@ public class TestSearchIndexing {
         holder.setBlob(new StringBlob("You know for search"));
         doc = session.createDocument(doc);
         session.save();
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         assertIndexedSince(doc.getId(), t1);
         assertIndexedContains(doc.getId(), "You know for search");
@@ -256,7 +257,7 @@ public class TestSearchIndexing {
         doc = session.createDocument(doc);
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         String versionId = proxy.getSourceId();
         assertIndexedSince(proxy.getId(), t1);
@@ -265,7 +266,7 @@ public class TestSearchIndexing {
 
         // unpublish
         session.removeDocument(proxy.getRef());
-        final long t2 = System.currentTimeMillis();
+        final long t2 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
 
         // no more proxy
@@ -318,14 +319,14 @@ public class TestSearchIndexing {
     }
 
     protected void shouldUnIndexUsingTrashService(DocumentModel folder, DocumentModel doc) {
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         assertIndexedSince(folder.getId(), t1);
         assertIndexedSince(doc.getId(), t1);
 
         trashService.trashDocument(doc);
 
-        final long t2 = System.currentTimeMillis();
+        final long t2 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         assertIndexedSince(doc.getId(), t2);
         assertIndexedContains(folder.getId(), "\"ecm:isTrashed\":false");
@@ -334,7 +335,7 @@ public class TestSearchIndexing {
         doc = session.getDocument(doc.getRef());
         trashService.untrashDocument(doc);
 
-        final long t3 = System.currentTimeMillis();
+        final long t3 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         assertIndexedSince(doc.getId(), t3);
 
@@ -357,7 +358,7 @@ public class TestSearchIndexing {
         DocumentRef dst = new PathRef("/");
         DocumentModel dstDoc = session.copy(src, dst, "file2");
         session.save();
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
 
         assertIndexedSince(dstDoc.getId(), t1);
@@ -416,7 +417,7 @@ public class TestSearchIndexing {
         DocumentModel folder = session.createDocumentModel("/", "section", "Folder");
         session.createDocument(folder);
         folder = session.saveDocument(folder); // generate a WARN and an UPDATE command
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         assertIndexedSince(folder.getId(), t1);
     }
@@ -441,7 +442,7 @@ public class TestSearchIndexing {
         assertIndexedContains(file2.getId(), "\"ecm:pos\":1");
         assertIndexedContains(file3.getId(), "\"ecm:pos\":2");
         assertIndexedContains(folder4.getId(), "\"ecm:pos\":3");
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         session.orderBefore(ofolder.getRef(), "testfile3", "testfile2");
         txFeature.nextTransaction();
         assertIndexedContains(file1.getId(), "\"ecm:pos\":0");
@@ -467,7 +468,7 @@ public class TestSearchIndexing {
         folder.setPropertyValue("dc:title", "v2");
         folder = session.saveDocument(folder);
         DocumentRef v2 = folder.checkIn(VersioningOption.MAJOR, "update");
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         // 3 docs (2 files + 1 folder checkout) + 2 versions of folder
         assertIndexedSince(folder.getId(), t1);
@@ -484,7 +485,7 @@ public class TestSearchIndexing {
 
     @Test
     public void shouldIndexLatestVersions() {
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         List<String> ids = createADocumentWith3Versions();
         ids.forEach(id -> assertIndexedSince(id, t1));
 
@@ -541,7 +542,7 @@ public class TestSearchIndexing {
         v2VM.setLabel("2.0");
         DocumentModel v2Doc = session.getDocumentWithVersion(new IdRef(doc), v2VM);
         session.restoreToVersion(new IdRef(doc), v2Doc.getRef());
-        final long t1 = System.currentTimeMillis();
+        final long t1 = Timestamp.currentTimeMicros();
         txFeature.nextTransaction();
         assertIndexedSince(doc, t1);
     }

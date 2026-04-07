@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.nuxeo.common.utils.Timestamp;
 
 /**
  * @since 2025.0
@@ -96,7 +97,7 @@ public class BulkIndexingRequest implements Serializable {
 
         protected Builder(boolean refresh) {
             this.refresh = refresh;
-            this.version = System.currentTimeMillis();
+            this.version = Timestamp.currentTimeMicros();
             this.requests = new ArrayList<>();
         }
 
