@@ -37,6 +37,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AuditScroll extends AbstractQueryBuilderScroll.Scroll {
 
+    /** @since 2025.19 */
+    public static final String SCROLL_NAME = "audit";
+
     protected AuditBackend backend;
 
     @Override

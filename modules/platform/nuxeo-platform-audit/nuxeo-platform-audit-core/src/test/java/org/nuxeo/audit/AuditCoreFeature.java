@@ -95,11 +95,17 @@ public class AuditCoreFeature implements RunnerFeature {
 
     /** @since 2025.16 */
     public void generateLogEntries(String backendName, int nbEntries, IntFunction<LogEntry> generator) {
+        generateLogEntries(List.of(backendName), nbEntries, generator);
+    }
+
+    /** @since 2025.19 */
+    public void generateLogEntries(List<String> backendNames, int nbEntries, IntFunction<LogEntry> generator) {
         var entries = new ArrayList<LogEntry>();
         for (int i = 0; i < nbEntries; i++) {
             entries.add(generator.apply(i));
         }
-        Framework.getService(AuditRouter.class).routeToBackends(entries, List.of(Route.allEventsTo(backendName)));
+        Framework.getService(AuditRouter.class)
+                 .routeToBackends(entries, backendNames.stream().map(Route::allEventsTo).toList());
         transactionalFeature.nextTransaction();
     }
 

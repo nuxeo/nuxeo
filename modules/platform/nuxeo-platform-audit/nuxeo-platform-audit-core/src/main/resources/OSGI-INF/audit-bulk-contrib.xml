@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.audit.bulk" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.bulk.config</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="copyAudit" inputStream="bulk/copyAudit" bucketSize="500" batchSize="50"
+            validationClass="org.nuxeo.audit.bulk.validation.CopyAuditValidation" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="copyAudit" class="org.nuxeo.audit.bulk.CopyAuditAction"
+                     defaultConcurrency="${nuxeo.bulk.action.copyAudit.defaultConcurrency:=2}"
+                     defaultPartitions="${nuxeo.bulk.action.copyAudit.defaultPartitions:=4}">
+      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
+    </streamProcessor>
+  </extension>
+
+</component>

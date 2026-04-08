@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.audit.scroll.AuditScroll.SCROLL_NAME;
 import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class TestAuditScroll {
     public void testScroll() {
         auditFeature.generateLogEntries(50, idx -> LogEntry.builder("test", new Date()).build());
 
-        var request = QueryBuilderScrollRequest.builder("audit", "SELECT * FROM " + DEFAULT_AUDIT_BACKEND).build();
+        var request = QueryBuilderScrollRequest.builder(SCROLL_NAME, "SELECT * FROM " + DEFAULT_AUDIT_BACKEND).build();
         List<String> expectedIds = IntStream.rangeClosed(1, 50).mapToObj(String::valueOf).toList();
         assertTrue(scrollService.exists(request));
         try (Scroll scroll = scrollService.scroll(request)) {

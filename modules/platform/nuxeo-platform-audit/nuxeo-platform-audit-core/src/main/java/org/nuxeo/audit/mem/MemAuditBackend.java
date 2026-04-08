@@ -84,7 +84,7 @@ public class MemAuditBackend extends AbstractAuditBackend
         for (var entry : entries) {
             synchronized (this) {
                 if (entry.getId() == 0L || entry.getLogDate() == null) {
-                    throw new IllegalArgumentException("Log entry must have an id and log date to be inserted");
+                    throw new IllegalArgumentException("Log entry must have an id and log daCte to be inserted");
                 } else if (this.entries.containsKey(entry.getId())) {
                     conflicts.add("Log entry with id: %s already exists".formatted(entry.getId()));
                 } else {

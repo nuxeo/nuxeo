@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Funsho David
  */
-
 package org.nuxeo.ecm.core.bulk;
 
 import java.io.Serializable;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -53,6 +53,15 @@ public abstract class AbstractBulkActionValidation implements BulkActionValidati
 
     protected String unknownParameterMessage(String parameter, BulkCommand command) {
         return "Unknown parameter " + parameter + " in command: " + command;
+    }
+
+    /** @since 2025.19 */
+    protected String requireStringNonBlank(String param, BulkCommand command) {
+        Serializable value = command.getParam(param);
+        if (value instanceof String string && StringUtils.isNotBlank(string)) {
+            return string;
+        }
+        throw new IllegalArgumentException(invalidParameterMessage(param, command));
     }
 
     protected void validateBoolean(String param, BulkCommand command) {

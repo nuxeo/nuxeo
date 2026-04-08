@@ -725,12 +725,14 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend
 
         @Override
         public void close() {
-            ClearScrollRequest request = new ClearScrollRequest();
-            request.addScrollId(scrollId);
-            client.clearScroll(request);
-            end = true;
-            // Call super close to clear cursor
-            super.close();
+            if (cursor != null) {
+                ClearScrollRequest request = new ClearScrollRequest();
+                request.addScrollId(scrollId);
+                client.clearScroll(request);
+                end = true;
+                // Call super close to clear cursor
+                super.close();
+            }
         }
 
     }
