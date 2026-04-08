@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,9 +71,12 @@ public interface PageProviderService extends Serializable {
      * @return the page provider instance.
      * @since 5.7
      */
-    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+    default PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            Object... parameters);
+            Object... parameters) {
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, null, properties, null,
+                null, parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name.
@@ -87,8 +90,10 @@ public interface PageProviderService extends Serializable {
      * @return the page provider instance.
      * @since 5.4
      */
-    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters);
+    default PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters) {
+        return getPageProvider(name, null, sortInfos, pageSize, currentPage, null, properties, null, null, parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name.
@@ -96,8 +101,11 @@ public interface PageProviderService extends Serializable {
      * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
      * @since 5.7
      */
-    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties, Object... parameters);
+    default PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters) {
+        return getPageProvider(name, searchDocument, sortInfos, pageSize, currentPage, null, properties, null, null,
+                parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name.
@@ -105,9 +113,12 @@ public interface PageProviderService extends Serializable {
      * @see #getPageProvider(String, DocumentModel, List, Long, Long, Map, Object...)
      * @since 8.4
      */
-    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties, List<QuickFilter> quickFilters,
-            Object... parameters);
+    default PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, List<QuickFilter> quickFilters,
+            Object... parameters) {
+        return getPageProvider(name, searchDocument, sortInfos, pageSize, currentPage, null, properties, null,
+                quickFilters, parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name.
@@ -115,9 +126,12 @@ public interface PageProviderService extends Serializable {
      * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
      * @since 8.4
      */
-    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+    default PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            List<QuickFilter> quickFilters, Object... parameters);
+            List<QuickFilter> quickFilters, Object... parameters) {
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, null, properties, null,
+                quickFilters, parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name.
@@ -125,9 +139,12 @@ public interface PageProviderService extends Serializable {
      * @see #getPageProvider(String, List, Long, Long, Map, Object...)
      * @since 9.1
      */
-    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+    default PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
-            Object... parameters);
+            Object... parameters) {
+        return getPageProvider(name, null, sortInfos, pageSize, currentPage, null, properties, highlights, quickFilters,
+                parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name.
@@ -135,9 +152,12 @@ public interface PageProviderService extends Serializable {
      * @see #getPageProvider(String, DocumentModel, List, Long, Long, Map, Object...)
      * @since 9.1
      */
-    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties, List<String> highlights,
-            List<QuickFilter> quickFilters, Object... parameters);
+    default PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, List<String> highlights,
+            List<QuickFilter> quickFilters, Object... parameters) {
+        return getPageProvider(name, searchDocument, sortInfos, pageSize, currentPage, null, properties, highlights,
+                quickFilters, parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name.
@@ -165,9 +185,12 @@ public interface PageProviderService extends Serializable {
      * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
      * @since 9.1
      */
-    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+    default PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters);
+            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, null, properties,
+                highlights, quickFilters, parameters);
+    }
 
     /**
      * Returns an instance of page provider with given name and definition.

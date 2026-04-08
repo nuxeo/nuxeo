@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -113,7 +114,7 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
             if (isAbortedCommand(bucket.getCommandId())) {
                 log.debug("Skipping aborted command: {}", bucket.getCommandId());
             } else {
-                log.warn("Skipping unknown command: {}, offset: {}.",bucket.getCommandId(), context.getLastOffset());
+                log.warn("Skipping unknown command: {}, offset: {}.", bucket.getCommandId(), context.getLastOffset());
             }
         }
         context.askForCheckpoint();
@@ -139,10 +140,10 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
         if (batch == null || batch.isEmpty()) {
             return;
         }
-        int timeout = (int) requireNonNullElse(getBatchTransactionTimeout(), Duration.ZERO).toSeconds();
-        log.debug("The computation: {} is about to start a transaction with timeout: {}s to process the batch: {}",
-                metadata::name, () -> timeout, () -> batch);
-        TransactionHelper.runInTransaction(timeout, () -> {
+        var timeout = requireNonNullElse(getBatchTransactionTimeout(), Duration.ZERO);
+        log.debug("The computation: {} is about to start a transaction with timeout: {} to process the batch: {}",
+                metadata::name, () -> DurationUtils.format(timeout), () -> batch);
+        TransactionHelper.runInTransaction((int) timeout.toSeconds(), () -> {
             try {
                 String username = command.getUsername();
                 String repository = command.getRepository();
