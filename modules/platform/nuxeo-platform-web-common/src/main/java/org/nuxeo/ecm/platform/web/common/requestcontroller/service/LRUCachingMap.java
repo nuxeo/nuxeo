@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +15,20 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.nuxeo.common.collections.CircularLinkedHashMap;
 
 /**
  * @author tiry
+ * @deprecated since 2025.19, use {@link org.nuxeo.common.collections.CircularLinkedHashMap} instead
  */
-public class LRUCachingMap<K, V> extends LinkedHashMap<K, V> {
+public class LRUCachingMap<K, V> extends CircularLinkedHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
-    private final int maxCachedItems;
-
     public LRUCachingMap(int maxCachedItems) {
         super(maxCachedItems, 1.0f, true);
-        this.maxCachedItems = maxCachedItems;
     }
-
-    @Override
-    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-        return size() > maxCachedItems;
-    }
-
 }

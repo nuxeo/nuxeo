@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
+import org.nuxeo.common.collections.CircularLinkedHashMap;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.resource.ResourceService;
@@ -42,7 +42,8 @@ import org.nuxeo.runtime.services.resource.ResourceService;
  */
 public class MvelRender implements Renderer {
 
-    protected Map<String, CompiledTemplate> cache = Collections.synchronizedMap(new Cache());
+    protected Map<String, CompiledTemplate> cache = Collections.synchronizedMap(
+            new CircularLinkedHashMap<>(128, 1.0f, true));
 
     @Override
     public String render(String uriOrContent, Map<String, Object> root) throws OperationException, IOException {
@@ -70,27 +71,4 @@ public class MvelRender implements Renderer {
         Object obj = TemplateRuntime.execute(compiled, root);
         return obj == null ? "" : obj.toString();
     }
-
-    @SuppressWarnings("serial")
-    private static class Cache extends LinkedHashMap<String, CompiledTemplate> {
-
-        private static final long serialVersionUID = 1L;
-        protected int maxCachedItems;
-
-        private Cache() {
-            this(128);
-        }
-
-        private Cache(int maxCachedItems) {
-            super(maxCachedItems, 1.0f, true);
-            this.maxCachedItems = maxCachedItems;
-        }
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<String, CompiledTemplate> eldest) {
-            return size() > maxCachedItems;
-        }
-
-    }
-
 }

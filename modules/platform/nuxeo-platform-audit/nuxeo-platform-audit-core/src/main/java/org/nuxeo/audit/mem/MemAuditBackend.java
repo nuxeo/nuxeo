@@ -27,6 +27,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,12 +38,12 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.api.LogEntryConstants;
 import org.nuxeo.audit.api.LogEntryList;
 import org.nuxeo.audit.service.AbstractAuditBackend;
 import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.common.collections.CircularLinkedHashMap;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.CursorResult;
 import org.nuxeo.ecm.core.api.CursorService;
@@ -65,14 +66,14 @@ public class MemAuditBackend extends AbstractAuditBackend
 
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 
-    protected final CircularFifoQueue<LogEntry> entries = new CircularFifoQueue<>(10_000);
+    protected final Map<Long, LogEntry> entries = Collections.synchronizedMap(new CircularLinkedHashMap<>(10_000));
 
     protected final CursorService<Iterator<LogEntry>, LogEntry, String> cursorService = new CursorService<>(
             entry -> String.valueOf(entry.getId()));
 
     @Override
     public Long getEventsCount(String eventId) {
-        return entries.stream().map(LogEntry::getEventId).filter(Predicate.isEqual(eventId)).count();
+        return entries.values().stream().map(LogEntry::getEventId).filter(Predicate.isEqual(eventId)).count();
     }
 
     @Override
@@ -81,7 +82,7 @@ public class MemAuditBackend extends AbstractAuditBackend
             if (entry.getId() == 0L || entry.getLogDate() == null) {
                 throw new IllegalArgumentException("Log entry must have an id and log date to be inserted");
             }
-            this.entries.add(entry.builder().extended(mapJsonContent(entry.getExtended())).build());
+            this.entries.put(entry.getId(), entry.builder().extended(mapJsonContent(entry.getExtended())).build());
         }
     }
 
@@ -104,7 +105,7 @@ public class MemAuditBackend extends AbstractAuditBackend
 
     @Override
     public LogEntry getLogEntryByID(long id) {
-        return entries.stream().filter(entry -> entry.getId() == id).findFirst().orElse(null);
+        return entries.get(id);
     }
 
     @Override
@@ -121,8 +122,14 @@ public class MemAuditBackend extends AbstractAuditBackend
         // create Comparator order
         Comparator<LogEntry> comparator = createComparator(queryOrders);
 
-        var result = entries.stream().filter(predicate).sorted(comparator).skip(queryOffset).limit(queryLimit).toList();
-        long totalCount = entries.stream().filter(predicate).count();
+        var result = entries.values()
+                            .stream()
+                            .filter(predicate)
+                            .sorted(comparator)
+                            .skip(queryOffset)
+                            .limit(queryLimit)
+                            .toList();
+        long totalCount = entries.values().stream().filter(predicate).count();
         return new LogEntryList(result, totalCount);
     }
 
@@ -140,7 +147,7 @@ public class MemAuditBackend extends AbstractAuditBackend
         // create Comparator order
         Comparator<LogEntry> comparator = createComparator(queryOrders);
 
-        var iterator = entries.stream().filter(predicate).sorted(comparator).iterator();
+        var iterator = entries.values().stream().filter(predicate).sorted(comparator).iterator();
         return new CursorResult<>(iterator, batchSize, (int) keepAlive.toSeconds());
     }
 

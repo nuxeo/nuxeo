@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.nuxeo.common.collections.CircularLinkedHashMap;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -48,7 +49,7 @@ public class RequestControllerService extends DefaultComponent implements Reques
     /** @since 6.0 */
     public static final String HEADERS_CONFIG_EP = "responseHeaders";
 
-    protected final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<>(250);
+    protected final Map<String, RequestFilterConfig> configCache = new CircularLinkedHashMap<>(250, 1.0f, true);
 
     protected Map<String, FilterConfigDescriptor> grantPatterns;
 
