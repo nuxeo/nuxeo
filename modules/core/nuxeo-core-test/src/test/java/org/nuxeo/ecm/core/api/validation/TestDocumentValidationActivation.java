@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,8 @@ public class TestDocumentValidationActivation {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc.setPropertyValue(SIMPLE_FIELD, VALID);
-        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] { "aStr" }); // set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] { "anotherStr" }); // set mandatory list
         Map<String, String> complex = new HashMap<>();
         complex.put("a_string", "not_null");
         doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
@@ -128,8 +128,8 @@ public class TestDocumentValidationActivation {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
-        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] { "aStr" }); // set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] { "anotherStr" }); // set mandatory list
         Map<String, String> complex = new HashMap<>();
         complex.put("a_string", "not_null");
         doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);
@@ -205,8 +205,8 @@ public class TestDocumentValidationActivation {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
-        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] {"aStr"});  //set mandatory list
-        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] {"anotherStr"});  //set mandatory list
+        doc.setPropertyValue(STRING_LIST_PROPS_FIELD, new String[] { "aStr" }); // set mandatory list
+        doc.setPropertyValue(STRING_LIST_ARRAY_FIELD, new String[] { "anotherStr" }); // set mandatory list
         Map<String, String> complex = new HashMap<>();
         complex.put("a_string", "not_null");
         doc.setPropertyValue(COMPLEX_MANDATORY, (Serializable) complex);

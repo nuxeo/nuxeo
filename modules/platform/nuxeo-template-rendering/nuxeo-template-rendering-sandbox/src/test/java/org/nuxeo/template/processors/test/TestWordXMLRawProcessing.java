@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,8 @@ public class TestWordXMLRawProcessing {
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc = session.createDocument(templateDoc);
 
-        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc", "TemplateBasedFile");
+        DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc",
+                "TemplateBasedFile");
         testDoc.setProperty("dublincore", "title", "MyTestDoc");
         fileBlob.setFilename("sample templatet.docx");
         // testDoc.setProperty("file", "content", fileBlob);

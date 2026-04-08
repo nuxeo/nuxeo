@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2025-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public class TestDuoFactorsAuthentication {
     protected Client duoClient;
 
     @Before
-    public void setup() throws DuoException {
+    public void setup() {
         NuxeoPrincipal casUserPrincipal = new UserPrincipal(DUO_USER, null, false, false);
         when(userManager.getPrincipal(DUO_USER)).thenReturn(casUserPrincipal);
         when(userManager.checkUsernamePassword(eq(DUO_USER), anyString())).thenReturn(true);

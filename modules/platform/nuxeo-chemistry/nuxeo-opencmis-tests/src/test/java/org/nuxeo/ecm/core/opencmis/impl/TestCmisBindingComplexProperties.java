@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,11 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         String statement = "SELECT complexTest:listItem FROM ComplexFile";
         ObjectList res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
-        PropertyData<String> data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:listItem");
+        PropertyData<String> data = (PropertyData<String>) res.getObjects()
+                                                              .get(0)
+                                                              .getProperties()
+                                                              .getProperties()
+                                                              .get("complexTest:listItem");
         assertNotNull(data);
         // Verify the JSON produced is valid and matches the original objects
         List<String> values = data.getValues();
@@ -166,7 +170,11 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         statement = "SELECT * FROM ComplexFile";
         res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
-        data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:listItem");
+        data = (PropertyData<String>) res.getObjects()
+                                         .get(0)
+                                         .getProperties()
+                                         .getProperties()
+                                         .get("complexTest:listItem");
         assertNull(data);
     }
 
@@ -261,7 +269,11 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         ObjectList res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
         // Verify the JSON produced is valid and matches the original objects
-        PropertyData<String> data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:complexItem");
+        PropertyData<String> data = (PropertyData<String>) res.getObjects()
+                                                              .get(0)
+                                                              .getProperties()
+                                                              .getProperties()
+                                                              .get("complexTest:complexItem");
         String jsonStr = data.getFirstValue();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonStr);
@@ -271,7 +283,11 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         statement = "SELECT * FROM ComplexFile";
         res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
-        data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:complexItem");
+        data = (PropertyData<String>) res.getObjects()
+                                         .get(0)
+                                         .getProperties()
+                                         .getProperties()
+                                         .get("complexTest:complexItem");
         assertNull(data);
     }
 

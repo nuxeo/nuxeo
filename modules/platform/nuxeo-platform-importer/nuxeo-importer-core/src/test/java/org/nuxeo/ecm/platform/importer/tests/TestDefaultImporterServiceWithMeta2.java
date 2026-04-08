@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,18 +68,18 @@ public class TestDefaultImporterServiceWithMeta2 {
         session.save();
         txFeature.nextTransaction();
 
-        DocumentModel docContainer = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src-with-metadata"));
+        DocumentModel docContainer = session.getDocument(
+                new PathRef("/default-domain/workspaces/import-src-with-metadata"));
         assertNotNull(docContainer);
         assertEquals("Folder", docContainer.getType());
 
-        DocumentModel folder = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src-with-metadata/branch1"));
+        DocumentModel folder = session.getDocument(
+                new PathRef("/default-domain/workspaces/import-src-with-metadata/branch1"));
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
 
-        DocumentModel file = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src-with-metadata/hello.pdf"));
+        DocumentModel file = session.getDocument(
+                new PathRef("/default-domain/workspaces/import-src-with-metadata/hello.pdf"));
         assertNotNull(file);
         assertEquals("File", file.getType());
         assertEquals("src1", file.getPropertyValue("dc:source"));

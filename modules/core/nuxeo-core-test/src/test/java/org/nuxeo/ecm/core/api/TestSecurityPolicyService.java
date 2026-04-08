@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api;
 
 import static org.junit.Assert.assertEquals;
@@ -97,8 +96,7 @@ public class TestSecurityPolicyService {
         assertTrue(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)).isEmpty());
         setTestPermissions(fooUser.getName(), READ);
         assertTrue(session.hasPermission(fooUser, folderRef, READ));
-        assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)),
-                Arrays.asList(READ));
+        assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)), Arrays.asList(READ));
 
         // open session as anonymous and set access on user info
         CoreSession anonSession = coreFeature.getCoreSession(ANONYMOUS);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Thomas Roger
  */
-
 package org.nuxeo.ecm.platform.importer.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -76,8 +75,8 @@ class ImporterExecutorWithListeners extends DefaultImporterExecutor {
     @Override
     public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
             Integer nbTheards, Boolean interactive) {
-        importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize,
-                nbTheards, getLogger());
+        importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize, nbTheards,
+                getLogger());
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());
 

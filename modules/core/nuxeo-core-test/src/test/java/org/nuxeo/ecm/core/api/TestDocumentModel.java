@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, LogCaptureFeature.class})
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentModel {
 

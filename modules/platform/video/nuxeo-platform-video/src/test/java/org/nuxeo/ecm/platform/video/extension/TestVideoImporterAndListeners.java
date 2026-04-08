@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.ecm.platform.video.extension;
 
 import static org.junit.Assert.assertEquals;
@@ -404,7 +403,9 @@ public class TestVideoImporterAndListeners {
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
                 TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
+        Set<String> transcodedNames = transcodedVideos.stream()
+                                                      .map(v -> (String) v.get("name"))
+                                                      .collect(Collectors.toSet());
         assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
         assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
         assertTrue(((Blob) transcodedVideos.get(0).get("content")).getLength() > 0);
@@ -632,8 +633,12 @@ public class TestVideoImporterAndListeners {
         doc = session.getDocument(doc.getRef());
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
-        Set<String> transcodedMimeTypes = transcodedVideos.stream().map(v -> ((Blob) v.get("content")).getMimeType()).collect(Collectors.toSet());
+        Set<String> transcodedNames = transcodedVideos.stream()
+                                                      .map(v -> (String) v.get("name"))
+                                                      .collect(Collectors.toSet());
+        Set<String> transcodedMimeTypes = transcodedVideos.stream()
+                                                          .map(v -> ((Blob) v.get("content")).getMimeType())
+                                                          .collect(Collectors.toSet());
         assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
         assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
         assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/mp4"));
@@ -692,8 +697,12 @@ public class TestVideoImporterAndListeners {
 
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
-        Set<String> transcodedMimeTypes = transcodedVideos.stream().map(v -> ((Blob) v.get("content")).getMimeType()).collect(Collectors.toSet());
+        Set<String> transcodedNames = transcodedVideos.stream()
+                                                      .map(v -> (String) v.get("name"))
+                                                      .collect(Collectors.toSet());
+        Set<String> transcodedMimeTypes = transcodedVideos.stream()
+                                                          .map(v -> ((Blob) v.get("content")).getMimeType())
+                                                          .collect(Collectors.toSet());
         assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
         assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
         assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/mp4"));
@@ -772,8 +781,12 @@ public class TestVideoImporterAndListeners {
 
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
-        Set<String> transcodedNames = transcodedVideos.stream().map(v -> (String) v.get("name")).collect(Collectors.toSet());
-        Set<String> transcodedMimeTypes = transcodedVideos.stream().map(v -> ((Blob) v.get("content")).getMimeType()).collect(Collectors.toSet());
+        Set<String> transcodedNames = transcodedVideos.stream()
+                                                      .map(v -> (String) v.get("name"))
+                                                      .collect(Collectors.toSet());
+        Set<String> transcodedMimeTypes = transcodedVideos.stream()
+                                                          .map(v -> ((Blob) v.get("content")).getMimeType())
+                                                          .collect(Collectors.toSet());
         assertTrue(transcodedNames.toString(), transcodedNames.contains("MP4 480p"));
         assertTrue(transcodedNames.toString(), transcodedNames.contains("WebM 480p"));
         assertTrue(transcodedMimeTypes.toString(), transcodedMimeTypes.contains("video/mp4"));

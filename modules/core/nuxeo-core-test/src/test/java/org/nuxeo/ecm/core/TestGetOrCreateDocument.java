@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Funsho David
- *
  */
-
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
@@ -108,9 +106,7 @@ public class TestGetOrCreateDocument {
             futures.add(completableFuture);
         }
 
-        List<DocumentModelList> docModelsPerThread = futures.stream()
-                                                            .map(CompletableFuture::join)
-                                                            .collect(Collectors.toList());
+        List<DocumentModelList> docModelsPerThread = futures.stream().map(CompletableFuture::join).toList();
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();

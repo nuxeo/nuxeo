@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ package org.nuxeo.ecm.directory.sql;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import jakarta.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -57,9 +57,9 @@ public class TestDescriptorOverride {
         assertEquals(100, config.getQuerySizeLimit());
         assertFalse(config.isAutoincrementIdField());
         assertTrue(config.isComputeMultiTenantId());
-        Assert.assertNull(config.cacheEntryName);
-        Assert.assertNull(config.cacheEntryWithoutReferencesName);
-        Assert.assertNull(config.negativeCaching);
+        assertNull(config.cacheEntryName);
+        assertNull(config.cacheEntryWithoutReferencesName);
+        assertNull(config.negativeCaching);
         assertEquals("test-users.csv", config.getDataFileName());
     }
 
@@ -74,7 +74,7 @@ public class TestDescriptorOverride {
         assertEquals(123, config.getQuerySizeLimit());
         assertTrue(config.isAutoincrementIdField());
         assertFalse(config.isComputeMultiTenantId());
-        Assert.assertEquals(Boolean.TRUE, config.negativeCaching);
+        assertEquals(Boolean.TRUE, config.negativeCaching);
 
         // inherit
         assertEquals("test-users.csv", config.getDataFileName());

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,8 +118,10 @@ public class FetchByPropertyTest {
         // add a where clause
 
         chain = new OperationChain("testChain");
-        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1").set("query",
-                "ecm:primaryType = 'Workspace'");
+        chain.add(FetchByProperty.ID)
+             .set("property", "dc:title")
+             .set("values", "title1")
+             .set("query", "ecm:primaryType = 'Workspace'");
 
         docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(1, docs.size());
@@ -144,8 +146,10 @@ public class FetchByPropertyTest {
         // add a where clause
 
         chain = new OperationChain("testChain");
-        chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1, title3").set("query",
-                "ecm:primaryType = 'Workspace'");
+        chain.add(FetchByProperty.ID)
+             .set("property", "dc:title")
+             .set("values", "title1, title3")
+             .set("query", "ecm:primaryType = 'Workspace'");
 
         docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(1, docs.size());

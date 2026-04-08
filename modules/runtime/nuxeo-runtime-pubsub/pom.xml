@@ -11,61 +11,14 @@
   <name>Nuxeo Runtime Publish/Subscribe Service</name>
 
   <dependencies>
-
-    <dependency>
-      <groupId>org.nuxeo.common</groupId>
-      <artifactId>nuxeo-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-cluster</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-stream</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.lib.stream</groupId>
-      <artifactId>nuxeo-stream</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
+    <!-- Libraries -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-
-    <!-- tests -->
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-cluster</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-stream</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.inject</groupId>
-      <artifactId>jakarta.inject-api</artifactId>
-      <scope>test</scope>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>io.opencensus</groupId>
@@ -96,6 +49,56 @@
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_httpserver</artifactId>
+    </dependency>
+
+    <!-- Nuxeo dependencies -->
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-cluster</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-stream</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.lib.stream</groupId>
+      <artifactId>nuxeo-stream</artifactId>
+    </dependency>
+
+    <!-- Test libraries -->
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Nuxeo test dependencies -->
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-cluster</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-stream</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
     </dependency>
   </dependencies>
 

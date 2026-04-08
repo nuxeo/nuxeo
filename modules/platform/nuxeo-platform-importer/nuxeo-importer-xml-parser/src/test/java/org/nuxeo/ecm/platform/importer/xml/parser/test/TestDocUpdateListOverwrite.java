@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@
  */
 package org.nuxeo.ecm.platform.importer.xml.parser.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.util.List;
 
 import jakarta.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -49,38 +51,38 @@ public class TestDocUpdateListOverwrite {
     @Inject
     CoreSession session;
 
-	@Test
-	public void test() throws Exception {
+    @Test
+    public void test() throws Exception {
         File xml = FileUtils.getResourceFileFromContext("multivalue.xml");
-        Assert.assertNotNull(xml);
+        assertNotNull(xml);
 
         DocumentModel root = session.getRootDocument();
 
         XMLImporterService importer = Framework.getService(XMLImporterService.class);
-        Assert.assertNotNull(importer);
+        assertNotNull(importer);
         importer.importDocuments(root, xml);
         session.save();
 
         List<DocumentModel> docs = session.query("select * from Document where dc:title='MultiValue'");
-        Assert.assertEquals("we should have only one File", 1, docs.size());
+        assertEquals("we should have only one File", 1, docs.size());
         DocumentModel fileDoc = docs.get(0);
         Property property = fileDoc.getProperty("dc:subjects");
         Object[] subjects = (Object[]) property.getValue();
-        Assert.assertEquals("The property dc:subjects should contain 2 values", 2, subjects.length);
+        assertEquals("The property dc:subjects should contain 2 values", 2, subjects.length);
 
         xml = FileUtils.getResourceFileFromContext("docupdate.xml");
-        Assert.assertNotNull(xml);
+        assertNotNull(xml);
         importer.importDocuments(root, xml, true);
         session.save();
 
         // UPDATE DOCUMENT, OVERWRITE LIST
         docs = session.query("select * from Document where dc:title='MultiValue'");
-        Assert.assertEquals("we should have only one File", 1, docs.size());
+        assertEquals("we should have only one File", 1, docs.size());
         fileDoc = docs.get(0);
         property = fileDoc.getProperty("dc:subjects");
         subjects = (Object[]) property.getValue();
-        Assert.assertEquals("The property dc:subjects should contain 4 values", 4, subjects.length);
+        assertEquals("The property dc:subjects should contain 4 values", 4, subjects.length);
 
-	}
+    }
 
 }

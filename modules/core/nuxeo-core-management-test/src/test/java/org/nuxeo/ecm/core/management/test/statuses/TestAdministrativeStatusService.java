@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.ecm.core.management.test.statuses;
 
 import static org.junit.Assert.assertEquals;
@@ -82,7 +81,8 @@ public class TestAdministrativeStatusService {
         assertNotNull(globalManager);
 
         // ensure that local manager is a singleton
-        AdministrativeStatusManager localManager2 = globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
+        AdministrativeStatusManager localManager2 = globalManager.getStatusManager(
+                globalManager.getLocalNuxeoInstanceIdentifier());
         assertEquals(localManager, localManager2);
 
         ProbeManager pm = Framework.getService(ProbeManager.class);

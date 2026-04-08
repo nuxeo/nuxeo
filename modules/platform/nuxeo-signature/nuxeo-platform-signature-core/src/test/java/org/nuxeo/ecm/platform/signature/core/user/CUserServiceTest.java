@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Wojciech Sulejman
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.signature.core.user;
 
 import static org.junit.Assert.assertNotNull;

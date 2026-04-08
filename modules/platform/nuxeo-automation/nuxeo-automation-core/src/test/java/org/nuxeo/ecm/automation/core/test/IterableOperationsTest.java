@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,8 +196,9 @@ public class IterableOperationsTest {
         ctx.setInput(docs);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value",
-                Scripting.newExpression("Document.getParent()['dc:title']"));
+        chain.add(SetDocumentProperty.ID)
+             .set("xpath", "dc:description")
+             .set("value", Scripting.newExpression("Document.getParent()['dc:title']"));
 
         DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2023 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -436,27 +436,27 @@ public class TestDocumentValidationService {
             ConstraintViolation violation = (ConstraintViolation) v;
             PathNode pathNode = violation.getPath().get(1);
             switch (pathNode.getIndex()) {
-            case 0:
-                checkPatternOnUsersFirstname(violation, 0);
-                found1 = true;
-                break;
-            case 2:
-                checkPatternOnUsersFirstname(violation, 2);
-                found2 = true;
-                break;
-            case 3:
-                checkNotNullOnUsersLastname(violation, 3);
-                found3 = true;
-                break;
-            case 4:
-                if (violation.getConstraint() instanceof NotNullConstraint) {
-                    checkNotNullOnUsersLastname(violation, 4);
-                    found5 = true;
-                } else if (violation.getConstraint() instanceof PatternConstraint) {
-                    checkPatternOnUsersFirstname(violation, 4);
-                    found4 = true;
-                }
-                break;
+                case 0:
+                    checkPatternOnUsersFirstname(violation, 0);
+                    found1 = true;
+                    break;
+                case 2:
+                    checkPatternOnUsersFirstname(violation, 2);
+                    found2 = true;
+                    break;
+                case 3:
+                    checkNotNullOnUsersLastname(violation, 3);
+                    found3 = true;
+                    break;
+                case 4:
+                    if (violation.getConstraint() instanceof NotNullConstraint) {
+                        checkNotNullOnUsersLastname(violation, 4);
+                        found5 = true;
+                    } else if (violation.getConstraint() instanceof PatternConstraint) {
+                        checkPatternOnUsersFirstname(violation, 4);
+                        found4 = true;
+                    }
+                    break;
             }
         }
         assertTrue(found1);
