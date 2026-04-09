@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_DOC_UUID;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_REPOSITORY_ID;
+import static org.nuxeo.ecm.platform.audit.impl.LogEntrySequenceGenerator.USE_NUXEO_SEQUENCER_PROPERTY;
 
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RandomBug;
@@ -84,7 +86,7 @@ public class TestAuditBackendWithDocument {
 
         LogEntry entry = trail.get(0);
         // the hibernate sequencer is not reset so the assertion will fail if the test is not the first one to run
-        if (!auditFeature.isBackendSql()) {
+        if (!auditFeature.isBackendSql() || Framework.isBooleanPropertyTrue(USE_NUXEO_SEQUENCER_PROPERTY)) {
             assertEquals(2L, entry.getId());
         }
         assertEquals("documentModified", entry.getEventId());
@@ -92,7 +94,7 @@ public class TestAuditBackendWithDocument {
         assertEquals("A modified File", entry.getExtendedValue("title"));
 
         entry = trail.get(1);
-        if (!auditFeature.isBackendSql()) {
+        if (!auditFeature.isBackendSql() || Framework.isBooleanPropertyTrue(USE_NUXEO_SEQUENCER_PROPERTY)) {
             assertEquals(1L, entry.getId());
         }
         assertEquals("documentCreated", entry.getEventId());

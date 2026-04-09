@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -212,4 +213,40 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <!-- deprecated since 2025.19, see LogEntrySequenceGenerator -->
+    <profile>
+      <id>testsWithNuxeoSequence</id>
+      <activation>
+        <!-- enable the profile in the CI -->
+        <property>
+          <name>custom.environment</name>
+          <value>postgresql</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>tests-with-nuxeo-sequencer</id>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <configuration>
+                  <reportNameSuffix>withNuxeoSequencer</reportNameSuffix>
+                  <systemPropertyVariables>
+                    <nuxeo.audit.backend.default.sql.use_nuxeo_sequencer>true</nuxeo.audit.backend.default.sql.use_nuxeo_sequencer>
+                  </systemPropertyVariables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

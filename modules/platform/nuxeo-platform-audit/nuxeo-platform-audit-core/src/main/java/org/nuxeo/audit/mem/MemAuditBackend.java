@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import org.nuxeo.audit.service.AbstractAuditBackend;
 import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.common.collections.CircularLinkedHashMap;
 import org.nuxeo.common.utils.DateUtils;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CursorResult;
 import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.query.sql.model.Literals;
@@ -78,11 +80,23 @@ public class MemAuditBackend extends AbstractAuditBackend
 
     @Override
     public void insertLogs(Collection<LogEntry> entries) {
+        var conflicts = new ArrayList<String>();
         for (var entry : entries) {
-            if (entry.getId() == 0L || entry.getLogDate() == null) {
-                throw new IllegalArgumentException("Log entry must have an id and log date to be inserted");
+            synchronized (this) {
+                if (entry.getId() == 0L || entry.getLogDate() == null) {
+                    throw new IllegalArgumentException("Log entry must have an id and log date to be inserted");
+                } else if (this.entries.containsKey(entry.getId())) {
+                    conflicts.add("Log entry with id: %s already exists".formatted(entry.getId()));
+                } else {
+                    this.entries.put(entry.getId(),
+                            entry.builder().extended(mapJsonContent(entry.getExtended())).build());
+                }
             }
-            this.entries.put(entry.getId(), entry.builder().extended(mapJsonContent(entry.getExtended())).build());
+        }
+        if (!conflicts.isEmpty()) {
+            var exception = new ConcurrentUpdateException("Concurrent update");
+            conflicts.forEach(exception::addInfo);
+            throw exception;
         }
     }
 

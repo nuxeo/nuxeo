@@ -60,6 +60,8 @@ public interface AuditBackend extends org.nuxeo.ecm.platform.audit.service.Audit
      * @param entries the list of log entries
      * @since 2025.16
      * @apiNote This API won't generate the log entry ids, the caller is responsible for setting them.
+     * @throws org.nuxeo.ecm.core.api.ConcurrentUpdateException if trying to insert one or more existing entries, others
+     *             would still be inserted
      */
     // deprecated since 2021.x, turn this method abstract on deprecation removal
     default void insertLogs(Collection<LogEntry> entries) {

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.audit.mongodb;
 
+import static com.mongodb.ErrorCategory.DUPLICATE_KEY;
+import static com.mongodb.ErrorCategory.fromErrorCode;
 import static com.mongodb.client.model.Projections.include;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_ID;
 import static org.nuxeo.runtime.mongodb.MongoDBSerializationHelper.MONGODB_ID;
@@ -46,6 +48,7 @@ import org.nuxeo.audit.api.LogEntryList;
 import org.nuxeo.audit.service.AbstractAuditBackend;
 import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.common.utils.TextTemplate;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CursorResult;
 import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -60,10 +63,13 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBSerializationHelper;
 
+import com.mongodb.MongoBulkWriteException;
+import com.mongodb.bulk.BulkWriteError;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.client.model.Sorts;
 
 /**
@@ -238,7 +244,23 @@ public class MongoDBAuditBackend extends AbstractAuditBackend
                     entry.getLogDate(), entry.getDocUUID());
             documents.add(MongoDBAuditEntryWriter.asDocument(entry));
         }
-        collection.insertMany(documents);
+        try {
+            collection.insertMany(documents, new InsertManyOptions().ordered(false));
+        } catch (MongoBulkWriteException mbwe) {
+            List<String> duplicates = mbwe.getWriteErrors()
+                                          .stream()
+                                          .filter(wr -> DUPLICATE_KEY.equals(fromErrorCode(wr.getCode())))
+                                          .map(BulkWriteError::getMessage)
+                                          .collect(Collectors.toList());
+            // Avoid hiding any others bulk errors
+            if (duplicates.size() == mbwe.getWriteErrors().size()) {
+                log.trace("MongoDB:    -> DUPLICATE KEY: {}", duplicates);
+                var concurrentUpdateException = new ConcurrentUpdateException("Concurrent update");
+                duplicates.forEach(concurrentUpdateException::addInfo);
+                throw concurrentUpdateException;
+            }
+            throw new NuxeoException("Error while inserting audit log entries", mbwe);
+        }
     }
 
     @Override

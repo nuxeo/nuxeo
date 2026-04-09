@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +53,7 @@ import org.nuxeo.audit.api.LogEntryList;
 import org.nuxeo.audit.service.AbstractAuditBackend;
 import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.common.utils.TextTemplate;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CursorResult;
 import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -100,6 +102,7 @@ import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.rest.RestStatus;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchModule;
 import org.opensearch.search.aggregations.AggregationBuilders;
@@ -416,18 +419,31 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend
                     var writer = Framework.getService(MarshallerRegistry.class)
                                           .getWriter(renderingContext, LogEntry.class, APPLICATION_JSON_TYPE);
                     writer.write(entry, LogEntry.class, LogEntry.class, APPLICATION_JSON_TYPE, out);
-                    bulkRequest.add(new IndexRequest(indexName).id(String.valueOf(entry.getId())).source(builder));
+                    bulkRequest.add(
+                            new IndexRequest(indexName).id(String.valueOf(entry.getId())).source(builder).create(true));
                 }
             }
 
             BulkResponse bulkResponse = client.bulk(bulkRequest);
             if (bulkResponse.hasFailures()) {
-                for (BulkItemResponse response : bulkResponse.getItems()) {
-                    if (response.isFailed()) {
-                        log.error("Unable to index audit entry {} : {}", response.getItemId(),
-                                response.getFailureMessage());
-                    }
+                List<BulkItemResponse.Failure> failures = Stream.of(bulkResponse.getItems())
+                                                                .filter(BulkItemResponse::isFailed)
+                                                                .map(BulkItemResponse::getFailure)
+                                                                .toList();
+                List<String> duplicates = failures.stream()
+                                                  .filter(failure -> failure.getStatus() == RestStatus.CONFLICT)
+                                                  .map(BulkItemResponse.Failure::getMessage)
+                                                  .toList();
+                // Avoid hiding any others bulk errors
+                if (duplicates.size() == failures.size()) {
+                    log.trace("OpenSearch:    -> DUPLICATE KEY: {}", duplicates);
+                    var concurrentUpdateException = new ConcurrentUpdateException("Concurrent update");
+                    duplicates.forEach(concurrentUpdateException::addInfo);
+                    throw concurrentUpdateException;
                 }
+                var nuxeoException = new NuxeoException("Error while inserting audit log entries");
+                failures.forEach(failure -> nuxeoException.addSuppressed(failure.getCause()));
+                throw nuxeoException;
             }
         } catch (IOException e) {
             throw new NuxeoException("Error while indexing Audit entries", e);

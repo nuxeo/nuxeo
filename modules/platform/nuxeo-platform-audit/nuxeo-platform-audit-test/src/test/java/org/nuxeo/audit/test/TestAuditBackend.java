@@ -18,6 +18,7 @@
  */
 package org.nuxeo.audit.test;
 
+import static org.apache.commons.collections4.ListUtils.union;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -49,6 +50,7 @@ import org.nuxeo.audit.IgnoreIfAuditBackendDoesNotHaveExtendedInfoSearchCapabili
 import org.nuxeo.audit.api.AuditQueryBuilder;
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.service.AuditBackend;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
@@ -79,6 +81,57 @@ public class TestAuditBackend {
 
     @Inject
     protected TransactionalFeature transactionalFeature;
+
+    @Test
+    @SuppressWarnings("removal")
+    @ConditionalIgnore(condition = IgnoreIfNotAuditSequence.class)
+    public void testInsertLogs() {
+        // first test illegal argument cases
+        // no id
+        assertThrows(IllegalArgumentException.class, () -> backend.insertLogs(
+                List.of(LogEntry.builder("eventIdForTests", new Date()).logDate(new Date()).build())));
+        // no log date
+        assertThrows(IllegalArgumentException.class,
+                () -> backend.insertLogs(List.of(LogEntry.builder("eventIdForTests", new Date()).id(1_000L).build())));
+
+        // second test normal insertion
+        backend.insertLogs(
+                List.of(LogEntry.builder("eventIdForTests", new Date()).id(1_000L).logDate(new Date()).build()));
+        assertNotNull(backend.getLogEntryByID(1_000L));
+
+        // third test same entry can not be inserted twice
+        assertThrows(ConcurrentUpdateException.class, () -> backend.insertLogs(
+                List.of(LogEntry.builder("eventIdForTests", new Date()).id(1_000L).logDate(new Date()).build())));
+    }
+
+    @Test
+    @SuppressWarnings("removal")
+    @ConditionalIgnore(condition = IgnoreIfNotAuditSequence.class)
+    public void testInsertLogsWithSomeExistingLogEntries() {
+        var queryBuilder = new AuditQueryBuilder().predicate(Predicates.eq(LOG_EVENT_ID, "eventIdForTests"));
+        // insert two logs entries
+        var originalEntries = List.of( //
+                LogEntry.builder("eventIdForTests", new Date()).id(1_000L).logDate(new Date()).build(), //
+                LogEntry.builder("eventIdForTests", new Date()).id(1_001L).logDate(new Date()).build() //
+        );
+        backend.insertLogs(originalEntries);
+        transactionalFeature.nextTransaction();
+        assertEquals(2, backend.queryLogs(queryBuilder).size());
+
+        // create two more entries and try to insert all of them
+        var newEntries = List.of( //
+                LogEntry.builder("eventIdForTests", new Date()).id(1_002L).logDate(new Date()).build(), //
+                LogEntry.builder("eventIdForTests", new Date()).id(1_003L).logDate(new Date()).build() //
+        );
+        var e = assertThrows(ConcurrentUpdateException.class,
+                () -> backend.insertLogs(union(originalEntries, newEntries)));
+        assertEquals("Concurrent update", e.getOriginalMessage());
+        // assert duplicate entries number
+        assertEquals(2, e.getInfos().size());
+        // assert new entries have been inserted
+        transactionalFeature.nextTransaction();
+        assertEquals(4, backend.queryLogs(queryBuilder).size());
+    }
 
     @Test
     public void shouldSupportMultiCriteriaQueries() {
