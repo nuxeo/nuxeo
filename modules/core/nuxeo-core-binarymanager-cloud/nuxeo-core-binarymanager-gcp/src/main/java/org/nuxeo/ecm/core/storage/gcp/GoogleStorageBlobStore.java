@@ -29,10 +29,11 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -54,7 +55,7 @@ import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.ReadChannel;
 import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.BlobInfo.Retention;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.CopyWriter;
 import com.google.cloud.storage.Storage;
@@ -357,17 +358,20 @@ public class GoogleStorageBlobStore extends AbstractBlobStore {
                     blob.toBuilder().setTemporaryHold(blobUpdateContext.updateLegalHold.hold).build().update();
                 }
                 if (blobUpdateContext.updateRetainUntil != null) {
-                    Calendar retainUntil = blobUpdateContext.updateRetainUntil.retainUntil;
-                    OffsetDateTime retainUntilTime = retainUntil == null ? null
-                            : retainUntil.toInstant().atOffset(ZoneOffset.UTC);
-                    blob.toBuilder()
-                        .setRetention(BlobInfo.Retention.newBuilder()
-                                                        .setMode(config.retentionMode)
-                                                        .setRetainUntilTime(retainUntilTime)
-                                                        .build())
-                        .build()
-                        .update();
-
+                    Optional.ofNullable(blobUpdateContext.updateRetainUntil.retainUntil)
+                            .map(Calendar::toInstant)
+                            .filter(retainUntil -> retainUntil.isAfter(Instant.now()))
+                            .map(retainUntil -> retainUntil.atOffset(ZoneOffset.UTC))
+                            .ifPresentOrElse(
+                                    retainUntilTime -> blob.toBuilder()
+                                                           .setRetention(Retention.newBuilder()
+                                                                                  .setMode(config.retentionMode)
+                                                                                  .setRetainUntilTime(retainUntilTime)
+                                                                                  .build())
+                                                           .build()
+                                                           .update(),
+                                    () -> log.debug("Skipping retention at GCS level for key: {}, retainUntil: {}",
+                                            gsKey::toString, () -> blobUpdateContext.updateRetainUntil.retainUntil));
                 }
             }
         } catch (StorageException e) {

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.gcp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -47,24 +48,24 @@ public class TestGoogleStorageRetention
         extends AbstractTestBlobStoreRetention<GoogleStorageBlobStoreConfiguration, GoogleStorageBlobKey> {
 
     @Override
+    protected void assertNoRetention() {
+        assertNull(getBlob().getRetention());
+    }
+
+    @Override
     protected void assertObjectHasLegalHold() {
-        assertTrue(getConfig().storage
-                                      .get(getCloudKey().blobId(),
-                                              Storage.BlobGetOption.fields(Storage.BlobField.values()))
-                                      .getTemporaryHold());
+        assertTrue(getBlob().getTemporaryHold());
     }
 
     @Override
     protected void assertObjectHasNotLegalHold() {
-        var hold = getConfig().storage.get(getCloudKey().blobId(),
-                Storage.BlobGetOption.fields(Storage.BlobField.values())).getTemporaryHold();
-        assertTrue(hold == null || Boolean.FALSE.equals(hold));
+        var hold = getBlob().getTemporaryHold();
+        assertTrue(hold == null || !hold);
     }
 
     @Override
     protected void assertRetention(Instant retainUntil) {
-        Blob blob = getConfig().storage.get(getCloudKey().blobId(),
-                Storage.BlobGetOption.fields(Storage.BlobField.values()));
+        Blob blob = getBlob();
         assertNotNull(blob.getRetention());
         assertEquals(getConfig().retentionMode, blob.getRetention().getMode());
         assertNotNull(blob.getRetention().getRetainUntilTime());
@@ -87,8 +88,7 @@ public class TestGoogleStorageRetention
     @Override
     protected boolean isRetentionExpired() throws IOException {
         try {
-            Blob blob = getConfig().storage.get(getCloudKey().blobId(),
-                    Storage.BlobGetOption.fields(Storage.BlobField.values()));
+            Blob blob = getBlob();
             if (blob.getRetention() == null) {
                 return true;
             }
@@ -105,6 +105,11 @@ public class TestGoogleStorageRetention
         } catch (StorageException e) {
             throw new IOException(e);
         }
+    }
+
+    protected Blob getBlob() {
+        return getConfig().storage.get(getCloudKey().blobId(),
+                Storage.BlobGetOption.fields(Storage.BlobField.values()));
     }
 
 }

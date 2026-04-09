@@ -20,6 +20,7 @@ package org.nuxeo.ecm.blob;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.CoreSession.RETAIN_UNTIL_INDETERMINATE;
 
 import java.io.IOException;
@@ -41,17 +42,19 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 2025.8
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @ConditionalIgnore(condition = IgnoreIfStorageRetentionDisabled.class)
 public abstract class AbstractTestBlobStoreRetention<T extends CloudBlobStoreConfiguration, S extends CloudBlobKey<T>> {
 
@@ -59,9 +62,14 @@ public abstract class AbstractTestBlobStoreRetention<T extends CloudBlobStoreCon
     protected CoreSession session;
 
     @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
+
+    @Inject
     protected TransactionalFeature txFeature;
 
     protected DocumentModel doc;
+
+    protected abstract void assertNoRetention();
 
     protected abstract void assertObjectHasLegalHold();
 
@@ -83,6 +91,12 @@ public abstract class AbstractTestBlobStoreRetention<T extends CloudBlobStoreCon
 
     protected Calendar getNextRetentionDelay() {
         Instant instant = Instant.now().plus(getRetentionDelay());
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        return GregorianCalendar.from(zonedDateTime);
+    }
+
+    protected Calendar getPastRetention() {
+        Instant instant = Instant.now().minus(getRetentionDelay());
         ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
         return GregorianCalendar.from(zonedDateTime);
     }
@@ -188,6 +202,20 @@ public abstract class AbstractTestBlobStoreRetention<T extends CloudBlobStoreCon
         session.setRetainUntil(doc.getRef(), retainShortWhile, null);
         txFeature.nextTransaction();
         assertObjectHasNotLegalHold();
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = TransactionalBlobStore.class)
+    public void testRetainUntilPastDateSkipsCloudRetention() {
+        Calendar pastRetention = getPastRetention();
+        session.setRetainUntil(doc.getRef(), pastRetention, null);
+        txFeature.nextTransaction();
+
+        // Record blob stores are transactional, check no error was logged while committing the transaction
+        assertTrue(logCaptureResult.getCaughtEvents().isEmpty());
+
+        // No retention should have been set at cloud level since the date is in the past
+        assertNoRetention();
     }
 
 }

@@ -30,10 +30,11 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -57,6 +58,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobImmutabilityPolicy;
 import com.azure.storage.blob.models.BlobRange;
+import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.models.BlockBlobItem;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.models.ParallelTransferOptions;
@@ -359,26 +361,34 @@ public class AzureBlobStore extends AbstractBlobStore {
     public void writeBlobProperties(BlobUpdateContext blobUpdateContext) throws IOException {
         String key = blobUpdateContext.key;
         var azureKey = new AzureBlobKey(config, key);
-        if (config.retentionEnabled) {
-            if (!azureKey.isVersioned()) {
-                throw new IOException("Cannot set legal hold or retention on non-versioned blob");
+        try {
+            if (config.retentionEnabled) {
+                if (!azureKey.isVersioned()) {
+                    throw new IOException("Cannot set legal hold or retention on non-versioned blob");
+                }
+                BlobClient blobClient = azureKey.blobClient();
+                if (!blobClient.exists()) {
+                    log.debug("Blob azure://{}/{} does not exist", config.containerName, azureKey);
+                    return;
+                }
+                if (blobUpdateContext.updateLegalHold != null) {
+                    blobClient.setLegalHold(blobUpdateContext.updateLegalHold.hold);
+                }
+                if (blobUpdateContext.updateRetainUntil != null) {
+                    Optional.ofNullable(blobUpdateContext.updateRetainUntil.retainUntil)
+                            .map(Calendar::toInstant)
+                            .filter(retainUntil -> retainUntil.isAfter(Instant.now()))
+                            .map(retainUntil -> retainUntil.atOffset(ZoneOffset.UTC))
+                            .ifPresentOrElse(retainUntilTime -> {
+                                BlobImmutabilityPolicy policy = new BlobImmutabilityPolicy().setPolicyMode(
+                                        config.retentionMode).setExpiryTime(retainUntilTime);
+                                blobClient.setImmutabilityPolicy(policy);
+                            }, () -> log.debug("Skipping retention at Azure Storage level for key: {}, retainUntil: {}",
+                                    azureKey::toString, () -> blobUpdateContext.updateRetainUntil.retainUntil));
+                }
             }
-            BlobClient blobClient = azureKey.blobClient();
-            if (!blobClient.exists()) {
-                log.debug("Blob azure://{}/{} does not exist", config.containerName, azureKey);
-                return;
-            }
-            if (blobUpdateContext.updateLegalHold != null) {
-                blobClient.setLegalHold(blobUpdateContext.updateLegalHold.hold);
-            }
-            if (blobUpdateContext.updateRetainUntil != null) {
-                Calendar retainUntil = blobUpdateContext.updateRetainUntil.retainUntil;
-                OffsetDateTime retainUntilTime = retainUntil == null ? null
-                        : retainUntil.toInstant().atOffset(ZoneOffset.UTC);
-                BlobImmutabilityPolicy policy = new BlobImmutabilityPolicy().setPolicyMode(config.retentionMode)
-                                                                            .setExpiryTime(retainUntilTime);
-                blobClient.setImmutabilityPolicy(policy);
-            }
+        } catch (BlobStorageException e) {
+            throw new IOException(e);
         }
     }
 

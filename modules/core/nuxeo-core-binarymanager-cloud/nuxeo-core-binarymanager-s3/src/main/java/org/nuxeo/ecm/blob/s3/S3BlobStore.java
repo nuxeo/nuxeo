@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletionException;
 
 import org.apache.commons.io.output.NullOutputStream;
@@ -706,16 +707,21 @@ public class S3BlobStore extends AbstractBlobStore {
                     if (!s3Key.isVersioned()) {
                         throw new IOException("Cannot set retention on non-versioned blob");
                     }
-                    Calendar retainUntil = blobUpdateContext.updateRetainUntil.retainUntil;
-                    Instant retainUntilInstant = retainUntil == null ? null : retainUntil.toInstant();
-                    logTrace("->", "setObjectRetention");
-                    logTrace("hnote right: " + s3Key);
-                    logTrace("rnote right: " + (retainUntil == null ? "null" : retainUntil.toInstant().toString()));
-                    amazonS3.putObjectRetention(
-                            pb -> pb.bucket(bucketName)
-                                    .key(s3Key.bucketKey())
-                                    .versionId(s3Key.versionId())
-                                    .retention(b -> b.mode(config.retentionMode).retainUntilDate(retainUntilInstant)));
+                    Optional.ofNullable(blobUpdateContext.updateRetainUntil.retainUntil)
+                            .map(Calendar::toInstant)
+                            .filter(retainUntil -> retainUntil.isAfter(Instant.now()))
+                            .ifPresentOrElse(retainUntil -> {
+                                logTrace("->", "setObjectRetention");
+                                logTrace("hnote right: " + s3Key);
+                                logTrace("rnote right: " + retainUntil);
+                                amazonS3.putObjectRetention(pb -> pb.bucket(bucketName)
+                                                                    .key(s3Key.bucketKey())
+                                                                    .versionId(s3Key.versionId())
+                                                                    .retention(b -> b.mode(config.retentionMode)
+                                                                                     .retainUntilDate(retainUntil)));
+
+                            }, () -> log.debug("Skipping retention at S3 level for key: {}, retainUntil: {}",
+                                    s3Key::toString, () -> blobUpdateContext.updateRetainUntil.retainUntil));
                 }
             }
             if (blobUpdateContext.coldStorageClass != null) {

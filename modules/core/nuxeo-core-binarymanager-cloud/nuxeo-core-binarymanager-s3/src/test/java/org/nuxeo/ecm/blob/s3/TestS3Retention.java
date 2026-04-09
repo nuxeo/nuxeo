@@ -20,6 +20,7 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static software.amazon.awssdk.services.s3.model.ObjectLockLegalHoldStatus.OFF;
 import static software.amazon.awssdk.services.s3.model.ObjectLockLegalHoldStatus.ON;
 
@@ -33,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
-import software.amazon.awssdk.services.s3.model.GetObjectLegalHoldResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.ObjectLockLegalHoldStatus;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -57,13 +58,8 @@ public class TestS3Retention extends AbstractTestBlobStoreRetention<S3BlobStoreC
     @Override
     protected boolean isRetentionExpired() throws IOException {
         try {
-            return Instant.now()
-                          .isAfter(getConfig().amazonS3
-                                                       .getObjectRetention(b -> b.bucket(getConfig().bucketName)
-                                                                                 .key(getCloudKey().bucketKey())
-                                                                                 .versionId(getCloudKey().versionId()))
-                                                       .retention()
-                                                       .retainUntilDate());
+            var retainUntil = headObject().objectLockRetainUntilDate();
+            return retainUntil == null || Instant.now().isAfter(retainUntil);
         } catch (S3Exception e) {
             throw new IOException(e);
         }
@@ -82,6 +78,13 @@ public class TestS3Retention extends AbstractTestBlobStoreRetention<S3BlobStoreC
     }
 
     @Override
+    protected void assertNoRetention() {
+        var headObject = headObject();
+        assertNull("Object has Object Lock mode set", headObject.objectLockMode());
+        assertNull("Object has Object Lock retain until date set", headObject.objectLockRetainUntilDate());
+    }
+
+    @Override
     protected void assertObjectHasLegalHold() {
         assertObjectLegalHold(ON);
     }
@@ -93,12 +96,7 @@ public class TestS3Retention extends AbstractTestBlobStoreRetention<S3BlobStoreC
 
     @Override
     protected void assertRetention(Instant retainUntil) {
-        assertEquals(retainUntil,
-                getConfig().amazonS3.getObjectRetention(b -> b.bucket(getConfig().bucketName)
-                                                              .key(getCloudKey().bucketKey())
-                                                              .versionId(getCloudKey().versionId()))
-                                    .retention()
-                                    .retainUntilDate());
+        assertEquals(retainUntil, headObject().objectLockRetainUntilDate());
     }
 
     @Override
@@ -107,11 +105,13 @@ public class TestS3Retention extends AbstractTestBlobStoreRetention<S3BlobStoreC
     }
 
     protected void assertObjectLegalHold(ObjectLockLegalHoldStatus expectedStatus) {
-        GetObjectLegalHoldResponse response = getConfig().amazonS3.getObjectLegalHold(
-                b -> b.bucket(getConfig().bucketName)
-                      .key(getCloudKey().bucketKey())
-                      .versionId(getCloudKey().versionId()));
-        assertEquals(expectedStatus, response.legalHold().status());
+        assertEquals(expectedStatus, headObject().objectLockLegalHoldStatus());
+    }
+
+    protected HeadObjectResponse headObject() {
+        return getConfig().amazonS3.headObject(b -> b.bucket(getConfig().bucketName)
+                                                     .key(getCloudKey().bucketKey())
+                                                     .versionId(getCloudKey().versionId()));
     }
 
 }
