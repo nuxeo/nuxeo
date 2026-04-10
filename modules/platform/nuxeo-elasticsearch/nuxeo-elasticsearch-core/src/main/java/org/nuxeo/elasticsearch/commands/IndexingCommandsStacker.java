@@ -85,7 +85,10 @@ public abstract class IndexingCommandsStacker {
             if (eventId.equals(DOCUMENT_SECURITY_UPDATED)) {
                 log.debug("Indexing root document children to update their permissions");
                 DocumentModelList children = doc.getCoreSession().getChildren(doc.getRef());
-                children.forEach(child -> stackCommand(child, docCtx, eventId));
+                for (DocumentModel child : children) {
+                    stackCommand(child, docCtx, eventId);
+                    stackDirectRootChildrenForSecurityUpdate(child, docCtx);
+                }
             }
         } else {
             stackCommand(doc, docCtx, eventId);
@@ -200,6 +203,23 @@ public abstract class IndexingCommandsStacker {
 
     private boolean isFolderish(DocumentModel doc) {
         return doc.isFolder() && !doc.isVersion();
+    }
+
+    /**
+     * Stack indexing for folder direct children of the repository root when its ACL changes.
+     *
+     * @since 2025.18
+     */
+    protected void stackDirectRootChildrenForSecurityUpdate(DocumentModel child, DocumentEventContext docCtx) {
+        if (!isFolderish(child)) {
+            return;
+        }
+        Boolean block = (Boolean) docCtx.getProperty(ElasticSearchConstants.DISABLE_AUTO_INDEXING);
+        if (Boolean.TRUE.equals(block)) {
+            return;
+        }
+        boolean sync = isSynchronous(docCtx, child);
+        getOrCreateCommands(child).add(Type.UPDATE, sync, false);
     }
 
     protected IndexingCommands getOrCreateCommands(DocumentModel doc) {

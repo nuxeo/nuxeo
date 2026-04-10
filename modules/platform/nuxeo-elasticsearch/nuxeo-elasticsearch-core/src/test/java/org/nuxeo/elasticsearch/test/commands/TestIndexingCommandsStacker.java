@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -263,6 +264,44 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
             return folder;
         }
 
+    }
+
+    @Test
+    public void testRootAclFolderChild() {
+        var root = session.getRootDocument();
+        assertEquals("/", root.getPathAsString());
+        var folder = session.createDocument(
+                session.createDocumentModel(root.getPathAsString(), "rootAclFolder", "Folder"));
+        var docCtx = new DocumentEventContext(session, session.getPrincipal(), root);
+        stackCommand(docCtx, DocumentEventTypes.DOCUMENT_SECURITY_UPDATED);
+        IndexingCommands icFolder = getCommands(folder);
+        assertEquals(2, icFolder.getCommands().size());
+        assertTrue(icFolder.contains(Type.UPDATE_SECURITY));
+        assertTrue(icFolder.contains(Type.UPDATE));
+        IndexingCommand secCmd = icFolder.getCommands()
+                                         .stream()
+                                         .filter(c -> c.getType() == Type.UPDATE_SECURITY)
+                                         .findFirst()
+                                         .orElseThrow();
+        assertTrue(secCmd.isRecurse());
+        IndexingCommand updCmd = icFolder.getCommands()
+                                         .stream()
+                                         .filter(c -> c.getType() == Type.UPDATE)
+                                         .findFirst()
+                                         .orElseThrow();
+        assertFalse(updCmd.isRecurse());
+    }
+
+    @Test
+    public void testRootAclFileChild() {
+        var root = session.getRootDocument();
+        var file = session.createDocument(session.createDocumentModel(root.getPathAsString(), "rootAclFile", "File"));
+        var docCtx = new DocumentEventContext(session, session.getPrincipal(), root);
+        stackCommand(docCtx, DocumentEventTypes.DOCUMENT_SECURITY_UPDATED);
+        IndexingCommands icFile = getCommands(file);
+        assertEquals(1, icFile.getCommands().size());
+        assertEquals(Type.UPDATE_SECURITY, icFile.getCommands().get(0).getType());
+        assertFalse(icFile.getCommands().get(0).isRecurse());
     }
 
     @Test
