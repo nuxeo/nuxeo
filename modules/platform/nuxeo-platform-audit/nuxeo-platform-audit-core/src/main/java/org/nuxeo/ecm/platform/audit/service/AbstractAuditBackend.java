@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import static org.nuxeo.ecm.platform.audit.impl.LogEntrySequenceGenerator.USE_NUXEO_SEQUENCER_PROPERTY;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.time.Duration;
@@ -30,6 +32,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import jakarta.el.ELException;
 
@@ -56,6 +59,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -254,16 +258,25 @@ public abstract class AbstractAuditBackend<L extends LogEntry> implements AuditB
         NuxeoPrincipal principal = session.getPrincipal();
         List<DocumentModel> folderishChildren = new ArrayList<>();
 
-        provider.addLogEntry(doCreateAndFillEntryFromDocument(node, session.getPrincipal()));
+        var logEntries = new ArrayList<LogEntry>();
+        logEntries.add(doCreateAndFillEntryFromDocument(node, session.getPrincipal()));
 
         for (DocumentModel child : guardedDocumentChildren(session, node.getRef())) {
             if (child.isFolder() && recurs) {
                 folderishChildren.add(child);
             } else {
-                provider.addLogEntry(doCreateAndFillEntryFromDocument(child, principal));
+                logEntries.add(doCreateAndFillEntryFromDocument(child, principal));
                 nbSyncedEntries += 1;
             }
         }
+        Consumer<LogEntry> persist = provider::addLogEntry;
+        if (Framework.isBooleanPropertyTrue(USE_NUXEO_SEQUENCER_PROPERTY)) {
+            var sequencer = Framework.getService(UIDGeneratorService.class).getSequencer();
+            List<Long> block = sequencer.getNextBlock("audit", logEntries.size());
+            Consumer<LogEntry> setId = entry -> ((LogEntryImpl) entry).setOriginalId(block.removeFirst());
+            persist = setId.andThen(persist);
+        }
+        logEntries.forEach(persist);
 
         if (recurs) {
             for (DocumentModel folderChild : folderishChildren) {

@@ -4,3 +4,6 @@ sql-audit.target=.
 nuxeo.template.includes=common
 
 nuxeo.audit.backend.default.factory=org.nuxeo.audit.sql.SQLAuditBackendFactory
+
+# deprecated since 2025.19, nuxeo sequencer would be the default
+nuxeo.audit.backend.default.sql.use_nuxeo_sequencer=false

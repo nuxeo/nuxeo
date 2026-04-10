@@ -33,6 +33,7 @@ import jakarta.persistence.EntityManager;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.audit.api.query.AuditQueryException;
 import org.nuxeo.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -40,6 +41,9 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test the log entries persistence
@@ -47,6 +51,8 @@ import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * @deprecated since 2025.0, follow {@link LogEntryProvider} deprecation
  */
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
 @SuppressWarnings("removal")
 @Deprecated(since = "2025.0", forRemoval = true)
 public class TestLogEntryProvider extends PersistenceTestCase {

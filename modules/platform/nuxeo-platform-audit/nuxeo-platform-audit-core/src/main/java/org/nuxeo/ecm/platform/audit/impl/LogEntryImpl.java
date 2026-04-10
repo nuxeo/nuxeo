@@ -44,6 +44,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.GenericGenerator;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.comment.UIAuditComment;
@@ -83,6 +84,12 @@ public class LogEntryImpl implements LogEntry {
 
     private long id;
 
+    /**
+     * @since 2025.19 - holds the caller-assigned id while {@link #id} is reset to 0 so Hibernate treats the entity as
+     *        transient
+     */
+    private Long originalId;
+
     private String principalName;
 
     private String eventId;
@@ -114,7 +121,8 @@ public class LogEntryImpl implements LogEntry {
      */
     @Override
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "nuxeo-log-generator")
+    @GenericGenerator(name = "nuxeo-log-generator", type = LogEntrySequenceGenerator.class)
     @Column(name = "LOG_ID", nullable = false, columnDefinition = "integer")
     public long getId() {
         return id;
@@ -123,6 +131,25 @@ public class LogEntryImpl implements LogEntry {
     @Override
     public void setId(long id) {
         this.id = id;
+    }
+
+    /**
+     * Introduced to use Nuxeo Sequencer within Hibernate.
+     * 
+     * @since 2025.19
+     */
+    @Transient
+    public Long getOriginalId() {
+        return originalId;
+    }
+
+    /**
+     * Introduced to use Nuxeo Sequencer within Hibernate.
+     * 
+     * @since 2025.19
+     */
+    public void setOriginalId(Long originalId) {
+        this.originalId = originalId;
     }
 
     /**

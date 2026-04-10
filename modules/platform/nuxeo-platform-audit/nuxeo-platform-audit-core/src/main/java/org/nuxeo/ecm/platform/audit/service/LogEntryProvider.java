@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import static org.nuxeo.ecm.platform.audit.impl.LogEntrySequenceGenerator.USE_NUXEO_SEQUENCER_PROPERTY;
+
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryList2;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @deprecated since 2025.0, {@link org.nuxeo.audit.service.AuditBackend} has all necessary APIs
@@ -80,13 +83,16 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     protected void doPersist(LogEntry entry) {
-        // Set the log date in java right before saving to the database. We
-        // cannot set a static column definition to
-        // "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" as MS SQL Server does not
-        // support the TIMESTAMP column type and generating a dynamic
-        // persistence configuration that would depend on the database is too
-        // complicated.
-        entry.setLogDate(new Date());
+        // set log date only if we handle the id
+        if (!Framework.isBooleanPropertyTrue(USE_NUXEO_SEQUENCER_PROPERTY)) {
+            // Set the log date in java right before saving to the database. We
+            // cannot set a static column definition to
+            // "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" as MS SQL Server does not
+            // support the TIMESTAMP column type and generating a dynamic
+            // persistence configuration that would depend on the database is too
+            // complicated.
+            entry.setLogDate(new Date());
+        }
         em.persist(entry);
     }
 
