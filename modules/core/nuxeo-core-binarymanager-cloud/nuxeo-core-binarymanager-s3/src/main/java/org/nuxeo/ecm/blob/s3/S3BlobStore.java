@@ -319,7 +319,7 @@ public class S3BlobStore extends AbstractBlobStore {
     }
 
     @Override
-    public OptionalOrUnknown<InputStream> getStream(String key) throws IOException {
+    public OptionalOrUnknown<InputStream> getStream(String key) {
         return OptionalOrUnknown.unknown();
     }
 
@@ -697,7 +697,7 @@ public class S3BlobStore extends AbstractBlobStore {
                     ObjectLockLegalHoldStatus status = hold ? ON : OFF;
                     logTrace("->", "setObjectLegalHold");
                     logTrace("hnote right: " + s3Key);
-                    logTrace("rnote right: " + status.toString());
+                    logTrace("rnote right: " + status);
                     amazonS3.putObjectLegalHold(pb -> pb.bucket(bucketName)
                                                         .key(s3Key.bucketKey())
                                                         .versionId(s3Key.versionId())
@@ -730,14 +730,13 @@ public class S3BlobStore extends AbstractBlobStore {
                 logTrace("->", "updateStorageClass");
                 logTrace("hnote right: " + s3Key);
                 logTrace("rnote right: " + storageClass);
-                Copy copy = config.transferManager.copy(cb -> cb.copyObjectRequest(b -> {
-                    b.sourceBucket(bucketName)
-                     .sourceKey(s3Key.bucketKey())
-                     .destinationBucket(bucketName)
-                     .destinationKey(s3Key.bucketKey())
-                     .storageClass(storageClass)
-                     .sourceVersionId(s3Key.versionId());
-                }));
+                Copy copy = config.transferManager.copy(
+                        cb -> cb.copyObjectRequest(b -> b.sourceBucket(bucketName)
+                                                         .sourceKey(s3Key.bucketKey())
+                                                         .destinationBucket(bucketName)
+                                                         .destinationKey(s3Key.bucketKey())
+                                                         .storageClass(storageClass)
+                                                         .sourceVersionId(s3Key.versionId())));
                 copy.completionFuture().join();
                 // No need to waitForCopyResult when changing storage class
             }

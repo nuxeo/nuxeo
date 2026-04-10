@@ -265,7 +265,7 @@ public class AzureBlobStore extends AbstractBlobStore {
     }
 
     @Override
-    public OptionalOrUnknown<InputStream> getStream(String key) throws IOException {
+    public OptionalOrUnknown<InputStream> getStream(String key) {
         BlobClient blobClient = client.getBlobClient(prefix + key);
         if (!blobClient.exists()) {
             return OptionalOrUnknown.missing();
