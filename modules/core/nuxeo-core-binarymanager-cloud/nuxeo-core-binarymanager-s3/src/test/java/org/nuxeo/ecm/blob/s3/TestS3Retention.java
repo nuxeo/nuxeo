@@ -26,13 +26,20 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.api.CoreSession.RETAIN_UNTIL_INDETERMINATE;
 import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
 
@@ -45,18 +52,21 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.BlacklistComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.amazonaws.SdkBaseException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectLegalHoldRequest;
 import com.amazonaws.services.s3.model.GetObjectLegalHoldResult;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRetentionRequest;
 import com.amazonaws.services.s3.model.ObjectLockLegalHold;
 import com.amazonaws.services.s3.model.ObjectLockLegalHoldStatus;
@@ -68,13 +78,16 @@ import com.amazonaws.services.s3.model.SetObjectLegalHoldRequest;
  * @since 2025.0
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, S3BlobProviderFeature.class })
+@Features({ CoreFeature.class, LogCaptureFeature.class, S3BlobProviderFeature.class })
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-blob-provider-s3-record.xml")
 @BlacklistComponent("org.nuxeo.ecm.core.storage.cloud.requestcontroller.service.contrib")
-public class TestS3BlobStoreRecordRetainIndeterminate {
+public class TestS3Retention {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Inject
     protected TransactionalFeature txFeature;
@@ -89,10 +102,21 @@ public class TestS3BlobStoreRecordRetainIndeterminate {
 
     protected AmazonS3 amazonS3;
 
+    protected void assertNoRetention() {
+        var metadata = amazonS3.getObjectMetadata(new GetObjectMetadataRequest(bucketName, bucketKey, versionId));
+        assertNull("Object has Object Lock mode set", metadata.getObjectLockLegalHoldStatus());
+        assertNull("Object has Object Lock retain until date set", metadata.getObjectLockRetainUntilDate());
+    }
+
     protected void assertObjectLegalHold(ObjectLockLegalHoldStatus expectedStatus) {
         GetObjectLegalHoldResult response = amazonS3.getObjectLegalHold(
                 new GetObjectLegalHoldRequest().withBucketName(bucketName).withKey(bucketKey).withVersionId(versionId));
         assertEquals(expectedStatus.toString(), response.getLegalHold().getStatus());
+    }
+
+    protected void assertRetention(Date retainUntil) {
+        var metadata = amazonS3.getObjectMetadata(new GetObjectMetadataRequest(bucketName, bucketKey, versionId));
+        assertEquals(retainUntil, metadata.getObjectLockRetainUntilDate());
     }
 
     @Before
@@ -141,6 +165,33 @@ public class TestS3BlobStoreRecordRetainIndeterminate {
                 // Never mind
             }
         }
+    }
+
+    @Test
+    public void testRetainUntilShortWhileAndExtend() {
+        Calendar retainShortWhile = Calendar.getInstance();
+        retainShortWhile.add(MILLISECOND, 500);
+        session.setRetainUntil(doc.getRef(), retainShortWhile, null);
+        txFeature.nextTransaction();
+        assertRetention(retainShortWhile.getTime());
+
+        // Extend retention expiration date
+        Calendar retainLongerWhile = Calendar.getInstance();
+        retainLongerWhile.add(MILLISECOND, 500);
+        session.setRetainUntil(doc.getRef(), retainLongerWhile, null);
+        txFeature.nextTransaction();
+        assertRetention(retainLongerWhile.getTime());
+    }
+
+    @Test
+    public void testLegalHoldUnHold() {
+        session.setLegalHold(doc.getRef(), true, null);
+        txFeature.nextTransaction();
+        assertObjectLegalHold(ON);
+
+        session.setLegalHold(doc.getRef(), false, null);
+        txFeature.nextTransaction();
+        assertObjectLegalHold(OFF);
     }
 
     @Test
@@ -193,6 +244,22 @@ public class TestS3BlobStoreRecordRetainIndeterminate {
         session.setRetainUntil(doc.getRef(), retainShortWhile, null);
         txFeature.nextTransaction();
         assertObjectLegalHold(OFF);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR", loggerClass = TransactionalBlobStore.class)
+    public void testRetainUntilPastDateSkipsCloudRetention() {
+        Instant instant = Instant.now().minus(Duration.ofMillis(500));
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        Calendar pastRetention = GregorianCalendar.from(zonedDateTime);
+        session.setRetainUntil(doc.getRef(), pastRetention, null);
+        txFeature.nextTransaction();
+
+        // Record blob stores are transactional, check no error was logged while committing the transaction
+        assertTrue(logCaptureResult.getCaughtEvents().isEmpty());
+
+        // No retention should have been set at cloud level since the date is in the past
+        assertNoRetention();
     }
 
 }

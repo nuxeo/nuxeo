@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -822,20 +823,26 @@ public class S3BlobStore extends AbstractBlobStore {
                     if (versionId == null) {
                         throw new IOException("Cannot set retention on non-versioned blob");
                     }
-                    Calendar retainUntil = blobUpdateContext.updateRetainUntil.retainUntil;
-                    Date retainUntilDate = retainUntil == null ? null : retainUntil.getTime();
-                    ObjectLockRetention retention = new ObjectLockRetention();
-                    retention.withMode(config.retentionMode) //
-                             .withRetainUntilDate(retainUntilDate);
-                    SetObjectRetentionRequest request = new SetObjectRetentionRequest();
-                    request.withBucketName(bucketName) //
-                           .withKey(bucketKey)
-                           .withVersionId(versionId)
-                           .withRetention(retention);
-                    logTrace("->", "setObjectRetention");
-                    logTrace("hnote right: " + bucketKey + "@" + versionId);
-                    logTrace("rnote right: " + (retainUntil == null ? "null" : retainUntil.toInstant().toString()));
-                    amazonS3.setObjectRetention(request);
+                    Optional.ofNullable(blobUpdateContext.updateRetainUntil.retainUntil)
+                            .map(Calendar::toInstant)
+                            .filter(retainUntil -> retainUntil.isAfter(Instant.now()))
+                            .ifPresentOrElse(retainUntil -> {
+                                ObjectLockRetention retention = new ObjectLockRetention();
+                                retention.withMode(config.retentionMode) //
+                                         .withRetainUntilDate(Date.from(retainUntil));
+                                SetObjectRetentionRequest request = new SetObjectRetentionRequest();
+                                request.withBucketName(bucketName) //
+                                       .withKey(bucketKey)
+                                       .withVersionId(versionId)
+                                       .withRetention(retention);
+                                logTrace("->", "setObjectRetention");
+                                logTrace("hnote right: " + bucketKey + "@" + versionId);
+                                logTrace("rnote right: " + retainUntil.toString());
+                                amazonS3.setObjectRetention(request);
+
+                            }, () -> log.debug("Skipping retention at S3 level for key: {}, retainUntil: {}",
+                                    () -> bucketKey + "@" + versionId,
+                                    () -> blobUpdateContext.updateRetainUntil.retainUntil));
                 }
             }
             if (blobUpdateContext.coldStorageClass != null) {
