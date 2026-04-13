@@ -14,6 +14,12 @@
     <!-- compile scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-kv</artifactId>
+      <type>test-jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>compile</scope>
     </dependency>

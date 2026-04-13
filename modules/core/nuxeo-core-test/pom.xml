@@ -84,6 +84,12 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-kv</artifactId>
+      <type>test-jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
     <dependency>

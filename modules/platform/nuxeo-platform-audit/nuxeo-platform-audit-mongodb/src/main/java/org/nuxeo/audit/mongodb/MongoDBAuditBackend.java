@@ -20,7 +20,6 @@ package org.nuxeo.audit.mongodb;
 
 import static com.mongodb.client.model.Projections.include;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_ID;
-import static org.nuxeo.ecm.core.uidgen.KeyValueStoreUIDSequencer.DEFAULT_STORE_NAME;
 import static org.nuxeo.runtime.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 
 import java.io.IOException;
@@ -59,8 +58,6 @@ import org.nuxeo.ecm.core.storage.mongodb.query.MongoDBSearchConverter;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.mongodb.MongoDBSerializationHelper;
 
 import com.mongodb.client.FindIterable;
@@ -307,9 +304,6 @@ public class MongoDBAuditBackend extends AbstractAuditBackend
     protected void clearEntries() {
         // clear audit
         collection.drop();
-        // clear sequencer
-        ((KeyValueStoreProvider) Framework.getService(KeyValueService.class)
-                                          .getKeyValueStore(DEFAULT_STORE_NAME)).clear();
     }
 
     @Override

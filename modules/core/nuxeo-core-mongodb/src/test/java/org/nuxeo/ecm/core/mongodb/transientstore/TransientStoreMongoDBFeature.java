@@ -28,7 +28,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 /**
  * @since 2021.30
  */
-@Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.storage")
 @Deploy("org.nuxeo.ecm.core.api")
 @Deploy("org.nuxeo.ecm.core.mongodb.test:OSGI-INF/test-mongodb-transientstore-contrib.xml")

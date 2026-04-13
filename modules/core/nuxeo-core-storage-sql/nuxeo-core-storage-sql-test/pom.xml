@@ -93,6 +93,12 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-kv</artifactId>
+      <type>test-jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-stream</artifactId>
       <type>test-jar</type>
       <scope>compile</scope>
@@ -172,11 +178,6 @@
     </dependency>
 
     <!-- Nuxeo test libraries -->
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-kv</artifactId>
-      <type>test-jar</type>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>

@@ -27,16 +27,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.core.LogEvent;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.cluster.ClusterServiceImpl.ClusterLockHelper;
-import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -62,19 +60,8 @@ public class TestClusterLockHelper {
     protected ClusterService clusterService;
 
     @Inject
-    protected KeyValueService keyValueService;
-
+    @Named(ClusterLockHelper.KV_STORE_NAME)
     protected KeyValueStore kvStore;
-
-    @Before
-    public void setUp() {
-        kvStore = keyValueService.getKeyValueStore(ClusterLockHelper.KV_STORE_NAME);
-    }
-
-    @After
-    public void tearDown() {
-        kvStore.put("mykey", (String) null);
-    }
 
     @Test
     public void testLockFailure() {

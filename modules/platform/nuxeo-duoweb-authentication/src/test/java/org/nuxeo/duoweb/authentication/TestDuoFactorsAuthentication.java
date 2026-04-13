@@ -51,12 +51,12 @@ import org.nuxeo.ecm.platform.web.common.MockHttpServletRequest;
 import org.nuxeo.ecm.platform.web.common.MockHttpServletResponse;
 import org.nuxeo.ecm.platform.web.common.WebCommonFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.RuntimeKeyValueStoreFeature;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.duosecurity.Client;
 import com.duosecurity.exception.DuoException;
@@ -67,8 +67,7 @@ import com.duosecurity.model.Token;
  * @since 2025.5
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, MockitoFeature.class, WebCommonFeature.class })
-@Deploy("org.nuxeo.runtime.kv")
+@Features({ RuntimeKeyValueStoreFeature.class, MockitoFeature.class, WebCommonFeature.class })
 @Deploy("org.nuxeo.ecm.platform.login")
 @Deploy("org.nuxeo.duoweb.authentication")
 @Deploy("org.nuxeo.duoweb.authentication.test:OSGI-INF/duo-authentication-test-config.xml")

@@ -107,6 +107,11 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-kv</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
     </dependency>

@@ -80,6 +80,11 @@
       <artifactId>nuxeo-runtime-cluster</artifactId>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-kv</artifactId>
+      <type>test-jar</type>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

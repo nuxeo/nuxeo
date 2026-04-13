@@ -32,11 +32,14 @@ import org.junit.Test;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
 import org.nuxeo.http.test.handler.JsonNodeHandler;
 import org.nuxeo.http.test.handler.StringHandler;
+import org.nuxeo.runtime.test.runner.Cleanup;
+import org.nuxeo.runtime.test.runner.Cleanup.Granularity;
 import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @since 2021.35
  */
+@Cleanup(Granularity.CLASS) // K/V is filled with introspection at Runtime start happening at test class start only
 @WithFrameworkProperty(name = StreamObject.ENABLED_OPTION, value = "true")
 public class TestStreamObject extends ManagementBaseTest {
 

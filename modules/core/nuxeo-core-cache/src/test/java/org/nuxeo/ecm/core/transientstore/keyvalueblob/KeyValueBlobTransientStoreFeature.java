@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.transientstore.keyvalueblob;
 
 import org.nuxeo.ecm.core.transientstore.TransientStoreFeature;
+import org.nuxeo.runtime.kv.RuntimeKeyValueStoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -26,10 +27,9 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 /**
  * @since 9.3
  */
-@Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.api")
 @Deploy("org.nuxeo.ecm.core.cache.test:OSGI-INF/test-kvbts-config.xml")
-@Features(TransientStoreFeature.class)
+@Features({ RuntimeKeyValueStoreFeature.class, TransientStoreFeature.class })
 public class KeyValueBlobTransientStoreFeature implements RunnerFeature {
 
 }

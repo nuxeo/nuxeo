@@ -22,13 +22,14 @@ import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.ts.RuntimeTransientDataStoreFeature;
 
 /**
  * Feature deploying the userManager and a default directory configuration for it.
  *
  * @since 11.1
  */
-@Features(DirectoryFeature.class)
+@Features({ RuntimeTransientDataStoreFeature.class, DirectoryFeature.class })
 @Deploy("org.nuxeo.ecm.platform.query.api") // required for userManager/directory page providers
 @Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
