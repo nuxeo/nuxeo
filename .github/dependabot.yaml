@@ -26,7 +26,7 @@ updates:
 
       # Tomcat major security updates
       - dependency-name: "org.apache.tomcat:*"
-        versions: ["[10,0.0)"]
+        versions: ["[10.0.0,)"]
 
       # Spurious major version updates
       - dependency-name: "com.google.apis:google-api-services-drive"
@@ -96,7 +96,7 @@ updates:
 
       # Tomcat major security updates
       - dependency-name: "org.apache.tomcat:*"
-        versions: ["[11,0.0)"]
+        versions: ["[11.0.0,)"]
 
       # Spurious major version updates
       - dependency-name: "com.google.apis:google-api-services-drive"
