@@ -93,7 +93,7 @@
     <box.api.version>1.1.0</box.api.version>
     <pdfbox.version>3.0.7</pdfbox.version>
     <pdfbox.jbig2.version>3.0.4</pdfbox.jbig2.version>
-    <aws.version>2.42.28</aws.version>
+    <aws.version>2.42.34</aws.version>
     <gcp.version>2.66.0</gcp.version>
     <jackson1.version>1.9.13</jackson1.version>
     <jackson.bom.version>2.21.2</jackson.bom.version>
