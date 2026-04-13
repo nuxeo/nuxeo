@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 public class GroupObject extends AbstractUMObject<NuxeoGroup> {
 
     @Path("user/{username}")
-    public UserToGroupObject doGetUserToGroup(@PathParam("username") String username) {
+    public Object doGetUserToGroup(@PathParam("username") String username) {
         UserManager um = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = um.getPrincipal(username);
         if (principal == null) {

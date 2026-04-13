@@ -96,7 +96,7 @@ public class SearchObject extends QueryExecutor {
      * @since 10.3
      */
     @Path("bulk")
-    public BulkActionObject doBulkActionByLang(@Context UriInfo uriInfo) {
+    public Object doBulkActionByLang(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(null, queryParams);
         String scrollName = queryParams.getFirst(SCROLL_PARAM);
@@ -121,7 +121,7 @@ public class SearchObject extends QueryExecutor {
     }
 
     @Path("pp/{pageProviderName}/bulk")
-    public BulkActionObject doBulkActionByPageProvider(@PathParam("pageProviderName") String pageProviderName,
+    public Object doBulkActionByPageProvider(@PathParam("pageProviderName") String pageProviderName,
             @Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         PageProvider<?> pageProvider = getPageProvider(pageProviderName, queryParams);
@@ -172,7 +172,7 @@ public class SearchObject extends QueryExecutor {
     }
 
     @Path("saved/{id}/bulk")
-    public BulkActionObject doBulkActionBySavedSearch(@PathParam("id") String id, @Context UriInfo uriInfo) {
+    public Object doBulkActionBySavedSearch(@PathParam("id") String id, @Context UriInfo uriInfo) {
         SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
         if (search == null) {
             throw new NuxeoException("Saved search not found", SC_NOT_FOUND);

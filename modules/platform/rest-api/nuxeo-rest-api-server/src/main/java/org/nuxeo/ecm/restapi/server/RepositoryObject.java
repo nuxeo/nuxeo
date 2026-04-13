@@ -50,21 +50,21 @@ public class RepositoryObject extends DefaultObject {
     }
 
     @Path("path{docPath:(/(?:(?!/@).)*)}")
-    public JSONDocumentObject getDocsByPath(@PathParam("docPath") String docPath) {
+    public Object getDocsByPath(@PathParam("docPath") String docPath) {
         CoreSession session = getContext().getCoreSession();
         DocumentModel doc = session.getDocument(new PathRef(docPath));
         return newObject(JSONDocumentObject.class, doc);
     }
 
     @Path("id/{id}")
-    public JSONDocumentObject getDocsById(@PathParam("id") String id) {
+    public Object getDocsById(@PathParam("id") String id) {
         CoreSession session = getContext().getCoreSession();
         DocumentModel doc = session.getDocument(new IdRef(id));
         return newObject(JSONDocumentObject.class, doc);
     }
 
     @Path("@" + EmptyDocumentAdapter.NAME)
-    public EmptyDocumentAdapter getEmptyDocumentModel() {
+    public Object getEmptyDocumentModel() {
         return newObject(EmptyDocumentAdapter.class);
     }
 

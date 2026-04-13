@@ -118,7 +118,7 @@ public class DirectoryObject extends PaginableObject<DirectoryEntry> {
     }
 
     @Path("{entryId:((?:(?!/@).)*)}")
-    public DirectoryEntryObject getEntry(@PathParam("entryId") final String entryId) {
+    public Object getEntry(@PathParam("entryId") final String entryId) {
         return withDirectorySession(directory, new DirectorySessionRunner<>() {
 
             @Override

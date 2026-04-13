@@ -30,17 +30,17 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 public class ConfigEndPoint extends DefaultObject {
 
     @Path("types")
-    public DocTypeEndPoint getTypes() {
+    public Object getTypes() {
         return newObject(DocTypeEndPoint.class);
     }
 
     @Path("schemas")
-    public SchemaEndPoint getSchemas() {
+    public Object getSchemas() {
         return newObject(SchemaEndPoint.class);
     }
 
     @Path("facets")
-    public FacetEndPoint getDocFacets() {
+    public Object getDocFacets() {
         return newObject(FacetEndPoint.class);
     }
 }
