@@ -43,7 +43,6 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
@@ -125,51 +124,52 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
-        case EP_EMBEDDED_SERVER:
-            ElasticSearchEmbeddedServerConfig serverContrib = (ElasticSearchEmbeddedServerConfig) contribution;
-            if (serverContrib.isEnabled()) {
-                embeddedServerConfig = serverContrib;
-                log.info("Registering embedded server configuration: {}, loaded from {}", embeddedServerConfig,
-                        contributor.getName());
-            } else if (embeddedServerConfig != null) {
-                log.info("Disabling previous embedded server configuration, deactivated by {}", contributor.getName());
-                embeddedServerConfig = null;
-            }
-            break;
-        case EP_CLIENT_INIT:
-            clientConfig = (ElasticSearchClientConfig) contribution;
-            break;
-        case EP_INDEX:
-            ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
-            ElasticSearchIndexConfig previous = indexConfig.get(idx.getName());
-            if (idx.isEnabled()) {
-                if (previous != null) {
-                    previous.merge(idx);
-                    indexConfig.put(idx.getName(), previous);
-                } else {
-                    indexConfig.put(idx.getName(), idx);
+            case EP_EMBEDDED_SERVER:
+                ElasticSearchEmbeddedServerConfig serverContrib = (ElasticSearchEmbeddedServerConfig) contribution;
+                if (serverContrib.isEnabled()) {
+                    embeddedServerConfig = serverContrib;
+                    log.info("Registering embedded server configuration: {}, loaded from {}", embeddedServerConfig,
+                            contributor.getName());
+                } else if (embeddedServerConfig != null) {
+                    log.info("Disabling previous embedded server configuration, deactivated by {}",
+                            contributor.getName());
+                    embeddedServerConfig = null;
                 }
-                log.info("Registering index configuration: {}, loaded from {}", idx, contributor.getName());
-            } else if (previous != null) {
-                log.info("Disabling index configuration: {}, deactivated by {}", previous, contributor.getName());
-                indexConfig.remove(idx.getName());
-            }
-            break;
-        case EP_DOC_WRITER:
-            ElasticSearchDocWriterDescriptor writerDescriptor = (ElasticSearchDocWriterDescriptor) contribution;
-            try {
-                jsonESDocumentWriter = writerDescriptor.getKlass().getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                log.error("Cannot instantiate jsonESDocumentWriter from {}", writerDescriptor::getKlass);
-                throw new NuxeoException(e);
-            }
-            break;
-        case EP_HINTS:
-            ESHintQueryBuilderDescriptor esHintDescriptor = (ESHintQueryBuilderDescriptor) contribution;
-            register(EP_HINTS, esHintDescriptor);
-            break;
-        default:
-            throw new IllegalStateException("Invalid EP: " + extensionPoint);
+                break;
+            case EP_CLIENT_INIT:
+                clientConfig = (ElasticSearchClientConfig) contribution;
+                break;
+            case EP_INDEX:
+                ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
+                ElasticSearchIndexConfig previous = indexConfig.get(idx.getName());
+                if (idx.isEnabled()) {
+                    if (previous != null) {
+                        previous.merge(idx);
+                        indexConfig.put(idx.getName(), previous);
+                    } else {
+                        indexConfig.put(idx.getName(), idx);
+                    }
+                    log.info("Registering index configuration: {}, loaded from {}", idx, contributor.getName());
+                } else if (previous != null) {
+                    log.info("Disabling index configuration: {}, deactivated by {}", previous, contributor.getName());
+                    indexConfig.remove(idx.getName());
+                }
+                break;
+            case EP_DOC_WRITER:
+                ElasticSearchDocWriterDescriptor writerDescriptor = (ElasticSearchDocWriterDescriptor) contribution;
+                try {
+                    jsonESDocumentWriter = writerDescriptor.getKlass().getDeclaredConstructor().newInstance();
+                } catch (ReflectiveOperationException e) {
+                    log.error("Cannot instantiate jsonESDocumentWriter from {}", writerDescriptor::getKlass);
+                    throw new NuxeoException(e);
+                }
+                break;
+            case EP_HINTS:
+                ESHintQueryBuilderDescriptor esHintDescriptor = (ESHintQueryBuilderDescriptor) contribution;
+                register(EP_HINTS, esHintDescriptor);
+                break;
+            default:
+                throw new IllegalStateException("Invalid EP: " + extensionPoint);
         }
     }
 
