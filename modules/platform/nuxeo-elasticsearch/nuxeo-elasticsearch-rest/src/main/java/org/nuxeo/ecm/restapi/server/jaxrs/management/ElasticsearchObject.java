@@ -72,7 +72,7 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
 
     private static final Logger log = LogManager.getLogger(ElasticsearchObject.class);
 
-    public static final String GET_ALL_DOCUMENTS_QUERY = "SELECT * from Document";
+    public static final String GET_ALL_DOCUMENTS_QUERY = "SELECT * FROM Document, Relation";
 
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -102,7 +102,7 @@ public class ElasticsearchObject extends AbstractResource<ResourceTypeImpl> {
     @Path("{documentId}/reindex")
     public BulkStatus doIndexingOnDocument(@PathParam("documentId") String documentId,
             @QueryParam("queryLimit") @DefaultValue("-1") Long queryLimit) {
-        String query = String.format("Select * From Document where %s = '%s' or %s = '%s'", //
+        String query = String.format("Select * From Document, Relation where %s = '%s' or %s = '%s'", //
                 NXQL.ECM_UUID, documentId, //
                 NXQL.ECM_ANCESTORID, documentId);
 

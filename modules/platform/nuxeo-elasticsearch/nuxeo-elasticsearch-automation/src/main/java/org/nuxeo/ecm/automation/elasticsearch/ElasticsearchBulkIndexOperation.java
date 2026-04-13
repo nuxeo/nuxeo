@@ -68,7 +68,7 @@ public class ElasticsearchBulkIndexOperation {
     @OperationMethod
     public Blob run() throws IOException {
         checkAccess();
-        String commandId = submitBulkCommand("SELECT ecm:uuid FROM Document", true);
+        String commandId = submitBulkCommand("SELECT ecm:uuid FROM Document, Relation", true);
         esa.initRepositoryIndexWithAliases(session.getRepositoryName());
         log.warn("Submitted index command: {} to index the entire {} repository.", commandId,
                 session.getRepositoryName());

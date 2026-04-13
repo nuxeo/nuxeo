@@ -22,6 +22,8 @@ package org.nuxeo.elasticsearch.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.elasticsearch.test.ESTestUtils.assertEqualsEvenUnderWindows;
+import static org.nuxeo.elasticsearch.test.ESTestUtils.getAllDocumentPrimaryTypeClauseValue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.opensearch.index.query.QueryBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +57,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.opensearch.index.query.QueryBuilder;
 
 @SuppressWarnings("unchecked")
 @RunWith(FeaturesRunner.class)
@@ -774,53 +775,73 @@ public class TestPageProvider {
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [\n" + //
-                "      {\n" + //
-                "        \"constant_score\" : {\n" + //
-                "          \"filter\" : {\n" + //
-                "            \"term\" : {\n" + //
-                "              \"dc:title.fulltext\" : {\n" + //
-                "                \"value\" : \"you know\",\n" + //
-                "                \"boost\" : 1.0\n" + //
-                "              }\n" + //
-                "            }\n" + //
-                "          },\n" + //
-                "          \"boost\" : 1.0\n" + //
-                "        }\n" + //
-                "      },\n" + //
-                "      {\n" + //
-                "        \"fuzzy\" : {\n" + //
-                "          \"my_field\" : {\n" + //
-                "            \"value\" : \"for search\",\n" + //
-                "            \"fuzziness\" : \"AUTO\",\n" + //
-                "            \"prefix_length\" : 0,\n" + //
-                "            \"max_expansions\" : 50,\n" + //
-                "            \"transpositions\" : true,\n" + //
-                "            \"boost\" : 1.0\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      },\n" + //
-                "      {\n" + //
-                "        \"constant_score\" : {\n" + //
-                "          \"filter\" : {\n" + //
-                "            \"terms\" : {\n" + //
-                "              \"my_subject\" : [\n" + //
-                "                \"foo\",\n" + //
-                "                \"bar\"\n" + //
-                "              ],\n" + //
-                "              \"boost\" : 1.0\n" + //
-                "            }\n" + //
-                "          },\n" + //
-                "          \"boost\" : 1.0\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    ],\n" + //
-                "    \"adjust_pure_negative\" : true,\n" + //
-                "    \"boost\" : 1.0\n" + //
-                "  }\n" + //
-                "}", esquery);
+        assertEqualsEvenUnderWindows("""
+                {
+                  "bool" : {
+                    "must" : [
+                      {
+                        "bool" : {
+                          "must" : [
+                            {
+                              "constant_score" : {
+                                "filter" : {
+                                  "term" : {
+                                    "dc:title.fulltext" : {
+                                      "value" : "you know",
+                                      "boost" : 1.0
+                                    }
+                                  }
+                                },
+                                "boost" : 1.0
+                              }
+                            },
+                            {
+                              "fuzzy" : {
+                                "my_field" : {
+                                  "value" : "for search",
+                                  "fuzziness" : "AUTO",
+                                  "prefix_length" : 0,
+                                  "max_expansions" : 50,
+                                  "transpositions" : true,
+                                  "boost" : 1.0
+                                }
+                              }
+                            },
+                            {
+                              "constant_score" : {
+                                "filter" : {
+                                  "terms" : {
+                                    "my_subject" : [
+                                      "foo",
+                                      "bar"
+                                    ],
+                                    "boost" : 1.0
+                                  }
+                                },
+                                "boost" : 1.0
+                              }
+                            }
+                          ],
+                          "adjust_pure_negative" : true,
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "filter" : [
+                      {
+                        "terms" : {
+                          "ecm:primaryType" : [
+                            %s
+                          ],
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "adjust_pure_negative" : true,
+                    "boost" : 1.0
+                  }
+                }""".formatted(getAllDocumentPrimaryTypeClauseValue()), esquery);
+
     }
 
     @Test
@@ -838,53 +859,72 @@ public class TestPageProvider {
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [\n" + //
-                "      {\n" + //
-                "        \"constant_score\" : {\n" + //
-                "          \"filter\" : {\n" + //
-                "            \"term\" : {\n" + //
-                "              \"dc:title.fulltext\" : {\n" + //
-                "                \"value\" : \"you know\",\n" + //
-                "                \"boost\" : 1.0\n" + //
-                "              }\n" + //
-                "            }\n" + //
-                "          },\n" + //
-                "          \"boost\" : 1.0\n" + //
-                "        }\n" + //
-                "      },\n" + //
-                "      {\n" + //
-                "        \"fuzzy\" : {\n" + //
-                "          \"my_field\" : {\n" + //
-                "            \"value\" : \"for search\",\n" + //
-                "            \"fuzziness\" : \"AUTO\",\n" + //
-                "            \"prefix_length\" : 0,\n" + //
-                "            \"max_expansions\" : 50,\n" + //
-                "            \"transpositions\" : true,\n" + //
-                "            \"boost\" : 1.0\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      },\n" + //
-                "      {\n" + //
-                "        \"constant_score\" : {\n" + //
-                "          \"filter\" : {\n" + //
-                "            \"terms\" : {\n" + //
-                "              \"my_subject\" : [\n" + //
-                "                \"foo\",\n" + //
-                "                \"bar\"\n" + //
-                "              ],\n" + //
-                "              \"boost\" : 1.0\n" + //
-                "            }\n" + //
-                "          },\n" + //
-                "          \"boost\" : 1.0\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    ],\n" + //
-                "    \"adjust_pure_negative\" : true,\n" + //
-                "    \"boost\" : 1.0\n" + //
-                "  }\n" + //
-                "}", esquery);
+        assertEqualsEvenUnderWindows("""
+                {
+                  "bool" : {
+                    "must" : [
+                      {
+                        "bool" : {
+                          "must" : [
+                            {
+                              "constant_score" : {
+                                "filter" : {
+                                  "term" : {
+                                    "dc:title.fulltext" : {
+                                      "value" : "you know",
+                                      "boost" : 1.0
+                                    }
+                                  }
+                                },
+                                "boost" : 1.0
+                              }
+                            },
+                            {
+                              "fuzzy" : {
+                                "my_field" : {
+                                  "value" : "for search",
+                                  "fuzziness" : "AUTO",
+                                  "prefix_length" : 0,
+                                  "max_expansions" : 50,
+                                  "transpositions" : true,
+                                  "boost" : 1.0
+                                }
+                              }
+                            },
+                            {
+                              "constant_score" : {
+                                "filter" : {
+                                  "terms" : {
+                                    "my_subject" : [
+                                      "foo",
+                                      "bar"
+                                    ],
+                                    "boost" : 1.0
+                                  }
+                                },
+                                "boost" : 1.0
+                              }
+                            }
+                          ],
+                          "adjust_pure_negative" : true,
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "filter" : [
+                      {
+                        "terms" : {
+                          "ecm:primaryType" : [
+                            %s
+                          ],
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "adjust_pure_negative" : true,
+                    "boost" : 1.0
+                  }
+                }""".formatted(getAllDocumentPrimaryTypeClauseValue()), esquery);
     }
 
     @Test
@@ -987,19 +1027,6 @@ public class TestPageProvider {
     public void testPageProviderType() {
         PageProvider<?> pageProvider = pageProviderService.getPageProvider("NXQL_PP_PATTERN", null, null, null, null);
         assertEquals(PageProviderType.ELASTIC, pageProviderService.getPageProviderType(pageProvider));
-    }
-
-    protected void assertEqualsEvenUnderWindows(String expected, String actual) {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            // make tests pass under Windows
-            expected = expected.trim();
-            expected = expected.replace("\n", "");
-            expected = expected.replace("\r", "");
-            actual = actual.trim();
-            actual = actual.replace("\n", "");
-            actual = actual.replace("\r", "");
-        }
-        Assert.assertEquals(expected, actual);
     }
 
 }

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_CARDINALITY;
+import static org.nuxeo.elasticsearch.test.ESTestUtils.assertEqualsEvenUnderWindows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,8 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.opensearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -75,6 +74,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.opensearch.search.builder.SearchSourceBuilder;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -131,7 +131,7 @@ public class TestAggregates {
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
         aggDef.setProperty("minDocCount", "10");
         aggDef.setProperty("size", "10");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -153,7 +153,7 @@ public class TestAggregates {
         aggDef.setProperty("exclude", "foo*");
         aggDef.setProperty("include", "bar*");
         aggDef.setProperty("order", "count asc");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
@@ -172,7 +172,7 @@ public class TestAggregates {
         aggDef.setDocumentField("ecm:isTrashed");
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "trashed_agg"));
         aggDef.setProperty("size", "2");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
@@ -190,7 +190,7 @@ public class TestAggregates {
         aggDef.setId("fulltext");
         aggDef.setDocumentField("ecm:fulltext");
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "fulltext_agg"));
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -208,7 +208,7 @@ public class TestAggregates {
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
         aggDef.setProperty("minDocCount", "10");
 
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
@@ -231,7 +231,7 @@ public class TestAggregates {
         ranges.add(new AggregateRangeDescriptor("medium", 2048.0, 6144.0));
         ranges.add(new AggregateRangeDescriptor("big", 6144.0, null));
         aggDef.setRanges(ranges);
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
@@ -254,7 +254,7 @@ public class TestAggregates {
         ranges.add(new AggregateRangeDateDescriptor("1monthAgo", "now-10M/M", "now-1M/M"));
         ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M", null));
         aggDef.setDateRanges(ranges);
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
@@ -275,7 +275,7 @@ public class TestAggregates {
         aggDef.setProperty("interval", "1024");
         aggDef.setProperty("extendedBoundsMin", "0");
         aggDef.setProperty("extendedBoundsMax", "10240");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -296,8 +296,7 @@ public class TestAggregates {
         aggDef.setProperty("extendedBoundsMax", "10240");
         HistogramAggregate agg = (HistogramAggregate) AggregateFactory.create(aggDef, null);
         agg.setSelection(Collections.singletonList("2048.0"));
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(agg);
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation").addAggregate(agg);
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
@@ -319,7 +318,7 @@ public class TestAggregates {
         aggDef.setProperty("minDocCounts", "5");
         DateHistogramAggregate agg = (DateHistogramAggregate) AggregateFactory.create(aggDef, null);
         agg.setSelection(Collections.singletonList("2016-08"));
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(agg);
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation").addAggregate(agg);
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
@@ -338,7 +337,7 @@ public class TestAggregates {
         aggDef.setProperty("interval", "month");
         aggDef.setProperty("order", "count desc");
         aggDef.setProperty("minDocCounts", "5");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -374,7 +373,7 @@ public class TestAggregates {
         model.setProperty("advanced_search", "source_agg", sources);
         // String[] natures = { "foobar" };
         // model.setProperty("advanced_search", "nature_agg", natures);
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef1, model))
                                                        .addAggregate(AggregateFactory.create(aggDef2, model));
 
@@ -395,7 +394,7 @@ public class TestAggregates {
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
         aggDef.setProperty("minDocCount", "10");
 
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document, Relation")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
@@ -610,22 +609,10 @@ public class TestAggregates {
                 pp.getAggregates().get("source").toString());
     }
 
-    protected void assertEqualsEvenUnderWindows(String expected, String actual) {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            // make tests pass under Windows
-            expected = expected.trim();
-            expected = expected.replace("\n", "");
-            expected = expected.replace("\r", "");
-            actual = actual.trim();
-            actual = actual.replace("\n", "");
-            actual = actual.replace("\r", "");
-        }
-        assertEquals(expected, actual);
-    }
-
     private static class DummyLengthBlob extends AbstractBlob {
 
         private static final long serialVersionUID = 1L;
+
         private final long length;
 
         public DummyLengthBlob(long length) {

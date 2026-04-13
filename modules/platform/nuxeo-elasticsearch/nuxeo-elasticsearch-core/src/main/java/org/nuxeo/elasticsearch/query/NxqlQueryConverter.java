@@ -19,6 +19,8 @@
  */
 package org.nuxeo.elasticsearch.query;
 
+import static org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.TYPE_DOCUMENT;
+import static org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.TYPE_RELATION;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_SCORE_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
@@ -53,7 +55,6 @@ import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
-import org.nuxeo.ecm.core.query.sql.model.FromList;
 import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
@@ -72,7 +73,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.hint.MoreLikeThisESHintQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
@@ -90,9 +90,9 @@ import org.opensearch.index.query.SimpleQueryStringBuilder;
  */
 public final class NxqlQueryConverter {
 
-    protected static final String SELECT_ALL = "SELECT * FROM Document";
+    protected static final String SELECT_ALL = "SELECT * FROM Document, Relation";
 
-    protected static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
+    protected static final String SELECT_ALL_WHERE = "SELECT * FROM Document, Relation WHERE ";
 
     protected static final String SIMPLE_QUERY_PREFIX = "es: ";
 
@@ -134,15 +134,13 @@ public final class NxqlQueryConverter {
 
             @Override
             public void visitFromClause(FromClause node) {
-                FromList elements = node.elements;
+                var elements = node.elements.values();
+                if (elements.contains(TYPE_DOCUMENT) && elements.contains(TYPE_RELATION)) {
+                    // "From Document, Relation" means all doc types
+                    return;
+                }
                 SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-
-                for (String type : elements.values()) {
-                    if (NXQLQueryMaker.TYPE_DOCUMENT.equalsIgnoreCase(type)) {
-                        // From Document means all doc types
-                        fromList.clear();
-                        return;
-                    }
+                for (String type : elements) {
                     Set<String> types = schemaManager.getDocumentTypeNamesExtending(type);
                     if (types != null) {
                         fromList.addAll(types);

@@ -53,7 +53,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
@@ -116,20 +115,27 @@ public class TestElasticsearchAutomation {
         doc.setPropertyValue("dc:title", "A file");
         doc.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         coreSession.createDocument(doc);
+
+        // Create a placeless Relation document without indexing it
+        DocumentModel relation = coreSession.createDocumentModel(null, "my-relation", "Relation");
+        relation.setPropertyValue("dc:title", "A relation");
+        relation.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        coreSession.createDocument(relation);
+
         coreSession.save();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         waitForIndexing();
         // nothing indexed because of disable indexing flag
-        assertEquals(0, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
+        assertEquals(0,
+                ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * FROM Document, Relation")).totalSize());
     }
-
 
     @Test
     public void testIndexingAll() throws Exception {
         automationService.run(ctx, INDEX_CHAIN);
-
-        assertEquals(2, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
+        assertEquals(3,
+                ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * FROM Document, Relation")).totalSize());
     }
 
     @Test
@@ -172,7 +178,8 @@ public class TestElasticsearchAutomation {
         assertTrue("Bulk action didn't finish", waitResult);
         // indexing is done but refresh is processed just after, do it sync
         esa.refresh();
-        assertEquals(2, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
+        assertEquals(3,
+                ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * FROM Document, Relation")).totalSize());
     }
 
 }

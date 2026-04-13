@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -49,7 +48,6 @@ import org.nuxeo.http.test.handler.HttpStatusCodeHandler;
 import org.nuxeo.http.test.handler.JsonNodeHandler;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,7 +55,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * since 11.3
  */
-@RunWith(FeaturesRunner.class)
 @Features(RepositoryLightElasticSearchFeature.class)
 @Deploy("org.nuxeo.elasticsearch.rest")
 public class TestElasticsearchObject extends ManagementBaseTest {
@@ -88,8 +85,9 @@ public class TestElasticsearchObject extends ManagementBaseTest {
         // Nothing indexed because the index was dropped
         assertEquals(0, ess.query(new NxQueryBuilder(coreSession).nxql(GET_ALL_DOCUMENTS_QUERY)).totalSize());
 
-        // Create new documents without indexing them
+        // Create documents and a relation without indexing them
         createDocuments();
+        createRelation();
 
         // Wait for an eventual indexing
         txFeature.nextTransaction();
@@ -99,7 +97,7 @@ public class TestElasticsearchObject extends ManagementBaseTest {
 
         // Start the ES indexing of all document of the coreSession repository
         httpClient.buildPostRequest("/management/elasticsearch/reindex")
-                  .executeAndConsume(new JsonNodeHandler(), node -> verifyIndexingResponse(node, 3 + initialDocCount));
+                  .executeAndConsume(new JsonNodeHandler(), node -> verifyIndexingResponse(node, 4 + initialDocCount));
     }
 
     @Test
@@ -242,5 +240,16 @@ public class TestElasticsearchObject extends ManagementBaseTest {
 
         // Commit the transaction
         txFeature.nextTransaction();
+    }
+
+    /**
+     * Creates a placeless Relation document without auto-indexing it.
+     */
+    protected void createRelation() {
+        DocumentModel relation = coreSession.createDocumentModel(null, "my-relation", "Relation");
+        relation.setPropertyValue("dc:title", "A relation");
+        relation.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        coreSession.createDocument(relation);
+        coreSession.save();
     }
 }

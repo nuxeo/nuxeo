@@ -507,7 +507,7 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public void reindexRepository(String repositoryName) {
         esa.dropAndInitRepositoryIndex(repositoryName, false);
-        runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document", true);
+        runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document, Relation", true);
     }
 
     @Override
