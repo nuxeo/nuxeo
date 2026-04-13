@@ -24,6 +24,10 @@ updates:
           "version-update:semver-minor"
         ]
 
+      # Tomcat major security updates
+      - dependency-name: "org.apache.tomcat:*"
+        versions: ["[10,0.0)"]
+
       # Spurious major version updates
       - dependency-name: "com.google.apis:google-api-services-drive"
         versions: [">v2-rev20201130-1.31.0"]
@@ -89,6 +93,10 @@ updates:
       # Major version updates
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+
+      # Tomcat major security updates
+      - dependency-name: "org.apache.tomcat:*"
+        versions: ["[11,0.0)"]
 
       # Spurious major version updates
       - dependency-name: "com.google.apis:google-api-services-drive"
