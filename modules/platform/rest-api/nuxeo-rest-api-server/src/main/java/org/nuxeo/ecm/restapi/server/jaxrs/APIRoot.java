@@ -49,7 +49,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 public class APIRoot extends ModuleRoot {
 
     @Path("/")
-    public RepositoryObject doGetRepository(@PathParam("repo") String repositoryParam)
+    public Object doGetRepository(@PathParam("repo") String repositoryParam)
             throws DocumentNotFoundException {
         if (StringUtils.isNotBlank(repositoryParam)) {
             String repoName = repositoryParam.substring("repo/".length() + 1);
@@ -64,37 +64,37 @@ public class APIRoot extends ModuleRoot {
     }
 
     @Path("/user")
-    public UserRootObject doGetUser() {
+    public Object doGetUser() {
         return newObject(UserRootObject.class);
     }
 
     @Path("/group")
-    public GroupRootObject doGetGroup() {
+    public Object doGetGroup() {
         return newObject(GroupRootObject.class);
     }
 
     @Path("/automation")
-    public AutomationResource getAutomationEndPoint() {
+    public Object getAutomationEndPoint() {
         return newObject(AutomationResource.class);
     }
 
     @Path("/directory")
-    public DirectoryRootObject doGetDirectory() {
+    public Object doGetDirectory() {
         return newObject(DirectoryRootObject.class);
     }
 
     @Path("/query")
-    public QueryObject doQuery() {
+    public Object doQuery() {
         return newObject(QueryObject.class);
     }
 
     @Path("/config")
-    public ConfigEndPoint doGetConfig() {
+    public Object doGetConfig() {
         return newObject(ConfigEndPoint.class);
     }
 
     @Path("/conversion")
-    public ConversionRootObject doGetConversion() {
+    public Object doGetConversion() {
         return newObject(ConversionRootObject.class);
     }
 
@@ -116,7 +116,7 @@ public class APIRoot extends ModuleRoot {
      * @since 11.5
      */
     @Path("/capabilities")
-    public CapabilitiesObject capabilities() {
+    public Object capabilities() {
         return newObject(CapabilitiesObject.class);
     }
 

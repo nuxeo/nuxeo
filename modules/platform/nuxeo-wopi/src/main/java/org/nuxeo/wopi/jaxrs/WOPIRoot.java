@@ -63,7 +63,7 @@ public class WOPIRoot extends ModuleRoot {
     protected HttpHeaders httpHeaders;
 
     @Path("/files/{fileId}")
-    public FilesEndpoint filesResource(@PathParam("fileId") FileInfo fileInfo) {
+    public Object filesResource(@PathParam("fileId") FileInfo fileInfo) {
         // prefix thread name for logging purpose
         return prefixThreadName(() -> {
             // verify proof key
