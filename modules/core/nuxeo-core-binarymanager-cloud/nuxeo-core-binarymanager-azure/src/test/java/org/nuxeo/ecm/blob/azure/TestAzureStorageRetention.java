@@ -48,7 +48,7 @@ public class TestAzureStorageRetention
     protected Duration getRetentionDelay() {
         // Azure does not take into account ms in retention dates
         // Let's make sure we bump the seconds unit in time stamps
-        return Duration.ofSeconds(1).plusMillis(100);
+        return Duration.ofSeconds(2);
     }
 
     @Override
