@@ -38,8 +38,6 @@ import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe;
 import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -49,7 +47,6 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.management")
 @Deploy("org.nuxeo.ecm.core.management")
 @Deploy("org.nuxeo.ecm.core.management.test")

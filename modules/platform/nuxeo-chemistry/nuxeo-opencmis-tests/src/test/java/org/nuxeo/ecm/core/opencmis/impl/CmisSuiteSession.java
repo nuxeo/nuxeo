@@ -112,8 +112,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -133,7 +131,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.webengine.core")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class CmisSuiteSession {
 
     public static final String NUXEO_ROOT_TYPE = "Root"; // from Nuxeo

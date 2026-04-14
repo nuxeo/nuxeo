@@ -52,8 +52,6 @@ import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.http.test.HttpClientTestRule;
 import org.nuxeo.http.test.handler.HttpStatusCodeHandler;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -75,7 +73,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
 @Deploy("org.nuxeo.ecm.automation.test.test:test-page-provider.xml")
 @Deploy("org.nuxeo.ecm.automation.test.test:test-expose-blob-action.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class AsyncOperationAdapterTest {
 
     public static final String VOID_OPERATION = "X-NXVoidOperation";

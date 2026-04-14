@@ -45,8 +45,6 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.search.client.repository.IgnoreIfRepositorySearchClient;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.CoreSearchFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +52,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreSearchFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @ConditionalIgnore(condition = IgnoreIfRepositorySearchClient.class)
 public class TestSearchCompareWithRepositoryQueryAndFetch {
 

@@ -25,8 +25,6 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.functionaltests.LogTestWatchman;
 import org.nuxeo.functionaltests.RestTestRule;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -35,7 +33,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 9.1
  */
 @RunWith(FeaturesRunner.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class ITRestAPITest {
 
     @Rule

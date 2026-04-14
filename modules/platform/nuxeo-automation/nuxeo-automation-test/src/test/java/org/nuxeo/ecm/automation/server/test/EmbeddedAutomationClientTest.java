@@ -82,8 +82,6 @@ import org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -106,7 +104,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.test:test-mvalues.xml")
 @Deploy("org.nuxeo.ecm.automation.test:operation-contrib.xml")
 @Features({ AuditFeature.class, EmbeddedAutomationServerFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
     protected static String[] attachments = { "att1", "att2", "att3" };

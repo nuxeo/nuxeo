@@ -51,8 +51,6 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.Directory;
@@ -66,7 +64,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 /**
  * @since 9.2
  */
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle.xml")
 public abstract class AbstractDirectoryTest {

@@ -24,8 +24,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.BlacklistComponent;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -46,7 +44,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  * @since 9.2
  */
 @Features({ LogFeature.class, SQLDirectoryFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory")
 @Deploy("org.nuxeo.ecm.directory.ldap")
 @Deploy("org.nuxeo.ecm.directory.ldap.tests")

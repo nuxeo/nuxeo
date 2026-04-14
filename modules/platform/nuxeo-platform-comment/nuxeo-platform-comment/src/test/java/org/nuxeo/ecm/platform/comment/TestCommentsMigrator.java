@@ -65,8 +65,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.CommentsMigrator;
@@ -89,7 +87,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CommentNotificationFeature.class, LogFeature.class, LogCaptureFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCommentsMigrator {
 
     protected static final int NB_COMMENTS_BY_FILE = 50;

@@ -43,8 +43,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.security.UpdateACEStatusListener;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationServiceFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Features;
@@ -57,7 +55,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ PermissionsFeature.class, TokenAuthenticationServiceFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestPermissionForTransientUsers {
 
     @Inject

@@ -55,8 +55,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -73,7 +71,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Deploy("org.nuxeo.ecm.webengine.core")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @WithFrameworkProperty(name = NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, value = "true")
 public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 

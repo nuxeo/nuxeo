@@ -39,8 +39,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -57,7 +55,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml")
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml")
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-provider.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataSyncListener extends BaseBinaryMetadataTest {
 
     @Inject

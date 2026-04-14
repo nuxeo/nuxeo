@@ -49,8 +49,6 @@ import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.search.IgnoreIfSearchClientDoesNotHaveAggregateCapability;
 import org.nuxeo.ecm.core.test.CoreSearchFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -64,7 +62,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Features({ AutomationFeaturesFeature.class, CoreBulkFeature.class, CoreSearchFeature.class })
 @Deploy("org.nuxeo.ecm.automation.features.tests:test-providers-aggregate-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.query.test:OSGI-INF/test-aggregate-schemas-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveAggregateCapability.class)
 public class TestBulkRunActionWithAggregates {
 

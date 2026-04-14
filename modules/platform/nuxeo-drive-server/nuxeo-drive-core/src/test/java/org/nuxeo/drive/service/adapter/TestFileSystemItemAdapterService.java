@@ -59,8 +59,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -75,7 +73,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestFileSystemItemAdapterService {
 
     protected static final String DEFAULT_FILE_SYSTEM_ITEM_FACTORY = "defaultFileSystemItemFactory";

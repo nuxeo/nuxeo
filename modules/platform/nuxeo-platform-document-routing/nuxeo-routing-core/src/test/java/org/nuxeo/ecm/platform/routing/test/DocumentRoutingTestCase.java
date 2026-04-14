@@ -39,8 +39,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -57,7 +55,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(WorkflowFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 // needs NotificationService & MailService
 @BlacklistComponent("org.nuxeo.ecm.platform.notification.document.routing.NotificationContrib")
 public class DocumentRoutingTestCase {

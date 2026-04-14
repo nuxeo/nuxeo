@@ -34,8 +34,6 @@ import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.automation.test.HttpAutomationSession;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,7 +48,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Deploy("org.nuxeo.ecm.automation.scripting")
 @Deploy("org.nuxeo.ecm.automation.test.test:operation-contrib.xml")
 @Deploy("org.nuxeo.ecm.automation.test.test:chain-scripting-operation-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestRemoteAutomationScript {
 
     @Inject

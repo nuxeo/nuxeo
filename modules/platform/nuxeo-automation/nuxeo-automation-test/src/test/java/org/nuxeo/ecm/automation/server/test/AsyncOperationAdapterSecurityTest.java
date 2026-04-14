@@ -42,8 +42,6 @@ import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.automation.server.test.operations.GenerateBlobOperation;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.http.test.HttpClientTestRule;
@@ -63,7 +61,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Features({ AutomationFeature.class, WebEngineFeature.class })
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.automation.test:operation-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class AsyncOperationAdapterSecurityTest {
 
     protected static final Duration ASYNC_TASK_DURATION = Duration.ofMillis(300);

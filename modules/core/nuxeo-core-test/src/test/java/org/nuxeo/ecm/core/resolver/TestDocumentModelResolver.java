@@ -57,8 +57,6 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentModelResolver;
 import org.nuxeo.ecm.core.model.DocumentModelResolver.MODE;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -68,7 +66,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RunWith(FeaturesRunner.class)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-document-resolver-contrib.xml")
 @Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentModelResolver {
 
     protected static final String REPO_AND_ID_XPATH = "dr:docRepoAndIdRef";

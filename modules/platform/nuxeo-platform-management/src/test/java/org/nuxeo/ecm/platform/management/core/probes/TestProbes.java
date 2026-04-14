@@ -32,8 +32,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.management.statuses.ProbeScheduler;
 import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -45,7 +43,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.management")
 @Deploy("org.nuxeo.ecm.core.management")
 @Deploy("org.nuxeo.ecm.platform.management")

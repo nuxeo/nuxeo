@@ -41,8 +41,6 @@ import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.BlacklistComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -59,7 +57,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, AutomationIOFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.actions")
 @Deploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")
 @BlacklistComponent("org.nuxeo.ecm.automation.server.marshallers") // needs AutomationServer

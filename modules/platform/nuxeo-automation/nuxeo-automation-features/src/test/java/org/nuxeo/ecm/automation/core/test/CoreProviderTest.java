@@ -53,8 +53,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
@@ -68,7 +66,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(AutomationFeaturesFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core:test-providers.xml")
 @Deploy("org.nuxeo.ecm.automation.core:test-operations.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class CoreProviderTest {
 
     @Inject

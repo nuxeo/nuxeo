@@ -23,8 +23,6 @@ import jakarta.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
 import org.nuxeo.runtime.management.ResourcePublisherService;
@@ -37,7 +35,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.management")
 public class TestRuntimeMbeanAdapterFactory {
 
