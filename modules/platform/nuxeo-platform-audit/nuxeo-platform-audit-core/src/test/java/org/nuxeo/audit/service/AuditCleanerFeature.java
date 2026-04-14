@@ -22,8 +22,8 @@ import java.util.Optional;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Cleanup.Granularity;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -45,17 +45,22 @@ public class AuditCleanerFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        // granularity is initialized in CoreFeature#initialize, CoreFeature is already deployed if it is present
-        if (Optional.ofNullable(runner.getFeature(CoreFeature.class)).map(CoreFeature::getGranularity).isPresent()) {
+        // check if the CoreFeature is deployed before AuditFeature by checking if storageConfiguration is initialized
+        if (Optional.ofNullable(runner.getFeature(CoreFeature.class))
+                    .map(CoreFeature::getStorageConfiguration)
+                    .isPresent()) {
             throw new IllegalStateException(
                     "The AuditFeature must be deployed before the CoreFeature, check your test configuration");
         }
     }
 
     @Override
+    @SuppressWarnings("removal") // deprecated since 2025.19, get granularity configuration from @Cleanup
     public void start(FeaturesRunner runner) {
         granularity = Optional.ofNullable(runner.getFeature(CoreFeature.class))
                               .map(CoreFeature::getGranularity)
+                              .filter(granularity -> granularity != org.nuxeo.ecm.core.test.annotations.Granularity.METHOD)
+                              .map(granularity -> Granularity.CLASS)
                               .orElse(Granularity.METHOD);
     }
 

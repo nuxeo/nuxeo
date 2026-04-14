@@ -31,6 +31,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
@@ -75,6 +76,7 @@ import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.management.ManagementFeature;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.stream.StreamService;
+import org.nuxeo.runtime.test.runner.Cleanup;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.DynamicFeaturesLoader;
@@ -103,7 +105,8 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.core.convert.plugins")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.core.test:OSGI-INF/test-storage-blob-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@Cleanup(Cleanup.Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD) // @deprecated since 2025.19, use @Cleanup instead
 @Features({
         // Runtime features
         ClusterFeature.class, //
@@ -135,7 +138,7 @@ public class CoreFeature implements RunnerFeature {
 
     protected RepositoryInit repositoryInit;
 
-    protected Granularity granularity;
+    protected Cleanup.Granularity granularity;
 
     // this value gets injected
     protected CoreSession session;
@@ -197,6 +200,10 @@ public class CoreFeature implements RunnerFeature {
         txFeature = runner.getFeature(TransactionalFeature.class);
         txFeature.addWaiter(this::awaitGC);
         loginFeature = runner.getFeature(DummyLoginFeature.class);
+        // init cleanup settings
+        granularity = Optional.ofNullable(runner.getConfig(Cleanup.class))
+                              .orElseGet(() -> Defaults.of(Cleanup.class))
+                              .value();
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);
         if (repositoryConfig == null) {
@@ -204,15 +211,28 @@ public class CoreFeature implements RunnerFeature {
         }
         try {
             repositoryInit = repositoryConfig.init().getDeclaredConstructor().newInstance();
+            // if RepositoryConfig(init) is configured, retrieve the cleanup setup from the RepositoryConfig annotation
+            // noinspection IfStatementWithIdenticalBranches - same branch for backward code explanation
+            if (repositoryConfig.init() != Defaults.of(RepositoryConfig.class).init()) {
+                granularity = repositoryConfig.cleanup() == Granularity.METHOD ? Cleanup.Granularity.METHOD
+                        : Cleanup.Granularity.CLASS;
+            } else {
+                // deprecated since 2025.19, defining the cleanup granularity with RepositoryConfig annotation, without
+                // init class, should be done with Cleanup annotation - code is here for backward compatibility
+                granularity = repositoryConfig.cleanup() == Granularity.METHOD ? Cleanup.Granularity.METHOD
+                        : Cleanup.Granularity.CLASS;
+            }
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }
-        Granularity cleanup = repositoryConfig.cleanup();
-        granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
     }
 
+    /**
+     * @deprecated since 2025.19, caller should retrieve {@link Cleanup} configuration from runner directly
+     */
+    @Deprecated(since = "2025.19", forRemoval = true)
     public Granularity getGranularity() {
-        return granularity;
+        return granularity == Cleanup.Granularity.CLASS ? Granularity.CLASS : Granularity.METHOD;
     }
 
     @Override
@@ -223,7 +243,7 @@ public class CoreFeature implements RunnerFeature {
     public void beforeRun(FeaturesRunner runner) {
         // wait for async tasks that may have been triggered by RuntimeFeature (typically repo initialization)
         txFeature.nextTransaction(Duration.ofSeconds(10));
-        if (granularity != Granularity.METHOD) {
+        if (granularity != Cleanup.Granularity.METHOD) {
             // we need a transaction to properly initialize the session
             // but it hasn't been started yet by TransactionalFeature
             TransactionHelper.startTransaction();
@@ -240,14 +260,14 @@ public class CoreFeature implements RunnerFeature {
     @Override
     public void afterRun(FeaturesRunner runner) {
         waitForAsyncCompletion(); // fulltext and various workers
-        if (granularity != Granularity.METHOD) {
+        if (granularity != Cleanup.Granularity.METHOD) {
             cleanupSession(); // close the session for us
         }
     }
 
     @Override
     public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
-        if (granularity == Granularity.METHOD) {
+        if (granularity == Cleanup.Granularity.METHOD) {
             initializeSession(); // create the session for us
         }
     }
@@ -255,7 +275,7 @@ public class CoreFeature implements RunnerFeature {
     @Override
     public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         waitForAsyncCompletion();
-        if (granularity == Granularity.METHOD) {
+        if (granularity == Cleanup.Granularity.METHOD) {
             cleanupSession(); // close the session for us
         }
     }

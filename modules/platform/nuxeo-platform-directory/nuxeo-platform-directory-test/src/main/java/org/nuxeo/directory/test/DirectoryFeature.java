@@ -38,7 +38,6 @@ import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.directory.mongodb.MongoDBDirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCoreFeature;
 import org.nuxeo.ecm.directory.DirectoryDeleteConstraintException;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.multi.MultiDirectory;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Cleanup.Granularity;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.DynamicFeaturesLoader;
 import org.nuxeo.runtime.test.runner.Features;
@@ -86,11 +86,14 @@ public class DirectoryFeature implements RunnerFeature {
     }
 
     @Override
+    @SuppressWarnings("removal") // deprecated since 2025.19, get granularity configuration from @Cleanup
     public void start(FeaturesRunner runner) {
         log.info(MARKER_CONSOLE_OVERRIDE, "Deploying Directory using {}",
                 () -> StringUtils.capitalize(DIRECTORY_SERVICE_VALUE.toLowerCase()));
         granularity = Optional.ofNullable(runner.getFeature(CoreFeature.class))
                               .map(CoreFeature::getGranularity)
+                              .filter(granularity -> granularity != org.nuxeo.ecm.core.test.annotations.Granularity.METHOD)
+                              .map(granularity -> Granularity.CLASS)
                               .orElse(Granularity.METHOD);
     }
 
