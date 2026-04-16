@@ -5288,7 +5288,7 @@
             </reportSets>
             <configuration>
               <!-- skip modules having issues to be built due to test-jars -->
-              <skippedModules>nuxeo-core-storage-sql-test,nuxeo-core-test,nuxeo-automation-test,nuxeo-platform-audit-test,nuxeo-platform-directory-test,nuxeo-platform-test,nuxeo-features-test,nuxeo-platform-imaging-test</skippedModules>
+              <skippedModules>nuxeo-core-storage-sql-test,nuxeo-core-test,nuxeo-automation-test,nuxeo-platform-audit-test,nuxeo-platform-directory-test,nuxeo-platform-test,nuxeo-features-test,nuxeo-platform-imaging-test,nuxeo-rest-api-test</skippedModules>
               <windowtitle>Nuxeo ${project.version} API Documentation</windowtitle>
               <doctitle>Nuxeo ${project.version} API Documentation</doctitle>
               <header>Nuxeo ${project.version}</header>

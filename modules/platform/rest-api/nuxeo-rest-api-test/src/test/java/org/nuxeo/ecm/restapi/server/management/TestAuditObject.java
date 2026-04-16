@@ -18,15 +18,21 @@
  */
 package org.nuxeo.ecm.restapi.server.management;
 
+import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 import static org.nuxeo.common.test.ModuleUnderTest.getClassLoaderResourceAsString;
+
+import java.util.Map;
 
 import jakarta.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.audit.test.AuditFeature;
+import org.nuxeo.ecm.restapi.test.JsonNodeHelper;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
+import org.nuxeo.http.test.handler.JsonNodeHandler;
 import org.nuxeo.http.test.handler.StringHandler;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -38,6 +44,30 @@ public class TestAuditObject extends ManagementBaseTest {
 
     @Inject
     protected AuditBackend backend;
+
+    // --------------
+    // /copy endpoint
+    // --------------
+
+    // @since 2025.19
+    @Test
+    public void testCopyFromToParameters() {
+        httpClient.buildPostRequest("/management/audit/copy")
+                  .entity(Map.of("from", DEFAULT_AUDIT_BACKEND))
+                  .executeAndConsume(new JsonNodeHandler(SC_BAD_REQUEST),
+                          node -> assertEquals("java.lang.IllegalArgumentException: from and to cannot be blank",
+                                  JsonNodeHelper.getErrorMessage(node)));
+
+        httpClient.buildPostRequest("/management/audit/copy")
+                  .entity(Map.of("to", DEFAULT_AUDIT_BACKEND))
+                  .executeAndConsume(new JsonNodeHandler(SC_BAD_REQUEST),
+                          node -> assertEquals("java.lang.IllegalArgumentException: from and to cannot be blank",
+                                  JsonNodeHelper.getErrorMessage(node)));
+    }
+
+    // -----------------------
+    // /introspection endpoint
+    // -----------------------
 
     @Test
     public void testIntrospection() {
