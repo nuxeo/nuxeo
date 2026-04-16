@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.search.client.opensearch1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.search.SearchServiceImpl.RELATION_INDEXING_ENABLED_PROP;
 
 import java.util.Map;
 import java.util.Objects;
@@ -1957,6 +1958,78 @@ public class TestOpenSearchQueryTransformer {
         var uso = assertThrows(QueryParseException.class, () -> BUILDER.apply(
                 "select * from Document where /*+ES: OPERATOR(unExitingHint) */ ecm:uuid = '1234'"));
         assertEquals("Operator: unExitingHint is unknown", uso.getMessage());
+    }
+
+    @Test
+    @WithFrameworkProperty(name = RELATION_INDEXING_ENABLED_PROP, value = "true")
+    public void testConverterSelectWithRelationEnabled() {
+        // When relation indexing is enabled, "FROM Document, Relation" means all doc types (match_all)
+        String es = BUILDER.apply("select * from Document, Relation");
+        assertEqualsEvenUnderWindows("""
+                {
+                  "match_all" : {
+                    "boost" : 1.0
+                  }
+                }""", es);
+        // "FROM Document" excludes Relation documents by adding a type filter
+        es = BUILDER.apply("select * from Document");
+        assertEqualsEvenUnderWindows("""
+                {
+                  "bool" : {
+                    "must" : [
+                      {
+                        "match_all" : {
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "filter" : [
+                      {
+                        "terms" : {
+                          "ecm:primaryType" : [
+                            "CommonDocument",
+                            "OpenSearchDocument",
+                            "Document"
+                          ],
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "adjust_pure_negative" : true,
+                    "boost" : 1.0
+                  }
+                }""", es);
+        // An empty query or null query should produce "FROM Document, Relation" via the flag and match_all
+        es = BUILDER.apply(null);
+        assertEqualsEvenUnderWindows("""
+                {
+                  "match_all" : {
+                    "boost" : 1.0
+                  }
+                }""", es);
+        es = BUILDER.apply("");
+        assertEqualsEvenUnderWindows("""
+                {
+                  "match_all" : {
+                    "boost" : 1.0
+                  }
+                }""", es);
+        // A where clause without select should also produce match_all (from Document, Relation via the flag)
+        es = BUILDER.apply("f1=1");
+        assertEqualsEvenUnderWindows("""
+                {
+                  "constant_score" : {
+                    "filter" : {
+                      "term" : {
+                        "f1" : {
+                          "value" : "1",
+                          "boost" : 1.0
+                        }
+                      }
+                    },
+                    "boost" : 1.0
+                  }
+                }""", es);
     }
 
     protected static Function<String, String> newQueryBuilder(Map<String, OpenSearchHintQueryBuilder> hintBuilders) {

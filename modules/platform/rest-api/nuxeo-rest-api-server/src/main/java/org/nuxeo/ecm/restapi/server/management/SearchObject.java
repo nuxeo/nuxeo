@@ -23,6 +23,7 @@ import static jakarta.servlet.http.HttpServletResponse.SC_REQUEST_TIMEOUT;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static java.lang.Math.max;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.nuxeo.ecm.core.search.SearchServiceImpl.getFromClause;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -102,7 +103,8 @@ public class SearchObject extends AbstractResource<ResourceTypeImpl> {
     @Path("{documentId}/reindex")
     public BulkStatus doIndexingOnDocument(@PathParam("documentId") String documentId,
             @QueryParam("queryLimit") @DefaultValue("-1") Long queryLimit, @QueryParam("index") List<String> indexes) {
-        String query = String.format("Select * From Document where %s = '%s' or %s = '%s'", //
+        String query = "Select * From %s where %s = '%s' or %s = '%s'".formatted( //
+                getFromClause(), //
                 NXQL.ECM_UUID, documentId, //
                 NXQL.ECM_ANCESTORID, documentId);
         return performIndexing(query, queryLimit, indexes);

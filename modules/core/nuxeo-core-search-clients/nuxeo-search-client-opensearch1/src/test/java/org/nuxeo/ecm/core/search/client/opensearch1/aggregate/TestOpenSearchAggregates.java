@@ -61,6 +61,7 @@ import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.common.Strings;
 
@@ -958,6 +959,70 @@ public class TestOpenSearchAggregates {
                             "min_doc_count" : 10,
                             "shard_min_doc_count" : 0,
                             "jlh" : { }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }""", request);
+    }
+
+    @Test
+    @WithFrameworkProperty(name = "nuxeo.search.indexing.relation.enabled", value = "true")
+    public void testAggregateWithRelationEnabled() {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setId("source");
+        aggDef.setType(AGG_TYPE_TERMS);
+        aggDef.setDocumentField("dc:source");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "source_agg"));
+        aggDef.setProperty("minDocCount", "10");
+        aggDef.setProperty("size", "10");
+        // With relation enabled, "SELECT * FROM Document, Relation" is used and should produce match_all
+        String request = BUILDER.apply(SearchQuery.builder("SELECT * FROM Document, Relation")
+                                                  .searchIndex(SEARCH_INDEX)
+                                                  .addAggregate(new AggregateTerm(aggDef, null))
+                                                  .build());
+        // Verify the query part is match_all (no type filter)
+        assertEqualsEvenUnderWindows("""
+                {
+                  "from" : 0,
+                  "size" : 10,
+                  "query" : {
+                    "match_all" : {
+                      "boost" : 1.0
+                    }
+                  },
+                  "_source" : {
+                    "includes" : [
+                      "ecm:uuid",
+                      "ecm:repository"
+                    ],
+                    "excludes" : [ ]
+                  },
+                  "track_total_hits" : 2147483647,
+                  "aggregations" : {
+                    "source_filter" : {
+                      "filter" : {
+                        "match_all" : {
+                          "boost" : 1.0
+                        }
+                      },
+                      "aggregations" : {
+                        "source" : {
+                          "terms" : {
+                            "field" : "dc:source",
+                            "size" : 10,
+                            "min_doc_count" : 10,
+                            "shard_min_doc_count" : 0,
+                            "show_term_doc_count_error" : false,
+                            "order" : [
+                              {
+                                "_count" : "desc"
+                              },
+                              {
+                                "_key" : "asc"
+                              }
+                            ]
                           }
                         }
                       }

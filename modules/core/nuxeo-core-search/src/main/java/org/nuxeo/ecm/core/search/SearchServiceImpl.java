@@ -69,13 +69,21 @@ public class SearchServiceImpl implements SearchService, SearchIndexingService {
 
     private static final Logger log = LogManager.getLogger(SearchServiceImpl.class);
 
+    /**
+     * Property to enable indexing of Relation documents. When set to {@code true}, Relation documents are included in
+     * search indexing and queries. Default is {@code false}.
+     *
+     * @since 2025.19
+     */
+    public static final String RELATION_INDEXING_ENABLED_PROP = "nuxeo.search.indexing.relation.enabled";
+
     protected static final int LOAD_SOURCES_TIMEOUT = (int) Duration.ofMinutes(1).toSeconds();
 
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 
-    protected static final String SELECT_DOCUMENTS_IN = "SELECT * FROM Document WHERE ecm:uuid IN ('%s')";
+    protected static final String SELECT_DOCUMENTS_IN = "SELECT * FROM %s WHERE ecm:uuid IN ('%s')";
 
-    protected static final String NXQL_ALL_DOCUMENTS = "SELECT * FROM Document";
+    protected static final String NXQL_ALL_DOCUMENTS = "SELECT * FROM %s";
 
     protected final Map<String, SearchClient> searchClients = new HashMap<>();
 
@@ -128,6 +136,15 @@ public class SearchServiceImpl implements SearchService, SearchIndexingService {
             }
             indexToJsonWriter.put(index.index(), descriptor.newWriterInstance());
         }
+    }
+
+    /**
+     * Returns the NXQL FROM clause depending on whether Relation indexing is enabled.
+     *
+     * @since 2025.19
+     */
+    public static String getFromClause() {
+        return Framework.isBooleanPropertyTrue(RELATION_INDEXING_ENABLED_PROP) ? "Document, Relation" : "Document";
     }
 
     @Override
@@ -244,7 +261,8 @@ public class SearchServiceImpl implements SearchService, SearchIndexingService {
             return new DocumentModelListImpl(0);
         }
         try {
-            DocumentModelList ret = session.query(String.format(SELECT_DOCUMENTS_IN, String.join("', '", documentIds)));
+            DocumentModelList ret = session.query(
+                    SELECT_DOCUMENTS_IN.formatted(getFromClause(), String.join("', '", documentIds)));
             if (log.isDebugEnabled() && ret.size() < documentIds.size()) {
                 // some documents might have been deleted since scroller projection
                 List<String> notFound = new ArrayList<>(documentIds);
@@ -303,9 +321,12 @@ public class SearchServiceImpl implements SearchService, SearchIndexingService {
         var idxNames = indexes.stream().map(SearchIndex::index).toList();
         BulkService bulkService = Framework.getService(BulkService.class);
         indexes.forEach(index -> getClient(index.client()).dropAndInitIndex(index.index()));
-        String commandId = bulkService.submit(
-                new BulkCommand.Builder(IndexingBackgroundAction.ACTION_NAME, NXQL_ALL_DOCUMENTS,
-                        SYSTEM_USERNAME).repository(repository).param(INDEXES_PARAM, (Serializable) idxNames).build());
+        String commandId = bulkService.submit(new BulkCommand.Builder(IndexingBackgroundAction.ACTION_NAME,
+                NXQL_ALL_DOCUMENTS.formatted(getFromClause()), SYSTEM_USERNAME)
+                                                                               .repository(repository)
+                                                                               .param(INDEXES_PARAM,
+                                                                                       (Serializable) idxNames)
+                                                                               .build());
         log.warn("Reindexing repository: {}, with bulk command: {} on indexes: {}", repository, commandId, idxNames);
         return commandId;
     }

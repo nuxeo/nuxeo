@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.core.operations.services.search;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.nuxeo.ecm.core.search.SearchServiceImpl.getFromClause;
 
 import java.io.IOException;
 import java.util.Map;
@@ -65,7 +66,8 @@ public class SearchIndexOperation {
     @OperationMethod
     public Blob run(DocumentModel doc) throws IOException {
         checkAccess();
-        String commandId = submitBulkCommand(String.format("Select * From Document where %s = '%s' or %s = '%s'", //
+        String commandId = submitBulkCommand("Select * From %s where %s = '%s' or %s = '%s'".formatted( //
+                getFromClause(), //
                 NXQL.ECM_UUID, doc.getId(), //
                 NXQL.ECM_ANCESTORID, doc.getId()));
         log.warn("Submitted index command: {} to index document {}.", commandId, doc.getId());
@@ -75,7 +77,7 @@ public class SearchIndexOperation {
     @OperationMethod
     public Blob run() throws IOException {
         checkAccess();
-        String commandId = submitBulkCommand("SELECT ecm:uuid FROM Document");
+        String commandId = submitBulkCommand("SELECT ecm:uuid FROM " + getFromClause());
         log.warn("Submitted index command: {} to index the entire {} repository.", commandId,
                 session.getRepositoryName());
         return Blobs.createJSONBlobFromValue(Map.of("commandId", commandId));

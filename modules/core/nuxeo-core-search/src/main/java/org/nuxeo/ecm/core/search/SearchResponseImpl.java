@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.search;
 
+import static org.nuxeo.ecm.core.search.SearchServiceImpl.getFromClause;
 import static org.nuxeo.ecm.platform.query.api.PageProvider.HIGHLIGHT_CTX_DATA;
 
 import java.io.Serializable;
@@ -53,7 +54,7 @@ public class SearchResponseImpl implements SearchResponse {
 
     private static final Logger log = LogManager.getLogger(SearchResponseImpl.class);
 
-    protected static final String SELECT_DOCUMENTS_IN = "SELECT * FROM Document WHERE ecm:uuid IN ('%s')";
+    protected static final String SELECT_DOCUMENTS_IN = "SELECT * FROM %s WHERE ecm:uuid IN ('%s')";
 
     protected final List<SearchHit> hits;
 
@@ -177,7 +178,7 @@ public class SearchResponseImpl implements SearchResponse {
         }
         DocumentModelList docs;
         try {
-            docs = session.query(String.format(SELECT_DOCUMENTS_IN, String.join("', '", documentIds)));
+            docs = session.query(SELECT_DOCUMENTS_IN.formatted(getFromClause(), String.join("', '", documentIds)));
         } catch (DocumentNotFoundException | PropertyConversionException | IllegalArgumentException e) {
             // A corrupted document prevents to load the batch of docs
             log.warn("Fail to load documents because of: {}, retrying one by one", e.getMessage());

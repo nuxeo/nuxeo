@@ -75,6 +75,7 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -796,5 +797,32 @@ public class TestSearchIndexing {
 
     protected String createBigString(int length, char character) {
         return new String(new char[length]).replace('\0', character);
+    }
+
+    /**
+     * @since 2025.19
+     */
+    @Test
+    public void shouldNotIndexRelationByDefault() {
+        var doc = session.createDocumentModel(null, "myRelation", "Relation");
+        doc.setPropertyValue("dc:title", "A relation");
+        doc = session.createDocument(doc);
+        String docId = doc.getId();
+        txFeature.nextTransaction();
+        assertNotIndexed(docId);
+    }
+
+    /**
+     * @since 2025.19
+     */
+    @Test
+    @WithFrameworkProperty(name = "nuxeo.search.indexing.relation.enabled", value = "true")
+    public void shouldIndexRelationWhenEnabled() {
+        var doc = session.createDocumentModel(null, "myRelation", "Relation");
+        doc.setPropertyValue("dc:title", "A relation");
+        doc = session.createDocument(doc);
+        String docId = doc.getId();
+        txFeature.nextTransaction();
+        assertIndexedContains(docId, "A relation");
     }
 }

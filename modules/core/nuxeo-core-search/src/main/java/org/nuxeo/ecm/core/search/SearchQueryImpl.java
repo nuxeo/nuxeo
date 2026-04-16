@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.search;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
+import static org.nuxeo.ecm.core.search.SearchServiceImpl.getFromClause;
 import static org.nuxeo.ecm.core.search.index.DefaultIndexingJsonWriter.REPOSITORY_PROP;
 
 import java.time.Duration;
@@ -207,9 +208,9 @@ public class SearchQueryImpl implements SearchQuery {
 
     public static class Builder {
 
-        protected static final String SELECT_ALL = "SELECT * FROM Document";
+        protected static final String SELECT_ALL = "SELECT * FROM %s";
 
-        protected static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
+        protected static final String SELECT_ALL_WHERE = "SELECT * FROM %s WHERE ";
 
         protected static final Duration DEFAULT_SCROLL_TIMEOUT_DURATION = Duration.ofMinutes(5);
 
@@ -330,10 +331,11 @@ public class SearchQueryImpl implements SearchQuery {
 
         protected static String completeQueryWithSelect(String nxql) {
             String query = (nxql == null) ? "" : nxql.trim();
+            var fromClause = getFromClause();
             if (query.isEmpty()) {
-                query = SELECT_ALL;
+                query = SELECT_ALL.formatted(fromClause);
             } else if (!query.toLowerCase().startsWith("select ")) {
-                query = SELECT_ALL_WHERE + nxql;
+                query = SELECT_ALL_WHERE.formatted(fromClause) + nxql;
             }
             return query;
         }
