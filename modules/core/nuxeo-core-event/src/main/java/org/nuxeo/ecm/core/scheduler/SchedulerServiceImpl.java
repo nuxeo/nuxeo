@@ -52,6 +52,7 @@ import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.jdbcjobstore.LockException;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -132,10 +133,11 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
         // clean up all nuxeo jobs
         // https://jira.nuxeo.com/browse/NXP-7303
-        GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals("nuxeo");
+        GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals(JOB_GROUP);
         Set<JobKey> jobs = scheduler.getJobKeys(matcher);
         try {
             scheduler.deleteJobs(new ArrayList<>(jobs)); // raise a lock error in case of concurrencies
+            cleanRemainingTriggers();
             for (Schedule each : registry.getSchedules()) {
                 registerSchedule(each);
             }
@@ -143,6 +145,27 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
             log.warn("scheduler already re-initializing, another cluster node concurrent startup ?", cause);
         }
         log.info("scheduler started");
+    }
+
+    /**
+     * Removes any triggers remaining in the {@link #JOB_GROUP} group after {@link Scheduler#deleteJobs(List)}, by key.
+     *
+     * @since 2025.19
+     */
+    protected void cleanRemainingTriggers() {
+        try {
+            GroupMatcher<TriggerKey> triggerMatcher = GroupMatcher.triggerGroupEquals(JOB_GROUP);
+            Set<TriggerKey> remainingTriggers = scheduler.getTriggerKeys(triggerMatcher);
+            if (!remainingTriggers.isEmpty()) {
+                log.warn("Found {} remaining trigger(s) after deleteJobs, removing: {}", remainingTriggers.size(),
+                        remainingTriggers);
+                for (TriggerKey triggerKey : remainingTriggers) {
+                    scheduler.unscheduleJob(triggerKey);
+                }
+            }
+        } catch (SchedulerException e) {
+            log.error("Failed to clean remaining triggers", e);
+        }
     }
 
     protected void shutdownScheduler() {
@@ -252,10 +275,10 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
                 // when jobs are persisted in a database, the job should already be there
                 // remove existing job and re-schedule
                 log.trace("Overriding scheduler with id: {}", schedule::getId);
-                boolean unregistered = unschedule(schedule.getId(), job.getKey());
-                if (unregistered) {
-                    schedule(schedule.getId(), job, trigger);
-                }
+                // unschedule trigger directly by key to handle stale jobId references
+                scheduler.unscheduleJob(trigger.getKey());
+                unschedule(schedule.getId(), job.getKey());
+                schedule(schedule.getId(), job, trigger);
             }
         } catch (SchedulerException e) {
             log.error("failed to schedule job with id '{}': {}", schedule.getId(), e.getMessage(), e);

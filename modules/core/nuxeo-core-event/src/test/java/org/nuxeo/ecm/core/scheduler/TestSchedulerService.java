@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.scheduler;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.scheduler.SchedulerService.JOB_GROUP;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -40,11 +41,16 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.TriggerBuilder;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreEventFeature.class)
 @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-scheduler-eventlistener.xml")
 public class TestSchedulerService {
+
+    protected static final String SCHEDULE_TEST_ID = "testing";
 
     public static final DateTimeFormatter CRON_EXPRESSION_FORMATTER = DateTimeFormatter.ofPattern("s m H d M ? yyyy");
 
@@ -122,8 +128,10 @@ public class TestSchedulerService {
     public void testScheduleManualRegistrationWithTimeZone() throws Exception {
         ScheduleImpl schedule = buildTestSchedule();
         schedule.timeZone = "UTC";
-        ZonedDateTime future = LocalDateTime.now().plusSeconds(3).atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneOffset.UTC);
+        ZonedDateTime future = LocalDateTime.now()
+                                            .plusSeconds(3)
+                                            .atZone(ZoneId.systemDefault())
+                                            .withZoneSameInstant(ZoneOffset.UTC);
 
         schedule.cronExpression = CRON_EXPRESSION_FORMATTER.format(future);
 
@@ -138,7 +146,7 @@ public class TestSchedulerService {
 
     protected ScheduleImpl buildTestSchedule() {
         ScheduleImpl schedule = new ScheduleImpl();
-        schedule.id = "testing";
+        schedule.id = SCHEDULE_TEST_ID;
         schedule.username = "Administrator";
         schedule.eventId = "testEvent";
         schedule.eventCategory = "default";
@@ -191,5 +199,47 @@ public class TestSchedulerService {
         waitUntilDummyEventListenerIsCalled(10); // wait more
         count = DummyEventListener.getCount();
         assertTrue("count " + count, count >= 1);
+    }
+
+    /**
+     * Verify that registering a schedule recovers gracefully when a conflicting job+trigger already exists in Quartz,
+     * handling the {@link org.quartz.ObjectAlreadyExistsException} by removing the stale entry and re-scheduling.
+     */
+    @Test
+    public void testScheduleWithOrphanTrigger() throws Exception {
+        ScheduleImpl schedule = buildTestSchedule();
+        schedule.cronExpression = "*/1 * * * * ?";
+
+        // register the schedule normally: creates job + trigger
+        scheduler.registerSchedule(schedule);
+        waitUntilDummyEventListenerIsCalled(10);
+        long count = DummyEventListener.getCount();
+        assertTrue("count " + count, count >= 1);
+
+        // unregister cleanly first
+        scheduler.unregisterSchedule(schedule.id);
+
+        // simulate orphan trigger: create a job+trigger pair directly in Quartz
+        // to block re-registration (simulates an orphan trigger from a previous lifecycle)
+        var quartzScheduler = ((SchedulerServiceImpl) scheduler).scheduler;
+        // use a far-future cron to avoid firing during the test
+        var alienJob = JobBuilder.newJob(EventJob.class).withIdentity(SCHEDULE_TEST_ID, JOB_GROUP).build();
+        var alienTrigger = TriggerBuilder.newTrigger()
+                                         .withIdentity(SCHEDULE_TEST_ID, JOB_GROUP)
+                                         .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 1 1 ? 2099"))
+                                         .forJob(alienJob)
+                                         .build();
+        quartzScheduler.scheduleJob(alienJob, alienTrigger);
+
+        // now re-register the same schedule — before the fix this would log an error
+        // and the schedule would not be re-created
+        DummyEventListener.setCount(0);
+        scheduler.registerSchedule(schedule);
+        waitUntilDummyEventListenerIsCalled(10);
+        count = DummyEventListener.getCount();
+        assertTrue("Schedule should have recovered after orphan trigger, count=" + count, count >= 1);
+
+        // cleanup
+        scheduler.unregisterSchedule(schedule.id);
     }
 }

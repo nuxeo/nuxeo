@@ -27,6 +27,9 @@ import java.util.Map;
  */
 public interface SchedulerService {
 
+    /** @since 2025.19 */
+    String JOB_GROUP = "nuxeo";
+
     /**
      * Registers a schedule.
      *
