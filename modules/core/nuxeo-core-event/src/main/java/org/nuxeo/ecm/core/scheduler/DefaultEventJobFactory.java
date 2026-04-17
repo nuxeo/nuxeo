@@ -43,18 +43,18 @@ public class DefaultEventJobFactory implements EventJobFactory {
         }
 
         return JobBuilder.newJob(getJobClass())
-                .withIdentity(schedule.getId(), "nuxeo")
-                .usingJobData(map)
-                .usingJobData("eventId", schedule.getEventId())
-                .usingJobData("eventCategory", schedule.getEventCategory())
-                .usingJobData("username", schedule.getUsername());
+                         .withIdentity(schedule.getId(), SchedulerService.JOB_GROUP)
+                         .usingJobData(map)
+                         .usingJobData("eventId", schedule.getEventId())
+                         .usingJobData("eventCategory", schedule.getEventCategory())
+                         .usingJobData("username", schedule.getUsername());
     }
 
     @Override
     public TriggerBuilder<?> buildTrigger(Schedule schedule) {
         return TriggerBuilder.newTrigger()
-                .withIdentity(schedule.getId(), "nuxeo")
-                .withSchedule(buildSchedule(schedule));
+                             .withIdentity(schedule.getId(), SchedulerService.JOB_GROUP)
+                             .withSchedule(buildSchedule(schedule));
     }
 
     @Override
