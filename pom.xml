@@ -153,6 +153,8 @@
     <protobuf.java.version>4.34.1</protobuf.java.version>
     <opensaml.version>5.2.1</opensaml.version>
     <quartz.version>2.5.2</quartz.version>
+    <mockito.version>5.23.0</mockito.version>
+    <byte-buddy.version>1.17.7</byte-buddy.version>
   </properties>
 
   <dependencyManagement>
@@ -3560,8 +3562,18 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.23.0</version>
+        <version>${mockito.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${byte-buddy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy-agent</artifactId>
+        <version>${byte-buddy.version}</version>
       </dependency>
       <dependency>
         <groupId>org.antlr</groupId>
@@ -4344,7 +4356,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <runOrder>alphabetical</runOrder>
-          <argLine>${it.memory.argLine} -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow ${it.failsafe.argLine} ${it.modules.argLine}</argLine>
+          <argLine>${it.memory.argLine} -Dfile.encoding=UTF-8 -XX:-OmitStackTraceInFastThrow -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar ${it.failsafe.argLine} ${it.modules.argLine}</argLine>
           <skipTests>${skip.surefire.tests}</skipTests>
           <systemPropertyVariables>
             <nashorn.persistent.code.cache>${project.build.directory}/nashorn_code_cache</nashorn.persistent.code.cache>
