@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.82"
+library identifier: "platform-ci-shared-library@v0.0.84"
 
 // we can not allocate directly the variable, we have to use an `if` to make Jenkins Groovy working
 def abortPrevious = false

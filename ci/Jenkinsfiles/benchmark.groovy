@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.82"
+library identifier: "platform-ci-shared-library@v0.0.84"
 
 boolean isTriggeredByCron(def build = currentBuild) {
   return build.getBuildCauses('org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTriggerCause')
