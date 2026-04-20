@@ -16,7 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <antoine.taillefer@hyland.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.82"
+library identifier: "platform-ci-shared-library@v0.0.84"
 
 GITHUB_WORKFLOW_DOCKER_SCAN = 'docker-image-scan.yaml'
 NUXEO_BRANCH = "${params.NUXEO_BRANCH}"
