@@ -24,6 +24,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Required to read .grype.yaml configuration at the root of the repository
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
       - name: Print workflow inputs
         run: |
           echo internalRegistry = ${{ inputs.internalRegistry }}
