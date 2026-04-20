@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.schema.test.CommonDocumentConstants.COMMON_STRI
 import static org.nuxeo.ecm.core.schema.test.CommonDocumentConstants.COMMON_UNPREFIXED_STRING;
 import static org.nuxeo.ecm.core.schema.test.CommonDocumentConstants.COMMON_UNPREFIXED_STRING_SHORT;
 import static org.nuxeo.ecm.core.search.BaseCoreSearchFeature.newSearchQuery;
+import static org.nuxeo.ecm.core.search.SearchServiceImpl.RELATION_INDEXING_ENABLED_PROP;
 
 import jakarta.inject.Inject;
 
@@ -32,9 +33,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreSearchFeature;
+import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * @since 2025.18
@@ -90,6 +93,71 @@ public class TestSearchDocument {
         // the NXQL contains the prefix (as the schema name here) as it is the supported way
         ret = service.search(newSearchQuery(session,
                 "SELECT * FROM Document WHERE %s = 'Some value'".formatted(COMMON_UNPREFIXED_STRING)));
+        assertEquals(1, ret.getTotal());
+    }
+
+    /**
+     * When relation indexing is disabled (default), Relation documents are not indexed and not returned by any search
+     * query.
+     *
+     * @since 2025.19
+     */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
+    public void testSearchRelationWhenDisabled() {
+        // create a regular document
+        var doc = session.createDocumentModel("/", "myDocument", COMMON_DOC_TYPE);
+        doc.setPropertyValue(COMMON_STRING_PROP, "regular");
+        session.createDocument(doc);
+        // create a Relation document (placeless)
+        var relation = session.createDocumentModel(null, "myRelation", "Relation");
+        relation.setPropertyValue("dc:title", "a relation");
+        session.createDocument(relation);
+        txFeature.nextTransaction();
+
+        // FROM Document returns only regular documents
+        var ret = service.search(newSearchQuery(session, "SELECT * FROM Document"));
+        assertEquals(1, ret.getTotal());
+
+        // FROM Document, Relation still returns only regular documents (Relation not indexed)
+        ret = service.search(newSearchQuery(session, "SELECT * FROM Document, Relation"));
+        assertEquals(1, ret.getTotal());
+
+        // FROM Relation returns nothing (not indexed)
+        ret = service.search(newSearchQuery(session, "SELECT * FROM Relation"));
+        assertEquals(0, ret.getTotal());
+    }
+
+    /**
+     * When relation indexing is enabled, Relation documents are indexed and returned only by FROM Document, Relation
+     * queries. FROM Document alone excludes Relation documents.
+     *
+     * @since 2025.19
+     */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
+    @WithFrameworkProperty(name = RELATION_INDEXING_ENABLED_PROP, value = "true")
+    public void testSearchRelationWhenEnabled() {
+        // create a regular document
+        var doc = session.createDocumentModel("/", "myDocument", COMMON_DOC_TYPE);
+        doc.setPropertyValue(COMMON_STRING_PROP, "regular");
+        session.createDocument(doc);
+        // create a Relation document (placeless)
+        var relation = session.createDocumentModel(null, "myRelation", "Relation");
+        relation.setPropertyValue("dc:title", "a relation");
+        session.createDocument(relation);
+        txFeature.nextTransaction();
+
+        // FROM Document returns only regular documents, not Relations
+        var ret = service.search(newSearchQuery(session, "SELECT * FROM Document"));
+        assertEquals(1, ret.getTotal());
+
+        // FROM Document, Relation returns both
+        ret = service.search(newSearchQuery(session, "SELECT * FROM Document, Relation"));
+        assertEquals(2, ret.getTotal());
+
+        // FROM Relation returns only the Relation document
+        ret = service.search(newSearchQuery(session, "SELECT * FROM Relation"));
         assertEquals(1, ret.getTotal());
     }
 }

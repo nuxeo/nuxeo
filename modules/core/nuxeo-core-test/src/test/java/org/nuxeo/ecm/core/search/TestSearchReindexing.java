@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.search.BaseCoreSearchFeature.forceRefresh;
 import static org.nuxeo.ecm.core.search.BaseCoreSearchFeature.newSearchQuery;
+import static org.nuxeo.ecm.core.search.SearchServiceImpl.RELATION_INDEXING_ENABLED_PROP;
 import static org.nuxeo.ecm.core.search.index.IndexingDomainEventProducer.DISABLE_AUTO_INDEXING;
 
 import java.time.Duration;
@@ -51,6 +52,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 
 /**
  * Test "on the fly" indexing via the listener system
@@ -201,4 +203,43 @@ public class TestSearchReindexing {
         assertTrue(events.getLast().contains("Max bulk size reached"));
     }
 
+    /**
+     * Verifies that a full repository reindex includes Relation documents when the flag is enabled, and that they are
+     * searchable after reindex.
+     *
+     * @since 2025.19
+     */
+    @Test
+    @WithFrameworkProperty(name = RELATION_INDEXING_ENABLED_PROP, value = "true")
+    public void shouldReindexRelationWhenEnabled() throws InterruptedException {
+        // create a regular document and a Relation
+        var doc = session.createDocumentModel("/", "testDoc", "File");
+        doc.setPropertyValue("dc:title", "A file");
+        session.createDocument(doc);
+        var relation = session.createDocumentModel(null, "myRelation", "Relation");
+        relation.setPropertyValue("dc:title", "A relation");
+        session.createDocument(relation);
+        txFeature.nextTransaction();
+
+        // both should be indexed
+        var ret = searchService.search(newSearchQuery(session, "SELECT * FROM Document, Relation"));
+        assertEquals(2, ret.getTotal());
+
+        // drop the index and reindex the repository
+        assumeTrue("Only for implementation that can init index", coreSearchFeature.dropAndInitIndex());
+        ret = searchService.search(newSearchQuery(session, "SELECT * FROM Document, Relation"));
+        assertEquals(0, ret.getTotal());
+
+        String commandId = searchIndexingService.reindexRepository(session.getRepositoryName());
+        bulkService.await(commandId, Duration.ofSeconds(30));
+        forceRefresh();
+
+        // both should be searchable after reindex
+        ret = searchService.search(newSearchQuery(session, "SELECT * FROM Document, Relation"));
+        assertEquals(2, ret.getTotal());
+
+        // Relation should be findable on its own
+        ret = searchService.search(newSearchQuery(session, "SELECT * FROM Relation"));
+        assertEquals(1, ret.getTotal());
+    }
 }
