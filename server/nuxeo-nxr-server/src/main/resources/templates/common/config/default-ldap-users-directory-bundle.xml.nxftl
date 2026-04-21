@@ -143,6 +143,11 @@
       </searchFilter>
       <searchScope>${nuxeo.ldap.group.searchScope}</searchScope>
 
+      <!-- using 'subany', search will match *toto*. use 'subfinal' to
+        match *toto and 'subinitial' to match toto*. subinitial is the
+        default  behaviour-->
+      <substringMatchType>${nuxeo.ldap.group.searchBehavior}</substringMatchType>
+
       <readOnly>${nuxeo.ldap.group.readonly}</readOnly>
 
       <!-- comment <cache* /> tags to disable the cache -->

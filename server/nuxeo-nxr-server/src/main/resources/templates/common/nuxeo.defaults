@@ -35,6 +35,7 @@ nuxeo.ldap.user.mapping.company=
 nuxeo.ldap.group.searchBaseDn=
 nuxeo.ldap.group.searchFilter=(|(objectClass=groupOfUniqueNames)(objectClass=groupOfURLs))
 nuxeo.ldap.group.searchScope=subtree
+nuxeo.ldap.group.searchBehavior=subinitial
 nuxeo.ldap.group.readonly=true
 nuxeo.ldap.group.mapping.rdn=
 nuxeo.ldap.group.mapping.name=
