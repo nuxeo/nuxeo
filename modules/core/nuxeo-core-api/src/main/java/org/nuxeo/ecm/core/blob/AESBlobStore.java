@@ -43,6 +43,8 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A blob store that encrypts binaries on the filesystem using AES.
@@ -50,6 +52,8 @@ import org.apache.commons.io.IOUtils;
  * @since 11.1
  */
 public class AESBlobStore extends LocalBlobStore {
+
+    private static final Logger log = LogManager.getLogger(AESBlobStore.class);
 
     protected static final byte[] FILE_MAGIC = "NUXEOCRYPT".getBytes(US_ASCII);
 
@@ -133,7 +137,71 @@ public class AESBlobStore extends LocalBlobStore {
     @Override
     public String copyOrMoveBlob(String key, BlobStore sourceStore, String sourceKey, boolean atomicMove)
             throws IOException {
-        throw new UnsupportedOperationException();
+        Path dest = pathStrategy.getPathForKey(key);
+        Files.createDirectories(dest.getParent());
+        Path tmpMove = null;
+        try {
+            Path readTo;
+            if (atomicMove) {
+                readTo = tmpMove = pathStrategy.createTempFile();
+            } else {
+                readTo = dest;
+            }
+            OptionalOrUnknown<InputStream> inOpt = sourceStore.getStream(sourceKey);
+            if (inOpt.isMissing()) {
+                return null;
+            } else if (inOpt.isPresent()) {
+                try (InputStream in = inOpt.get()) {
+                    write(in, readTo);
+                }
+            } else {
+                // No Stream API available, let's try with File
+                var file = sourceStore.getFile(sourceKey);
+                if (file.isPresent()) {
+                    try (InputStream in = Files.newInputStream(file.get())) {
+                        write(in, readTo);
+                    }
+                } else {
+                    // No File API available, let's have it written in a clear tmp file (unwanted, but no choice).
+                    Path tmp = Files.createTempFile("bin_", ".tmp");
+                    try {
+                        if (!sourceStore.readBlob(sourceKey, tmp)) {
+                            return null; // not found
+                        }
+                        // and move it encrypted
+                        try (InputStream in = Files.newInputStream(tmp)) {
+                            write(in, readTo);
+                        }
+                    } finally {
+                        deleteTempFile(tmp);
+                    }
+                }
+            }
+            if (atomicMove) {
+                PathStrategy.atomicMove(readTo, dest);
+                sourceStore.deleteBlob(sourceKey);
+            }
+            return key;
+        } finally {
+            deleteTempFile(tmpMove);
+        }
+    }
+
+    protected void deleteTempFile(Path path) {
+        if (path != null) {
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException e) {
+                log.warn(e, e);
+            }
+        }
+    }
+
+    protected void write(InputStream in, Path dest) throws IOException {
+        try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(dest));
+                EncryptingOutputStream cryptOut = new EncryptingOutputStream(out, aesConfig)) {
+            IOUtils.copy(in, cryptOut);
+        }
     }
 
     /**
