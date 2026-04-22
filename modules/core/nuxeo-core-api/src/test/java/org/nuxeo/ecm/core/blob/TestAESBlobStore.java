@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
 import static org.nuxeo.ecm.core.blob.AESBlobStoreConfiguration.PROP_KEY_ALIAS;
 import static org.nuxeo.ecm.core.blob.AESBlobStoreConfiguration.PROP_KEY_PASSWORD;
 import static org.nuxeo.ecm.core.blob.AESBlobStoreConfiguration.PROP_KEY_STORE_FILE;
@@ -85,12 +84,6 @@ public class TestAESBlobStore extends TestLocalBlobStoreAbstract {
         assertFalse(bp.isTransactional());
         assertFalse(bp.isRecordMode());
         assertTrue(bs.getKeyStrategy().useDeDuplication());
-    }
-
-    @Override
-    protected void testCopyOrMove(boolean atomicMove) {
-        // we don't test the unimplemented copyBlob API, as it's only called from commit or during caching
-        assumeFalse("low-level copy/move not tested in aes blob store", true);
     }
 
     @Before
