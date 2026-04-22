@@ -52,7 +52,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             throws IOException, ServletException {
 
         if (response.containsHeader("Cache-Control")) {
-            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Cache-Control", Framework.getProperty("nuxeo.cache.control", "no-cache"));
         }
 
         Throwable unwrappedException = ExceptionHelper.unwrapException(t);

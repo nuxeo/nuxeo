@@ -13,6 +13,7 @@
 String context = request.getContextPath();
 
 String productName = Framework.getProperty(Environment.PRODUCT_NAME);
+String cacheControl = Framework.getProperty("nuxeo.cache.control", "no-cache");
 
 LoginScreenConfig screenConfig = LoginScreenHelper.getConfig();
 String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#0066ff");
@@ -136,7 +137,7 @@ String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl()
   <form id="oauth2Form" action="<%=context%>/oauth2/authorize_submit" method="POST">
     <!-- To prevent caching -->
     <%
-      response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
+      response.setHeader("Cache-Control", cacheControl); // HTTP 1.1
       response.setHeader("Pragma", "no-cache"); // HTTP 1.0
       response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
     %>
