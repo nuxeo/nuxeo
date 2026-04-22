@@ -27,6 +27,7 @@ String productName = Framework.getProperty(Environment.PRODUCT_NAME);
 String productVersion = Framework.getProperty(Environment.PRODUCT_VERSION);
 String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
 boolean isTesting = "Nuxeo-Selenium-Tester".equals(testerName);
+String cacheControl = Framework.getProperty("nuxeo.cache.control", "no-cache");
 String context = request.getContextPath();
 
 HttpSession httpSession = request.getSession(false);
@@ -426,7 +427,7 @@ if (selectedLanguage != null) { %>
         </div>
         <!-- To prevent caching -->
         <%
-          response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
+          response.setHeader("Cache-Control", cacheControl); // HTTP 1.1
           response.setHeader("Pragma", "no-cache"); // HTTP 1.0
           response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
         %>
