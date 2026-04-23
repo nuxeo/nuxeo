@@ -2,6 +2,7 @@
   <%@ page contentType="text/html; charset=UTF-8"%>
 
   <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+  <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
     <%
     String context = request.getContextPath();
@@ -15,8 +16,16 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
 
   <title></title>
-  <link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
-  <link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
+  <c:choose>
+    <c:when test="${not empty favIconUrl}">
+      <link rel="icon" type="image/x-icon" href="${fn:escapeXml(favIconUrl)}" />
+      <link rel="shortcut icon" type="image/x-icon" href="${fn:escapeXml(favIconUrl)}" />
+    </c:when>
+    <c:otherwise>
+      <link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
+      <link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
+    </c:otherwise>
+  </c:choose>
   <meta name="description" content="">
   <meta name="viewport"
   content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">

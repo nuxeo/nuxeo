@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,6 +101,9 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     // extension => wopi action => wopi action url
     protected Map<String, Map<String, String>> extensionActionURLs = new HashMap<>();
 
+    // extension => favicon url (from WOPI discovery)
+    protected Map<String, String> extensionFavIconURLs = new HashMap<>();
+
     protected PublicKey proofKey;
 
     protected PublicKey oldProofKey;
@@ -133,10 +136,16 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     public void stop(ComponentContext context) {
         checkFileInfoUpdater = null;
         discoveryURL = null;
+        clearDiscoveryState();
+        unregisterInvalidator();
+    }
+
+    protected void clearDiscoveryState() {
+        extensionAppNames.clear();
+        extensionActionURLs.clear();
+        extensionFavIconURLs.clear();
         proofKey = null;
         oldProofKey = null;
-
-        unregisterInvalidator();
     }
 
     protected boolean hasDiscoveryURL() {
@@ -190,6 +199,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         }
 
         List<String> supportedAppNames = getSupportedAppNames();
+        clearDiscoveryState();
         netZone.getApps().stream().filter(app -> supportedAppNames.contains(app.getName())).forEach(this::registerApp);
         log.debug("Successfully loaded WOPI discovery: WOPI enabled");
 
@@ -226,6 +236,9 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     protected void registerApp(WOPIDiscovery.App app) {
         app.getActions().forEach(action -> {
             extensionAppNames.put(action.getExt(), app.getName());
+            if (isNotBlank(app.getFavIconUrl())) {
+                extensionFavIconURLs.put(action.getExt(), app.getFavIconUrl());
+            }
             var url = action.getUrl();
             int firstArg = url.indexOf("<");
             if (firstArg > 0) {
@@ -265,6 +278,12 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     public String getActionURL(Blob blob, String action) {
         String extension = getExtension(blob);
         return extensionActionURLs.getOrDefault(extension, Collections.emptyMap()).get(action);
+    }
+
+    @Override
+    public String getFavIconURL(Blob blob) {
+        String extension = getExtension(blob);
+        return extension != null ? extensionFavIconURLs.get(extension) : null;
     }
 
     protected String getExtension(Blob blob) {

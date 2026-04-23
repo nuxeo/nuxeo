@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.wopi.Constants.ACTION_CONVERT;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
 import static org.nuxeo.wopi.Constants.ACTION_VIEW;
+import static org.nuxeo.wopi.TestWOPIDiscovery.EXCEL_FAV_ICON_URL;
+import static org.nuxeo.wopi.TestWOPIDiscovery.WORD_FAV_ICON_URL;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +112,9 @@ public class TestWOPIService {
         // proof keys
         assertNotNull(wopiServiceImpl.proofKey);
         assertNotNull(wopiServiceImpl.oldProofKey);
+        // favicon URLs
+        assertEquals(EXCEL_FAV_ICON_URL, wopiServiceImpl.extensionFavIconURLs.get("xlsx"));
+        assertEquals(WORD_FAV_ICON_URL, wopiServiceImpl.extensionFavIconURLs.get("docx"));
     }
 
     // NXP-33568
@@ -161,6 +166,33 @@ public class TestWOPIService {
         blob.setFilename("file.DOCX");
         assertEquals("https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?IsLicensedUser=1&",
                 wopiService.getActionURL(blob, ACTION_VIEW));
+    }
+
+    @Test
+    public void testGetFavIconURL() {
+        Blob blob = Blobs.createBlob("content");
+        // no filename
+        assertNull(wopiService.getFavIconURL(blob));
+
+        // extension not supported by WOPI
+        blob.setFilename("file.txt");
+        assertNull(wopiService.getFavIconURL(blob));
+
+        // extension not supported by Nuxeo
+        blob.setFilename("file.pdf");
+        assertNull(wopiService.getFavIconURL(blob));
+
+        // Excel
+        blob.setFilename("file.xlsx");
+        assertEquals(EXCEL_FAV_ICON_URL, wopiService.getFavIconURL(blob));
+        blob.setFilename("file.xls");
+        assertEquals(EXCEL_FAV_ICON_URL, wopiService.getFavIconURL(blob));
+
+        // Word
+        blob.setFilename("file.docx");
+        assertEquals(WORD_FAV_ICON_URL, wopiService.getFavIconURL(blob));
+        blob.setFilename("file.DOCX");
+        assertEquals(WORD_FAV_ICON_URL, wopiService.getFavIconURL(blob));
     }
 
     @Test

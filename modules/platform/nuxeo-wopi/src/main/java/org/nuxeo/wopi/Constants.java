@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,9 @@ public class Constants {
     public static final String ACTION_EDIT = "edit";
 
     public static final String ACTION_VIEW = "view";
+
+    /** @since 2025.19 */
+    public static final String FAV_ICON_URL = "favIconUrl";
 
     public static final String FILES_ENDPOINT_PATH = "site/wopi/files/";
 

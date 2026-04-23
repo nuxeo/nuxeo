@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,16 @@ public interface WOPIService {
      * Returns the WOPI action url given a {@code blob} and an {@code action}.
      */
     String getActionURL(Blob blob, String action);
+
+    /**
+     * Returns the favicon URL for the application associated with the given {@code blob}, or {@code null} if not
+     * available.
+     *
+     * @since 2025.19
+     */
+    default String getFavIconURL(Blob blob) {
+        return null;
+    }
 
     /**
      * Verifies that the request originate from Office Online.

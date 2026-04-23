@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,9 @@ public class WOPIDiscovery {
 
         private String name;
 
+        @JacksonXmlProperty(localName = "favIconUrl", isAttribute = true)
+        private String favIconUrl;
+
         @JacksonXmlProperty(localName = "action")
         @JacksonXmlElementWrapper(useWrapping = false)
         private List<Action> actions;
@@ -146,6 +149,19 @@ public class WOPIDiscovery {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        /**
+         * Returns the favicon URL for this application as provided by the WOPI discovery.
+         *
+         * @since 2025.19
+         */
+        public String getFavIconUrl() {
+            return favIconUrl;
+        }
+
+        public void setFavIconUrl(String favIconUrl) {
+            this.favIconUrl = favIconUrl;
         }
 
         public List<Action> getActions() {

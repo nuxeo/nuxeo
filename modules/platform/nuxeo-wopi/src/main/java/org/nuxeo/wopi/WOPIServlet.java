@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package org.nuxeo.wopi;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_ATTRIBUTE;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_TTL_ATTRIBUTE;
+import static org.nuxeo.wopi.Constants.FAV_ICON_URL;
 import static org.nuxeo.wopi.Constants.FILES_ENDPOINT_PATH;
 import static org.nuxeo.wopi.Constants.FORM_URL;
 import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
@@ -112,6 +113,10 @@ public class WOPIServlet extends HttpServlet {
         String wopiSrc = URLEncoder.encode(String.format("%s%s%s", wopiBaseURL, FILES_ENDPOINT_PATH, fileId),
                 UTF_8.name());
         request.setAttribute(FORM_URL, String.format("%s%s=%s", actionURL, WOPI_SRC, wopiSrc));
+        String favIconUrl = wopiService.getFavIconURL(blob);
+        if (favIconUrl != null) {
+            request.setAttribute(FAV_ICON_URL, favIconUrl);
+        }
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(WOPI_JSP);
         requestDispatcher.forward(request, response);
     }

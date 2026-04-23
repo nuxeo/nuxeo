@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,10 @@ public class TestWOPIDiscovery {
 
     protected static Map<String, String> EXPECTED_WORDPDF_ACTIONS = new HashMap<>();
 
+    protected static final String EXCEL_FAV_ICON_URL = "https://excel.officeapps-df.live.com/x/_layouts/resources/FavIcon_Excel.ico";
+
+    protected static final String WORD_FAV_ICON_URL = "https://word-view.officeapps-df.live.com/wv/resources/1033/FavIcon_Word.ico";
+
     static {
         EXPECTED_EXCEL_ACTIONS.put(ACTION_VIEW, "xlsx");
         EXPECTED_EXCEL_ACTIONS.put(ACTION_EDIT, "xlsx");
@@ -73,13 +77,15 @@ public class TestWOPIDiscovery {
         assertNotNull(apps);
         assertEquals(3, apps.size());
 
-        checkApp(apps.get(0), "Excel", EXPECTED_EXCEL_ACTIONS);
-        checkApp(apps.get(1), "Word", EXPECTED_WORD_ACTIONS);
-        checkApp(apps.get(2), "WordPdf", EXPECTED_WORDPDF_ACTIONS);
+        checkApp(apps.get(0), "Excel", EXPECTED_EXCEL_ACTIONS, EXCEL_FAV_ICON_URL);
+        checkApp(apps.get(1), "Word", EXPECTED_WORD_ACTIONS, WORD_FAV_ICON_URL);
+        checkApp(apps.get(2), "WordPdf", EXPECTED_WORDPDF_ACTIONS, WORD_FAV_ICON_URL);
     }
 
-    protected void checkApp(WOPIDiscovery.App app, String expectedAppName, Map<String, String> expectedActions) {
+    protected void checkApp(WOPIDiscovery.App app, String expectedAppName, Map<String, String> expectedActions,
+            String expectedFavIconUrl) {
         assertEquals(expectedAppName, app.getName());
+        assertEquals(expectedFavIconUrl, app.getFavIconUrl());
         List<WOPIDiscovery.Action> actions = app.getActions();
         assertNotNull(actions);
         assertEquals(expectedActions.size(), actions.size());
