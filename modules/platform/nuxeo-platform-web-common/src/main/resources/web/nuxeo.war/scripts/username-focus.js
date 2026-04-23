@@ -16,4 +16,5 @@
  * Contributors:
  *     Antoine Taillefer
  */
+'use strict';
 document.getElementById('username').focus();

@@ -16,7 +16,8 @@
  * Contributors:
  *     Antoine Taillefer
  */
-newsIframe = document.getElementById('news');
+'use strict';
+const newsIframe = document.getElementById('news');
 window.addEventListener('load', () => {
   newsIframe.style.visibility='visible';
 })

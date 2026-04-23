@@ -16,6 +16,7 @@
  * Contributors:
  *     Antoine Taillefer
  */
+'use strict';
 var submitted = false;
 var oauth2Form = document.getElementById("oauth2Form");
 oauth2Form.onsubmit = function(evt) {
