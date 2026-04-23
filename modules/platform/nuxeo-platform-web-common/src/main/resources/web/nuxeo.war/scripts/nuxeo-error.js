@@ -16,6 +16,7 @@
  * Contributors:
  *     Antoine Taillefer
  */
+'use strict';
 function toggleError(id) {
   var style = document.getElementById(id).style;
   if ("block" == style.display) {

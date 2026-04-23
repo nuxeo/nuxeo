@@ -1,6 +1,7 @@
 var nxtz = (function() {
+  'use strict';
 
-  resetTimeZoneCookieIfNotSet = function() {
+  var resetTimeZoneCookieIfNotSet = function() {
     // check the cookie is set
     if (!readCookie("org.jboss.seam.core.TimeZone")) {
       // set tz cookie if not set
@@ -8,7 +9,7 @@ var nxtz = (function() {
     }
   };
 
-  readCookie = function(name) {
+  var readCookie = function(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
     for ( var i = 0; i < ca.length; i++) {
@@ -21,7 +22,7 @@ var nxtz = (function() {
     return null;
   }
 
-  resetTimeZoneCookie = function() {
+  var resetTimeZoneCookie = function() {
     // retrieves locale timezone thanks to detect_timezone.js
     var timezone = jstz.determine().name();
     // set the expire date in 365 days

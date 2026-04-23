@@ -16,6 +16,7 @@
  * Contributors:
  *     Antoine Taillefer
  */
+'use strict';
 var frameholder = document.getElementById('frameholder');
 var office_frame = document.createElement('iframe');
 office_frame.name = 'office_frame';
