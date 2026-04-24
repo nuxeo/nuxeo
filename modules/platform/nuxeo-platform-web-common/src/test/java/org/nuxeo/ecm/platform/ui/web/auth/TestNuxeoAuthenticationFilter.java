@@ -69,6 +69,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -663,7 +664,8 @@ public class TestNuxeoAuthenticationFilter {
         filter.doFilter(request, response, chain);
 
         checkCachedUser(sessionAttributes, "bob");
-        verify(session).invalidate();
+        // NXP-33531: session ID is rotated on successful authentication
+        verify(request).changeSessionId();
         checkEvents(EVENT_LOGIN_SUCCESS);
     }
 
@@ -833,8 +835,8 @@ public class TestNuxeoAuthenticationFilter {
         // redirect was called
         verify(response).sendRedirect(eq("http://localhost:8080/nuxeo/mystart/foo"));
 
-        // make sure the session was invalidated with a successful authentication
-        verify(session).invalidate();
+        // make sure the session ID was rotated with a successful authentication (NXP-33531)
+        verify(request).changeSessionId();
     }
 
     /**
@@ -895,6 +897,15 @@ public class TestNuxeoAuthenticationFilter {
 
         // redirect was called. home.html is the default LoginScreenHelper startup page
         verify(response).sendRedirect(eq("http://localhost:8080/nuxeo/home.html"));
+
+        // NXP-33531: JSESSIONID cookie is cleared with the correct context path
+        var cookieCaptor = ArgumentCaptor.forClass(Cookie.class);
+        verify(response).addCookie(cookieCaptor.capture());
+        var jsessionCookie = cookieCaptor.getValue();
+        assertEquals("JSESSIONID", jsessionCookie.getName());
+        assertEquals(0, jsessionCookie.getMaxAge());
+        assertEquals(CONTEXT, jsessionCookie.getPath());
+        assertTrue(jsessionCookie.isHttpOnly());
     }
 
     protected void initAuthPluginFormLogoutRequest(HttpServletRequest request, HttpSession session,
@@ -1133,6 +1144,34 @@ public class TestNuxeoAuthenticationFilter {
         assertEquals(400, assertThrows(NuxeoException.class, () -> filter.checkRequestedURL(request)).getStatusCode());
         when(request.getParameter(eq(REQUESTED_URL))).thenReturn("////yogosha.com");
         assertEquals(400, assertThrows(NuxeoException.class, () -> filter.checkRequestedURL(request)).getStatusCode());
+    }
+
+    // session is invalidated when authentication fails in doAuthenticate (unknown user)
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-form.xml")
+    public void testSessionInvalidatedOnAuthFailure() throws IOException, ServletException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        mockRequestAttributes(request);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        mockSessionAttributes(session);
+        when(request.getSession(anyBoolean())).thenReturn(session);
+        mockRequestURI(request, "/doesnotmatter", "", "");
+        // credentials pass the plugin check (username == password) but user is unknown to UserManager
+        when(request.getParameter(eq(DUMMY_AUTH_FORM_USERNAME_KEY))).thenReturn("unknown");
+        when(request.getParameter(eq(DUMMY_AUTH_FORM_PASSWORD_KEY))).thenReturn("unknown");
+        // record output
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        @SuppressWarnings("resource")
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, UTF_8), true);
+        when(response.getWriter()).thenReturn(writer);
+
+        filter.doFilter(request, response, chain);
+
+        assertFalse(chain.called);
+        checkEvents("loginFailed");
+        // session was invalidated on auth failure
+        verify(session).invalidate();
     }
 
 }
