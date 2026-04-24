@@ -230,6 +230,12 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         Principal principal = getPrincipalCheckingAuth(userIdent, httpRequest);
         if (principal == null || principal == DIRECTORY_ERROR_PRINCIPAL) {
+            // invalidate pre-existing session on auth failure to prevent session fixation
+            HttpSession session = httpRequest.getSession(false);
+            if (session != null) {
+                log.debug("doAuthenticate: authentication failed, invalidating HTTP session");
+                service.invalidateSession(httpRequest);
+            }
             return principal;
         }
 
@@ -245,16 +251,14 @@ public class NuxeoAuthenticationFilter implements Filter {
         httpRequest.setAttribute(LOGINCONTEXT_KEY, loginContext);
 
         boolean createSession = needSessionSaving(userIdent);
-        // we have successfully authenticated a user, first invalidate the HTTP session that may be created
-        // while the user was not authenticated (at the login page for instance)
+        // rotate the session ID to prevent session fixation attacks
         HttpSession session = httpRequest.getSession(false);
         if (session != null) {
-            log.debug("doAuthenticate: invalidating HTTP session");
-            service.invalidateSession(httpRequest);
-            createSession = true; // we had a session, re-create one
+            log.debug("doAuthenticate: rotating HTTP session ID");
+            httpRequest.changeSessionId();
+        } else if (createSession) {
+            session = httpRequest.getSession(true);
         }
-
-        session = httpRequest.getSession(createSession);
         // store user ident
         if (session != null) {
             session.setAttribute(USERIDENT_KEY, cachableUserIdent);
@@ -790,12 +794,14 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (requestedUrl != null) {
             parameters.put(REQUESTED_URL, requestedUrl);
         }
-        // Reset JSESSIONID Cookie
+        // Reset JSESSIONID Cookie (use context path to match Tomcat's cookie path)
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Cookie cookie = new Cookie("JSESSIONID", null);
         cookie.setMaxAge(0);
-        cookie.setPath("/");
+        cookie.setPath(httpRequest.getContextPath());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(httpRequest.isSecure());
         httpResponse.addCookie(cookie);
 
         NuxeoAuthenticationPlugin authPlugin = getAuthenticator(cachedUserInfo);
