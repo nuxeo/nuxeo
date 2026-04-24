@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -121,6 +122,34 @@ public class CacheMetrics extends CacheWrapper {
             super.put(key, value);
         } finally {
             write.inc();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Records read/hit/miss/write counters around the delegated call so that the loading path is accounted for like
+     * direct {@code get}/{@code put} operations.
+     * </p>
+     *
+     * @since 2025.20
+     */
+    @Override
+    public <V extends Serializable> V computeIfAbsent(String key, Supplier<V> supplier) {
+        read.inc();
+        var loaded = new boolean[1];
+        try {
+            return super.computeIfAbsent(key, () -> {
+                loaded[0] = true;
+                return supplier.get();
+            });
+        } finally {
+            if (loaded[0]) {
+                read_miss.inc();
+                write.inc();
+            } else {
+                read_hit.inc();
+            }
         }
     }
 

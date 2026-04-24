@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Class to implement mandatory check attributes before calling implementation of cache This enable to have the same
@@ -50,7 +51,8 @@ public class CacheAttributesChecker extends CacheWrapper {
     @Override
     public void invalidate(String key) {
         if (key == null) {
-            throw new IllegalArgumentException(String.format("Can't invalidate a null key for the cache '%s'!", cache.getName()));
+            throw new IllegalArgumentException(
+                    "Can't invalidate a null key for the cache '%s'!".formatted(cache.getName()));
         }
         super.invalidate(key);
     }
@@ -63,9 +65,23 @@ public class CacheAttributesChecker extends CacheWrapper {
     @Override
     public void put(String key, Serializable value) {
         if (key == null) {
-            throw new IllegalArgumentException(String.format("Can't put a null key for the cache '%s'!", cache.getName()));
+            throw new IllegalArgumentException("Can't put a null key for the cache '%s'!".formatted(cache.getName()));
         }
         super.put(key, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 2025.20
+     */
+    @Override
+    public <V extends Serializable> V computeIfAbsent(String key, Supplier<V> supplier) {
+        if (key == null) {
+            throw new IllegalArgumentException(
+                    "Can't computeIfAbsent a null key for the cache '%s'!".formatted(cache.getName()));
+        }
+        return super.computeIfAbsent(key, supplier);
     }
 
     @Override
