@@ -49,6 +49,16 @@ public class ComputeDigestWork extends AbstractWork {
         return "computeDigest";
     }
 
+    /**
+     * Allows one retry in case of transient failure (e.g., blob not yet available in S3 after eventual consistency).
+     *
+     * @since 2025.19
+     */
+    @Override
+    public int getRetryCount() {
+        return 1;
+    }
+
     @Override
     public void work() {
         ComputeDigestHelper.newTransaction();

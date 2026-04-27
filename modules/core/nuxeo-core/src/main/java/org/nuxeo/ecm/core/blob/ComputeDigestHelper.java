@@ -77,8 +77,9 @@ public class ComputeDigestHelper {
         // compute the digest
         digest = computeDigest(blobStore);
         if (digest == null) {
-            log.debug("Blob with key: {} was not found in blob provider: {}", key, blobProviderId);
-            return;
+            throw new NuxeoException(
+                    "Blob with key: %s was not found in blob provider: %s, document will keep its temporary key".formatted(
+                            key, blobProviderId));
         }
         if (digest.equals(key)) {
             return;
@@ -106,10 +107,10 @@ public class ComputeDigestHelper {
     protected String computeDigest(BlobStore blobStore) {
         blobStore = blobStore.unwrap(); // we want the low-level version, with no caching
         KeyStrategy keyStrategy = blobStore.getKeyStrategy();
-        if (!(keyStrategy instanceof KeyStrategyDigest)) {
+        if (!(keyStrategy instanceof KeyStrategyDigest digestStrategy)) {
             throw new NuxeoException("Invalid key strategy class: " + keyStrategy.getClass().getName());
         }
-        String digestAlgorithm = ((KeyStrategyDigest) keyStrategy).digestAlgorithm;
+        String digestAlgorithm = digestStrategy.digestAlgorithm;
 
         // you might think that it would be better to stream bytes from the blob store,
         // but it's actually more efficient to read in parallel multipart chunks into a temporary file
