@@ -104,6 +104,21 @@ S3 parameters (except `nuxeo.core.binarymanager`) are mandatory, additionally Cl
 - `nuxeo.s3storage.cloudfront.protocol`: the prefered protocol (default `HTTPS`)
 - `nuxeo.s3storage.cloudfront.fix.encoding`: Enable a workaround to fix an error on CloudFront side (default `false`)
 
+## Digest Configuration
+
+- `nuxeo.s3storage.digest` : the digest algorithm used for blob keys (default `MD5`). Supported values include `MD5`, `SHA-1`, `SHA-256`.
+
+- `nuxeo.s3storage.digestAsync` : if `true`, digest computation is done asynchronously after the blob is stored (default `false`). Required when blobs are uploaded directly to S3 (direct upload) and digest needs to be computed server-side.
+
+- `nuxeo.s3storage.digest.maxSize` : maximum blob size for digest-based keys. Blobs larger than this threshold are stored with a UUIDv7 key instead of computing a content digest. Accepts byte size values like `5g`, `500m`, `1024k`. Default is disabled (all blobs get a digest key).
+
+  When enabled:
+  - Blobs at or below the threshold get a content-based digest key (e.g., MD5) with deduplication.
+  - Blobs above the threshold get a unique UUIDv7 key — no digest computation, no deduplication.
+  - Both key formats coexist transparently. Existing digest-keyed blobs remain valid.
+  - This is useful for very large files (50 GB+) where digest computation can exceed Kafka `max.poll.interval.ms`.
+  - Note: with SSE-KMS encryption, S3 ETags are opaque and cannot be used as digests, making this threshold approach the recommended solution for large files.
+
 ## Building
 
 ```shell

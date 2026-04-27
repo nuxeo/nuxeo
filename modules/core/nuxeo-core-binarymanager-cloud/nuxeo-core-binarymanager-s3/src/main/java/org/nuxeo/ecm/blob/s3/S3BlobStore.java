@@ -607,8 +607,7 @@ public class S3BlobStore extends AbstractBlobStore {
         if (key == null) {
             // fast digest compute or trigger async digest computation
             String digest;
-            if (keyStrategy instanceof KeyStrategyDigest
-                    && ((KeyStrategyDigest) keyStrategy).digestAlgorithm.equals("MD5") //
+            if (keyStrategy instanceof KeyStrategyDigest ksd && "MD5".equals(ksd.digestAlgorithm)
                     && (digest = sourceBlobStore.getMD5DigestFromETag(sourceBucketKey)) != null) {
                 // we have a usable MD5 digest
                 key = digest;
@@ -952,8 +951,8 @@ public class S3BlobStore extends AbstractBlobStore {
                         continue;
                     }
                     if (useDeDuplication) {
-                        if (!((KeyStrategyDigest) keyStrategy).isValidDigest(key)) {
-                            // ignore files that cannot be digests, for safety
+                        if (!keyStrategy.isValidKey(key)) {
+                            // ignore files that cannot be valid keys, for safety
                             continue;
                         }
                     }

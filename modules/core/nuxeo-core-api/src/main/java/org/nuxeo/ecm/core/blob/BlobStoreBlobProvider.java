@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.DIRECTDOWNLOAD_PROPERTY;
 import static org.nuxeo.ecm.core.blob.DigestConfiguration.DIGEST_ALGORITHM_PROPERTY;
+import static org.nuxeo.ecm.core.blob.DigestConfiguration.DIGEST_MAX_SIZE_PROPERTY;
 import static org.nuxeo.ecm.core.blob.KeyStrategy.VER_SEP;
 
 import java.io.File;
@@ -30,8 +31,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobStore.OptionalOrUnknown;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -43,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  * This abstract class deals with
  */
 public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
+
+    private static final Logger log = LogManager.getLogger(BlobStoreBlobProvider.class);
 
     /** @since 11.2 */
     public static final String KEY_STRATEGY_PROPERTY = "keyStrategy";
@@ -76,7 +81,7 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
             keyStrategy = KeyStrategyDocId.instance();
         } else {
             String strKeyStrategy = properties.getOrDefault(KEY_STRATEGY_PROPERTY, DIGEST_KEY_STRATEGY);
-            keyStrategy = new KeyStrategyDigest(getDigestAlgorithm());
+            keyStrategy = new KeyStrategyDigest(getDigestAlgorithm(), getDigestMaxSize());
             if (MANAGED_KEY_STRATEGY.equals(strKeyStrategy)) {
                 keyStrategy = new KeyStrategyManaged(keyStrategy);
             }
@@ -86,6 +91,25 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
 
     /** The digest algorithm to use for the default key strategy. */
     protected abstract String getDigestAlgorithm();
+
+    /**
+     * Returns the maximum blob size for digest computation, or {@link ByteSize#unlimited()} if no threshold is
+     * configured. Subclasses may override to provide the value from their own configuration.
+     *
+     * @since 2025.19
+     */
+    protected ByteSize getDigestMaxSize() {
+        var value = properties.get(DIGEST_MAX_SIZE_PROPERTY);
+        if (StringUtils.isBlank(value)) {
+            return ByteSize.unlimited();
+        }
+        try {
+            return ByteSize.parse(value.strip());
+        } catch (NumberFormatException e) {
+            log.error("Invalid {} value: {}", DIGEST_MAX_SIZE_PROPERTY, value, e);
+            return ByteSize.unlimited();
+        }
+    }
 
     @Override
     public boolean supportsSync() {
@@ -251,18 +275,22 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
             if (keyStrategy instanceof KeyStrategyManaged) {
                 keyStrategy = ((KeyStrategyManaged) keyStrategy).strategy;
             }
-            if (keyStrategy instanceof KeyStrategyDigest) {
-                KeyStrategyDigest ksd = (KeyStrategyDigest) keyStrategy;
-                String currentDigest = blob.getDigest();
-                if (currentDigest == null || currentDigest.contains("-")) {
-                    // missing or temporary digest
-                    String digest = stripBlobKeyVersionSuffix(stripBlobKeyPrefix(key));
-                    blob.setDigest(digest);
-                    currentDigest = digest;
+            if (!(keyStrategy instanceof KeyStrategyDigest ksd)) {
+                return;
+            }
+            String currentDigest = blob.getDigest();
+            if (currentDigest == null || currentDigest.contains("-")) {
+                // missing or temporary digest
+                String digest = stripBlobKeyVersionSuffix(stripBlobKeyPrefix(key));
+                if (KeyStrategyDigest.isUUIDv7(digest)) {
+                    // UUID key (above threshold): no content-based digest available
+                    return;
                 }
-                if (blob.getDigestAlgorithm() == null && ksd.isValidDigest(currentDigest)) {
-                    blob.setDigestAlgorithm(ksd.digestAlgorithm);
-                }
+                blob.setDigest(digest);
+                currentDigest = digest;
+            }
+            if (blob.getDigestAlgorithm() == null && ksd.isValidDigest(currentDigest)) {
+                blob.setDigestAlgorithm(ksd.digestAlgorithm);
             }
         }
     }

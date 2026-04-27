@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.nuxeo.common.utils.ByteSize;
 
 /**
  * Configuration for the digest.
@@ -36,6 +37,14 @@ public class DigestConfiguration extends PropertyBasedConfiguration {
     /** @since 11.5 */
     public static final String DIGEST_ASYNC_PROPERTY = "digestAsync";
 
+    /**
+     * Maximum blob size in bytes for digest computation. Blobs larger than this get a UUIDv7 key instead of a
+     * content-based digest. Accepts byte size strings like {@code 5g}, {@code 500m}. Default: unset (no threshold).
+     *
+     * @since 2025.19
+     */
+    public static final String DIGEST_MAX_SIZE_PROPERTY = "digest.maxSize";
+
     // this is already used in production. Changing it would cause data loss.
     public static final String DEFAULT_DIGEST_ALGORITHM = "MD5";
 
@@ -48,11 +57,20 @@ public class DigestConfiguration extends PropertyBasedConfiguration {
     /** @since 11.5 */
     public final boolean digestAsync;
 
+    /**
+     * Maximum blob size for digest computation. {@link ByteSize#unlimited()} means no threshold (always use digest
+     * keys).
+     *
+     * @since 2025.19
+     */
+    public final ByteSize digestMaxSize;
+
     public DigestConfiguration(String digestAlgorithm) {
         super(null, null);
         this.digestAlgorithm = digestAlgorithm;
         digestPattern = getDigestPattern();
         digestAsync = false;
+        digestMaxSize = ByteSize.unlimited();
     }
 
     public DigestConfiguration(String systemPropertyPrefix, Map<String, String> properties) {
@@ -60,6 +78,7 @@ public class DigestConfiguration extends PropertyBasedConfiguration {
         digestAlgorithm = getDigestAlgorithm();
         digestPattern = getDigestPattern();
         digestAsync = getBooleanProperty(DIGEST_ASYNC_PROPERTY);
+        digestMaxSize = getDigestMaxSize();
     }
 
     protected String getDigestAlgorithm() {
@@ -78,6 +97,16 @@ public class DigestConfiguration extends PropertyBasedConfiguration {
     @Deprecated
     public boolean isValidDigest(String digest) {
         return digestPattern.matcher(digest).matches();
+    }
+
+    /**
+     * Returns the maximum blob size for digest computation, or {@link ByteSize#unlimited()} if no threshold is
+     * configured.
+     *
+     * @since 2025.19
+     */
+    protected ByteSize getDigestMaxSize() {
+        return getOptionalByteSizeProperty(DIGEST_MAX_SIZE_PROPERTY).orElse(ByteSize.unlimited());
     }
 
 }

@@ -36,6 +36,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -140,6 +141,11 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
     @Override
     protected String getDigestAlgorithm() {
         return config.digestConfiguration.digestAlgorithm;
+    }
+
+    @Override
+    protected ByteSize getDigestMaxSize() {
+        return config.digestConfiguration.digestMaxSize;
     }
 
     /** Checks if the bucket exists (used in health check probes). */
