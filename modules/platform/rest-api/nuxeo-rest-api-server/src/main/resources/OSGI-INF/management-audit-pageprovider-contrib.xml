@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.restapi.server.management.audit">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+    <genericPageProvider name="audit_check_nxql" class="org.nuxeo.audit.provider.AuditPageProvider">
+      <searchDocumentType>BasicAuditSearch</searchDocumentType>
+      <pattern quoteParameters="false" escapeParameters="false">?</pattern>
+      <pageSize>10</pageSize>
+      <sort column="id" ascending="false" />
+    </genericPageProvider>
+  </extension>
+
+</component>

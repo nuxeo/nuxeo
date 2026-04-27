@@ -19,7 +19,13 @@
 package org.nuxeo.ecm.restapi.server.management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
+import static org.nuxeo.audit.test.MultiAuditFeature.OTHER_AUDIT_BACKEND;
 import static org.nuxeo.common.test.ModuleUnderTest.getClassLoaderResourceAsString;
+
+import java.util.List;
 
 import jakarta.inject.Inject;
 
@@ -27,18 +33,64 @@ import org.junit.Test;
 import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.audit.test.MultiAuditFeature;
 import org.nuxeo.ecm.restapi.test.ManagementBaseTest;
+import org.nuxeo.http.test.handler.JsonNodeHandler;
 import org.nuxeo.http.test.handler.StringHandler;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 2025.16
  */
 @Features(MultiAuditFeature.class)
+@Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-multi-audit-disable-loginSuccess-event.xml")
 public class TestAuditObjectMultiAudit extends ManagementBaseTest {
 
     @Inject
     protected AuditBackend backend;
+
+    // ---------------------
+    // /checkSearch endpoint
+    // ---------------------
+
+    // @since 2025.19
+    @Test
+    public void testCheckSearch() {
+        httpClient.buildGetRequest("/management/audit/checkSearch")
+                  .addQueryParameter("backend", DEFAULT_AUDIT_BACKEND)
+                  .addQueryParameter("backend", OTHER_AUDIT_BACKEND)
+                  .executeAndConsume(new JsonNodeHandler(), node -> {
+                      assertEquals("audit_check_nxql", node.get("pageProvider").asText());
+                      assertEquals("id DESC", node.get("orders").get(0).asText());
+
+                      var executions = node.get("executions");
+                      assertNotNull(executions);
+
+                      var defaultExecution = executions.get(DEFAULT_AUDIT_BACKEND);
+                      assertNotNull(defaultExecution);
+                      assertTrue(defaultExecution.get("duration").isTextual());
+                      assertEquals(6, defaultExecution.get("resultsCount").asInt());
+                      assertEquals(0, defaultExecution.get("resultsCountLimit").asInt());
+                      var defaultExecutionResults = defaultExecution.get("results");
+                      assertTrue(defaultExecutionResults.isArray());
+                      assertEquals(List.of(6L, 5L, 4L, 3L, 2L, 1L),
+                              defaultExecutionResults.valueStream().map(JsonNode::asLong).toList());
+
+                      var otherExecution = executions.get(OTHER_AUDIT_BACKEND);
+                      assertNotNull(otherExecution);
+                      assertTrue(otherExecution.get("duration").isTextual());
+                      assertEquals(0, otherExecution.get("resultsCount").asInt());
+                      assertEquals(0, otherExecution.get("resultsCountLimit").asInt());
+                      var otherExecutionResults = otherExecution.get("results");
+                      assertTrue(otherExecutionResults.isArray());
+                      assertEquals(List.of(), otherExecutionResults.valueStream().map(JsonNode::asLong).toList());
+                  });
+    }
+
+    // -----------------------
+    // /introspection endpoint
+    // -----------------------
 
     @Test
     public void testIntrospectionWithoutAnyRoutesToOtherBackend() {

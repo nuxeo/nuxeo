@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.restapi.server.management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 import static org.nuxeo.audit.test.MultiAuditFeature.OTHER_AUDIT_BACKEND;
 
@@ -92,6 +94,33 @@ public abstract class TestAuditObjectAbstractFromToBackends extends ManagementBa
 
         assertEquals(count, fromBackend.queryLogs(countTotalQuery).getTotalSize());
         assertEquals(count, targetBackend.queryLogs(countTotalQuery).getTotalSize());
+
+        httpClient.buildGetRequest("/management/audit/checkSearch")
+                  .addQueryParameter("backend", fromBackendName)
+                  .addQueryParameter("backend", targetBackendName)
+                  .executeAndConsume(new JsonNodeHandler(), node -> {
+                      assertEquals("audit_check_nxql", node.get("pageProvider").asText());
+                      assertEquals("id DESC", node.get("orders").get(0).asText());
+
+                      var executions = node.get("executions");
+                      assertNotNull(executions);
+
+                      var executionFrom = executions.get(fromBackendName);
+                      assertNotNull(executionFrom);
+                      assertTrue(executionFrom.get("duration").isTextual());
+                      assertEquals(count, executionFrom.get("resultsCount").asInt());
+                      assertEquals(0, executionFrom.get("resultsCountLimit").asInt());
+                      var executionFromResults = executionFrom.get("results");
+                      assertTrue(executionFromResults.isArray());
+
+                      var executionTarget = executions.get(targetBackendName);
+                      assertNotNull(executionTarget);
+                      assertTrue(executionTarget.get("duration").isTextual());
+                      assertEquals(count, executionTarget.get("resultsCount").asInt());
+                      assertEquals(0, executionTarget.get("resultsCountLimit").asInt());
+                      var executionTargetResults = executionTarget.get("results");
+                      assertTrue(executionTargetResults.isArray());
+                  });
     }
 
     // testing copy from default allows to test that we can scroll from any backend implementation

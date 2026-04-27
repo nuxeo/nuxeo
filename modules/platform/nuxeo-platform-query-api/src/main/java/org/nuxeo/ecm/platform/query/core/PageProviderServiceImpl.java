@@ -20,18 +20,22 @@ package org.nuxeo.ecm.platform.query.core;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderCheckRequest;
+import org.nuxeo.ecm.platform.query.api.PageProviderCheckResult;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
@@ -233,6 +237,25 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public Set<String> getPageProviderDefinitionNames() {
         return Set.copyOf(providers.keySet());
+    }
+
+    @Override
+    public PageProviderCheckResult runPageProviderCheck(PageProviderCheckRequest request) {
+        var executionsResult = new LinkedHashMap<String, PageProviderCheckResult.Execution>();
+        List<SortInfo> orders = null;
+        for (var entry : request.executions().entrySet()) {
+            var executionRequest = entry.getValue();
+            var pageProvider = getPageProvider(request.name(), null, null, request.pageSize(), 0L, null,
+                    executionRequest.properties(), null, null, executionRequest.parameters());
+            var watch = StopWatch.createStarted();
+            var result = pageProvider.getCurrentPage();
+            watch.stop();
+            executionsResult.put(entry.getKey(),
+                    new PageProviderCheckResult.Execution(watch.getDuration(), pageProvider.getResultsCount(),
+                            pageProvider.getResultsCountLimit(), result.stream().map(request.resultMapper()).toList()));
+            orders = pageProvider.getSortInfos();
+        }
+        return new PageProviderCheckResult(request.name(), orders, request.pageSize(), executionsResult);
     }
 
     record PageProviderReplacerWithName(String replacedName, Class<? extends PageProvider<?>> providerClass) {

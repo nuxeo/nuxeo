@@ -65,6 +65,19 @@ public class TestAuditObject extends ManagementBaseTest {
                                   JsonNodeHelper.getErrorMessage(node)));
     }
 
+    // ---------------------
+    // /checkSearch endpoint
+    // ---------------------
+
+    // @since 2025.19
+    @Test
+    public void testCheckSearchParameters() {
+        httpClient.buildGetRequest("/management/audit/checkSearch")
+                  .executeAndConsume(new JsonNodeHandler(SC_BAD_REQUEST),
+                          node -> assertEquals("java.lang.IllegalArgumentException: No execution to run",
+                                  JsonNodeHelper.getErrorMessage(node)));
+    }
+
     // -----------------------
     // /introspection endpoint
     // -----------------------

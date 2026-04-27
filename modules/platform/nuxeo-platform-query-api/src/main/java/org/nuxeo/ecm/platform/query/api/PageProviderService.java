@@ -224,4 +224,15 @@ public interface PageProviderService extends Serializable {
      */
     Set<String> getPageProviderDefinitionNames();
 
+    /**
+     * Runs the given check request and returns its result.
+     * <p>
+     * The page provider will be run with the different given executions.
+     * 
+     * @since 2025.19
+     */
+    // @deprecated since 2021.x, turn this method abstract on deprecation removal
+    default PageProviderCheckResult runPageProviderCheck(PageProviderCheckRequest request) {
+        throw new UnsupportedOperationException("runPageProviderCheck not yet implemented");
+    }
 }

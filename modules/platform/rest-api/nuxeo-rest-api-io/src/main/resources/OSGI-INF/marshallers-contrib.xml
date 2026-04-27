@@ -10,6 +10,7 @@
     <register class="org.nuxeo.ecm.restapi.io.management.MigrationListJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.io.management.PackageJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.io.management.PackageJsonWriter$ListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.restapi.io.management.PageProviderCheckResultJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.io.management.ProbeInfoJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.io.management.ProbeInfoListJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.restapi.io.management.ProbeStatusJsonWriter" enable="true" />

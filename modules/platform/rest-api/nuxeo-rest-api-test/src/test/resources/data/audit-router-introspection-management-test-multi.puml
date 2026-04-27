@@ -20,7 +20,6 @@ component event_listener [
 Event Listener
 ----
 events:
-- loginSuccess
 - loginFailed
 - logout
 - documentCreated

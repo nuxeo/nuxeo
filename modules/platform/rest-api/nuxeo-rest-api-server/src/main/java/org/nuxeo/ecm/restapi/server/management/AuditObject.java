@@ -18,24 +18,36 @@
  */
 package org.nuxeo.ecm.restapi.server.management;
 
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.audit.bulk.CopyAuditAction.ACTION_NAME;
 import static org.nuxeo.audit.bulk.CopyAuditAction.PARAMETER_BACKEND_NAME;
+import static org.nuxeo.audit.provider.AuditPageProvider.BACKEND_NAME_PROPERTY;
 import static org.nuxeo.audit.scroll.AuditScroll.SCROLL_NAME;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_PLANT_UML;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.function.Function;
+
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 
 import org.nuxeo.audit.api.AuditRouterIntrospection;
+import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.service.AuditRouter;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
+import org.nuxeo.ecm.platform.query.api.PageProviderCheckRequest;
+import org.nuxeo.ecm.platform.query.api.PageProviderCheckResult;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -46,6 +58,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = ManagementObject.MANAGEMENT_OBJECT_PREFIX + "audit")
 public class AuditObject extends AbstractResource<ResourceTypeImpl> {
+
+    protected static final String CHECK_SEARCH_NXQL_PP = "audit_check_nxql";
 
     @POST
     @Path("/copy")
@@ -62,6 +76,25 @@ public class AuditObject extends AbstractResource<ResourceTypeImpl> {
         var bulkService = Framework.getService(BulkService.class);
         String commandId = bulkService.submit(command);
         return bulkService.getStatus(commandId);
+    }
+
+    @GET
+    @Path("/checkSearch")
+    public PageProviderCheckResult checkSearch(@QueryParam("nxql") @DefaultValue("SELECT * FROM LogEntry") String nxql,
+            @QueryParam("pageSize") Long pageSize, @QueryParam("backend") List<String> backendNames) {
+        Function<String, PageProviderCheckRequest.Execution> toExecution = //
+                backendName -> PageProviderCheckRequest.Execution.builder()
+                                                                 .property(BACKEND_NAME_PROPERTY, backendName)
+                                                                 .parameter(nxql)
+                                                                 .build();
+        var request = PageProviderCheckRequest.builder(CHECK_SEARCH_NXQL_PP)
+                                              .pageSize(pageSize)
+                                              .resultMapper(LogEntry::getId)
+                                              .executions(backendNames.stream()
+                                                                      .collect(toMap(Function.identity(), toExecution,
+                                                                              (a, b) -> b, LinkedHashMap::new)))
+                                              .build();
+        return Framework.getService(PageProviderService.class).runPageProviderCheck(request);
     }
 
     @GET

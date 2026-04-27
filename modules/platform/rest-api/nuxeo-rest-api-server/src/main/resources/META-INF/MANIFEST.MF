@@ -9,6 +9,7 @@ Nuxeo-Component: OSGI-INF/docviewurl-service-contrib.xml,
  OSGI-INF/auth-contrib.xml,
  OSGI-INF/searchadapter-pp-contrib.xml,
  OSGI-INF/json-enrichers-contrib.xml,
+ OSGI-INF/management-audit-pageprovider-contrib.xml,
  OSGI-INF/management-search-pageprovider-contrib.xml,
  OSGI-INF/rest-api-service-contrib.xml
 Nuxeo-AllowOverride: true
