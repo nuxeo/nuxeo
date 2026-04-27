@@ -19,7 +19,7 @@
  */
 import groovy.transform.Field
 
-library identifier: "platform-ci-shared-library@v0.0.84"
+library identifier: "platform-ci-shared-library@v0.0.85"
 
 // we can not allocate directly the variable, we have to use an `if` to make Jenkins Groovy working
 def abortPrevious = false
