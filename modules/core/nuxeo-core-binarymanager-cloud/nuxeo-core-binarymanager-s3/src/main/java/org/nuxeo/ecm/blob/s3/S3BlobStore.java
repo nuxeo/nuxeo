@@ -534,11 +534,15 @@ public class S3BlobStore extends AbstractBlobStore {
         if (key == null) {
             // fast digest compute or trigger async digest computation
             String digest;
-            if (keyStrategy instanceof KeyStrategyDigest keyStrategyDigest
-                    && keyStrategyDigest.digestAlgorithm.equals("MD5") //
+            if (keyStrategy instanceof KeyStrategyDigest ksd && "MD5".equals(ksd.digestAlgorithm)
                     && (digest = sourceBlobStore.getMD5DigestFromETag(srcs3Key.bucketKey())) != null) {
                 // we have a usable MD5 digest
                 key = digest;
+            } else if (keyStrategy instanceof KeyStrategyDigest ksd && ksd.hasThreshold()
+                    && sourceBlobStore.lengthOfBlob(sourceKey) > ksd.maxSize.bytes()) {
+                // above digest threshold: assign a UUIDv7 key directly, skip async digest to avoid
+                // downloading the blob from S3 just to hash it
+                key = ksd.generateUUIDv7Key();
             } else {
                 // async: use a random key for now; and do async computation of real digest
                 key = randomString();
@@ -819,8 +823,8 @@ public class S3BlobStore extends AbstractBlobStore {
                 if (key == null) {
                     return;
                 }
-                if (useDeDuplication && !((KeyStrategyDigest) keyStrategy).isValidDigest(key)) {
-                    // ignore files that cannot be digests, for safety
+                if (useDeDuplication && !keyStrategy.isValidKey(key)) {
+                    // ignore files that cannot be valid keys, for safety
                     return;
                 }
                 long length = content.size();

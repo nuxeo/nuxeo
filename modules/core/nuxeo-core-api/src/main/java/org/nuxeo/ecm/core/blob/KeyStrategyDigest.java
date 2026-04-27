@@ -30,23 +30,58 @@ import java.util.regex.Pattern;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.NuxeoException;
+
+import com.fasterxml.uuid.Generators;
 
 /**
  * Represents computation of blob keys based on a message digest.
+ * <p>
+ * When a {@code maxSize} threshold is configured, blobs strictly larger than the threshold get a UUIDv7 key instead of
+ * a content-based digest key. This avoids unbounded digest computation for very large files (which can exceed Kafka
+ * poll intervals when computed asynchronously).
  *
  * @since 11.1
  */
 public class KeyStrategyDigest implements KeyStrategy {
 
+    /**
+     * UUIDv7 pattern: version digit {@code 7}, variant bits {@code 10xx} (hex digit in {@code 8|9|a|b}).
+     *
+     * @since 2025.19
+     */
+    protected static final Pattern UUID_V7_PATTERN = Pattern.compile(
+            "[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+
     public final String digestAlgorithm;
 
     public final Pattern digestPattern;
 
+    /**
+     * Size threshold. Blobs strictly larger than this size get a UUIDv7 key instead of a digest key.
+     * {@link ByteSize#unlimited()} disables the threshold (always use digest keys).
+     *
+     * @since 2025.19
+     */
+    public final ByteSize maxSize;
+
     public KeyStrategyDigest(String digestAlgorithm) {
+        this(digestAlgorithm, ByteSize.unlimited());
+    }
+
+    /**
+     * @param digestAlgorithm the digest algorithm (e.g. {@code MD5})
+     * @param maxSize the size threshold; blobs strictly larger than this get a UUIDv7 key. {@link ByteSize#unlimited()}
+     *            disables the threshold (always use digest keys).
+     * @since 2025.19
+     */
+    public KeyStrategyDigest(String digestAlgorithm, ByteSize maxSize) {
         Objects.requireNonNull(digestAlgorithm);
+        Objects.requireNonNull(maxSize);
         this.digestAlgorithm = digestAlgorithm;
-        digestPattern = getDigestPattern(digestAlgorithm);
+        this.digestPattern = getDigestPattern(digestAlgorithm);
+        this.maxSize = maxSize;
     }
 
     @Override
@@ -56,6 +91,7 @@ public class KeyStrategyDigest implements KeyStrategy {
 
     @Override
     public String getDigestFromKey(String key) {
+        // UUIDv7 keys are not content-based digests, so they are not returned here
         return isValidDigest(key) ? key : null;
     }
 
@@ -71,10 +107,50 @@ public class KeyStrategyDigest implements KeyStrategy {
 
     @Override
     public BlobWriteContext getBlobWriteContext(BlobContext blobContext) {
+        if (isAboveThreshold(blobContext)) {
+            // large blob: use UUIDv7 key, no write observer (no digest computation)
+            String key = generateUUIDv7Key();
+            return new BlobWriteContext(blobContext, null, () -> key, this);
+        }
         MutableObject<String> keyHolder = new MutableObject<>();
         WriteObserver writeObserver = new WriteObserverDigest(digestAlgorithm, keyHolder::setValue);
         Supplier<String> keyComputer = keyHolder::getValue;
         return new BlobWriteContext(blobContext, writeObserver, keyComputer, this);
+    }
+
+    /**
+     * @return {@code true} if a threshold is configured and the blob is strictly larger than it
+     * @since 2025.19
+     */
+    protected boolean isAboveThreshold(BlobContext blobContext) {
+        if (!hasThreshold() || blobContext.blob == null) {
+            return false;
+        }
+        long length = blobContext.blob.getLength();
+        return length >= 0 && length > maxSize.bytes();
+    }
+
+    /**
+     * @return {@code true} if a finite size threshold is configured
+     * @since 2025.19
+     */
+    protected boolean hasThreshold() {
+        return maxSize.bytes() >= 0;
+    }
+
+    /**
+     * @since 2025.19
+     */
+    protected String generateUUIDv7Key() {
+        return Generators.timeBasedEpochGenerator().generate().toString();
+    }
+
+    /**
+     * @return {@code true} if the given key matches the UUIDv7 format
+     * @since 2025.19
+     */
+    public static boolean isUUIDv7(String key) {
+        return key != null && UUID_V7_PATTERN.matcher(key).matches();
     }
 
     /**
@@ -114,21 +190,29 @@ public class KeyStrategyDigest implements KeyStrategy {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof KeyStrategyDigest)) {
+        if (!(obj instanceof KeyStrategyDigest other)) {
             return false;
         }
-        KeyStrategyDigest other = (KeyStrategyDigest) obj;
-        return digestAlgorithm.equals(other.digestAlgorithm);
+        return digestAlgorithm.equals(other.digestAlgorithm) && Objects.equals(maxSize, other.maxSize);
     }
 
     @Override
     public int hashCode() {
-        return digestAlgorithm.hashCode();
+        return Objects.hash(digestAlgorithm, maxSize);
+    }
+
+    @Override
+    public String toString() {
+        if (!hasThreshold()) {
+            return getClass().getSimpleName() + "(" + digestAlgorithm + ")";
+        }
+        return getClass().getSimpleName() + "(" + digestAlgorithm + ", maxSize=" + maxSize + ")";
     }
 
     @Override
     public boolean isValidKey(String key) {
-        return isValidDigest(key);
+        // accept the content digest, and (when threshold is configured) UUIDv7 keys
+        return isValidDigest(key) || (hasThreshold() && isUUIDv7(key));
     }
 
 }

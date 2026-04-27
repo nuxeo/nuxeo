@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -31,6 +32,9 @@ import java.io.OutputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.ByteSize;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.blob.KeyStrategy.WriteObserver;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -120,6 +124,118 @@ public class TestKeyStrategies {
         c = ks.getBlobWriteContext(blobContext);
         assertNull(c.writeObserver);
         assertEquals("docid1-files_files-0-file", c.getKey());
+    }
+
+    @Test
+    public void testKeyStrategyDigestThresholdBelowThreshold() throws IOException {
+        var ks = new KeyStrategyDigest("MD5", ByteSize.ofKibibytes(1));
+
+        assertTrue(ks.useDeDuplication());
+
+        // blob below threshold -> digest key via write observer
+        var blob = Blobs.createBlob(ABC);
+        var blobContext = new BlobContext(blob, "doc1", "content");
+        var c = ks.getBlobWriteContext(blobContext);
+        assertNotNull(c.writeObserver);
+        @SuppressWarnings("resource")
+        OutputStream out = c.writeObserver.wrap(NullOutputStream.INSTANCE);
+        out.write(ABC.getBytes(UTF_8), 0, 3);
+        out.flush();
+        c.writeObserver.done();
+        assertEquals(ABC_MD5, c.getKey());
+    }
+
+    @Test
+    public void testKeyStrategyDigestThresholdAboveThreshold() {
+        var ks = new KeyStrategyDigest("MD5", ByteSize.ofBytes(2));
+
+        // blob above threshold -> UUIDv7 key, no write observer
+        var blob = Blobs.createBlob(ABC); // 3 bytes > 2
+        var blobContext = new BlobContext(blob, "doc1", "content");
+        var c = ks.getBlobWriteContext(blobContext);
+        assertNull(c.writeObserver);
+        String key = c.getKey();
+        assertNotNull(key);
+        assertTrue("Expected UUIDv7 key but got: " + key, KeyStrategyDigest.isUUIDv7(key));
+    }
+
+    @Test
+    public void testKeyStrategyDigestThresholdUnknownSize() throws IOException {
+        var ks = new KeyStrategyDigest("MD5", ByteSize.ofBytes(2));
+
+        // blob with unknown size (-1) -> falls back to digest strategy even though content is above threshold
+        var blob = new StringBlob(ABC) {
+            @Override
+            public long getLength() {
+                return -1;
+            }
+        };
+        var blobContext = new BlobContext(blob, "doc1", "content");
+        var c = ks.getBlobWriteContext(blobContext);
+        // digest strategy provides a write observer (falls back to digest since size is unknown)
+        assertNotNull(c.writeObserver);
+    }
+
+    @Test
+    public void testKeyStrategyDigestThresholdIsValidKey() {
+        var ks = new KeyStrategyDigest("MD5", ByteSize.ofKibibytes(1));
+
+        // MD5 digest key is valid
+        assertTrue(ks.isValidKey(ABC_MD5));
+
+        // UUIDv7 key is valid
+        assertTrue(ks.isValidKey("01936e40-d6e0-7a3e-a2b1-c4d5e6f7a8b9"));
+
+        // random string is not valid
+        assertFalse(ks.isValidKey("deadbeef"));
+
+        // temp key is not valid
+        assertFalse(ks.isValidKey("1234567890123456789-0"));
+
+        // UUIDv4 (KeyStrategyDocId) is not valid
+        assertFalse(ks.isValidKey("12051767-a926-425c-a7e0-dcdf02c0bc04"));
+    }
+
+    @Test
+    public void testKeyStrategyDigestThresholdGetDigestFromKey() {
+        var ks = new KeyStrategyDigest("MD5", ByteSize.ofKibibytes(1));
+
+        // digest key returns digest
+        assertEquals(ABC_MD5, ks.getDigestFromKey(ABC_MD5));
+
+        // UUID key returns null (no content-based digest)
+        assertNull(ks.getDigestFromKey("01936e40-d6e0-7a3e-a2b1-c4d5e6f7a8b9"));
+    }
+
+    @Test
+    public void testKeyStrategyDigestThresholdEquals() {
+        var ks1 = new KeyStrategyDigest("MD5", ByteSize.ofKibibytes(1));
+        var ks2 = new KeyStrategyDigest("MD5", ByteSize.ofKibibytes(1));
+        var ks3 = new KeyStrategyDigest("MD5", ByteSize.ofKibibytes(2));
+        var ks4 = new KeyStrategyDigest("SHA-256", ByteSize.ofKibibytes(1));
+        var ks5 = new KeyStrategyDigest("MD5"); // no threshold
+
+        assertEquals(ks1, ks2);
+        assertNotEquals(ks1, ks3); // different maxSize
+        assertNotEquals(ks1, ks4); // different algorithm
+        assertNotEquals(ks1, ks5); // bounded vs unlimited maxSize
+        assertNotEquals(ks1, "foobar");
+    }
+
+    @Test
+    public void testIsUUIDv7() {
+        // valid UUIDv7 (version=7, variant=2)
+        assertTrue(KeyStrategyDigest.isUUIDv7("01936e40-d6e0-7a3e-a2b1-c4d5e6f7a8b9"));
+
+        // UUIDv4 (version=4, variant=2) should not match
+        assertFalse(KeyStrategyDigest.isUUIDv7("12051767-a926-425c-a7e0-dcdf02c0bc04"));
+
+        // not a UUID
+        assertFalse(KeyStrategyDigest.isUUIDv7("not-a-uuid"));
+        assertFalse(KeyStrategyDigest.isUUIDv7(null));
+
+        // MD5 digest
+        assertFalse(KeyStrategyDigest.isUUIDv7(ABC_MD5));
     }
 
 }
