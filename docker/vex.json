@@ -1,0 +1,26 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://openvex.dev/docs/public/vex-e7b07a2cefab009252b507f3b1270d7117061fc619f903af769c92d401fed15b",
+  "author": "Hyland - Nuxeo",
+  "timestamp": "2026-04-27T12:00:00.000+02:00",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2026-0603",
+        "aliases": [
+          "GHSA-2p5w-cvg5-gc5c"
+        ]
+      },
+      "timestamp": "2026-04-27T12:00:00.000+02:00",
+      "products": [
+        {
+          "@id": "pkg:maven/org.hibernate/hibernate-core"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "hibernate-core is used in nuxeo-core-persistence purely as a JPA configuration/lifecycle provider. No bulk HQL DELETE/UPDATE statements are executed anywhere in the codebase, so InlineIdsOrClauseBuilder is never invoked. Tracked in NXP-33596."
+    }
+  ]
+}
