@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Required to read .grype.yaml configuration at the root of the repository
+      # Required to read vex.json configuration
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -49,6 +49,7 @@ jobs:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
           output-format: table
+          vex: docker/vex.json
 
       - name: Scan Docker image with Grype - JSON output
         if: always() # necessary as using a failure threshold in the scan step
@@ -58,6 +59,7 @@ jobs:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
           output-format: json
+          vex: docker/vex.json
 
       - name: Print Grype JSON output
         if: always() # necessary as using a failure threshold in the scan step
@@ -71,6 +73,7 @@ jobs:
         with:
           image: ${{ env.DOCKER_REGISTRY }}/${{ inputs.imageName }}
           severity-cutoff: medium
+          vex: docker/vex.json
 
       - name: Upload SARIF file
         if: always() # necessary as using a failure threshold in the scan step
