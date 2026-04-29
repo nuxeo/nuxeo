@@ -13,6 +13,7 @@
       <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
       <fulltext disabled="${nuxeo.test.fulltext.disabled}"
                 storedInBlob="${nuxeo.test.fulltext.storedInBlob}"
+                storedInBlobThreshold="${nuxeo.test.fulltext.storedInBlobThreshold:=0}"
                 searchDisabled="${nuxeo.test.fulltext.search.disabled}">
         <index> <!-- name="default" implied -->
           <!-- all props implied -->

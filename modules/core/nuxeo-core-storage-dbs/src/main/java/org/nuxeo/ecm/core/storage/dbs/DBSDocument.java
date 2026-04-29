@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -936,10 +937,18 @@ public class DBSDocument extends BaseDocument<State> {
         } else if (name.startsWith(SYSPROP_FULLTEXT_BINARY)) {
             propertyName = name.replace(SYSPROP_FULLTEXT_BINARY, KEY_FULLTEXT_BINARY);
             if (session.isFulltextStoredInBlob()) {
-                if (!(value instanceof String)) {
+                if (!(value instanceof String text)) {
                     throw new PropertyException("Property " + name + " must be a string");
                 }
-                setPropertyBlobData(propertyName, (String) value);
+                var threshold = session.getFulltextStoredInBlobThreshold();
+                if (text.getBytes(UTF_8).length >= threshold.toBytes()) {
+                    // above threshold: store as blob
+                    setPropertyBlobData(propertyName, text);
+                } else {
+                    // below threshold: store inline in repository, but clean up old blob if any
+                    markOldFulltextBlobForDeletion(propertyName);
+                    setPropertyValue(propertyName, text);
+                }
                 return;
             }
         } else {

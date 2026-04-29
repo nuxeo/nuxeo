@@ -112,6 +112,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
@@ -189,6 +190,9 @@ public class DBSSession extends BaseSession {
 
     protected final boolean fulltextStoredInBlob;
 
+    /** @since 2025.19 */
+    protected final ByteSize fulltextStoredInBlobThreshold;
+
     protected final boolean fulltextSearchDisabled;
 
     protected final boolean changeTokenEnabled;
@@ -210,6 +214,9 @@ public class DBSSession extends BaseSession {
         transaction = new DBSTransactionState(repository, this);
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         fulltextStoredInBlob = fulltextConfiguration != null && fulltextConfiguration.fulltextStoredInBlob;
+        fulltextStoredInBlobThreshold = fulltextConfiguration != null
+                ? fulltextConfiguration.fulltextStoredInBlobThreshold
+                : ByteSize.ofBytes(0);
         fulltextSearchDisabled = fulltextConfiguration == null || fulltextConfiguration.fulltextSearchDisabled;
         changeTokenEnabled = repository.isChangeTokenEnabled();
 
@@ -1464,6 +1471,11 @@ public class DBSSession extends BaseSession {
     @Override
     public boolean isFulltextStoredInBlob() {
         return fulltextStoredInBlob;
+    }
+
+    @Override
+    public ByteSize getFulltextStoredInBlobThreshold() {
+        return fulltextStoredInBlobThreshold;
     }
 
     @Override

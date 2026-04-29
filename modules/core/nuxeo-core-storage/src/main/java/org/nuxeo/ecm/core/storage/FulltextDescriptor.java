@@ -145,6 +145,26 @@ public class FulltextDescriptor {
         fulltextStoredInBlob = Boolean.valueOf(storedInBlob);
     }
 
+    private ByteSize fulltextStoredInBlobThreshold;
+
+    /**
+     * Returns the threshold above which binary fulltext is stored in a blob instead of inline in the repository, or
+     * {@code null} if no threshold is set (meaning all fulltext goes to blob when {@link #getFulltextStoredInBlob()} is
+     * {@code true}).
+     *
+     * @since 2025.19
+     */
+    public ByteSize getFulltextStoredInBlobThreshold() {
+        return fulltextStoredInBlobThreshold;
+    }
+
+    /**
+     * @since 2025.19
+     */
+    public void setFulltextStoredInBlobThreshold(ByteSize fulltextStoredInBlobThreshold) {
+        this.fulltextStoredInBlobThreshold = fulltextStoredInBlobThreshold;
+    }
+
     private Boolean fulltextSearchDisabled;
 
     public boolean getFulltextSearchDisabled() {
@@ -196,6 +216,7 @@ public class FulltextDescriptor {
         fulltextFieldByteSizeLimit = other.fulltextFieldByteSizeLimit;
         fulltextDisabled = other.fulltextDisabled;
         fulltextStoredInBlob = other.fulltextStoredInBlob;
+        fulltextStoredInBlobThreshold = other.fulltextStoredInBlobThreshold;
         fulltextSearchDisabled = other.fulltextSearchDisabled;
         fulltextIndexes = FulltextIndexDescriptor.copyList(other.fulltextIndexes);
         fulltextExcludedTypes = new HashSet<>(other.fulltextExcludedTypes);
@@ -211,6 +232,9 @@ public class FulltextDescriptor {
         }
         if (other.fulltextStoredInBlob != null) {
             fulltextStoredInBlob = other.fulltextStoredInBlob;
+        }
+        if (other.fulltextStoredInBlobThreshold != null) {
+            fulltextStoredInBlobThreshold = other.fulltextStoredInBlobThreshold;
         }
         if (other.fulltextSearchDisabled != null) {
             fulltextSearchDisabled = other.fulltextSearchDisabled;

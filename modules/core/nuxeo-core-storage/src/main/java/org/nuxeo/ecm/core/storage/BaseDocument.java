@@ -724,11 +724,27 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     protected void setPropertyBlobData(String xpath, String string) {
         Blob blob = string == null ? null : Blobs.createBlob(string);
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+        markOldFulltextBlobForDeletion(xpath);
+        String key;
+        try {
+            key = blobManager.writeBlob(blob, this, xpath);
+            log.debug("setPropertyBlobData({}) for doc: {} with blob key: {}", xpath, getUUID(), key);
+        } catch (IOException e) {
+            throw new PropertyException("Cannot write binary for doc: " + getUUID(), e);
+        }
+        setPropertyValue(xpath, key);
+    }
+
+    /**
+     * If the current value of the given property is a fulltext blob key, fires a deletion event for the old blob.
+     *
+     * @since 2025.19
+     */
+    protected void markOldFulltextBlobForDeletion(String xpath) {
         if (getSession().isFulltextStoredInBlob()) {
             String oldKey = (String) getPropertyValue(xpath);
             if (AbstractSession.isFulltextValueABlobKey(oldKey)) {
                 if (oldKey.contains(":")) {
-                    // A prefix is needed to create a ManagedBlob
                     BlobInfo oldBlobInfo = new BlobInfo();
                     oldBlobInfo.key = oldKey;
                     ManagedBlob oldBlob = new SimpleManagedBlob(oldBlobInfo);
@@ -741,14 +757,6 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 }
             }
         }
-        String key;
-        try {
-            key = blobManager.writeBlob(blob, this, xpath);
-            log.debug("setPropertyBlobData({}) for doc: {} with blob key: {}", xpath, getUUID(), key);
-        } catch (IOException e) {
-            throw new PropertyException("Cannot write binary for doc: " + getUUID(), e);
-        }
-        setPropertyValue(xpath, key);
     }
 
     /**
