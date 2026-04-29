@@ -27,6 +27,9 @@ public class FulltextStoredInBlobFeature implements RunnerFeature {
 
     private static final String KEY = "nuxeo.test.fulltext.storedInBlob";
 
+    /** @since 2025.19 */
+    public static final String MIGRATION_KEY = "nuxeo.bulk.action.fixBinaryFulltextStorage.enabled";
+
     private String flag;
 
     @Override

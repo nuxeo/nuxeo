@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -259,6 +260,16 @@ public interface Session<T extends QueryFilter> {
      * @since 11.1
      */
     boolean isFulltextStoredInBlob();
+
+    /**
+     * Returns the threshold above which binary fulltext is stored in a blob instead of inline in the repository. A
+     * value of {@code 0} means no threshold (all fulltext goes to blob).
+     *
+     * @since 2025.19
+     */
+    default ByteSize getFulltextStoredInBlobThreshold() {
+        return ByteSize.ofBytes(0);
+    }
 
     /**
      * Gets the fulltext extracted from the binary fields.

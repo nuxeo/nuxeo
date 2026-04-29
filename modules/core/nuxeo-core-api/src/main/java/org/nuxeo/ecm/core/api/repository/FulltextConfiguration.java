@@ -25,6 +25,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.common.utils.ByteSize;
+
 /**
  * Info about the fulltext configuration.
  *
@@ -74,6 +76,15 @@ public class FulltextConfiguration {
     public final Set<String> includedTypes = new HashSet<>();
 
     public boolean fulltextStoredInBlob;
+
+    /**
+     * Threshold above which binary fulltext is stored in a blob instead of inline in the repository when
+     * {@link #fulltextStoredInBlob} is {@code true}. A value of {@code 0} means no threshold (all fulltext goes to blob
+     * when {@link #fulltextStoredInBlob} is {@code true}).
+     *
+     * @since 2025.19
+     */
+    public ByteSize fulltextStoredInBlobThreshold = ByteSize.ofBytes(0);
 
     public boolean fulltextSearchDisabled;
 

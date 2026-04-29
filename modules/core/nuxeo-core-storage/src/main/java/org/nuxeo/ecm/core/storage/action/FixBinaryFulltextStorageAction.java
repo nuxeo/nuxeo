@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.storage.action;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
@@ -30,6 +31,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -45,6 +47,9 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  * <p>
  * This action is copying existing fulltext from the repository to blobs without extracting the binary fulltext or
  * triggering any events or reindexing.
+ * <p>
+ * When a storedInBlobThreshold is configured, it also moves blob-stored fulltext back inline if it is below the
+ * threshold (reverse migration).
  *
  * @since 2023.27
  */
@@ -72,9 +77,10 @@ public class FixBinaryFulltextStorageAction implements StreamProcessorTopology {
         }
 
         @Override
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            @SuppressWarnings("rawtypes")
             Session lowSession = ((AbstractSession) session).getSession();
+            var threshold = lowSession.getFulltextStoredInBlobThreshold();
             int updated = 0;
             for (String id : ids) {
                 Document doc = lowSession.getDocumentByUUID(id);
@@ -83,14 +89,46 @@ public class FixBinaryFulltextStorageAction implements StreamProcessorTopology {
                     continue;
                 }
                 String fulltext = (String) doc.getPropertyValue("ecm:fulltextBinary");
-                if (fulltext == null || AbstractSession.isFulltextValueABlobKey(fulltext)) {
+                if (fulltext == null) {
                     delta.incrementSkipCount();
                     continue;
                 }
-                updated++;
-                doc.setSystemProp("fulltextBinary", fulltext);
-                String key = (String) doc.getPropertyValue("ecm:fulltextBinary");
-                log.warn("Move fulltext of: {}, to blob: {}, length: {}", id, key, fulltext.length());
+                boolean isBlobKey = AbstractSession.isFulltextValueABlobKey(fulltext);
+                if (!isBlobKey) {
+                    // inline text that may need to be moved to blob (respects threshold)
+                    int fulltextLength = fulltext.getBytes(UTF_8).length;
+                    if (threshold.toBytes() > 0 && fulltextLength < threshold.toBytes()) {
+                        // already inline and below threshold: no storage change needed
+                        delta.incrementSkipCount();
+                        continue;
+                    }
+                    updated++;
+                    doc.setSystemProp("fulltextBinary", fulltext);
+                    String key = (String) doc.getPropertyValue("ecm:fulltextBinary");
+                    boolean resultIsBlobKey = key != null && AbstractSession.isFulltextValueABlobKey(key);
+                    log.warn("Fix fulltext storage of: {}, isBlobKey: {}, size: {}", id, resultIsBlobKey,
+                            new ByteSize(fulltextLength));
+                } else if (threshold.toBytes() > 0) {
+                    try {
+                        // blob key that may need to be moved back inline if below threshold
+                        Map<String, String> ftMap = lowSession.getBinaryFulltext(id);
+                        String binaryFulltext = ftMap.get("binarytext");
+                        int fulltextLength = binaryFulltext.getBytes(UTF_8).length;
+                        if (fulltextLength < threshold.toBytes()) {
+                            updated++;
+                            doc.setSystemProp("fulltextBinary", binaryFulltext);
+                            log.warn("Move fulltext of: {}, back to inline, size: {}", id,
+                                    new ByteSize(fulltextLength));
+                        } else {
+                            delta.incrementSkipCount();
+                        }
+                    } catch (PropertyException e) {
+                        log.warn("Cannot read binary fulltext for document: {}", id, e);
+                        delta.incrementSkipCount();
+                    }
+                } else {
+                    delta.incrementSkipCount();
+                }
             }
             if (updated > 0) {
                 try {
