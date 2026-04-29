@@ -10,7 +10,7 @@
     </blobprovider>
   </extension>
 
-<#if "${nuxeo.vcs.fulltext.storedInBlob}" == "true">
+<#if "${nuxeo.fulltext.storedInBlob}" == "true">
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="fulltext">
       <class>${nuxeo.core.binarymanager}</class>

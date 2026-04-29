@@ -33,7 +33,7 @@
       <property name="userAgentPrefix">${nuxeo.s3storage.user.agent.prefix}</property>
       <property name="userAgentSuffix">${nuxeo.s3storage.user.agent.suffix}</property>
     </blobprovider>
-<#if "${nuxeo.vcs.fulltext.storedInBlob}" == "true">
+<#if "${nuxeo.fulltext.storedInBlob}" == "true">
     <blobprovider name="fulltext">
       <property name="bucket_prefix">${nuxeo.s3storage.fulltext.storeInBlob.bucket_prefix}</property>
       <property name="storageClass">${nuxeo.s3storage.fulltext.storeInBlob.storageClass}</property>

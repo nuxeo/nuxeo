@@ -43,7 +43,7 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 /**
  * Bulk Action to fix the binary fulltext storage when switching storage from repository to blob using
- * nuxeo.vcs.fulltext.storedInBlob=true on an existing instance.
+ * nuxeo.fulltext.storedInBlob=true on an existing instance.
  * <p>
  * This action is copying existing fulltext from the repository to blobs without extracting the binary fulltext or
  * triggering any events or reindexing.

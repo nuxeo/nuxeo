@@ -47,7 +47,7 @@ public class FixBinaryFulltextStorageValidation extends AbstractBulkActionValida
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         if (!fulltextConfiguration.isFulltextStoredInBlob()) {
             throw new IllegalArgumentException("The repository: " + command.getRepository()
-                    + " is not configured with nuxeo.vcs.fulltext.storedInBlob=true");
+                    + " is not configured with nuxeo.fulltext.storedInBlob=true");
         }
     }
 }
