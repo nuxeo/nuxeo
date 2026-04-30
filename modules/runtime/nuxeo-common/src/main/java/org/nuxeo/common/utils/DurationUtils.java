@@ -123,6 +123,9 @@ public final class DurationUtils {
      * @since 2025.18
      */
     public static String format(Duration duration) {
+        if (duration.isZero()) {
+            return "0s";
+        }
         var builder = new StringBuilder();
         BiConsumer<Long, String> printPartAndUnit = (part, unit) -> {
             if (part > 0) {
