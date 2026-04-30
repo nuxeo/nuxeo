@@ -82,6 +82,7 @@ public class TestDurationUtils {
 
     @Test
     public void testFormat() {
+        assertEquals("0s", format(Duration.ZERO));
         assertEquals("876ns", format(Duration.ofNanos(876)));
         assertEquals("123ms", format(Duration.ofMillis(123)));
         assertEquals("1m28s", format(Duration.ofSeconds(88)));
