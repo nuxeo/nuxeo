@@ -465,7 +465,6 @@ pipeline {
               expression {
                 pullRequest.labels.contains('docker-scan')
               }
-              changeset "docker/**"
             }
           }
           steps {
