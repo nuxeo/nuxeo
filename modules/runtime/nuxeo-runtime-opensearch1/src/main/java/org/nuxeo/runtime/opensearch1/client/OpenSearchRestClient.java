@@ -445,8 +445,11 @@ public class OpenSearchRestClient implements OpenSearchClient {
                 log.warn("Detecting overloaded OpenSearch: {}", e.getMessage());
                 throw new RetryableException("OpenSearch timeout, might be overloaded", e);
             } else if (e.getMessage() != null && e.getMessage().contains("Unable to parse response body")) {
-                log.warn("OpenSearch not available, bad gateway", e);
-                throw new RetryableException("OpenSearch timeout, might be overloaded", e);
+                // 404 with unparseable body is benign (e.g. already-freed scroll), let caller handle it
+                if (!RestStatus.NOT_FOUND.equals(e.status())) {
+                    log.warn("OpenSearch not available, bad gateway", e);
+                    throw new RetryableException("OpenSearch timeout, might be overloaded", e);
+                }
             }
             throw new RuntimeServiceException(e);
         } catch (SocketTimeoutException e) {

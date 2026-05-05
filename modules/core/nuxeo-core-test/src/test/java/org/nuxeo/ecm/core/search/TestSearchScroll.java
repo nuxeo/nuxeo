@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreSearchFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
@@ -44,7 +47,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreSearchFeature.class)
+@Features({ CoreSearchFeature.class, LogCaptureFeature.class })
 public class TestSearchScroll {
 
     @Inject
@@ -55,6 +58,9 @@ public class TestSearchScroll {
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     public void testScroll() {
@@ -87,6 +93,26 @@ public class TestSearchScroll {
         // Check order
         assertEquals(session.query(query).stream().map(DocumentModel::getPathAsString).collect(Collectors.toList()),
                 docPaths);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testDoubleClearScroll() {
+        buildAndIndexTree(5);
+        var res = searchService.search(SearchQuery.builder("select * from Document", session)
+                                                  .scrollSize(2)
+                                                  .scrollKeepAlive(Duration.ofSeconds(60))
+                                                  .build());
+        var scrollContext = res.getScrollContext();
+        assertNotNull(scrollContext);
+        assertNotNull(scrollContext.scrollId());
+
+        assertTrue("First clearSearchScroll must succeed", searchService.clearSearchScroll(scrollContext));
+        // Second clear of the same already-freed scroll must be swallowed gracefully.
+        assertTrue("Second clearSearchScroll on already-freed scroll must succeed",
+                searchService.clearSearchScroll(scrollContext));
+        List<LogEvent> events = logCaptureResult.getCaughtEvents();
+        assertTrue("Unexpected WARN logged: " + events, events.isEmpty());
     }
 
     protected void buildAndIndexTree(int docCount) {
