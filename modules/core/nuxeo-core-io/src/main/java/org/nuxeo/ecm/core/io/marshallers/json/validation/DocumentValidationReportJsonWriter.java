@@ -104,7 +104,9 @@ public class DocumentValidationReportJsonWriter extends ExtensibleEntityJsonWrit
                 jg.writeArrayFieldStart("path");
                 for (PathNode node : cv.getPath()) {
                     jg.writeStartObject();
-                    jg.writeStringField("field_name", node.getField().getName().getPrefixedName());
+                    // For list items, use "item" instead of the actual field name
+                    String fieldName = node.isListItem() ? "item" : node.getField().getName().getPrefixedName();
+                    jg.writeStringField("field_name", fieldName);
                     jg.writeBooleanField("is_list_item", node.isListItem());
                     if (node.isListItem()) {
                         jg.writeNumberField("index", node.getIndex());
