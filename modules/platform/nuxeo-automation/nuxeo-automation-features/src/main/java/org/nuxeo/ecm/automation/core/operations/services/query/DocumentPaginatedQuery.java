@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.query;
 
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
+
+import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.OperationException;
@@ -129,15 +132,17 @@ public class DocumentPaginatedQuery {
             strParameters = null;
         }
 
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session,
-                PageProviderSpec.builder(def)
-                                .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
-                                        namedParameters))
-                                .sortInfosByFieldsAndOrders(sortBy, sortOrder)
-                                .pageSize(targetPageSize)
-                                .currentPage(targetPage)
-                                .parameters(strParameters)
-                                .build());
+        var spec = PageProviderSpec.builder(def)
+                                   .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
+                                           namedParameters))
+                                   .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                   .pageSize(targetPageSize)
+                                   .currentPage(targetPage)
+                                   .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                   .parameters(strParameters)
+                                   .build();
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) Framework.getService(PageProviderService.class)
+                                                                                .getPageProvider(spec);
 
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(pp);
         if (res.hasError()) {

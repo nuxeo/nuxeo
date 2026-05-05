@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.server.search;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -283,22 +284,20 @@ public class SearchObject extends QueryExecutor {
             Long currentPageOffset, Long maxResults, String orderedParams, Map<String, String> namedParameters,
             List<SortInfo> sortInfo) {
         Map<String, String> namedParametersProps = getNamedParameters(namedParameters);
-        Object[] parameters = replaceParameterPattern(new Object[] { orderedParams });
         Map<String, Serializable> props = getProperties();
 
         DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), null,
                 namedParametersProps);
 
         return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo, props,
-                searchDocumentModel, parameters);
+                searchDocumentModel, orderedParams);
     }
 
     protected DocumentModelList querySavedSearchByPageProvider(String pageProviderName, Long pageSize,
             Long currentPageIndex, Long currentPageOffset, String orderedParams, Map<String, String> namedParameters,
             List<SortInfo> sortInfo, List<QuickFilter> quickFilters, DocumentModel searchDocumentModel) {
         Map<String, String> namedParametersProps = getNamedParameters(namedParameters);
-        Object[] parameters = orderedParams != null ? replaceParameterPattern(new Object[] { orderedParams })
-                : new Object[0];
+        Object[] parameters = orderedParams != null ? new Object[] { orderedParams } : new Object[0];
         Map<String, Serializable> props = getProperties();
 
         DocumentModel documentModel;
@@ -335,7 +334,7 @@ public class SearchObject extends QueryExecutor {
         PageProviderDefinition def = providerName == null ? PageProviderHelper.getQueryPageProviderDefinition(query)
                 : PageProviderHelper.getPageProviderDefinition(providerName);
 
-        return PageProviderHelper.getPageProvider(ctx.getCoreSession(),
+        return pageProviderService.getPageProvider(
                 PageProviderSpec.builder(def)
                                 .searchDocument(PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(),
                                         def.getName(), namedParameters))
@@ -343,6 +342,7 @@ public class SearchObject extends QueryExecutor {
                                 .pageSize(pageSize)
                                 .currentPage(currentPageIndex)
                                 .quickFiltersByNames(quickfilters)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession())
                                 .parameters(queryParameters)
                                 .build());
     }

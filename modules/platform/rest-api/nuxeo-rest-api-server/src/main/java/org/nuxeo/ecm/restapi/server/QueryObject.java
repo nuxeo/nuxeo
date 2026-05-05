@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.restapi.server;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CURRENT_REPOSITORY_PARAMETER_VALUE;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CURRENT_USER_PARAMETER_VALUE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -78,9 +80,19 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
     public static final String ORDERED_PARAMS = "queryParams";
 
-    public static final String CURRENT_USERID_PATTERN = "$currentUser";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_USER_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_USERID_PATTERN = PageProviderSpec.CURRENT_USER_PARAMETER_VALUE;
 
-    public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_REPOSITORY_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_REPO_PATTERN = PageProviderSpec.CURRENT_REPOSITORY_PARAMETER_VALUE;
 
     /**
      * @since 8.4
@@ -143,9 +155,9 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
             if (!queryParametersMap.containsValue(namedParameterKey)) {
                 String value = queryParams.getFirst(namedParameterKey);
                 if (value != null) {
-                    if (value.equals(CURRENT_USERID_PATTERN)) {
+                    if (value.equals(CURRENT_USER_PARAMETER_VALUE)) {
                         value = ctx.getCoreSession().getPrincipal().getName();
-                    } else if (value.equals(CURRENT_REPO_PATTERN)) {
+                    } else if (value.equals(CURRENT_REPOSITORY_PARAMETER_VALUE)) {
                         value = ctx.getCoreSession().getRepositoryName();
                     }
                 }
@@ -169,15 +181,6 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         Object[] parameters = null;
         if (orderedParams != null && !orderedParams.isEmpty()) {
             parameters = orderedParams.toArray(new String[0]);
-            // expand specific parameters
-            for (int idx = 0; idx < parameters.length; idx++) {
-                String value = (String) parameters[idx];
-                if (value.equals(CURRENT_USERID_PATTERN)) {
-                    parameters[idx] = ctx.getCoreSession().getPrincipal().getName();
-                } else if (value.equals(CURRENT_REPO_PATTERN)) {
-                    parameters[idx] = ctx.getCoreSession().getRepositoryName();
-                }
-            }
         }
 
         DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(),

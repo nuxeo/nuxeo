@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CURRENT_REPOSITORY_PARAMETER_VALUE;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CURRENT_USER_PARAMETER_VALUE;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -61,9 +65,19 @@ public class AuditPageProviderOperation {
 
     public static final String ID = "Audit.QueryWithPageProvider";
 
-    public static final String CURRENT_USERID_PATTERN = "$currentUser";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_USER_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_USERID_PATTERN = PageProviderSpec.CURRENT_USER_PARAMETER_VALUE;
 
-    public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_REPOSITORY_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_REPO_PATTERN = PageProviderSpec.CURRENT_REPOSITORY_PARAMETER_VALUE;
 
     public static final String DESC = "DESC";
 
@@ -120,26 +134,8 @@ public class AuditPageProviderOperation {
     @OperationMethod
     public Paginable<LogEntry> run() throws IOException {
 
-        Object[] parameters = null;
-
-        if (strParameters != null && !strParameters.isEmpty()) {
-            parameters = strParameters.toArray(String[]::new);
-            // expand specific parameters
-            for (int idx = 0; idx < parameters.length; idx++) {
-                String value = (String) parameters[idx];
-                if (value.equals(CURRENT_USERID_PATTERN)) {
-                    parameters[idx] = session.getPrincipal().getName();
-                } else if (value.equals(CURRENT_REPO_PATTERN)) {
-                    parameters[idx] = session.getRepositoryName();
-                }
-            }
-        }
-        if (parameters == null) {
-            parameters = new Object[0];
-        }
-
         Map<String, Serializable> props = new HashMap<>();
-        props.put(AuditPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        props.put(CORE_SESSION_PROPERTY, (Serializable) session);
         props.put(AuditPageProvider.BACKEND_NAME_PROPERTY, backendName);
 
         if (query == null && StringUtils.isEmpty(providerName)) {
@@ -151,6 +147,19 @@ public class AuditPageProviderOperation {
         long targetPageSize = Objects.requireNonNullElse(pageSize, 0).longValue();
 
         if (query != null) {
+            // build and configure the AuditPageProvider directly, bypassing the service: parameter substitution and
+            // sortInfos conversion must therefore be performed locally
+            Object[] parameters = strParameters == null || strParameters.isEmpty() ? new Object[0]
+                    : strParameters.toArray(String[]::new);
+            for (int idx = 0; idx < parameters.length; idx++) {
+                String value = (String) parameters[idx];
+                if (value.equals(CURRENT_USER_PARAMETER_VALUE)) {
+                    parameters[idx] = session.getPrincipal().getName();
+                } else if (value.equals(CURRENT_REPOSITORY_PARAMETER_VALUE)) {
+                    parameters[idx] = session.getRepositoryName();
+                }
+            }
+
             AuditPageProvider app = new AuditPageProvider();
             app.setProperties(props);
             GenericPageProviderDescriptor desc = new GenericPageProviderDescriptor();
@@ -176,7 +185,7 @@ public class AuditPageProviderOperation {
                                     .pageSize(targetPageSize)
                                     .currentPage(targetPage)
                                     .properties(props)
-                                    .parameters(parameters)
+                                    .parameters(strParameters)
                                     .build());
             return new PaginableLogEntryList(pp);
         }

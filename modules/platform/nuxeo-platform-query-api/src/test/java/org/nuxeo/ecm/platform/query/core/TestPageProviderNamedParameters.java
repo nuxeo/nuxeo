@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.query.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -91,7 +91,7 @@ public class TestPageProviderNamedParameters {
     }
 
     protected Map<String, Serializable> getPageProviderProps() {
-        return Map.of(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
+        return Map.of(CORE_SESSION_PROPERTY, (AbstractSession) session);
     }
 
     protected DocumentModel getSearchDocWithNamedParam(String propName, Serializable propValue) {

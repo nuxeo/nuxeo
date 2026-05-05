@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.audit.provider.LatestCreatedUsersOrGroupsPageProvider.LATEST_CREATED_USERS_OR_GROUPS_PROVIDER;
 import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
-import static org.nuxeo.audit.sql.pageprovider.SQLAuditPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -19,6 +19,7 @@
 package org.nuxeo.audit.sql.pageprovider;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.List;

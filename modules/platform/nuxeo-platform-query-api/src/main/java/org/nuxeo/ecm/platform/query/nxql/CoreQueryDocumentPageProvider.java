@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
@@ -46,9 +47,9 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  * <p>
  * It builds the query at each call so that it can refresh itself when the query changes.
  * <p>
- * The page provider property named {@link #CORE_SESSION_PROPERTY} is used to pass the {@link CoreSession} instance that
- * will perform the query. The optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true" to avoid
- * performing the query again if it did not change.
+ * The page provider property named {@link PageProviderSpec#CORE_SESSION_PROPERTY} is used to pass the
+ * {@link CoreSession} instance that will perform the query. The optional property {@link #CHECK_QUERY_CACHE_PROPERTY}
+ * can be set to "true" to avoid performing the query again if it did not change.
  * <p>
  * Since 6.0, the page provider property named {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether the
  * query should be run as unrestricted. When such a property is set to "true", the additional property
@@ -59,7 +60,11 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class CoreQueryDocumentPageProvider extends AbstractPageProvider<DocumentModel> {
 
-    public static final String CORE_SESSION_PROPERTY = "coreSession";
+    /**
+     * @deprecated since 2025.20, use {@link PageProviderSpec#CORE_SESSION_PROPERTY} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CORE_SESSION_PROPERTY = PageProviderSpec.CORE_SESSION_PROPERTY;
 
     public static final String MAX_RESULTS_PROPERTY = "maxResults";
 

@@ -19,6 +19,9 @@
 package org.nuxeo.ecm.restapi.server.search;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CURRENT_REPOSITORY_PARAMETER_VALUE;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CURRENT_USER_PARAMETER_VALUE;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,7 +47,6 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -91,9 +93,19 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
      */
     public static final String HIGHLIGHT = "highlight";
 
-    public static final String CURRENT_USERID_PATTERN = "$currentUser";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_USER_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_USERID_PATTERN = PageProviderSpec.CURRENT_USER_PARAMETER_VALUE;
 
-    public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_REPOSITORY_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_REPO_PATTERN = PageProviderSpec.CURRENT_REPOSITORY_PARAMETER_VALUE;
 
     public enum QueryParams {
         PAGE_SIZE, CURRENT_PAGE_INDEX, MAX_RESULTS, SORT_BY, SORT_ORDER, ORDERED_PARAMS, QUERY
@@ -241,9 +253,9 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
 
     protected String handleNamedParamVars(String value) {
         if (value != null) {
-            if (value.equals(CURRENT_USERID_PATTERN)) {
+            if (value.equals(CURRENT_USER_PARAMETER_VALUE)) {
                 return ctx.getCoreSession().getPrincipal().getName();
-            } else if (value.equals(CURRENT_REPO_PATTERN)) {
+            } else if (value.equals(CURRENT_REPOSITORY_PARAMETER_VALUE)) {
                 return ctx.getCoreSession().getRepositoryName();
             }
         }
@@ -253,20 +265,21 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     protected Object[] getParameters(MultivaluedMap<String, String> queryParams) {
         List<String> orderedParams = queryParams.get(ORDERED_PARAMS);
         if (orderedParams != null && !orderedParams.isEmpty()) {
-            Object[] parameters = orderedParams.toArray(new String[orderedParams.size()]);
-            // expand specific parameters
-            replaceParameterPattern(parameters);
-            return parameters;
+            return orderedParams.toArray(new String[orderedParams.size()]);
         }
         return null;
     }
 
+    /**
+     * @deprecated since 2025.20, not used anymore
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
     protected Object[] replaceParameterPattern(Object[] parameters) {
         for (int idx = 0; idx < parameters.length; idx++) {
             String value = (String) parameters[idx];
-            if (value.equals(CURRENT_USERID_PATTERN)) {
+            if (value.equals(CURRENT_USER_PARAMETER_VALUE)) {
                 parameters[idx] = ctx.getCoreSession().getPrincipal().getName();
-            } else if (value.equals(CURRENT_REPO_PATTERN)) {
+            } else if (value.equals(CURRENT_REPOSITORY_PARAMETER_VALUE)) {
                 parameters[idx] = ctx.getCoreSession().getRepositoryName();
             }
         }
@@ -275,7 +288,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
 
     protected Map<String, Serializable> getProperties() {
         Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
+        props.put(CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
         props.put(PageProvider.SKIP_AGGREGATES_PROP, skipAggregates);
         return props;
     }

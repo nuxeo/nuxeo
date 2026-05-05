@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -151,18 +153,20 @@ public class DocumentPageProviderOperation {
         if (actionContext != null) {
             parameters = PageProviderHelper.resolveELParameters(def, parameters);
         }
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session,
-                PageProviderSpec.builder(def)
-                                .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
-                                        namedParameters))
-                                .sortInfosByFieldsAndOrders(sortBy, sortOrder)
-                                .pageSize(targetPageSize)
-                                .currentPage(targetPage)
-                                .currentPageOffset(currentOffset)
-                                .highlights(highlights)
-                                .quickFiltersByNames(quickFilters)
-                                .parameters(parameters)
-                                .build());
+        var spec = PageProviderSpec.builder(def)
+                                   .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
+                                           namedParameters))
+                                   .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                   .pageSize(targetPageSize)
+                                   .currentPage(targetPage)
+                                   .currentPageOffset(currentOffset)
+                                   .highlights(highlights)
+                                   .quickFiltersByNames(quickFilters)
+                                   .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                   .parameters(parameters)
+                                   .build();
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) Framework.getService(PageProviderService.class)
+                                                                                .getPageProvider(spec);
 
         HttpServletRequest request = (HttpServletRequest) context.get("request");
         if (request != null) {

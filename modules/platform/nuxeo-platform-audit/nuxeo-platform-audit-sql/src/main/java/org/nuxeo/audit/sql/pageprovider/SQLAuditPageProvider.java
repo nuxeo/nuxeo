@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.runtime.api.Framework;
@@ -52,7 +53,11 @@ public class SQLAuditPageProvider extends AbstractPageProvider<LogEntry> impleme
 
     protected Map<String, Object> auditQueryParams;
 
-    public static final String CORE_SESSION_PROPERTY = "coreSession";
+    /**
+     * @deprecated since 2025.20, use {@link PageProviderSpec#CORE_SESSION_PROPERTY} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CORE_SESSION_PROPERTY = PageProviderSpec.CORE_SESSION_PROPERTY;
 
     /**
      * @deprecated since 2025.0, unused

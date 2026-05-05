@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
-import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ALL_WORKFLOWS_QUERY;

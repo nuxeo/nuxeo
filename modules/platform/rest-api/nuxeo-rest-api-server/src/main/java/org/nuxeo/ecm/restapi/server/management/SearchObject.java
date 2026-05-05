@@ -24,7 +24,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static java.lang.Math.max;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.core.search.SearchServiceImpl.getFromClause;
-import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.time.Duration;

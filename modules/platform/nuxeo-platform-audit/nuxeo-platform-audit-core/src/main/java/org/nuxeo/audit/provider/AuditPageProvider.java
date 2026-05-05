@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
@@ -49,8 +50,12 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     /** @since 2025.16 */
     public static final String BACKEND_NAME_PROPERTY = "backend";
 
-    /** @since 2025.16 */
-    public static final String CORE_SESSION_PROPERTY = "coreSession";
+    /**
+     * @since 2025.16
+     * @deprecated since 2025.20, use {@link PageProviderSpec#CORE_SESSION_PROPERTY} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CORE_SESSION_PROPERTY = PageProviderSpec.CORE_SESSION_PROPERTY;
 
     protected String nxqlQuery;
 

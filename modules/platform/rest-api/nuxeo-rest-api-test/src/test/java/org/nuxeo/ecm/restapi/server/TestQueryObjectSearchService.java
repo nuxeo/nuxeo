@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_TITLE_PROPERTY;
-import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 
 import java.io.Serializable;

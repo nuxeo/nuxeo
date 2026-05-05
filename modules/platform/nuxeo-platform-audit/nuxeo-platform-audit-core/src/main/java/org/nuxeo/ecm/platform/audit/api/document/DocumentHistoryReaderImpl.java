@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.audit.api.document;
 
-import static org.nuxeo.audit.provider.AuditPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.List;

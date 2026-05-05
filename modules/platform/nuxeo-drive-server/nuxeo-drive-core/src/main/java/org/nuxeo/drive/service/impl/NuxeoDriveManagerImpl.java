@@ -20,7 +20,7 @@
 package org.nuxeo.drive.service.impl;
 
 import static org.nuxeo.audit.service.AuditComponent.DISABLE_AUDIT_LOGGER;
-import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
 import java.io.Serializable;
