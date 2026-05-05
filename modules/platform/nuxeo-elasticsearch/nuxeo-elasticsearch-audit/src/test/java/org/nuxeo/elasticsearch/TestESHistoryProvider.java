@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -431,8 +432,13 @@ public class TestESHistoryProvider {
     protected PageProvider<LogEntry> getPageProvider(String name, int pageSize, int currentPage, Object... parameters) {
         List<SortInfo> sorters = List.of(new SortInfo("id", true));
         @SuppressWarnings("unchecked")
-        PageProvider<LogEntry> pageProvider = (PageProvider<LogEntry>) pageProviderService.getPageProvider(name,
-                sorters, Long.valueOf(pageSize), Long.valueOf(currentPage), Map.of(), parameters);
+        PageProvider<LogEntry> pageProvider = (PageProvider<LogEntry>) pageProviderService.getPageProvider(
+                PageProviderSpec.builder(name)
+                                .sortInfos(sorters)
+                                .pageSize(Long.valueOf(pageSize))
+                                .currentPage(Long.valueOf(currentPage))
+                                .parameters(parameters)
+                                .build());
         return pageProvider;
     }
 }

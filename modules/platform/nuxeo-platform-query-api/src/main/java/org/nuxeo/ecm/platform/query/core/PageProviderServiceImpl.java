@@ -21,19 +21,18 @@ package org.nuxeo.ecm.platform.query.core;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
+import javax.annotation.Nonnull;
+
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.PageProviderType;
-import org.nuxeo.ecm.platform.query.api.QuickFilter;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -72,39 +71,32 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     }
 
     @Override
-    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, null, properties,
-                highlights, quickFilters, parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Long currentOffset,
-            Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
-            Object... parameters) {
-
+    public PageProvider<?> getPageProvider(@Nonnull PageProviderSpec spec) {
+        var desc = spec.definition();
         if (desc == null) {
-            return null;
+            desc = providerReg.getPageProvider(name);
+            if (desc == null) {
+                throw new NuxeoException("Could not resolve page provider with name '%s'".formatted(spec.name()));
+            }
         }
-        PageProvider<?> pageProvider = newPageProviderInstance(name, desc);
-        // XXX: set local properties without resolving, and merge with given
-        // properties.
+        PageProvider<?> pageProvider = newPageProviderInstance(spec.name(), desc);
+        // Definition properties are already merged into spec.properties() by the builder when the definition was set
+        // there. When the definition was resolved late (by name) we still need to fold them in here, with explicit
+        // spec-provided properties winning.
         Map<String, Serializable> allProps = new HashMap<>();
-        Map<String, String> localProps = desc.getProperties();
-        if (localProps != null) {
-            allProps.putAll(localProps);
+        if (spec.definition() == null) {
+            Map<String, String> localProps = desc.getProperties();
+            if (localProps != null) {
+                allProps.putAll(localProps);
+            }
         }
-        if (properties != null) {
-            allProps.putAll(properties);
-        }
+        allProps.putAll(spec.properties());
         pageProvider.setProperties(allProps);
         pageProvider.setSortable(desc.isSortable());
-        pageProvider.setParameters(parameters);
+        pageProvider.setParameters(spec.parameters());
         pageProvider.setPageSizeOptions(desc.getPageSizeOptions());
-        if (searchDocument != null) {
-            pageProvider.setSearchDocumentModel(searchDocument);
+        if (spec.searchDocument() != null) {
+            pageProvider.setSearchDocumentModel(spec.searchDocument());
         }
 
         Long maxPageSize = desc.getMaxPageSize();
@@ -112,56 +104,34 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             pageProvider.setMaxPageSize(maxPageSize.longValue());
         }
 
-        if (sortInfos != null) {
-            pageProvider.setSortInfos(sortInfos);
+        if (spec.sortInfos() != null) {
+            pageProvider.setSortInfos(spec.sortInfos());
         }
 
-        if (quickFilters != null) {
-            pageProvider.setQuickFilters(quickFilters);
+        if (spec.quickFilters() != null) {
+            pageProvider.setQuickFilters(spec.quickFilters());
         }
 
-        if (highlights != null) {
-            pageProvider.setHighlights(highlights);
+        if (spec.highlights() != null) {
+            pageProvider.setHighlights(spec.highlights());
         }
 
+        var pageSize = spec.pageSize();
         if (pageSize == null || pageSize.longValue() < 0) {
             pageProvider.setPageSize(desc.getPageSize());
         } else {
             pageProvider.setPageSize(pageSize.longValue());
         }
+        var currentPage = spec.currentPage();
         if (currentPage != null && currentPage.longValue() > 0) {
             pageProvider.setCurrentPage(currentPage.longValue());
         }
+        var currentOffset = spec.currentPageOffset();
         if (currentOffset != null && currentOffset.longValue() >= 0) {
             pageProvider.setCurrentPageOffset(currentOffset.longValue());
         }
 
         return pageProvider;
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            List<QuickFilter> quickFilters, Object... parameters) {
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null,
-                quickFilters, parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
-            Object... parameters) {
-        return getPageProvider(name, (DocumentModel) null, sortInfos, pageSize, currentPage, properties, highlights,
-                quickFilters, parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            Object... parameters) {
-
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null, null,
-                parameters);
     }
 
     protected PageProvider<?> newPageProviderInstance(String name, PageProviderDefinition desc) {
@@ -205,59 +175,6 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
                     klass.getName(), name), e);
         }
         return ret;
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters) {
-        PageProviderDefinition desc = providerReg.getPageProvider(name);
-        if (desc == null) {
-            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
-        }
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null, null,
-                parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Map<String, Serializable> properties, List<String> highlights,
-            List<QuickFilter> quickFilters, Object... parameters) {
-        PageProviderDefinition desc = providerReg.getPageProvider(name);
-        if (desc == null) {
-            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
-        }
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, highlights,
-                quickFilters, parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Long currentOffset, Map<String, Serializable> properties,
-            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
-        PageProviderDefinition desc = providerReg.getPageProvider(name);
-        if (desc == null) {
-            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
-        }
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, currentOffset, properties,
-                highlights, quickFilters, parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Map<String, Serializable> properties, List<QuickFilter> quickFilters,
-            Object... parameters) {
-        PageProviderDefinition desc = providerReg.getPageProvider(name);
-        if (desc == null) {
-            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
-        }
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, quickFilters,
-                parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters) {
-        return getPageProvider(name, (DocumentModel) null, sortInfos, pageSize, currentPage, properties, parameters);
     }
 
     @Override

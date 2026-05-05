@@ -19,8 +19,9 @@
  */
 package org.nuxeo.ecm.platform.audit.api.document;
 
+import static org.nuxeo.ecm.platform.audit.api.AuditPageProvider.CORE_SESSION_PROPERTY;
+
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,9 +52,14 @@ public class DocumentHistoryReaderImpl implements DocumentHistoryReader {
     public PageProvider<LogEntry> getPageProvider(DocumentModel doc, long pageIndex, long pageSize) {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
-                Long.valueOf(pageSize), Long.valueOf(pageIndex), new HashMap<String, Serializable>(), doc);
-        return pp;
+        return (PageProvider<LogEntry>) pps.getPageProvider(
+                PageProviderSpec.builder("DOCUMENT_HISTORY_PROVIDER")
+                                .searchDocument(doc)
+                                .pageSize(pageSize)
+                                .currentPage(pageIndex)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) doc.getCoreSession())
+                                .parameters(doc)
+                                .build());
     }
 
 }

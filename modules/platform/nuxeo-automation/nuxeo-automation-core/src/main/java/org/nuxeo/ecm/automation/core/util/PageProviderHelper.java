@@ -21,11 +21,10 @@ package org.nuxeo.ecm.automation.core.util;
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
 import static org.nuxeo.common.utils.DateUtils.nowIfNull;
 import static org.nuxeo.ecm.platform.query.api.PageProviderService.NAMED_PARAMETERS;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,14 +34,12 @@ import javax.el.ELContext;
 import javax.el.ValueExpression;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -56,6 +53,7 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRange;
@@ -147,11 +145,19 @@ public class PageProviderHelper {
         return pageProviderService.getPageProviderDefinition(providerName);
     }
 
+    /**
+     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
             Map<String, String> namedParameters, Object... queryParams) {
         return getPageProvider(session, def, namedParameters, null, null, null, null, queryParams);
     }
 
+    /**
+     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
             Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
             Long currentPageIndex, Object... queryParams) {
@@ -159,6 +165,10 @@ public class PageProviderHelper {
                 queryParams);
     }
 
+    /**
+     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
             Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
             Long currentPageIndex, List<String> highlights, List<String> quickFilters, Object... parameters) {
@@ -166,15 +176,42 @@ public class PageProviderHelper {
                 highlights, quickFilters, parameters);
     }
 
+    /**
+     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
             Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
             Long currentPageIndex, Long currentOffset, List<String> highlights, List<String> quickFilters,
             Object... parameters) {
-        // Ordered parameters
-        if (ArrayUtils.isNotEmpty(parameters)) {
-            // expand specific parameters
-            for (int idx = 0; idx < parameters.length; idx++) {
-                String value = (String) parameters[idx];
+        return getPageProvider(session,
+                PageProviderSpec.builder(def)
+                                .searchDocument(getSearchDocumentModel(session, def.getName(), namedParameters))
+                                .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                .pageSize(pageSize)
+                                .currentPage(currentPageIndex)
+                                .currentPageOffset(currentOffset)
+                                .highlights(highlights)
+                                .quickFiltersByNames(quickFilters)
+                                .parameters(parameters)
+                                .build());
+    }
+
+    /**
+     * Resolves and runs the {@link PageProvider} described by the given {@link PageProviderSpec}.
+     * <p>
+     * Specific values in the spec parameters are expanded ({@code $currentUser}, {@code $currentRepository}), the core
+     * session is injected into the provider properties under
+     * {@link CoreQueryDocumentPageProvider#CORE_SESSION_PROPERTY}, then the call is delegated to
+     * {@link PageProviderService#getPageProvider(PageProviderSpec)}.
+     *
+     * @since 2025.20
+     */
+    public static PageProvider<?> getPageProvider(CoreSession session, PageProviderSpec spec) {
+        Object[] parameters = spec.parameters();
+        // expand specific parameters
+        for (int idx = 0; idx < parameters.length; idx++) {
+            if (parameters[idx] instanceof String value) {
                 if (value.equals(CURRENT_USERID_PATTERN)) {
                     parameters[idx] = session.getPrincipal().getName();
                 } else if (value.equals(CURRENT_REPO_PATTERN)) {
@@ -182,43 +219,19 @@ public class PageProviderHelper {
                 }
             }
         }
-
-        // Sort Info Management
-        List<SortInfo> sortInfos = null;
-        if (sortBy != null) {
-            sortInfos = new ArrayList<>();
-            for (int i = 0; i < sortBy.size(); i++) {
-                String sort = sortBy.get(i);
-                if (StringUtils.isNotBlank(sort)) {
-                    boolean sortAscending = (sortOrder != null && !sortOrder.isEmpty()
-                            && ASC.equalsIgnoreCase(sortOrder.get(i).toLowerCase()));
-                    sortInfos.add(new SortInfo(sort, sortAscending));
-                }
-            }
-        }
-
-        // Quick filters management
-        List<QuickFilter> quickFilterList = null;
-        if (quickFilters != null) {
-            quickFilterList = new ArrayList<>();
-            for (String filter : quickFilters) {
-                for (QuickFilter quickFilter : def.getQuickFilters()) {
-                    if (quickFilter.getName().equals(filter)) {
-                        quickFilterList.add(quickFilter);
-                        break;
-                    }
-                }
-            }
-        }
-
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        DocumentModel searchDocumentModel = getSearchDocumentModel(session, def.getName(), namedParameters);
-
-        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-
-        return pageProviderService.getPageProvider(def.getName(), def, searchDocumentModel, sortInfos, pageSize,
-                currentPageIndex, currentOffset, props, highlights, quickFilterList, parameters);
+        var resolved = PageProviderSpec.builder(spec.definition())
+                                       .searchDocument(spec.searchDocument())
+                                       .sortInfos(spec.sortInfos())
+                                       .pageSize(spec.pageSize())
+                                       .currentPage(spec.currentPage())
+                                       .currentPageOffset(spec.currentPageOffset())
+                                       .properties(spec.properties())
+                                       .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                       .highlights(spec.highlights())
+                                       .quickFilters(spec.quickFilters())
+                                       .parameters(parameters)
+                                       .build();
+        return Framework.getService(PageProviderService.class).getPageProvider(resolved);
     }
 
     public static DocumentModel getSearchDocumentModel(CoreSession session, String providerName,

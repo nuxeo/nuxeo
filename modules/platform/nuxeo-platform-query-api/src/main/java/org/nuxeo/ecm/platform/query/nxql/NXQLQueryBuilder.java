@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.query.nxql;
 
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -246,7 +248,7 @@ public class NXQLQueryBuilder {
             }
         }
 
-        if (params == null) {
+        if (isEmpty(params)) {
             queryBuilder = new StringBuilder(pattern + ' ');
         } else {
             // handle "standard" parameters replacements (referenced by ? characters)

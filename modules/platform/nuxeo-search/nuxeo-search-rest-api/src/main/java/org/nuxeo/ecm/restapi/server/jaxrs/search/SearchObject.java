@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.search.core.InvalidSearchParameterException;
 import org.nuxeo.ecm.platform.search.core.SavedSearch;
@@ -369,8 +370,16 @@ public class SearchObject extends QueryExecutor {
         PageProviderDefinition def = providerName == null ? PageProviderHelper.getQueryPageProviderDefinition(query)
                 : PageProviderHelper.getPageProviderDefinition(providerName);
 
-        return PageProviderHelper.getPageProvider(ctx.getCoreSession(), def, namedParameters, sortBy, sortOrder,
-                pageSize, currentPageIndex, null, quickfilters, queryParameters);
+        return PageProviderHelper.getPageProvider(ctx.getCoreSession(),
+                PageProviderSpec.builder(def)
+                                .searchDocument(PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(),
+                                        def.getName(), namedParameters))
+                                .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                .pageSize(pageSize)
+                                .currentPage(currentPageIndex)
+                                .quickFiltersByNames(quickfilters)
+                                .parameters(queryParameters)
+                                .build());
     }
 
     /**

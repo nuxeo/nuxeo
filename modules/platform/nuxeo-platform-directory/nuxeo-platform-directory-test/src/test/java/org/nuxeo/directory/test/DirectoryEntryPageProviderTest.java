@@ -34,6 +34,7 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -65,8 +66,11 @@ public class DirectoryEntryPageProviderTest {
 
     @Test
     public void testGetPage() {
-        var pp = pageProviderService.getPageProvider(PP_NAME, List.of(new SortInfo("id", true)), null, 0L, null,
-                continent);
+        var pp = pageProviderService.getPageProvider(PageProviderSpec.builder(PP_NAME)
+                                                                     .sortInfos(List.of(new SortInfo("id", true)))
+                                                                     .currentPage(0L)
+                                                                     .parameters(continent)
+                                                                     .build());
 
         var entriesPage = (List<DirectoryEntry>) pp.getCurrentPage();
         assertEquals(7, entriesPage.size());
@@ -88,8 +92,12 @@ public class DirectoryEntryPageProviderTest {
     // NXP-30520
     @Test
     public void testIsNextPageAvailable() {
-        var pp = pageProviderService.getPageProvider(PP_NAME, List.of(new SortInfo("id", true)), 1L, 0L, null,
-                continent);
+        var pp = pageProviderService.getPageProvider(PageProviderSpec.builder(PP_NAME)
+                                                                     .sortInfos(List.of(new SortInfo("id", true)))
+                                                                     .pageSize(1L)
+                                                                     .currentPage(0L)
+                                                                     .parameters(continent)
+                                                                     .build());
 
         var entriesPage = (List<DirectoryEntry>) pp.getCurrentPage();
         assertEquals(1, entriesPage.size());

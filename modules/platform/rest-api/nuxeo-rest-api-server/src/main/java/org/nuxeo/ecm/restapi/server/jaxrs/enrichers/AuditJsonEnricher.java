@@ -21,11 +21,10 @@ package org.nuxeo.ecm.restapi.server.jaxrs.enrichers;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
@@ -35,8 +34,8 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.AuditAdapter;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -72,11 +71,14 @@ public class AuditJsonEnricher extends AbstractJsonEnricher<DocumentModel>  {
 
             PageProviderService ppService = Framework.getService(PageProviderService.class);
             PageProviderDefinition ppDefinition = ppService.getPageProviderDefinition(AuditAdapter.PAGE_PROVIDER_NAME);
-            Map<String, Serializable> props = new HashMap<>();
-            props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) wrapper.getSession());
             @SuppressWarnings("unchecked")
-            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider("", ppDefinition, searchDocument, null,
-                    null, 0L, props, new Object[] {document});
+            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider(
+                    PageProviderSpec.builder("", ppDefinition)
+                                    .searchDocument(searchDocument)
+                                    .currentPage(0L)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) wrapper.getSession())
+                                    .parameter(document)
+                                    .build());
             for (LogEntry e : pp.getCurrentPage()) {
                 writeEntity(e, jg);
             }

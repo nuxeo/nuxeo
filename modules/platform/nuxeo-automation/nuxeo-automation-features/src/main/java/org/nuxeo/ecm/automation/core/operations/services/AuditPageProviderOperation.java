@@ -20,12 +20,9 @@ package org.nuxeo.ecm.automation.core.operations.services;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -38,13 +35,13 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.audit.api.AuditPageProvider;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryList;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 
@@ -107,35 +104,18 @@ public class AuditPageProviderOperation {
      * @since 6.0
      */
     @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
-    protected String sortBy;
+    protected StringList sortBy;
 
     /**
      * @since 6.0
      */
     @Param(name = "sortOrder", required = false, description = "Sort order, "
             + "ASC or DESC", widget = Constants.W_OPTION, values = { ASC, DESC })
-    protected String sortOrder;
+    protected StringList sortOrder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
     public Paginable<LogEntry> run() throws IOException {
-
-        List<SortInfo> sortInfos = null;
-        // Sort Info Management
-        if (!StringUtils.isBlank(sortBy)) {
-            sortInfos = new ArrayList<>();
-            String[] sorts = sortBy.split(",");
-            String[] orders = null;
-            if (!StringUtils.isBlank(sortOrder)) {
-                orders = sortOrder.split(",");
-            }
-            for (int i = 0; i < sorts.length; i++) {
-                String sort = sorts[i];
-                boolean sortAscending = (orders != null && orders.length > i
-                        && "asc".equals(orders[i].toLowerCase()));
-                sortInfos.add(new SortInfo(sort, sortAscending));
-            }
-        }
 
         Object[] parameters = null;
 
@@ -180,7 +160,7 @@ public class AuditPageProviderOperation {
             desc.setPattern(query);
             app.setParameters(parameters);
             app.setDefinition(desc);
-            app.setSortInfos(sortInfos);
+            app.setSortInfos(PageProviderSpec.toSortInfos(sortBy, sortOrder));
             app.setPageSize(targetPageSize);
             app.setCurrentPage(targetPage);
             return new LogEntryList(app);
@@ -193,9 +173,15 @@ public class AuditPageProviderOperation {
                 DocumentHelper.setProperties(session, searchDoc, namedQueryParams);
             }
 
-            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider(providerName, searchDoc,
-                    sortInfos, targetPageSize, targetPage, props, parameters);
-            // return new PaginablePageProvider<LogEntry>(pp);
+            PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider(
+                    PageProviderSpec.builder(providerName)
+                                    .searchDocument(searchDoc)
+                                    .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                    .pageSize(targetPageSize)
+                                    .currentPage(targetPage)
+                                    .properties(props)
+                                    .parameters(parameters)
+                                    .build());
             return new LogEntryList(pp);
         }
 

@@ -22,11 +22,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -42,7 +41,7 @@ import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 
 /**
  * Class testing the MoveCollectionMemberOpeartion operation.
@@ -66,15 +65,14 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
     protected List<DocumentModel> getCollectionMembersByQuery() {
         // Check order from query
 
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         @SuppressWarnings("unchecked")
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pps.getPageProvider(
-                CollectionConstants.ORDERED_COLLECTION_CONTENT_PAGE_PROVIDER, null, null, null, props,
-                new Object[] { collection.getId() });
+                PageProviderSpec.builder(CollectionConstants.ORDERED_COLLECTION_CONTENT_PAGE_PROVIDER)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(collection.getId())
+                                .build());
 
-        List<DocumentModel> members = pageProvider.getCurrentPage();
-        return members;
+        return pageProvider.getCurrentPage();
     }
 
     protected void initialCheck(Collection collectionAdapter) {

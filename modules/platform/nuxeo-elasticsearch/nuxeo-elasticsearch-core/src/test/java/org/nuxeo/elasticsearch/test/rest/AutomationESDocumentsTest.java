@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -46,8 +47,8 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -135,10 +136,14 @@ public class AutomationESDocumentsTest {
         // call a PageProvder configured with the "searchAllRepositories" property to true
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition(SEARCH_ALL_REPOSITORIES_PP);
         assertNotNull(ppdef);
-        var props = Map.of(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         var parameter = "/folder_0";
-        PageProvider<?> pp = pageProviderService.getPageProvider(SEARCH_ALL_REPOSITORIES_PP, ppdef, null, null, 10L, 0L,
-                props, parameter);
+        PageProvider<?> pp = pageProviderService.getPageProvider(
+                PageProviderSpec.builder(ppdef)
+                                .pageSize(10L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(parameter)
+                                .build());
 
         @SuppressWarnings("unchecked")
         var page = (List<DocumentModel>) pp.getCurrentPage();

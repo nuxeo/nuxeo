@@ -26,9 +26,9 @@ import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_PAGE_
 import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_TYPE;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_TITLE_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
+import static org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -52,9 +52,9 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.QueryObject;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.restapi.test.JsonNodeHelper;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
@@ -143,15 +143,16 @@ public class RestESDocumentsTest {
     @Test
     @SuppressWarnings("unchecked")
     public void isQueryEndpointCanSwitchToES() {
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(
                 SearchAdapter.pageProviderName);
         ppdefinition.setPattern(QUERY);
         ppdefinition.getProperties().put("maxResults", "1");
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
-                        ppdefinition, null, null, 10000L, null, props, (Object[]) null),
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                        PageProviderSpec.builder(ppdefinition)
+                                        .pageSize(10000L)
+                                        .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                        .build()),
                 null);
         if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
             fail("Should be an elastic search page provider");
@@ -181,7 +182,11 @@ public class RestESDocumentsTest {
                 (Serializable) session);
         @SuppressWarnings("unchecked")
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                ppdef.getName(), ppdef, null, null, null, 0L, props, "testCo");
+                PageProviderSpec.builder(ppdef)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters("testCo")
+                                .build());
 
         List<DocumentModel> page = pp.getCurrentPage();
         assertEquals(2, page.size());

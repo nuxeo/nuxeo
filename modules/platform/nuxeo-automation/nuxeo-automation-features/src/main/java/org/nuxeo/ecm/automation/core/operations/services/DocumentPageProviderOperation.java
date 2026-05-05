@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 
@@ -149,9 +150,18 @@ public class DocumentPageProviderOperation {
         if (actionContext != null) {
             parameters = PageProviderHelper.resolveELParameters(def, parameters);
         }
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session, def,
-                namedParameters, sortBy, sortOrder, targetPageSize, targetPage, currentOffset, highlights, quickFilters,
-                parameters);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session,
+                PageProviderSpec.builder(def)
+                                .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
+                                        namedParameters))
+                                .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                .pageSize(targetPageSize)
+                                .currentPage(targetPage)
+                                .currentPageOffset(currentOffset)
+                                .highlights(highlights)
+                                .quickFiltersByNames(quickFilters)
+                                .parameters(parameters)
+                                .build());
 
         HttpServletRequest request = (HttpServletRequest) context.get("request");
         if (request != null) {

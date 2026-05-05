@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 
 /**
  * Operation to execute a query or a named provider with support for Pagination
@@ -115,8 +116,15 @@ public class ResultSetPageProviderOperation {
         Long targetPageSize = pageSize != null ? pageSize.longValue() : null;
 
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) PageProviderHelper.getPageProvider(
-                session, def, namedParameters, sortBy, sortOrder, targetPageSize, targetPage,
-                strParameters != null ? strParameters.toArray(new String[0]) : null);
+                session,
+                PageProviderSpec.builder(def)
+                                .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
+                                        namedParameters))
+                                .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                .pageSize(targetPageSize)
+                                .currentPage(targetPage)
+                                .parameters(strParameters)
+                                .build());
 
         PaginableRecordSetImpl res = new PaginableRecordSetImpl(pp);
         if (res.hasError()) {

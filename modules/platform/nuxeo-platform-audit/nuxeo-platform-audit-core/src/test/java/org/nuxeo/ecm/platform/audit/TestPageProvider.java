@@ -28,10 +28,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -51,6 +48,7 @@ import org.nuxeo.ecm.platform.audit.provider.LatestCreatedUsersOrGroupsPageProvi
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -137,9 +135,8 @@ public class TestPageProvider {
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
         assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntries", null, Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>());
-
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("GetAllEntries").pageSize(5L).currentPage(0L).build());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
@@ -176,8 +173,11 @@ public class TestPageProvider {
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
         assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesInCategory", null, Long.valueOf(2), Long.valueOf(0),
-                new HashMap<String, Serializable>(), "category7");
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder("GetAllEntriesInCategory")
+                                                                 .pageSize(Long.valueOf(2))
+                                                                 .currentPage(Long.valueOf(0))
+                                                                 .parameters("category7")
+                                                                 .build());
 
         assertNotNull(pp);
 
@@ -215,8 +215,11 @@ public class TestPageProvider {
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
         assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesForDocumentInCategory", (DocumentModel) null, null,
-                Long.valueOf(2), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder("GetAllEntriesForDocumentInCategory")
+                                                                 .pageSize(Long.valueOf(2))
+                                                                 .currentPage(Long.valueOf(0))
+                                                                 .parameters("uuid")
+                                                                 .build());
 
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
@@ -261,8 +264,11 @@ public class TestPageProvider {
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
         assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesForDocumentInCategories", null, Long.valueOf(2),
-                Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder("GetAllEntriesForDocumentInCategories")
+                                                                 .pageSize(Long.valueOf(2))
+                                                                 .currentPage(Long.valueOf(0))
+                                                                 .parameters("uuid")
+                                                                 .build());
 
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
@@ -304,8 +310,11 @@ public class TestPageProvider {
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
         assertEquals(AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("GetAllEntriesBetween2Dates", null, Long.valueOf(6), Long.valueOf(0),
-                new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder("GetAllEntriesBetween2Dates")
+                                                                 .pageSize(Long.valueOf(6))
+                                                                 .currentPage(Long.valueOf(0))
+                                                                 .parameters("uuid")
+                                                                 .build());
 
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
@@ -401,8 +410,11 @@ public class TestPageProvider {
         GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
         assertEquals(DocumentHistoryPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
 
-        PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(6), Long.valueOf(0),
-                new HashMap<String, Serializable>(), "uuid");
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder("DOCUMENT_HISTORY_PROVIDER")
+                                                                 .pageSize(Long.valueOf(6))
+                                                                 .currentPage(Long.valueOf(0))
+                                                                 .parameters("uuid")
+                                                                 .build());
 
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
@@ -457,8 +469,12 @@ public class TestPageProvider {
                 LatestCreatedUsersOrGroupsPageProvider.LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER);
         assertNotNull(ppdef);
 
-        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, 6L, 0L, props);
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER)
+                                                                 .pageSize(6L)
+                                                                 .currentPage(0L)
+                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                         (Serializable) session)
+                                                                 .build());
 
         assertNotNull(pp);
 
@@ -470,8 +486,11 @@ public class TestPageProvider {
         // Check that a non-admin user cannot have results from the page provider
         CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(),
                 userManager.getPrincipal(testUsername));
-        props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) userSession);
-        pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, 6L, 0L, props);
+        pp = pps.getPageProvider(PageProviderSpec.builder(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER)
+                                                 .pageSize(6L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) userSession)
+                                                 .build());
 
         entries = (List<DocumentModel>) pp.getCurrentPage();
         assertEquals(0, entries.size());

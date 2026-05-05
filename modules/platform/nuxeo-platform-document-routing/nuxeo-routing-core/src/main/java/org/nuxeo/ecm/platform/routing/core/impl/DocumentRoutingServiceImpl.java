@@ -83,6 +83,7 @@ import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -562,11 +563,17 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         PageProvider<DocumentModel> pageProvider;
         if (StringUtils.isEmpty(searchString)) {
             pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null, 0L, props);
+                    PageProviderSpec.builder(DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME)
+                                    .currentPage(0L)
+                                    .properties(props)
+                                    .build());
         } else {
             pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME, null, null, 0L, props,
-                    searchString + '%');
+                    PageProviderSpec.builder(DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME)
+                                    .currentPage(0L)
+                                    .properties(props)
+                                    .parameters(searchString + '%')
+                                    .build());
         }
         List<DocumentModel> allRouteModels = new ArrayList<>(pageProvider.getCurrentPage());
         while (pageProvider.isNextPageAvailable()) {

@@ -22,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -82,11 +82,13 @@ public class TestPageProviderTracking {
         PageProviderDefinition def = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN2");
         assertFalse(def.isUsageTrackingEnabled());
 
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
-
-        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN2", null, 10L, 0L, props,
-                coreSession.getRootDocument().getId());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("CURRENT_DOCUMENT_CHILDREN2")
+                                .pageSize(10L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) coreSession)
+                                .parameters(coreSession.getRootDocument().getId())
+                                .build());
         assertNotNull(pp);
 
         SearchEventsAccumulator.reset();
@@ -98,11 +100,13 @@ public class TestPageProviderTracking {
     @Test
     public void testTrackingListener() throws Exception {
 
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
-
-        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_TRACK", null, 10L, 0L, props,
-                coreSession.getRootDocument().getId());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("CURRENT_DOCUMENT_CHILDREN_TRACK")
+                                .pageSize(10L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) coreSession)
+                                .parameters(coreSession.getRootDocument().getId())
+                                .build());
         assertNotNull(pp);
 
         SearchEventsAccumulator.reset();
@@ -110,8 +114,12 @@ public class TestPageProviderTracking {
         List<Map<String, Serializable>> events = SearchEventsAccumulator.getStackedEvents();
         assertEquals(1, events.size());
 
-        pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN", null, 10L, 0L, props,
-                coreSession.getRootDocument().getId());
+        pp = pps.getPageProvider(PageProviderSpec.builder("CURRENT_DOCUMENT_CHILDREN")
+                                                 .pageSize(10L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) coreSession)
+                                                 .parameters(coreSession.getRootDocument().getId())
+                                                 .build());
         assertNotNull(pp);
 
         SearchEventsAccumulator.reset();
@@ -135,11 +143,13 @@ public class TestPageProviderTracking {
     @Test
     public void testTrackingData() throws Exception {
 
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
-
-        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_TRACK", null, 10L, 0L, props,
-                coreSession.getRootDocument().getId());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("CURRENT_DOCUMENT_CHILDREN_TRACK")
+                                .pageSize(10L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) coreSession)
+                                .parameters(coreSession.getRootDocument().getId())
+                                .build());
         assertNotNull(pp);
 
         SearchEventsAccumulator.reset();
@@ -151,7 +161,12 @@ public class TestPageProviderTracking {
         assertEquals("Administrator", events.get(0).get("principal"));
         assertNotNull(events.get(0).get("searchPattern"));
 
-        pp = pps.getPageProvider("ADVANCED_SEARCH", null, 10L, 0L, props, coreSession.getRootDocument().getId());
+        pp = pps.getPageProvider(PageProviderSpec.builder("ADVANCED_SEARCH")
+                                                 .pageSize(10L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) coreSession)
+                                                 .parameters(coreSession.getRootDocument().getId())
+                                                 .build());
         assertNotNull(pp);
         pp.setSearchDocumentModel(getSearchDoc());
         SearchEventsAccumulator.reset();

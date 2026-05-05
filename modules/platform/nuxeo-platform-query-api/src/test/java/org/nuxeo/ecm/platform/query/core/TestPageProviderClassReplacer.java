@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -59,15 +60,16 @@ public class TestPageProviderClassReplacer {
         assertNotNull(pps);
 
         PageProviderDefinition ppd = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN");
-        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN", ppd, null, null, 1L, 0L, null);
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("CURRENT_DOCUMENT_CHILDREN", ppd).pageSize(1L).currentPage(0L).build());
         assertNotNull(pp);
         assertTrue("wrong class " + pp, pp instanceof CoreQueryAndFetchPageProvider);
 
-        pp = pps.getPageProvider("foo", ppd, null, null, 1L, 0L, null);
+        pp = pps.getPageProvider(PageProviderSpec.builder("foo", ppd).pageSize(1L).currentPage(0L).build());
         assertNotNull(pp);
         assertTrue("wrong class " + pp, pp instanceof CoreQueryAndFetchPageProvider);
 
-        pp = pps.getPageProvider("bar", ppd, null, null, 1L, 0L, null);
+        pp = pps.getPageProvider(PageProviderSpec.builder("bar", ppd).pageSize(1L).currentPage(0L).build());
         assertNotNull(pp);
         assertTrue("wrong class " + pp, pp instanceof CoreQueryDocumentPageProvider);
     }

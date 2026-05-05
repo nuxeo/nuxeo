@@ -23,13 +23,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -47,9 +47,9 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
-import org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -169,10 +169,10 @@ public class TaskPageProvidersTest {
 
     @SuppressWarnings("unchecked")
     private PageProvider<DashBoardItem> getPageProvider(String pageProviderName) {
-        Map<String, Serializable> properties = Collections.singletonMap(UserTaskPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
-        return (PageProvider<DashBoardItem>) ppService.getPageProvider(pageProviderName, null, null, null, properties,
-                (Object[]) null);
+        return (PageProvider<DashBoardItem>) ppService.getPageProvider(PageProviderSpec.builder(pageProviderName)
+                                                                                       .property(CORE_SESSION_PROPERTY,
+                                                                                               (Serializable) session)
+                                                                                       .build());
 
     }
 

@@ -20,8 +20,9 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
+
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,9 +40,8 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -231,18 +231,11 @@ public abstract class AbstractTagService implements TagService {
         if (ppService == null) {
             throw new NuxeoException("Missing PageProvider service");
         }
-        Map<String, Serializable> props = new HashMap<>();
-        // first retrieve potential props from definition
-        PageProviderDefinition def = ppService.getPageProviderDefinition(pageProviderName);
-        if (def != null) {
-            Map<String, String> defProps = def.getProperties();
-            if (defProps != null) {
-                props.putAll(defProps);
-            }
-        }
-        props.put(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) ppService.getPageProvider(
-                pageProviderName, null, null, null, props, params);
+                PageProviderSpec.builder(pageProviderName)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(params)
+                                .build());
         if (pp == null) {
             throw new NuxeoException("Page provider not found: " + pageProviderName);
         }

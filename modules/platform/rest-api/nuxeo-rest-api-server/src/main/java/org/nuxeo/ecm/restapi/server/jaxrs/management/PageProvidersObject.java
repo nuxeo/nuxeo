@@ -27,6 +27,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -57,7 +58,8 @@ public class PageProvidersObject extends AbstractResource<ResourceTypeImpl> {
             ObjectNode node = mapper.createObjectNode();
             PageProviderDefinition def = pps.getPageProviderDefinition(ppName);
             // Create an instance so class replacer is taken in account
-            PageProvider<?> pp = pps.getPageProvider(ppName, def, null, null, 0L, 0L, null);
+            PageProvider<?> pp = pps.getPageProvider(
+                    PageProviderSpec.builder(def).pageSize(0L).currentPage(0L).build());
             String klass = pp.getClass().getCanonicalName();
             node.put("name", pp.getName());
             node.put("class", klass);

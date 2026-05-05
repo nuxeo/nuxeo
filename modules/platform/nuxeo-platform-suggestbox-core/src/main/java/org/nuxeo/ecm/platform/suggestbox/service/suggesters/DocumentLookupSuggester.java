@@ -18,20 +18,20 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.suggestbox.service.DocumentSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
@@ -75,8 +75,6 @@ public class DocumentLookupSuggester implements Suggester {
     @SuppressWarnings("unchecked")
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) context.session);
         userInput = NXQLQueryBuilder.sanitizeFulltextInput(userInput);
         if (userInput.trim().isEmpty()) {
             return Collections.emptyList();
@@ -87,8 +85,12 @@ public class DocumentLookupSuggester implements Suggester {
         }
         try {
             List<Suggestion> suggestions = new ArrayList<>();
-            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName, null,
-                    null, null, null, props, highlights, null, new Object[] { userInput });
+            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    PageProviderSpec.builder(providerName)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) context.session)
+                                    .highlights(highlights)
+                                    .parameters(userInput)
+                                    .build());
             for (DocumentModel doc : pp.getCurrentPage()) {
                 suggestions.add(DocumentSuggestion.fromDocumentModel(doc));
             }

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -65,8 +66,13 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         if (coreSession == null || !canSearchUsersAndGroups(coreSession.getPrincipal())) {
             return Collections.emptyList();
         }
-        PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, getPageSize(),
-                getCurrentPageIndex(), getProperties(), coreSession.getRootDocument().getId());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER)
+                                .pageSize(getPageSize())
+                                .currentPage(getCurrentPageIndex())
+                                .properties(getProperties())
+                                .parameters(coreSession.getRootDocument().getId())
+                                .build());
         @SuppressWarnings("unchecked")
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
         if (entries != null) {
@@ -106,8 +112,8 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
     public long getResultsCountLimit() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         @SuppressWarnings("unchecked")
-        PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, null, null,
-                null, null);
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER).build());
         return pp.getResultsCountLimit();
     }
 

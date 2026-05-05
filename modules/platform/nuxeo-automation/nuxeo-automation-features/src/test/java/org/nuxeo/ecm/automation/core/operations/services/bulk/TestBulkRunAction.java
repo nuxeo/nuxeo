@@ -24,10 +24,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -189,10 +188,11 @@ public class TestBulkRunAction {
         txFeature.nextTransaction();
 
         @SuppressWarnings("unchecked")
-        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider("bulkPP",
-                null, null, null,
-                Collections.singletonMap(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session),
-                model.getId());
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                PageProviderSpec.builder("bulkPP")
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(model.getId())
+                                .build());
 
         for (DocumentModel child : pageProvider.getCurrentPage()) {
             assertEquals(title, child.getTitle());

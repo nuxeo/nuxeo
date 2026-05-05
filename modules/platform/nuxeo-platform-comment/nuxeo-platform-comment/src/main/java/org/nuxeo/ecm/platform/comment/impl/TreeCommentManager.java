@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -53,9 +51,7 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CO
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -81,6 +77,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -150,10 +147,12 @@ public class TreeCommentManager extends AbstractCommentManager {
     public List<Comment> getComments(CoreSession session, Collection<String> documentIds) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
 
-        Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
         @SuppressWarnings("unchecked")
         var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_COMMENTS_FOR_DOCUMENTS_PAGE_PROVIDER_NAME, null, null, null, props, new ArrayList<>(documentIds));
+                PageProviderSpec.builder(GET_COMMENTS_FOR_DOCUMENTS_PAGE_PROVIDER_NAME)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameter(documentIds)
+                                .build());
         return pageProvider.getCurrentPage().stream().map(doc -> doc.getAdapter(Comment.class)).collect(toList());
     }
 
@@ -394,16 +393,24 @@ public class TreeCommentManager extends AbstractCommentManager {
     @SuppressWarnings("unchecked")
     protected DocumentModel getExternalCommentModel(CoreSession session, String documentId, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider;
         // backward compatibility
         if (isBlank(documentId)) {
-            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(GET_COMMENT_PAGE_PROVIDER_NAME,
-                    Collections.emptyList(), 1L, 0L, props, entityId);
+            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    PageProviderSpec.builder(GET_COMMENT_PAGE_PROVIDER_NAME)
+                                    .pageSize(1L)
+                                    .currentPage(0L)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                    .parameters(entityId)
+                                    .build());
         } else {
             pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME, Collections.emptyList(), 1L, 0L, props, documentId,
-                    entityId);
+                    PageProviderSpec.builder(GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME)
+                                    .pageSize(1L)
+                                    .currentPage(0L)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                    .parameters(documentId, entityId)
+                                    .build());
         }
         List<DocumentModel> documents = pageProvider.getCurrentPage();
         if (documents.isEmpty()) {
@@ -477,11 +484,15 @@ public class TreeCommentManager extends AbstractCommentManager {
 
             PageProviderService ppService = Framework.getService(PageProviderService.class);
 
-            Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
-            List<SortInfo> sortInfos = singletonList(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, sortAscending));
+            List<SortInfo> sortInfos = List.of(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, sortAscending));
             var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME, sortInfos, pageSize, currentPageIndex, props,
-                    documentId);
+                    PageProviderSpec.builder(GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME)
+                                    .sortInfos(sortInfos)
+                                    .pageSize(pageSize)
+                                    .currentPage(currentPageIndex)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                    .parameters(documentId)
+                                    .build());
             return new PartialList<>(pageProvider.getCurrentPage(), pageProvider.getResultsCount());
         } catch (DocumentNotFoundException dnfe) {
             return new PartialList<>(emptyList(), 0);

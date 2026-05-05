@@ -19,11 +19,11 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +46,8 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -180,9 +180,6 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
             }
         }
 
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
-
         DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(),
                 pageProviderService, providerName, namedParameters);
 
@@ -215,9 +212,15 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                 providerName = SearchAdapter.pageProviderName;
             }
 
-            res = new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(providerName, ppdefinition,
-                            searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters),
+            res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    PageProviderSpec.builder(providerName, ppdefinition)
+                                    .searchDocument(searchDocumentModel)
+                                    .sortInfos(sortInfoList)
+                                    .pageSize(targetPageSize)
+                                    .currentPage(targetPage)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession())
+                                    .parameters(parameters)
+                                    .build()),
                     null);
         } else {
             PageProviderDefinition pageProviderDefinition = pageProviderService.getPageProviderDefinition(providerName);
@@ -235,9 +238,16 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                     }
                 }
             }
-            res = new PaginableDocumentModelListImpl(
-                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(providerName, searchDocumentModel,
-                            sortInfoList, targetPageSize, targetPage, props, quickFilterList, parameters),
+            res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    PageProviderSpec.builder(providerName)
+                                    .searchDocument(searchDocumentModel)
+                                    .sortInfos(sortInfoList)
+                                    .pageSize(targetPageSize)
+                                    .currentPage(targetPage)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession())
+                                    .quickFilters(quickFilterList)
+                                    .parameters(parameters)
+                                    .build()),
                     null);
         }
         if (res.hasError()) {

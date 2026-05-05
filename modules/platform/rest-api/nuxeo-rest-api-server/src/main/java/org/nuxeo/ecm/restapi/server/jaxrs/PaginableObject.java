@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -83,11 +83,16 @@ public abstract class PaginableObject<T> extends DefaultObject {
         }
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 
-        return getPaginableEntries((PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), null,
-                pageSize, currentPageIndex, offset, props, null, null, getParams()));
+        return getPaginableEntries((PageProvider<T>) pps.getPageProvider(
+                PageProviderSpec.builder("", ppDefinition)
+                                .searchDocument(getSearchDocument())
+                                .pageSize(pageSize)
+                                .currentPage(currentPageIndex)
+                                .currentPageOffset(offset)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession())
+                                .parameters(getParams())
+                                .build()));
     }
 
     protected Paginable<T> getPaginableEntries(PageProvider<T> pageProvider) {

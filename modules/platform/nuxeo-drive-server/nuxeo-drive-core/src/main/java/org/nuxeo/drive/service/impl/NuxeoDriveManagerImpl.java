@@ -71,6 +71,7 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -469,16 +470,21 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             Set<String> collectionMemberIds = new HashSet<>();
             CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
-            Map<String, Serializable> props = new HashMap<>();
-            props.put(CORE_SESSION_PROPERTY, (Serializable) session);
             PageProvider<DocumentModel> collectionPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    CollectionConstants.ALL_COLLECTIONS_PAGE_PROVIDER, null, null, 0L, props);
+                    PageProviderSpec.builder(CollectionConstants.ALL_COLLECTIONS_PAGE_PROVIDER)
+                                    .currentPage(0L)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                    .build());
             List<DocumentModel> collections = collectionPageProvider.getCurrentPage();
             for (DocumentModel collection : collections) {
                 if (isSynchronizationRoot(principal, collection)) {
                     PageProvider<DocumentModel> collectionMemberPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                            CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, COLLECTION_CONTENT_PAGE_SIZE,
-                            0L, props, collection.getId());
+                            PageProviderSpec.builder(CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER)
+                                            .pageSize(COLLECTION_CONTENT_PAGE_SIZE)
+                                            .currentPage(0L)
+                                            .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                            .parameters(collection.getId())
+                                            .build());
                     List<DocumentModel> collectionMembers = collectionMemberPageProvider.getCurrentPage();
                     for (DocumentModel collectionMember : collectionMembers) {
                         collectionMemberIds.add(collectionMember.getId());
