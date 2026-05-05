@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2024-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -213,7 +212,7 @@ public class SearchObject extends AbstractResource<ResourceTypeImpl> {
         ret.put("resultsCount", pp.getResultsCount());
         ret.put("resultsCountLimit", pp.getResultsCountLimit());
         ret.put("order", pp.getSortInfo());
-        ret.put("results", (Serializable) res.stream().map(DocumentModel::getId).collect(Collectors.toList()));
+        ret.put("results", (Serializable) res.stream().map(DocumentModel::getId).toList());
         return ret;
     }
 

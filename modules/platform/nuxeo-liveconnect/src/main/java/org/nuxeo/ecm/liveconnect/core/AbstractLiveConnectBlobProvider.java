@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -168,9 +167,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
                 if (nextDocumentsToBeUpdated.isEmpty()) {
                     break;
                 }
-                List<String> docIds = nextDocumentsToBeUpdated.stream()
-                                                              .map(DocumentModel::getId)
-                                                              .collect(Collectors.toList());
+                List<String> docIds = nextDocumentsToBeUpdated.stream().map(DocumentModel::getId).toList();
                 BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
                         buildWorkId(repositoryName, offset), blobProviderId);
                 work.setDocuments(repositoryName, docIds);

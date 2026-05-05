@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.query;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.OperationException;
@@ -112,7 +111,7 @@ public class DocumentPaginatedQuery {
         }
         Map<String, String> properties = null;
         if (maxResults != null) {
-            properties = Collections.singletonMap("maxResults", maxResults.toString());
+            properties = Map.of("maxResults", maxResults.toString());
         }
         PageProviderDefinition def = PageProviderHelper.getQueryPageProviderDefinition(query, properties,
                 escapePatternParameters, quotePatternParameters);

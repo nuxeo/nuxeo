@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                 buildQuery();
             }
             if (query == null) {
-                throw new NuxeoException(String.format("Cannot perform null query: check provider '%s'", getName()));
+                throw new NuxeoException("Cannot perform null query: check provider '%s'".formatted(getName()));
             }
 
             currentItems = new ArrayList<>();
@@ -207,8 +207,8 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
 
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
+                throw new NuxeoException(
+                        "Cannot build query of provider '%s': no search document model is set".formatted(getName()));
             }
             newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, quickFiltersClause, getParameters(),
                     sortArray);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core.operations.services.query;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.OperationException;
@@ -28,8 +27,8 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.automation.core.operations.services.PaginableRecordSetImpl;
+import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
 import org.nuxeo.ecm.automation.core.util.StringList;
@@ -42,10 +41,9 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 /**
  * @since 6.0 Result set query operation to perform queries on the repository.
  */
-@Operation(id = ResultSetPaginatedQuery.ID, category = Constants.CAT_FETCH, label = "ResultSet Query", description =
-            "Perform a query on the repository. The result set returned will become the input for the next operation. " +
-            "If no query or provider name is given, a query returning all the documents that the user has access to " +
-                    "will be executed.", since = "6.0", addToStudio = true, aliases = { "ResultSet.PaginatedQuery" })
+@Operation(id = ResultSetPaginatedQuery.ID, category = Constants.CAT_FETCH, label = "ResultSet Query", description = "Perform a query on the repository. The result set returned will become the input for the next operation. "
+        + "If no query or provider name is given, a query returning all the documents that the user has access to "
+        + "will be executed.", since = "6.0", addToStudio = true, aliases = { "ResultSet.PaginatedQuery" })
 public class ResultSetPaginatedQuery {
 
     public static final String ID = "Repository.ResultSetQuery";
@@ -101,7 +99,7 @@ public class ResultSetPaginatedQuery {
         }
         Map<String, String> properties = null;
         if (maxResults != null) {
-            properties = Collections.singletonMap("maxResults", maxResults.toString());
+            properties = Map.of("maxResults", maxResults.toString());
         }
         PageProviderDefinition def = PageProviderHelper.getQueryAndFetchProviderDefinition(query, properties);
 

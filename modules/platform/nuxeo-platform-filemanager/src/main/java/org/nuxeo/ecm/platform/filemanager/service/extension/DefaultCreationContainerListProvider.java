@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2008-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: DefaultCreationContainerListProvider.java 30594 2008-02-26 17:21:10Z ogrisel $
  */
-
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import java.io.Serializable;

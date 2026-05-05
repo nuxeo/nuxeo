@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -226,8 +226,9 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     protected void checkBatchSize(int batchSize) {
-        int maxDescendantsBatchSize = Framework.getService(ConfigurationService.class).getInteger(
-                MAX_DESCENDANTS_BATCH_SIZE_PROPERTY, MAX_DESCENDANTS_BATCH_SIZE_DEFAULT);
+        int maxDescendantsBatchSize = Framework.getService(ConfigurationService.class)
+                                               .getInteger(MAX_DESCENDANTS_BATCH_SIZE_PROPERTY,
+                                                       MAX_DESCENDANTS_BATCH_SIZE_DEFAULT);
         if (batchSize > maxDescendantsBatchSize) {
             throw new NuxeoException(String.format(
                     "Batch size %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -351,7 +350,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                     // Get document changes
                     Set<IdRef> lastRefs = lastSyncRootRefs.get(repositoryName);
                     if (lastRefs == null) {
-                        lastRefs = Collections.emptySet();
+                        lastRefs = Set.of();
                     }
                     SynchronizationRoots activeRoots = roots.get(repositoryName);
                     if (activeRoots == null) {
@@ -359,7 +358,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                     }
                     Set<String> repoCollectionSyncRootMemberIds = collectionSyncRootMemberIds.get(repositoryName);
                     if (repoCollectionSyncRootMemberIds == null) {
-                        repoCollectionSyncRootMemberIds = Collections.emptySet();
+                        repoCollectionSyncRootMemberIds = Set.of();
                     }
                     log.debug(
                             "Start: getting FileSystemItem changes for repository {} / user {} between {} and {} with activeRoots = {}",

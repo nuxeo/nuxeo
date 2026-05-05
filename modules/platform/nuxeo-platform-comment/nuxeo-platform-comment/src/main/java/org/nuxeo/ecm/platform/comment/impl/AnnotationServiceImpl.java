@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
  *     Funsho David
  *     Nuno Cunha <ncunha@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_ARE_SPECIAL_CHILDREN;
 import static org.nuxeo.ecm.platform.comment.impl.AbstractCommentManager.COMMENTS_DIRECTORY;
@@ -29,7 +27,6 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CO
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -87,10 +84,9 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                         + " does not have access to the annotations of document " + documentId);
             }
         } catch (DocumentNotFoundException dnfe) {
-            throw new CommentNotFoundException(String.format("The document %s does not exist.", docRef), dnfe);
+            throw new CommentNotFoundException("The document %s does not exist.".formatted(docRef), dnfe);
         }
-        return streamAnnotations(session, documentId, xpath).map(doc -> doc.getAdapter(Annotation.class))
-                                                            .collect(Collectors.toList());
+        return streamAnnotations(session, documentId, xpath).map(doc -> doc.getAdapter(Annotation.class)).toList();
     }
 
     protected Stream<DocumentModel> streamAnnotations(CoreSession session, String documentId, String xpath) {
@@ -164,7 +160,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     @Deprecated(since = "11.1", forRemoval = true)
     protected DocumentModel getAnnotationModel(CoreSession session, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
         List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
                 GET_ANNOTATION_PAGEPROVIDER_NAME, null, 1L, 0L, props, entityId)).getCurrentPage();
         if (results.isEmpty()) {

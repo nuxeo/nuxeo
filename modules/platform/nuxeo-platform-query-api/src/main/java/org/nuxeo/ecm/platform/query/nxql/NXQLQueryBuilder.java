@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@
  */
 package org.nuxeo.ecm.platform.query.nxql;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -115,7 +119,7 @@ public class NXQLQueryBuilder {
                                                    .reduce(StringUtils.EMPTY, NXQLQueryBuilder::appendClause);
         if (whereClauseDefinition == null) {
             if (!quickFiltersClause.isEmpty()) {
-                query = StringUtils.containsIgnoreCase(pattern, " WHERE ") ? appendClause(pattern, quickFiltersClause)
+                query = Strings.CI.contains(pattern, " WHERE ") ? appendClause(pattern, quickFiltersClause)
                         : pattern + " WHERE " + quickFiltersClause;
             } else {
                 query = pattern;
@@ -141,7 +145,7 @@ public class NXQLQueryBuilder {
             Object[] params, SortInfo... sortInfos) {
         StringBuilder queryBuilder = new StringBuilder();
         String selectStatement = whereClause.getSelectStatement();
-        if (StringUtils.isBlank(selectStatement)) {
+        if (isBlank(selectStatement)) {
             selectStatement = DEFAULT_SELECT_STATEMENT;
         }
         queryBuilder.append(selectStatement);
@@ -190,8 +194,8 @@ public class NXQLQueryBuilder {
         }
         // add fixed part if applicable
         String fixedPart = whereClause.getFixedPart();
-        if (!StringUtils.isBlank(fixedPart)) {
-            if (StringUtils.isNotBlank(quickFiltersClause)) {
+        if (isNotBlank(fixedPart)) {
+            if (isNotBlank(quickFiltersClause)) {
                 fixedPart = appendClause(fixedPart, quickFiltersClause);
             }
             if (elements.isEmpty()) {
@@ -201,7 +205,6 @@ public class NXQLQueryBuilder {
                 elements.add('(' + getQuery(fixedPart, params, whereClause.getQuoteFixedPartParameters(),
                         whereClause.getEscapeFixedPartParameters(), model) + ')');
             }
-        } else if (StringUtils.isNotBlank(quickFiltersClause)) {
         }
 
         if (elements.isEmpty()) {
@@ -327,7 +330,7 @@ public class NXQLQueryBuilder {
             result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
 
-        return buildPattern(pattern, key, '(' + StringUtils.join(result, ", ") + ')');
+        return buildPattern(pattern, key, '(' + String.join(", ", result) + ')');
     }
 
     /**
@@ -396,7 +399,7 @@ public class NXQLQueryBuilder {
                 operator = operator.toUpperCase();
             }
         }
-        if (StringUtils.isBlank(operator)) {
+        if (isBlank(operator)) {
             operator = predicateDescriptor.getOperator();
         }
         String hint = predicateDescriptor.getHint();
@@ -738,9 +741,9 @@ public class NXQLQueryBuilder {
      * @since 8.4
      */
     public static String appendClause(String query, String clause) {
-        if (StringUtils.isBlank(query)) {
+        if (isBlank(query)) {
             return clause;
-        } else if (StringUtils.isBlank(clause)) {
+        } else if (isBlank(clause)) {
             return query;
         } else {
             return query + " AND " + clause;

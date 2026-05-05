@@ -143,7 +143,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         } else if (desc instanceof SearchServicePageProviderDescriptor) {
             ret = new SearchServicePageProvider();
         } else {
-            throw new NuxeoException(String.format("Invalid page provider definition with name '%s'", name));
+            throw new NuxeoException("Invalid page provider definition with name '%s'".formatted(name));
         }
         ret.setName(name);
         ret.setDefinition(desc);
@@ -163,15 +163,15 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
 
     protected PageProvider<?> newPageProviderInstance(String name, Class<? extends PageProvider<?>> klass) {
         if (klass == null) {
-            throw new NuxeoException(String.format(
-                    "Cannot find class for page provider definition with name: '%s', check ERROR logs at startup",
-                    name));
+            throw new NuxeoException(
+                    "Cannot find class for page provider definition with name: '%s', check ERROR logs at startup".formatted(
+                            name));
         }
         try {
             return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(
-                    String.format("Cannot create an instance of class: %s for page provider definition with name: '%s'",
+                    "Cannot create an instance of class: %s for page provider definition with name: '%s'".formatted(
                             klass.getName(), name),
                     e);
         }
@@ -183,7 +183,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
         PageProviderDefinition desc = providers.get(name);
         if (desc == null) {
-            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
+            throw new NuxeoException("Could not resolve page provider with name '%s'".formatted(name));
         }
         return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, currentOffset, properties,
                 highlights, quickFilters, parameters);
@@ -195,7 +195,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             Object... parameters) {
         PageProviderDefinition desc = providers.get(name);
         if (desc == null) {
-            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
+            throw new NuxeoException("Could not resolve page provider with name '%s'".formatted(name));
         }
         return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, quickFilters,
                 parameters);

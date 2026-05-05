@@ -27,7 +27,6 @@ import static org.nuxeo.audit.sql.pageprovider.SQLAuditPageProvider.CORE_SESSION
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -438,7 +437,7 @@ public class TestSQLAuditPageProvider {
                 LatestCreatedUsersOrGroupsPageProvider.LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER);
         assertNotNull(ppdef);
 
-        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<?> pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, 6L, 0L, props);
 
         assertNotNull(pp);
@@ -451,7 +450,7 @@ public class TestSQLAuditPageProvider {
         // Check that a non-admin user cannot have results from the page provider
         CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(),
                 userManager.getPrincipal(testUsername));
-        props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) userSession);
+        props = Map.of(CORE_SESSION_PROPERTY, (Serializable) userSession);
         pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, 6L, 0L, props);
 
         entries = (List<DocumentModel>) pp.getCurrentPage();

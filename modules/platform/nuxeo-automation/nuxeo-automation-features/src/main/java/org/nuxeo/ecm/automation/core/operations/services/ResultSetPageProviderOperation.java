@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,7 @@ public class ResultSetPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false,
-            description = "Named parameters to pass to the page provider to fill in query variables.")
+    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to fill in query variables.")
     protected Properties namedParameters;
 
     /**
@@ -102,8 +101,8 @@ public class ResultSetPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = "sortOrder", required = false, description = "Sort order, ASC or DESC",
-            widget = Constants.W_OPTION, values = { ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, ASC or DESC", widget = Constants.W_OPTION, values = {
+            ASC, DESC })
     protected StringList sortOrder;
 
     @SuppressWarnings("unchecked")

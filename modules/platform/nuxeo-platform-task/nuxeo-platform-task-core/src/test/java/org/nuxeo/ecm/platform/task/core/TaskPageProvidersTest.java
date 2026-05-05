@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -101,9 +100,9 @@ public class TaskPageProvidersTest {
         taskService.createTask(session, administrator, document, "Test Task Name 2", actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null);
         // NXP-18868 create task without document (task from workflow without document)
-        taskService.createTaskForProcess(session, administrator, Collections.emptyList(), null, "Test Task Name 3",
-                "Task1a34", "a6dd157e-143d-4e03-a3cf-d33482c8de36", null, actors, false, "test directive",
-                "test comment", calendar.getTime(), null, null, null);
+        taskService.createTaskForProcess(session, administrator, List.of(), null, "Test Task Name 3", "Task1a34",
+                "a6dd157e-143d-4e03-a3cf-d33482c8de36", null, actors, false, "test directive", "test comment",
+                calendar.getTime(), null, null, null);
         session.save();
     }
 
@@ -166,7 +165,7 @@ public class TaskPageProvidersTest {
 
     @SuppressWarnings("unchecked")
     private PageProvider<DashBoardItem> getPageProvider(String pageProviderName) {
-        Map<String, Serializable> properties = Collections.singletonMap(UserTaskPageProvider.CORE_SESSION_PROPERTY,
+        Map<String, Serializable> properties = Map.of(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         return (PageProvider<DashBoardItem>) ppService.getPageProvider(pageProviderName, null, null, null, properties,
                 (Object[]) null);

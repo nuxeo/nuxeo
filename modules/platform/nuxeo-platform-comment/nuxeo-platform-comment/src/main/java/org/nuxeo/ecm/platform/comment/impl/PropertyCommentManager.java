@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,8 @@
  *     Funsho David
  *     Nuno Cunha <ncunha@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -39,7 +36,6 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -98,11 +94,10 @@ public class PropertyCommentManager extends AbstractCommentManager {
         }
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         return CoreInstance.doPrivileged(session, s -> {
-            Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
+            Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) s);
             PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME,
-                    singletonList(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, true)), null, null, props,
-                    docModel.getId());
+                    GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, List.of(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, true)),
+                    null, null, props, docModel.getId());
             return pageProvider.getCurrentPage();
         });
     }
@@ -238,11 +233,11 @@ public class PropertyCommentManager extends AbstractCommentManager {
                             + " does not have access to the comments of document " + documentId);
                 }
             }
-            Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
+            Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) s);
             PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                     GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME,
-                    singletonList(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, sortAscending)), pageSize,
-                    currentPageIndex, props, documentId);
+                    List.of(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, sortAscending)), pageSize, currentPageIndex,
+                    props, documentId);
             List<DocumentModel> commentList = pageProvider.getCurrentPage();
             return commentList.stream()
                               .map(doc -> doc.getAdapter(Comment.class))
@@ -403,7 +398,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
     protected DocumentModel getExternalCommentModel(CoreSession session, String documentId, String entityId) {
         return CoreInstance.doPrivileged(session, s -> {
             PageProviderService ppService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
+            Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) s);
             PageProvider<DocumentModel> pageProvider;
             // backward compatibility
             if (isBlank(documentId)) {

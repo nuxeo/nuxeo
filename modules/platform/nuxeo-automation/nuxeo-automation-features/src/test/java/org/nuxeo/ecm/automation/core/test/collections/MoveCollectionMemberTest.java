@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,8 +114,9 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
                 // Expected, let's keep testing
 
                 chain = new OperationChain("test-chain");
-                chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(0)).set("member2",
-                        listDocs.get(NB_FILES - 1));
+                chain.add(MoveCollectionMemberOperation.ID)
+                     .set("member1", listDocs.get(0))
+                     .set("member2", listDocs.get(NB_FILES - 1));
 
                 // Wrong input
                 ctx.setInput(null);
@@ -142,8 +143,9 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
         initialCheck(collectionAdapter);
 
         chain = new OperationChain("test-chain");
-        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(0)).set("member2",
-                listDocs.get(NB_FILES - 1));
+        chain.add(MoveCollectionMemberOperation.ID)
+             .set("member1", listDocs.get(0))
+             .set("member2", listDocs.get(NB_FILES - 1));
 
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(collection);
@@ -214,8 +216,9 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
         chain = new OperationChain("test-chain");
         int index = NB_FILES / 2;
-        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
-                listDocs.get(index + 1));
+        chain.add(MoveCollectionMemberOperation.ID)
+             .set("member1", listDocs.get(index))
+             .set("member2", listDocs.get(index + 1));
 
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(collection);
@@ -255,8 +258,9 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
         chain = new OperationChain("test-chain");
         int index = (NB_FILES / 2) + 1;
-        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
-                listDocs.get(index - 1));
+        chain.add(MoveCollectionMemberOperation.ID)
+             .set("member1", listDocs.get(index))
+             .set("member2", listDocs.get(index - 1));
 
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(collection);
@@ -323,8 +327,9 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
         chain = new OperationChain("test-chain");
         int index = (NB_FILES / 2) + 1;
-        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
-                listDocs.get(index)); // twice same index
+        chain.add(MoveCollectionMemberOperation.ID)
+             .set("member1", listDocs.get(index))
+             .set("member2", listDocs.get(index)); // twice same index
 
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(collection);

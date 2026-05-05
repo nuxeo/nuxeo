@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 package org.nuxeo.audit.sql.pageprovider;
+
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class SQLDocumentHistoryPageProvider extends SQLAuditPageProvider {
     public List<SortInfo> getSortInfos() {
 
         List<SortInfo> sort = super.getSortInfos();
-        if (sort == null || sort.size() == 0) {
+        if (isEmpty(sort)) {
             sort = new ArrayList<>();
             sort.add(new SortInfo("log.eventDate", true));
             sort.add(new SortInfo("log.id", true));

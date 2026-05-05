@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 package org.nuxeo.audit.provider;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +61,7 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         PageProviderService pps = Framework.getService(PageProviderService.class);
         CoreSession coreSession = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
         if (coreSession == null || !canSearchUsersAndGroups(coreSession.getPrincipal())) {
-            return Collections.emptyList();
+            return List.of();
         }
         PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, getPageSize(),
                 getCurrentPageIndex(), getProperties(), coreSession.getRootDocument().getId());

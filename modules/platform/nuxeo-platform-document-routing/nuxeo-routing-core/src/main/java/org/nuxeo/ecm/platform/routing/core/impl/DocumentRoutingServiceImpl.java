@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,12 +37,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -923,7 +921,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             GraphNode node = nodeAccessRunner.getNode();
             return node.getWorkflowContextualInfo(session, true);
         }
-        return Collections.emptyMap();
+        return Map.of();
     }
 
     @Override
@@ -1196,6 +1194,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         return routeModels.stream()
                           .filter(route -> canCreateInstance(session, documentIds, route.getName()))
                           .map(document -> document.getAdapter(DocumentRoute.class))
-                          .collect(Collectors.toList());
+                          .toList();
     }
 }

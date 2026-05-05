@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2024 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -395,7 +396,7 @@ public class PageProviderHelper {
      * @since 2023.18
      */
     protected static String getTermClause(String field, String key) {
-        return field + "='" + StringUtils.replace(key, "'", "\\'") + "'";
+        return field + "='" + Strings.CS.replace(key, "'", "\\'") + "'";
     }
 
     protected static String getRangeClause(String field, BucketRange bucketRange) {
@@ -423,7 +424,7 @@ public class PageProviderHelper {
     }
 
     protected static String appendToPattern(String pattern, String clause) {
-        return StringUtils.containsIgnoreCase(pattern, " WHERE ") ? NXQLQueryBuilder.appendClause(pattern, clause)
+        return Strings.CI.contains(pattern, " WHERE ") ? NXQLQueryBuilder.appendClause(pattern, clause)
                 : pattern + " WHERE " + clause;
     }
 

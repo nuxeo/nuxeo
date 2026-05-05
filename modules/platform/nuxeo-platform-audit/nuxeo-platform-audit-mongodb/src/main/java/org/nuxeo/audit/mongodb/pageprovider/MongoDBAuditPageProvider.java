@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,8 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
 
     protected CoreSession getCoreSession() {
         Object session = getProperties().get(CORE_SESSION_PROPERTY);
-        if (session instanceof CoreSession) {
-            return (CoreSession) session;
+        if (session instanceof CoreSession coreSession) {
+            return coreSession;
         }
         return null;
     }
@@ -245,8 +245,8 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
                     value = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(), fieldDef[fidx].getName());
                 }
                 // Convert Calendar objects
-                if (value instanceof Calendar) {
-                    value = ((Calendar) value).getTime();
+                if (value instanceof Calendar calendar) {
+                    value = calendar.getTime();
                 }
                 val[fidx] = value;
             }
@@ -328,12 +328,12 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
             return false;
         }
         for (Object v : val) {
-            if (v instanceof String) {
-                if (!((String) v).isEmpty()) {
+            if (v instanceof String s) {
+                if (!s.isEmpty()) {
                     return true;
                 }
-            } else if (v instanceof String[]) {
-                if (((String[]) v).length > 0) {
+            } else if (v instanceof String[] strings) {
+                if (strings.length > 0) {
                     return true;
                 }
             } else if (v != null) {

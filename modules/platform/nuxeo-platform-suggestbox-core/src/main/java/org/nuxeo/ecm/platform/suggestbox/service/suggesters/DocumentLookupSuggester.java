@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +78,7 @@ public class DocumentLookupSuggester implements Suggester {
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) context.session);
         userInput = NXQLQueryBuilder.sanitizeFulltextInput(userInput);
         if (userInput.trim().isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
         if (!userInput.endsWith(" ")) {
             // perform a prefix search on the last typed word
