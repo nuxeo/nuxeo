@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.adapters.SearchAdapter;
@@ -339,9 +340,16 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
             ppdefinition.getProperties().put("maxResults", maxResults.toString());
         }
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
-                        ppdefinition, searchDocumentModel, sortInfo, pageSize, currentPageIndex, currentPageOffset,
-                        props, null, null, parameters),
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                        PageProviderSpec.builder(ppdefinition)
+                                        .searchDocument(searchDocumentModel)
+                                        .sortInfos(sortInfo)
+                                        .pageSize(pageSize)
+                                        .currentPage(currentPageIndex)
+                                        .currentPageOffset(currentPageOffset)
+                                        .properties(props)
+                                        .parameters(parameters)
+                                        .build()),
                 null);
         if (res.hasError()) {
             throw new NuxeoException(res.getErrorMessage(), SC_BAD_REQUEST);
@@ -364,9 +372,18 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
             Long currentPageOffset, List<SortInfo> sortInfo, List<String> highlights, List<QuickFilter> quickFilters,
             Map<String, Serializable> props, DocumentModel searchDocumentModel, Object... parameters) {
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, searchDocumentModel,
-                        sortInfo, pageSize, currentPageIndex, currentPageOffset, props, highlights, quickFilters,
-                        parameters),
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                        PageProviderSpec.builder(pageProviderName)
+                                        .searchDocument(searchDocumentModel)
+                                        .sortInfos(sortInfo)
+                                        .pageSize(pageSize)
+                                        .currentPage(currentPageIndex)
+                                        .currentPageOffset(currentPageOffset)
+                                        .properties(props)
+                                        .highlights(highlights)
+                                        .quickFilters(quickFilters)
+                                        .parameters(parameters)
+                                        .build()),
                 null);
         if (res.hasError()) {
             throw new NuxeoException(res.getErrorMessage(), SC_BAD_REQUEST);

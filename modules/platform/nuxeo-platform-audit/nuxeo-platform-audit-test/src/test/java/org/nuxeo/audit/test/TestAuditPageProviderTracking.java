@@ -23,9 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -71,11 +71,13 @@ public class TestAuditPageProviderTracking {
     @Test
     public void shouldLogPageProviderCallsInAudit() {
 
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-
-        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_TRACK", null, 10L, 0L, props,
-                session.getRootDocument().getId());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("CURRENT_DOCUMENT_CHILDREN_TRACK")
+                                .pageSize(10L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(session.getRootDocument().getId())
+                                .build());
         assertNotNull(pp);
 
         List<LogEntry> trail = backend.queryLogs(
@@ -114,12 +116,14 @@ public class TestAuditPageProviderTracking {
     @Test
     public void shouldLogPageProviderCallsAndSearchDocumentModelInAudit() {
 
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-
         DocumentModel rootDoc = session.getRootDocument();
-        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_SEARCH_DOCUMENT_TRACK", rootDoc, null,
-                Long.valueOf(2), Long.valueOf(0), props);
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("CURRENT_DOCUMENT_CHILDREN_SEARCH_DOCUMENT_TRACK")
+                                .searchDocument(rootDoc)
+                                .pageSize(2L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .build());
         assertNotNull(pp);
 
         List<LogEntry> trail = backend.queryLogs(

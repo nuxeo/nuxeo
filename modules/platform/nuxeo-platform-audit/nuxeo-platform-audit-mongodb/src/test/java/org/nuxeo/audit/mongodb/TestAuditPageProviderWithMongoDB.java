@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -34,6 +33,7 @@ import org.nuxeo.audit.AuditCoreFeature;
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +54,8 @@ public class TestAuditPageProviderWithMongoDB {
     @Test
     public void testSimplePageProvider() {
         auditCoreFeature.generateLogEntries("dummy", "entry", "category", 15);
-        PageProvider<?> pp = pps.getPageProvider("SimpleMongoDBAuditPP", null, 5L, 0L, new HashMap<>());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("SimpleMongoDBAuditPP").pageSize(5L).currentPage(0L).build());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
@@ -71,8 +72,11 @@ public class TestAuditPageProviderWithMongoDB {
     @Test
     public void testSimplePageProviderWithParams() {
         auditCoreFeature.generateLogEntries("withParams", "entry", "category", 15);
-        PageProvider<?> pp = pps.getPageProvider("SimpleMongoDBAuditPPWithParams", null, 5L, 0L, new HashMap<>(),
-                "category1");
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder("SimpleMongoDBAuditPPWithParams")
+                                                                 .pageSize(5L)
+                                                                 .currentPage(0L)
+                                                                 .parameters("category1")
+                                                                 .build());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
@@ -81,7 +85,11 @@ public class TestAuditPageProviderWithMongoDB {
         // check that sort does work
         assertTrue(entries.get(0).getId() > entries.get(1).getId());
 
-        pp = pps.getPageProvider("SimpleMongoDBAuditPPWithParams", null, 5L, 0L, new HashMap<>(), "category0");
+        pp = pps.getPageProvider(PageProviderSpec.builder("SimpleMongoDBAuditPPWithParams")
+                                                 .pageSize(5L)
+                                                 .currentPage(0L)
+                                                 .parameters("category0")
+                                                 .build());
         entries = (List<LogEntry>) pp.getCurrentPage();
         assertEquals(1, entries.size());
 
@@ -90,7 +98,8 @@ public class TestAuditPageProviderWithMongoDB {
     @Test
     public void testSimplePageProviderWithUUID() {
         auditCoreFeature.generateLogEntries("uuid1", "uentry", "ucategory", 10);
-        PageProvider<?> pp = pps.getPageProvider("SearchById", null, 5L, 0L, new HashMap<>(), "uuid1");
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("SearchById").pageSize(5L).currentPage(0L).parameters("uuid1").build());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
@@ -100,7 +109,8 @@ public class TestAuditPageProviderWithMongoDB {
     @Test
     public void testAdminPageProvider() {
         auditCoreFeature.generateLogEntries("uuid2", "aentry", "acategory", 10);
-        PageProvider<?> pp = pps.getPageProvider("ADMIN_HISTORY", null, 5L, 0L, new HashMap<>());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("ADMIN_HISTORY").pageSize(5L).currentPage(0L).build());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();

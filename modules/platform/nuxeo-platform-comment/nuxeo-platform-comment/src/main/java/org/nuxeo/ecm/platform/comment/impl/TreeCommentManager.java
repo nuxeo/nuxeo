@@ -49,7 +49,6 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CO
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +75,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -145,10 +145,12 @@ public class TreeCommentManager extends AbstractCommentManager {
     public List<Comment> getComments(CoreSession session, Collection<String> documentIds) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
 
-        Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
         @SuppressWarnings("unchecked")
         var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_COMMENTS_FOR_DOCUMENTS_PAGE_PROVIDER_NAME, null, null, null, props, new ArrayList<>(documentIds));
+                PageProviderSpec.builder(GET_COMMENTS_FOR_DOCUMENTS_PAGE_PROVIDER_NAME)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameter(documentIds)
+                                .build());
         return pageProvider.getCurrentPage().stream().map(doc -> doc.getAdapter(Comment.class)).collect(toList());
     }
 
@@ -357,15 +359,24 @@ public class TreeCommentManager extends AbstractCommentManager {
     @SuppressWarnings("unchecked")
     protected DocumentModel getExternalCommentModel(CoreSession session, String documentId, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider;
         // backward compatibility
         if (isBlank(documentId)) {
-            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(GET_COMMENT_PAGE_PROVIDER_NAME,
-                    List.of(), 1L, 0L, props, entityId);
+            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    PageProviderSpec.builder(GET_COMMENT_PAGE_PROVIDER_NAME)
+                                    .pageSize(1L)
+                                    .currentPage(0L)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                    .parameters(entityId)
+                                    .build());
         } else {
             pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME, List.of(), 1L, 0L, props, documentId, entityId);
+                    PageProviderSpec.builder(GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME)
+                                    .pageSize(1L)
+                                    .currentPage(0L)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                    .parameters(documentId, entityId)
+                                    .build());
         }
         List<DocumentModel> documents = pageProvider.getCurrentPage();
         if (documents.isEmpty()) {
@@ -389,8 +400,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             if (!(principal.isAdministrator() //
                     || author.equals(principal.getName()) //
                     || s.hasPermission(principal, ancestorRef, EVERYTHING))) {
-                throw new CommentSecurityException("The user %s cannot delete comments of the document %s".formatted(
-                        principal.getName(), ancestorRef));
+                throw new CommentSecurityException(String.format(
+                        "The user %s cannot delete comments of the document %s", principal.getName(), ancestorRef));
             }
             Comment comment = commentDoc.getAdapter(Comment.class);
 
@@ -414,9 +425,9 @@ public class TreeCommentManager extends AbstractCommentManager {
         try {
             return session.getDocument(new IdRef(id));
         } catch (DocumentNotFoundException dnfe) {
-            throw new CommentNotFoundException("The comment %s does not exist.".formatted(id), dnfe);
+            throw new CommentNotFoundException(String.format("The comment %s does not exist.", id), dnfe);
         } catch (DocumentSecurityException dse) {
-            throw new CommentSecurityException("The user %s does not have access to the comment %s".formatted(
+            throw new CommentSecurityException(String.format("The user %s does not have access to the comment %s",
                     session.getPrincipal().getName(), id), dse);
         }
     }
@@ -439,17 +450,21 @@ public class TreeCommentManager extends AbstractCommentManager {
 
             PageProviderService ppService = Framework.getService(PageProviderService.class);
 
-            Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
             List<SortInfo> sortInfos = List.of(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, sortAscending));
             var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME, sortInfos, pageSize, currentPageIndex, props,
-                    documentId);
+                    PageProviderSpec.builder(GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME)
+                                    .sortInfos(sortInfos)
+                                    .pageSize(pageSize)
+                                    .currentPage(currentPageIndex)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                    .parameters(documentId)
+                                    .build());
             return new PartialList<>(pageProvider.getCurrentPage(), pageProvider.getResultsCount());
         } catch (DocumentNotFoundException dnfe) {
             return new PartialList<>(List.of(), 0);
         } catch (DocumentSecurityException dse) {
             throw new CommentSecurityException(
-                    "The user %s does not have access to the comments of document %s".formatted(
+                    String.format("The user %s does not have access to the comments of document %s",
                             session.getPrincipal().getName(), documentId),
                     dse);
         }
@@ -477,7 +492,7 @@ public class TreeCommentManager extends AbstractCommentManager {
         topLevelDoc.addFacet(HAS_RELATED_TEXT);
 
         // Get the related text id (the related text key is different in the case of Comment or Annotation)
-        String relatedTextId = COMMENT_RELATED_TEXT_ID.formatted(commentId);
+        String relatedTextId = String.format(COMMENT_RELATED_TEXT_ID, commentId);
 
         @SuppressWarnings("unchecked")
         List<Map<String, String>> resources = (List<Map<String, String>>) topLevelDoc.getPropertyValue(
@@ -522,7 +537,8 @@ public class TreeCommentManager extends AbstractCommentManager {
      * @since 11.1
      */
     protected boolean hasComments(CoreSession session, DocumentModel document) {
-        String query = QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR.formatted(document.getId());
+        String query = String.format( //
+                QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR, document.getId());
         return !session.queryProjection(query, 1, 0).isEmpty();
     }
 
@@ -532,7 +548,8 @@ public class TreeCommentManager extends AbstractCommentManager {
      * @since 11.1
      */
     protected boolean hasComments(CoreSession session, DocumentModel document, String user) {
-        String query = QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR_AND_AUTHOR.formatted(document.getId(), user);
+        String query = String.format( //
+                QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR_AND_AUTHOR, document.getId(), user);
         return !session.queryProjection(query, 1, 0).isEmpty();
     }
 

@@ -21,10 +21,7 @@ package org.nuxeo.ecm.platform.usermanager.providers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jakarta.inject.Inject;
 
@@ -37,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -82,10 +80,12 @@ public class TestGroupsPageProvider {
     @Test
     @SuppressWarnings("unchecked")
     public void testGroupsPageProviderAllMode() {
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY, AbstractGroupsPageProvider.ALL_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, properties, "");
+                PageProviderSpec.builder(PROVIDER_NAME)
+                                .property(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
+                                        AbstractGroupsPageProvider.ALL_MODE)
+                                .parameters("")
+                                .build());
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(5, groups.size());
@@ -105,11 +105,12 @@ public class TestGroupsPageProvider {
     @Test
     @SuppressWarnings("unchecked")
     public void testGroupsPageProviderSearchMode() {
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
-                AbstractGroupsPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, properties, "group");
+                PageProviderSpec.builder(PROVIDER_NAME)
+                                .property(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
+                                        AbstractGroupsPageProvider.SEARCH_ONLY_MODE)
+                                .parameters("group")
+                                .build());
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(2, groups.size());
@@ -119,8 +120,12 @@ public class TestGroupsPageProvider {
         assertEquals("group2", group.getId());
 
         // check computed groups
-        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(PROVIDER_NAME, null, null, null,
-                properties, "Grp");
+        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                PageProviderSpec.builder(PROVIDER_NAME)
+                                .property(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
+                                        AbstractGroupsPageProvider.SEARCH_ONLY_MODE)
+                                .parameters("Grp")
+                                .build());
         groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(2, groups.size());
@@ -130,8 +135,12 @@ public class TestGroupsPageProvider {
         assertEquals("Grp2", group.getId());
 
         // regular and computed groups together
-        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(PROVIDER_NAME, null, null, null,
-                properties, "gr");
+        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                PageProviderSpec.builder(PROVIDER_NAME)
+                                .property(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
+                                        AbstractGroupsPageProvider.SEARCH_ONLY_MODE)
+                                .parameters("gr")
+                                .build());
         groups = groupsProvider.getCurrentPage();
         assertEquals(4, groups.size());
         assertEquals("group1", groups.get(0).getId());

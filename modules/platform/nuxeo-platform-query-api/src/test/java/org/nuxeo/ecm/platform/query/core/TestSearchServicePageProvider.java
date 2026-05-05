@@ -22,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.test.CoreSearchFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.SearchServicePageProvider;
 import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -67,11 +68,13 @@ public class TestSearchServicePageProvider {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_PATTERN");
         assertNotNull(ppdef);
 
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
         SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
-                "NXQL_PP_PATTERN", ppdef, null, null, pageSize, 0L, props);
+                PageProviderSpec.builder(ppdef)
+                                .pageSize(pageSize)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .build());
         assertNotNull(pp);
 
         // create 10 docs
@@ -103,8 +106,12 @@ public class TestSearchServicePageProvider {
         pageSize = 10000;
         ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_PATTERN2");
         assertNotNull(ppdef);
-        pp = (SearchServicePageProvider) pageProviderService.getPageProvider("NXQL_PP_PATTERN2", ppdef, null, null,
-                pageSize, 0L, props);
+        pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
+                PageProviderSpec.builder(ppdef)
+                                .pageSize(pageSize)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .build());
         assertNotNull(pp);
         p = pp.getCurrentPage();
         assertEquals(10, pp.getResultsCount());
@@ -118,10 +125,13 @@ public class TestSearchServicePageProvider {
     public void ICanUseANxqlPageProviderWithParameters() {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("nxql_search");
         assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pageProviderService.getPageProvider("nxql_search", ppdef, null, null, pageSize, 0L, props);
+        PageProvider<?> pp = pageProviderService.getPageProvider(PageProviderSpec.builder(ppdef)
+                                                                                 .pageSize(pageSize)
+                                                                                 .currentPage(0L)
+                                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                                         (Serializable) session)
+                                                                                 .build());
         // create 10 docs
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
@@ -145,14 +155,17 @@ public class TestSearchServicePageProvider {
     public void ICanUseANxqlPageProviderWithFixedPart() {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_FIXED_PART");
         assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<>();
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sources = { "Source1", "Source2" };
         model.setProperty("advanced_search", "source_agg", sources);
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pageProviderService.getPageProvider("NXQL_PP_FIXED_PART", ppdef, model, null, pageSize, 0L,
-                props);
+        PageProvider<?> pp = pageProviderService.getPageProvider(PageProviderSpec.builder(ppdef)
+                                                                                 .searchDocument(model)
+                                                                                 .pageSize(pageSize)
+                                                                                 .currentPage(0L)
+                                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                                         (Serializable) session)
+                                                                                 .build());
         // create 10 docs
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
@@ -179,9 +192,12 @@ public class TestSearchServicePageProvider {
     public void ICanUseInvalidPageProvider() {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("INVALID_PP");
         assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pageProviderService.getPageProvider("INVALID_PP", ppdef, null, null, 0L, 0L, props);
+        PageProvider<?> pp = pageProviderService.getPageProvider(PageProviderSpec.builder(ppdef)
+                                                                                 .pageSize(0L)
+                                                                                 .currentPage(0L)
+                                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                                         (Serializable) session)
+                                                                                 .build());
         assertNotNull(pp);
         List<?> p = pp.getCurrentPage();
         assertNotNull(p);
@@ -194,11 +210,13 @@ public class TestSearchServicePageProvider {
     @Test
     public void testMaxResultWindow() {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_PATTERN");
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 2;
         SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
-                "NXQL_PP_PATTERN", ppdef, null, null, pageSize, 0L, props);
+                PageProviderSpec.builder(ppdef)
+                                .pageSize(pageSize)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .build());
         pp.setMaxResultWindow(6);
         assertEquals(6, pp.getMaxResultWindow());
         // create 10 docs
@@ -244,10 +262,11 @@ public class TestSearchServicePageProvider {
         txFeature.nextTransaction();
 
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_PP_UNLIMITED");
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pageProviderService.getPageProvider("NXQL_PP_UNLIMITED", ppdef, null, null, null, 0L,
-                props);
+        PageProvider<?> pp = pageProviderService.getPageProvider(PageProviderSpec.builder(ppdef)
+                                                                                 .currentPage(0L)
+                                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                                         (Serializable) session)
+                                                                                 .build());
         List<?> page = pp.getCurrentPage();
         // here we test that ES doesn't throw an exception + we're able to retrieve something
         assertFalse(page.isEmpty());
@@ -258,11 +277,12 @@ public class TestSearchServicePageProvider {
 
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("UNRESTRICTED_PP");
 
-        HashMap<String, Serializable> props = new HashMap<>();
         CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) bobSession);
         SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
-                "UNRESTRICTED_PP", ppdef, null, null, null, 0L, props);
+                PageProviderSpec.builder(ppdef)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) bobSession)
+                                .build());
 
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
@@ -280,7 +300,8 @@ public class TestSearchServicePageProvider {
      */
     @Test
     public void testPageProviderScroller() {
-        PageProvider<?> pageProvider = pageProviderService.getPageProvider("NXQL_PP_PATTERN", null, null, null, null);
+        PageProvider<?> pageProvider = pageProviderService.getPageProvider(
+                PageProviderSpec.builder("NXQL_PP_PATTERN").build());
         assertEquals("search", pageProvider.getScroller());
     }
 

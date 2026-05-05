@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -139,10 +140,12 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public List<FileSystemItem> getChildren() {
         CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props, docId);
+                PageProviderSpec.builder(FOLDER_ITEM_CHILDREN_PAGE_PROVIDER)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(docId)
+                                .build());
         long pageSize = childrenPageProvider.getPageSize();
 
         List<FileSystemItem> children = new ArrayList<>();

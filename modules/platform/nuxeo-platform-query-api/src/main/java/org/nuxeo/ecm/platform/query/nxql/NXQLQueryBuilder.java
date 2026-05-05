@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.query.nxql;
 
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -268,7 +269,7 @@ public class NXQLQueryBuilder {
             }
         }
 
-        if (params == null) {
+        if (isEmpty(params)) {
             queryBuilder = new StringBuilder(pattern + ' ');
         } else {
             // handle "standard" parameters replacements (referenced by ? characters)

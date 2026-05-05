@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -128,9 +129,15 @@ public class DocumentPaginatedQuery {
             strParameters = null;
         }
 
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session, def,
-                namedParameters, sortBy, sortOrder, targetPageSize, targetPage,
-                strParameters != null ? strParameters.toArray(new String[0]) : null);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session,
+                PageProviderSpec.builder(def)
+                                .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
+                                        namedParameters))
+                                .sortInfosByFieldsAndOrders(sortBy, sortOrder)
+                                .pageSize(targetPageSize)
+                                .currentPage(targetPage)
+                                .parameters(strParameters)
+                                .build());
 
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(pp);
         if (res.hasError()) {

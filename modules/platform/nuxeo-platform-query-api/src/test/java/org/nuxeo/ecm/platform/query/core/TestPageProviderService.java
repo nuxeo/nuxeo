@@ -23,11 +23,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import jakarta.inject.Inject;
@@ -40,7 +39,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -148,10 +147,12 @@ public class TestPageProviderService {
     public void testQuery() {
         PageProviderDefinition ppd = pageProviderService.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         ppd.setPattern("SELECT * FROM Document");
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
-        PageProvider<?> pp = pageProviderService.getPageProvider(CURRENT_DOCUMENT_CHILDREN, ppd, null, null,
-                Long.valueOf(1), Long.valueOf(0), props);
+        PageProvider<?> pp = pageProviderService.getPageProvider(PageProviderSpec.builder(ppd)
+                                                                                 .pageSize(1L)
+                                                                                 .currentPage(0L)
+                                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                                         (Serializable) coreSession)
+                                                                                 .build());
 
         assertNotNull(pp);
 
@@ -163,10 +164,8 @@ public class TestPageProviderService {
     @Test
     @SuppressWarnings("unchecked")
     public void testMergedProperties() {
-        Map<String, Serializable> props = new HashMap<>();
-        props.put("myprop", "foo");
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                CURRENT_DOCUMENT_CHILDREN, null, null, null, props);
+                PageProviderSpec.builder(CURRENT_DOCUMENT_CHILDREN).property("myprop", "foo").build());
         assertTrue(pp.getProperties().containsKey("myprop"));
         assertTrue(pp.getProperties().containsKey("dummy"));
     }
@@ -207,8 +206,8 @@ public class TestPageProviderService {
      */
     @Test
     public void testPageProviderScroller() {
-        PageProvider<?> pageProvider = pageProviderService.getPageProvider(CURRENT_DOCUMENT_CHILDREN, null, null, null,
-                null);
+        PageProvider<?> pageProvider = pageProviderService.getPageProvider(
+                PageProviderSpec.builder(CURRENT_DOCUMENT_CHILDREN).build());
         assertEquals("repository", pageProvider.getScroller());
     }
 

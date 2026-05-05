@@ -20,9 +20,9 @@ package org.nuxeo.ecm.platform.query.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.MultiRepositorySearchFeature;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.SearchServicePageProvider;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -96,10 +97,12 @@ public class TestSearchServicePageProviderMultiRepository {
     protected SearchServicePageProvider getPP(String name) {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition(name);
         assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider(name, ppdef,
-                null, null, 10L, 0L, props);
+        SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
+                PageProviderSpec.builder(ppdef)
+                                .pageSize(10L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .build());
         assertNotNull(pp);
         return pp;
     }

@@ -18,13 +18,13 @@
  */
 package org.nuxeo.io.fsexporter;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
@@ -36,17 +36,14 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
 public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
     public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String customQuery) {
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-
         String query;
         // if the user gives a query, we build a new Page Provider with the query provided
         if (StringUtils.isNotBlank(customQuery)) {
@@ -63,8 +60,11 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         @SuppressWarnings("unchecked")
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null,
-                null, null, null, props, new Object[] { doc.getId() });
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                PageProviderSpec.builder("customPP", desc)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(doc.getId())
+                                .build());
 
         int countPages = 1;
         // get all the documents of the first page

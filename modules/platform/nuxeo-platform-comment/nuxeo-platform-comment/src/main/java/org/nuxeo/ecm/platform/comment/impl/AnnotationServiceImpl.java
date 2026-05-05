@@ -26,7 +26,6 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CO
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -101,12 +101,10 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                     parentId = commentsFolder.getId();
                 }
                 // when comments are special children we can leverage inherited acls
-                Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
-                return getPageProviderPage(GET_ANNOTATIONS_FOR_DOCUMENT_PAGE_PROVIDER_NAME, props, parentId, xpath);
+                return getPageProviderPage(GET_ANNOTATIONS_FOR_DOCUMENT_PAGE_PROVIDER_NAME, session, parentId, xpath);
             } else {
-                Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) s);
-                List<DocumentModel> docs = getPageProviderPage(GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, props,
-                        documentId, xpath);
+                List<DocumentModel> docs = getPageProviderPage(GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, s, documentId,
+                        xpath);
                 docs.forEach(doc -> doc.detach(true)); // due to privileged session
                 return docs;
             }
@@ -114,11 +112,13 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getPageProviderPage(String ppName, Map<String, Serializable> props,
-            Object... parameters) {
+    protected List<DocumentModel> getPageProviderPage(String ppName, CoreSession session, Object... parameters) {
         var ppService = Framework.getService(PageProviderService.class);
-        var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(ppName, null, null, null, props,
-                parameters);
+        var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                PageProviderSpec.builder(ppName)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(parameters)
+                                .build());
         return pageProvider.getCurrentPage();
     }
 
@@ -160,9 +160,13 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     @Deprecated(since = "11.1", forRemoval = true)
     protected DocumentModel getAnnotationModel(CoreSession session, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
         List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_ANNOTATION_PAGEPROVIDER_NAME, null, 1L, 0L, props, entityId)).getCurrentPage();
+                PageProviderSpec.builder(GET_ANNOTATION_PAGEPROVIDER_NAME)
+                                .pageSize(1L)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(entityId)
+                                .build())).getCurrentPage();
         if (results.isEmpty()) {
             return null;
         }

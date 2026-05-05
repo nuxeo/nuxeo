@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.search.SearchService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.SearchServicePageProvider;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -196,10 +197,12 @@ public class SearchObject extends AbstractResource<ResourceTypeImpl> {
     protected Map<String, Serializable> extractResultInfo(SearchIndex searchIndex, String nxql, long pageSize) {
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition(CHECK_SEARCH_NXQL_PP);
-        HashMap<String, Serializable> params = new HashMap<>();
-        params.put(CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
-        var pp = (SearchServicePageProvider) pageProviderService.getPageProvider(CHECK_SEARCH_NXQL_PP, ppdef, null,
-                null, pageSize, 0L, params);
+        var pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
+                PageProviderSpec.builder(ppdef)
+                                .pageSize(pageSize)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession())
+                                .build());
         pp.setSearchIndexes(List.of(searchIndex));
         pp.setParameters(new String[] { nxql });
         long start = System.currentTimeMillis();

@@ -27,7 +27,6 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -279,8 +279,13 @@ public class TestOpenSearchHistoryProvider {
     protected PageProvider<LogEntry> getPageProvider(String name, int pageSize, int currentPage, Object... parameters) {
         List<SortInfo> sorters = List.of(new SortInfo("id", true));
         @SuppressWarnings("unchecked")
-        PageProvider<LogEntry> pageProvider = (PageProvider<LogEntry>) pageProviderService.getPageProvider(name,
-                sorters, Long.valueOf(pageSize), Long.valueOf(currentPage), Map.of(), parameters);
+        PageProvider<LogEntry> pageProvider = (PageProvider<LogEntry>) pageProviderService.getPageProvider(
+                PageProviderSpec.builder(name)
+                                .sortInfos(sorters)
+                                .pageSize(Long.valueOf(pageSize))
+                                .currentPage(Long.valueOf(currentPage))
+                                .parameters(parameters)
+                                .build());
         return pageProvider;
     }
 }

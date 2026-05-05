@@ -20,9 +20,9 @@ package org.nuxeo.ecm.platform.query.core.client.opensearch1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.test.CoreSearchFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.SearchServicePageProvider;
 import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -72,14 +73,17 @@ public class TestSearchServicePageProviderOpenSearchESHint {
     public void testNxqlPredicateWithHint() {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_WITH_HINT");
         assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
-        SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider("NXQL_WITH_HINT",
-                ppdef, model, null, pageSize, 0L, props);
+        SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
+                PageProviderSpec.builder(ppdef)
+                                .searchDocument(model)
+                                .pageSize(pageSize)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .build());
         assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         var nxql = pp.getCurrentQuery();
@@ -140,14 +144,17 @@ public class TestSearchServicePageProviderOpenSearchESHint {
     public void testNxqlPredicateWithHintInParameter() {
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("NXQL_WITH_HINT_IN_PARAMETER");
         assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(SearchServicePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
-        SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider("NXQL_WITH_HINT",
-                ppdef, model, null, pageSize, 0L, props);
+        SearchServicePageProvider pp = (SearchServicePageProvider) pageProviderService.getPageProvider(
+                PageProviderSpec.builder(ppdef)
+                                .searchDocument(model)
+                                .pageSize(pageSize)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .build());
         assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         var nxql = pp.getCurrentQuery();
@@ -234,11 +241,13 @@ public class TestSearchServicePageProviderOpenSearchESHint {
 
         PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition("default_match_phrase_prefix");
 
-        Map<String, Serializable> props = Map.of(SearchServicePageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
         @SuppressWarnings("unchecked")
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                ppdef.getName(), ppdef, null, null, null, 0L, props, "testMat");
+                PageProviderSpec.builder(ppdef)
+                                .currentPage(0L)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters("testMat")
+                                .build());
 
         List<DocumentModel> page = pp.getCurrentPage();
         assertEquals(2, page.size());

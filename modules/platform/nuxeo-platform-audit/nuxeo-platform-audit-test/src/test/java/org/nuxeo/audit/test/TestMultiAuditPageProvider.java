@@ -24,8 +24,6 @@ import static org.nuxeo.audit.provider.AuditPageProvider.BACKEND_NAME_PROPERTY;
 import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
 import static org.nuxeo.audit.test.MultiAuditFeature.OTHER_AUDIT_BACKEND;
 
-import java.util.Map;
-
 import jakarta.inject.Inject;
 
 import org.junit.Test;
@@ -34,6 +32,7 @@ import org.nuxeo.audit.AuditCoreFeature;
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -58,7 +57,8 @@ public class TestMultiAuditPageProvider {
         auditCoreFeature.generateLogEntries(OTHER_AUDIT_BACKEND, "doc002", "event", "otherCategory", 5);
 
         @SuppressWarnings("unchecked")
-        var defaultProvider = (PageProvider<LogEntry>) pps.getPageProvider("ADMIN_HISTORY", null, 100L, 0L, Map.of());
+        var defaultProvider = (PageProvider<LogEntry>) pps.getPageProvider(
+                PageProviderSpec.builder("ADMIN_HISTORY").pageSize(100L).currentPage(0L).build());
         var defaultPage = defaultProvider.getCurrentPage();
         assertEquals(5, defaultPage.size());
         defaultPage.forEach(
@@ -66,8 +66,12 @@ public class TestMultiAuditPageProvider {
                         logEntry.getCategory().startsWith("defaultCategory")));
 
         @SuppressWarnings("unchecked")
-        var otherProvider = (PageProvider<LogEntry>) pps.getPageProvider("ADMIN_HISTORY", null, 100L, 0L,
-                Map.of(BACKEND_NAME_PROPERTY, OTHER_AUDIT_BACKEND));
+        var otherProvider = (PageProvider<LogEntry>) pps.getPageProvider(
+                PageProviderSpec.builder("ADMIN_HISTORY")
+                                .pageSize(100L)
+                                .currentPage(0L)
+                                .property(BACKEND_NAME_PROPERTY, OTHER_AUDIT_BACKEND)
+                                .build());
         var otherPage = otherProvider.getCurrentPage();
         assertEquals(5, otherPage.size());
         otherPage.forEach(logEntry -> assertTrue("LogEntry: %s category doesn't start with other".formatted(logEntry),

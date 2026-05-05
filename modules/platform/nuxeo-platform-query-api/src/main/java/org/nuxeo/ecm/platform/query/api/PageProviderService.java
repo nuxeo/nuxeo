@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.annotation.Nonnull;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 
@@ -52,6 +54,17 @@ public interface PageProviderService extends Serializable {
     PageProviderDefinition getPageProviderDefinition(String name);
 
     /**
+     * Returns an instance of page provider built from the given {@code spec}.
+     * <p>
+     * When the {@link PageProviderSpec#definition() definition} is not set on the spec, the definition is resolved from
+     * the registered providers using the spec {@link PageProviderSpec#name() name}, throwing a
+     * {@link org.nuxeo.ecm.core.api.NuxeoException} when no provider is registered under that name.
+     *
+     * @since 2025.20
+     */
+    PageProvider<?> getPageProvider(@Nonnull PageProviderSpec spec);
+
+    /**
      * Returns an instance of page provider with given name and definition.
      * <p>
      * Useful to share the definition between the page provider service, and the content view service (as content views
@@ -70,7 +83,9 @@ public interface PageProviderService extends Serializable {
      * @param parameters the provider parameters.
      * @return the page provider instance.
      * @since 5.7
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
             Object... parameters) {
@@ -89,7 +104,9 @@ public interface PageProviderService extends Serializable {
      * @param parameters the provider parameters.
      * @return the page provider instance.
      * @since 5.4
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Map<String, Serializable> properties, Object... parameters) {
         return getPageProvider(name, null, sortInfos, pageSize, currentPage, null, properties, null, null, parameters);
@@ -100,7 +117,9 @@ public interface PageProviderService extends Serializable {
      *
      * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
      * @since 5.7
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters) {
         return getPageProvider(name, searchDocument, sortInfos, pageSize, currentPage, null, properties, null, null,
@@ -112,7 +131,9 @@ public interface PageProviderService extends Serializable {
      *
      * @see #getPageProvider(String, DocumentModel, List, Long, Long, Map, Object...)
      * @since 8.4
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage, Map<String, Serializable> properties, List<QuickFilter> quickFilters,
             Object... parameters) {
@@ -125,7 +146,9 @@ public interface PageProviderService extends Serializable {
      *
      * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
      * @since 8.4
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
             List<QuickFilter> quickFilters, Object... parameters) {
@@ -138,7 +161,9 @@ public interface PageProviderService extends Serializable {
      *
      * @see #getPageProvider(String, List, Long, Long, Map, Object...)
      * @since 9.1
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
             Object... parameters) {
@@ -151,7 +176,9 @@ public interface PageProviderService extends Serializable {
      *
      * @see #getPageProvider(String, DocumentModel, List, Long, Long, Map, Object...)
      * @since 9.1
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage, Map<String, Serializable> properties, List<String> highlights,
             List<QuickFilter> quickFilters, Object... parameters) {
@@ -174,17 +201,33 @@ public interface PageProviderService extends Serializable {
      * @param parameters the provider parameters.
      * @return the page provider instance.
      * @since 9.3
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
-    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Long currentOffset, Map<String, Serializable> properties, List<String> highlights,
-            List<QuickFilter> quickFilters, Object... parameters);
+    @Deprecated(since = "2025.20", forRemoval = true)
+    default PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Long currentOffset, Map<String, Serializable> properties,
+            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
+        return getPageProvider(PageProviderSpec.builder(name)
+                                               .searchDocument(searchDocument)
+                                               .sortInfos(sortInfos)
+                                               .pageSize(pageSize)
+                                               .currentPage(currentPage)
+                                               .currentPageOffset(currentOffset)
+                                               .properties(properties)
+                                               .highlights(highlights)
+                                               .quickFilters(quickFilters)
+                                               .parameters(parameters)
+                                               .build());
+    }
 
     /**
      * Returns an instance of page provider with given name.
      *
      * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
      * @since 9.1
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
+    @Deprecated(since = "2025.20", forRemoval = true)
     default PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
             List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
@@ -211,11 +254,28 @@ public interface PageProviderService extends Serializable {
      * @param parameters the provider parameters.
      * @return the page provider instance.
      * @since 9.3
+     * @deprecated since 2025.20, use {@link #getPageProvider(PageProviderSpec)} instead.
      */
-    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+    @Deprecated(since = "2025.20", forRemoval = true)
+    default PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Long currentOffset,
             Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
-            Object... parameters);
+            Object... parameters) {
+        if (desc == null) {
+            return null;
+        }
+        return getPageProvider(PageProviderSpec.builder(name, desc)
+                                               .searchDocument(searchDocument)
+                                               .sortInfos(sortInfos)
+                                               .pageSize(pageSize)
+                                               .currentPage(currentPage)
+                                               .currentPageOffset(currentOffset)
+                                               .properties(properties)
+                                               .highlights(highlights)
+                                               .quickFilters(quickFilters)
+                                               .parameters(parameters)
+                                               .build());
+    }
 
     /**
      * Returns all the registered page provider names, or an empty set if no page provider is registered.

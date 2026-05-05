@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.query.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,8 +41,8 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -92,10 +92,12 @@ public class TestPageProviderCurrentPage {
     @Test
     public void testPageProviderCurrentPage() {
         PageProviderDefinition ppd = pps.getPageProviderDefinition(DUMMY_FETCH_DOCUMENTS);
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pps.getPageProvider(DUMMY_FETCH_DOCUMENTS, ppd, null, null, ppd.getMaxPageSize(), 0L,
-                props);
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder(ppd)
+                                                                 .pageSize(ppd.getMaxPageSize())
+                                                                 .currentPage(0L)
+                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                         (Serializable) session)
+                                                                 .build());
         // check that both pages are different
         assertEquals(0, pp.getCurrentPageIndex());
         assertEquals(pp.getMaxPageSize(), pp.getCurrentPageSize());
@@ -123,9 +125,12 @@ public class TestPageProviderCurrentPage {
     @Test
     public void testPageProviderCurrentPageWithoutPageSize() {
         PageProviderDefinition ppd = pps.getPageProviderDefinition(DUMMY_FETCH_DOCUMENTS);
-        HashMap<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pps.getPageProvider(DUMMY_FETCH_DOCUMENTS, ppd, null, null, 0L, 0L, props);
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder(ppd)
+                                                                 .pageSize(0L)
+                                                                 .currentPage(0L)
+                                                                 .property(CORE_SESSION_PROPERTY,
+                                                                         (Serializable) session)
+                                                                 .build());
         // check that both pages are different
         assertEquals(0, pp.getCurrentPageIndex());
         assertEquals(pp.getMaxPageSize(), pp.getCurrentPageSize());
@@ -172,14 +177,24 @@ public class TestPageProviderCurrentPage {
         session.createDocument(file2);
         transactionalFeature.nextTransaction();
 
-        var props = Map.of(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         // default sort infos, no quick filter
-        var pp = pps.getPageProvider(pageProviderName, null, 0L, 0L, props, rootFolder.getId());
+        var pp = pps.getPageProvider(PageProviderSpec.builder(pageProviderName)
+                                                     .pageSize(0L)
+                                                     .currentPage(0L)
+                                                     .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                                     .parameters(rootFolder.getId())
+                                                     .build());
         assertSortedTitles(pp, mapper, "File 1", "File 2", "Folder");
 
         // custom sort infos, no quick filter
         var sortInfos = List.of(new SortInfo("dc:title", false));
-        pp = pps.getPageProvider(pageProviderName, sortInfos, 0L, 0L, props, rootFolder.getId());
+        pp = pps.getPageProvider(PageProviderSpec.builder(pageProviderName)
+                                                 .sortInfos(sortInfos)
+                                                 .pageSize(0L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                                 .parameters(rootFolder.getId())
+                                                 .build());
         assertSortedTitles(pp, mapper, "Folder", "File 2", "File 1");
 
         // default sort infos, quick filter w/o sort info
@@ -188,11 +203,24 @@ public class TestPageProviderCurrentPage {
                               .stream()
                               .filter(q -> "noFolder".equals(q.getName()))
                               .collect(Collectors.toList());
-        pp = pps.getPageProvider(pageProviderName, null, 0L, 0L, props, null, quickFilters, rootFolder.getId());
+        pp = pps.getPageProvider(PageProviderSpec.builder(pageProviderName)
+                                                 .pageSize(0L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                                 .quickFilters(quickFilters)
+                                                 .parameters(rootFolder.getId())
+                                                 .build());
         assertSortedTitles(pp, mapper, "File 1", "File 2");
 
         // custom sort infos, quick filter w/o sort info
-        pp = pps.getPageProvider(pageProviderName, sortInfos, 0L, 0L, props, null, quickFilters, rootFolder.getId());
+        pp = pps.getPageProvider(PageProviderSpec.builder(pageProviderName)
+                                                 .sortInfos(sortInfos)
+                                                 .pageSize(0L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                                 .quickFilters(quickFilters)
+                                                 .parameters(rootFolder.getId())
+                                                 .build());
         assertSortedTitles(pp, mapper, "File 2", "File 1");
 
         // default sort infos, quick filter with sort info
@@ -200,7 +228,13 @@ public class TestPageProviderCurrentPage {
                           .stream()
                           .filter(q -> "bySource".equals(q.getName()))
                           .collect(Collectors.toList());
-        pp = pps.getPageProvider(pageProviderName, null, 0L, 0L, props, null, quickFilters, rootFolder.getId());
+        pp = pps.getPageProvider(PageProviderSpec.builder(pageProviderName)
+                                                 .pageSize(0L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                                 .quickFilters(quickFilters)
+                                                 .parameters(rootFolder.getId())
+                                                 .build());
         assertSortedTitles(pp, mapper, "Folder", "File 1", "File 2");
 
         // custom sort infos, quick filter with sort info
@@ -208,7 +242,14 @@ public class TestPageProviderCurrentPage {
                           .stream()
                           .filter(q -> "bySource".equals(q.getName()))
                           .collect(Collectors.toList());
-        pp = pps.getPageProvider(pageProviderName, sortInfos, 0L, 0L, props, null, quickFilters, rootFolder.getId());
+        pp = pps.getPageProvider(PageProviderSpec.builder(pageProviderName)
+                                                 .sortInfos(sortInfos)
+                                                 .pageSize(0L)
+                                                 .currentPage(0L)
+                                                 .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                                 .quickFilters(quickFilters)
+                                                 .parameters(rootFolder.getId())
+                                                 .build());
         assertSortedTitles(pp, mapper, "Folder", "File 2", "File 1");
     }
 

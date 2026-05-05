@@ -19,16 +19,16 @@
  */
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,11 +53,11 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> getDomainsFiltered() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pps.getPageProvider(
-                PUBLISHING_DOMAINS_PROVIDER, null, null, null, props,
-                new Object[] { session.getRootDocument().getId() });
+                PageProviderSpec.builder(PUBLISHING_DOMAINS_PROVIDER)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                .parameters(session.getRootDocument().getId())
+                                .build());
         return pageProvider.getCurrentPage();
     }
 

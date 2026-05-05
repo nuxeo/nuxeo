@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.search.SearchService;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.core.SearchServicePageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.SearchServicePageProvider;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -63,7 +64,8 @@ public class PageProvidersObject extends AbstractResource<ResourceTypeImpl> {
             ObjectNode node = mapper.createObjectNode();
             PageProviderDefinition def = pps.getPageProviderDefinition(ppName);
             // Create an instance so class replacer is taken in account
-            PageProvider<?> pp = pps.getPageProvider(ppName, def, null, null, 0L, 0L, null);
+            PageProvider<?> pp = pps.getPageProvider(
+                    PageProviderSpec.builder(def).pageSize(0L).currentPage(0L).build());
             String klass = pp.getClass().getCanonicalName();
             node.put("name", pp.getName());
             node.put("class", klass);

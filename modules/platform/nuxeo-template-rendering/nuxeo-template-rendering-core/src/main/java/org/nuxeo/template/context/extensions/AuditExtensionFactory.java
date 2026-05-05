@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.context.ContextExtensionFactory;
 import org.nuxeo.template.api.context.DocumentWrapper;
@@ -51,7 +52,11 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
         List<LogEntry> auditEntries;
         var pps = Framework.getService(PageProviderService.class);
         if (pps != null) {
-            var pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, 0L, 1_000L, Map.of(), currentDocument);
+            var pp = pps.getPageProvider(PageProviderSpec.builder("DOCUMENT_HISTORY_PROVIDER")
+                                                         .pageSize(0L)
+                                                         .currentPage(1_000L)
+                                                         .parameter(currentDocument)
+                                                         .build());
             auditEntries = (List<LogEntry>) pp.getCurrentPage();
         } else {
             if (Framework.isTestModeSet() && testAuditEntries != null) {

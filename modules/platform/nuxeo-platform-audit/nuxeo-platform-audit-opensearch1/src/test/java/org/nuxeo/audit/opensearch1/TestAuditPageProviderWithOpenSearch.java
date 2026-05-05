@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Map;
 
 import jakarta.inject.Inject;
 
@@ -35,6 +34,7 @@ import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.opensearch1.pageprovider.OpenSearchAuditPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -55,7 +55,8 @@ public class TestAuditPageProviderWithOpenSearch {
     @Test
     public void testSimplePageProvider() {
         auditCoreFeature.generateLogEntries("dummy", "entry", "category", 15);
-        PageProvider<?> pp = pps.getPageProvider("SimpleESAuditPP", null, 5L, 0L, Map.of());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("SimpleESAuditPP").pageSize(5L).currentPage(0L).build());
         assertNotNull(pp);
 
         var entries = (List<LogEntry>) pp.getCurrentPage();
@@ -72,7 +73,11 @@ public class TestAuditPageProviderWithOpenSearch {
     @Test
     public void testSimplePageProviderWithParams() {
         auditCoreFeature.generateLogEntries("withParams", "entry", "category", 15);
-        PageProvider<?> pp = pps.getPageProvider("SimpleESAuditPPWithParams", null, 5L, 0L, Map.of(), "category1");
+        PageProvider<?> pp = pps.getPageProvider(PageProviderSpec.builder("SimpleESAuditPPWithParams")
+                                                                 .pageSize(5L)
+                                                                 .currentPage(0L)
+                                                                 .parameters("category1")
+                                                                 .build());
         assertNotNull(pp);
 
         var entries = (List<LogEntry>) pp.getCurrentPage();
@@ -81,8 +86,11 @@ public class TestAuditPageProviderWithOpenSearch {
         // check that sort does work
         assertTrue(entries.get(0).getId() > entries.get(1).getId());
 
-        pp = pps.getPageProvider("SimpleESAuditPPWithParams", null, Long.valueOf(5), Long.valueOf(0), Map.of(),
-                "category0");
+        pp = pps.getPageProvider(PageProviderSpec.builder("SimpleESAuditPPWithParams")
+                                                 .pageSize(Long.valueOf(5))
+                                                 .currentPage(Long.valueOf(0))
+                                                 .parameters("category0")
+                                                 .build());
         entries = (List<LogEntry>) pp.getCurrentPage();
         assertEquals(1, entries.size());
 
@@ -91,7 +99,8 @@ public class TestAuditPageProviderWithOpenSearch {
     @Test
     public void testSimplePageProviderWithUUID() {
         auditCoreFeature.generateLogEntries("uuid1", "uentry", "ucategory", 10);
-        PageProvider<?> pp = pps.getPageProvider("SearchById", null, 5L, 0L, Map.of(), "uuid1");
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("SearchById").pageSize(5L).currentPage(0L).parameters("uuid1").build());
         assertNotNull(pp);
 
         var entries = (List<LogEntry>) pp.getCurrentPage();
@@ -101,7 +110,8 @@ public class TestAuditPageProviderWithOpenSearch {
     @Test
     public void testAdminPageProvider() {
         auditCoreFeature.generateLogEntries("uuid2", "aentry", "acategory", 10);
-        PageProvider<?> pp = pps.getPageProvider("ADMIN_HISTORY", null, 5L, 0L, Map.of());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("ADMIN_HISTORY").pageSize(5L).currentPage(0L).build());
         assertNotNull(pp);
         var entries = (List<LogEntry>) pp.getCurrentPage();
         assertTrue(pp.isNextPageAvailable());
@@ -113,7 +123,8 @@ public class TestAuditPageProviderWithOpenSearch {
     public void testMaxResultWindow() {
         auditCoreFeature.generateLogEntries("uuid2", "aentry", "acategory", 10);
 
-        PageProvider<?> pp = pps.getPageProvider("ADMIN_HISTORY", null, 2L, 0L, Map.of());
+        PageProvider<?> pp = pps.getPageProvider(
+                PageProviderSpec.builder("ADMIN_HISTORY").pageSize(2L).currentPage(0L).build());
         // get current page
         pp.getCurrentPage();
         // limit the result window to the 6 first results

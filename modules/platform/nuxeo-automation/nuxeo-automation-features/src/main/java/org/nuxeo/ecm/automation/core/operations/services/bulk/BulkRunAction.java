@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 
 /**
  * Automation operation that can run an http enabled Bulk Action.
@@ -136,8 +137,13 @@ public class BulkRunAction {
                     SC_BAD_REQUEST);
         }
 
-        PageProvider<?> provider = PageProviderHelper.getPageProvider(session, def, namedParameters, null, null, null,
-                null, null, quickFilters, queryParams != null ? queryParams.toArray(new String[0]) : null);
+        PageProvider<?> provider = PageProviderHelper.getPageProvider(session,
+                PageProviderSpec.builder(def)
+                                .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
+                                        namedParameters))
+                                .quickFiltersByNames(quickFilters)
+                                .parameters(queryParams)
+                                .build());
         query = PageProviderHelper.buildQueryStringWithAggregates(provider);
 
         if (query.contains("?")) {

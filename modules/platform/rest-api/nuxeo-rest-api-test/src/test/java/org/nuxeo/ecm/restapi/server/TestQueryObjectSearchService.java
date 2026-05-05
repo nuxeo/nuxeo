@@ -23,11 +23,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_TITLE_PROPERTY;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.StreamSupport;
 
 import jakarta.inject.Inject;
@@ -49,7 +48,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.query.nxql.SearchServicePageProvider;
 import org.nuxeo.ecm.restapi.server.adapters.SearchAdapter;
 import org.nuxeo.ecm.restapi.test.JsonNodeHelper;
@@ -119,15 +118,16 @@ public class TestQueryObjectSearchService {
     @Test
     @SuppressWarnings("unchecked")
     public void isQueryEndpointCanSwitchToES() {
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(
                 SearchAdapter.pageProviderName);
         ppdefinition.setPattern(QUERY);
         ppdefinition.getProperties().put("maxResults", "1");
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
-                        ppdefinition, null, null, 10000L, null, props, (Object[]) null),
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                        PageProviderSpec.builder(ppdefinition)
+                                        .pageSize(10000L)
+                                        .property(CORE_SESSION_PROPERTY, (Serializable) session)
+                                        .build()),
                 null);
         if (!(res.getProvider() instanceof SearchServicePageProvider)) {
             fail("Should be a search service page provider");
