@@ -23,6 +23,7 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.nuxeo.ecm.automation.core.operations.services.bulk.AbstractAutomationBulkAction.OPERATION_ID;
 import static org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActionUi.ACTION_NAME;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -77,6 +78,9 @@ public class BulkRunAction {
 
     @Context
     protected CoreSession session;
+
+    @Context
+    protected PageProviderService pageProviderService;
 
     @Param(name = "query", required = false)
     protected String query;
@@ -138,11 +142,12 @@ public class BulkRunAction {
                     SC_BAD_REQUEST);
         }
 
-        PageProvider<?> provider = PageProviderHelper.getPageProvider(session,
+        PageProvider<?> provider = pageProviderService.getPageProvider(
                 PageProviderSpec.builder(def)
                                 .searchDocument(PageProviderHelper.getSearchDocumentModel(session, def.getName(),
                                         namedParameters))
                                 .quickFiltersByNames(quickFilters)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
                                 .parameters(queryParams)
                                 .build());
         query = PageProviderHelper.buildQueryStringWithAggregates(provider);

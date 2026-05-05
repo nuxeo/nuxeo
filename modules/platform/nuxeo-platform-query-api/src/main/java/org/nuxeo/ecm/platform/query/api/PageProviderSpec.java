@@ -38,6 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -60,6 +61,36 @@ public class PageProviderSpec {
     public static final String ASC = "ASC";
 
     public static final String DESC = "DESC";
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Properties — keys for the page provider properties map (see Builder#property(String, Serializable))
+    // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Property name used to pass a {@link org.nuxeo.ecm.core.api.CoreSession} to the page provider through
+     * {@link Builder#property(String, java.io.Serializable) properties}.
+     * <p>
+     * When this property is set, {@link PageProviderService#getPageProvider(PageProviderSpec)} also substitutes any
+     * occurrence of {@link #CURRENT_USER_PARAMETER_VALUE} or {@link #CURRENT_REPOSITORY_PARAMETER_VALUE} in
+     * {@link #parameters()} with the session's principal name and repository name respectively.
+     */
+    public static final String CORE_SESSION_PROPERTY = "coreSession";
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Parameter values — placeholders for entries of the page provider parameters array (see Builder#parameters)
+    // ----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Parameter placeholder substituted with the current user name when a {@link #CORE_SESSION_PROPERTY CoreSession}
+     * property is provided.
+     */
+    public static final String CURRENT_USER_PARAMETER_VALUE = "$currentUser";
+
+    /**
+     * Parameter placeholder substituted with the current repository name when a {@link #CORE_SESSION_PROPERTY
+     * CoreSession} property is provided.
+     */
+    public static final String CURRENT_REPOSITORY_PARAMETER_VALUE = "$currentRepository";
 
     protected final String name;
 
@@ -95,6 +126,18 @@ public class PageProviderSpec {
         this.highlights = builder.highlights == null ? null : List.copyOf(builder.highlights);
         this.quickFilters = builder.quickFilters == null ? null : List.copyOf(builder.quickFilters);
         this.parameters = builder.parameters.toArray();
+        // expand parameters
+        if (this.properties.get(CORE_SESSION_PROPERTY) instanceof CoreSession coreSession) {
+            for (int i = 0; i < parameters.length; i++) {
+                if (parameters[i] instanceof String value) {
+                    if (CURRENT_USER_PARAMETER_VALUE.equals(value)) {
+                        parameters[i] = coreSession.getPrincipal().getName();
+                    } else if (CURRENT_REPOSITORY_PARAMETER_VALUE.equals(value)) {
+                        parameters[i] = coreSession.getRepositoryName();
+                    }
+                }
+            }
+        }
     }
 
     /**

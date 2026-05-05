@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.audit.provider;
 
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +50,6 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
     public static final String LATEST_CREATED_USERS_OR_GROUPS_PROVIDER = "LATEST_CREATED_USERS_OR_GROUPS_PROVIDER";
 
     public static final String LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER = "LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER";
-
-    protected static final String CORE_SESSION_PROPERTY = "coreSession";
 
     protected static final String POWER_USERS_GROUP = "powerusers";
 

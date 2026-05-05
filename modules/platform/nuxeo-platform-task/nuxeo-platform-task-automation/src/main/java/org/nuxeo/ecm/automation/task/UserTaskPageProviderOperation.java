@@ -18,7 +18,7 @@
 
 package org.nuxeo.ecm.automation.task;
 
-import static org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;

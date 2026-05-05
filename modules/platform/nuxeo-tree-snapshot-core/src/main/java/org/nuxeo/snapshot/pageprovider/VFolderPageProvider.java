@@ -23,13 +23,19 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.snapshot.Snapshot;
 
 public class VFolderPageProvider extends AbstractPageProvider<DocumentModel> implements PageProvider<DocumentModel> {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String CORE_SESSION_PROPERTY = "coreSession";
+    /**
+     * @deprecated since 2025.20, use {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CORE_SESSION_PROPERTY}
+     *             instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CORE_SESSION_PROPERTY = PageProviderSpec.CORE_SESSION_PROPERTY;
 
     @Override
     public List<DocumentModel> getCurrentPage() {

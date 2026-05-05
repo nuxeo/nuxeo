@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.AuditPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 
 /**
  * Page provider that is dedicated to fetching history of a Document.
@@ -93,7 +94,7 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
                 uuid = doc.getId();
                 session = doc.getCoreSession();
             } else {
-                session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
+                session = (CoreSession) getProperties().get(PageProviderSpec.CORE_SESSION_PROPERTY);
                 uuid = params[0].toString();
             }
             if (session != null) {

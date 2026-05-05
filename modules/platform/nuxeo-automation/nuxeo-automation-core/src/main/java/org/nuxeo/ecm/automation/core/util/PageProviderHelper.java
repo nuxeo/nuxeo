@@ -21,7 +21,7 @@ package org.nuxeo.ecm.automation.core.util;
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
 import static org.nuxeo.common.utils.DateUtils.nowIfNull;
 import static org.nuxeo.ecm.platform.query.api.PageProviderService.NAMED_PARAMETERS;
-import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -63,7 +63,6 @@ import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.MockBucket;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
@@ -93,9 +92,19 @@ public class PageProviderHelper {
 
     public static final String DESC = "DESC";
 
-    public static final String CURRENT_USERID_PATTERN = "$currentUser";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_USER_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_USERID_PATTERN = PageProviderSpec.CURRENT_USER_PARAMETER_VALUE;
 
-    public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+    /**
+     * @deprecated since 2025.20, use
+     *             {@link org.nuxeo.ecm.platform.query.api.PageProviderSpec#CURRENT_REPOSITORY_PARAMETER_VALUE} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CURRENT_REPO_PATTERN = PageProviderSpec.CURRENT_REPOSITORY_PARAMETER_VALUE;
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -146,7 +155,7 @@ public class PageProviderHelper {
     }
 
     /**
-     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     * @deprecated since 2025.20, use {@link PageProviderService#getPageProvider(PageProviderSpec)} instead
      */
     @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
@@ -155,7 +164,7 @@ public class PageProviderHelper {
     }
 
     /**
-     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     * @deprecated since 2025.20, use {@link PageProviderService#getPageProvider(PageProviderSpec)} instead
      */
     @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
@@ -166,7 +175,7 @@ public class PageProviderHelper {
     }
 
     /**
-     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     * @deprecated since 2025.20, use {@link PageProviderService#getPageProvider(PageProviderSpec)} instead
      */
     @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
@@ -177,61 +186,26 @@ public class PageProviderHelper {
     }
 
     /**
-     * @deprecated since 2025.20, use {@link #getPageProvider(CoreSession, PageProviderSpec)} instead
+     * @deprecated since 2025.20, use {@link PageProviderService#getPageProvider(PageProviderSpec)} instead
      */
     @Deprecated(since = "2025.20", forRemoval = true)
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
             Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
             Long currentPageIndex, Long currentOffset, List<String> highlights, List<String> quickFilters,
             Object... parameters) {
-        return getPageProvider(session,
+        var service = Framework.getService(PageProviderService.class);
+        return service.getPageProvider(
                 PageProviderSpec.builder(def)
                                 .searchDocument(getSearchDocumentModel(session, def.getName(), namedParameters))
                                 .sortInfosByFieldsAndOrders(sortBy, sortOrder)
                                 .pageSize(pageSize)
                                 .currentPage(currentPageIndex)
                                 .currentPageOffset(currentOffset)
+                                .property(CORE_SESSION_PROPERTY, (Serializable) session)
                                 .highlights(highlights)
                                 .quickFiltersByNames(quickFilters)
                                 .parameters(parameters)
                                 .build());
-    }
-
-    /**
-     * Resolves and runs the {@link PageProvider} described by the given {@link PageProviderSpec}.
-     * <p>
-     * Specific values in the spec parameters are expanded ({@code $currentUser}, {@code $currentRepository}), the core
-     * session is injected into the provider properties under
-     * {@link CoreQueryDocumentPageProvider#CORE_SESSION_PROPERTY}, then the call is delegated to
-     * {@link PageProviderService#getPageProvider(PageProviderSpec)}.
-     *
-     * @since 2025.20
-     */
-    public static PageProvider<?> getPageProvider(CoreSession session, PageProviderSpec spec) {
-        Object[] parameters = spec.parameters();
-        // expand specific parameters
-        for (int idx = 0; idx < parameters.length; idx++) {
-            if (parameters[idx] instanceof String value) {
-                if (value.equals(CURRENT_USERID_PATTERN)) {
-                    parameters[idx] = session.getPrincipal().getName();
-                } else if (value.equals(CURRENT_REPO_PATTERN)) {
-                    parameters[idx] = session.getRepositoryName();
-                }
-            }
-        }
-        var resolved = PageProviderSpec.builder(spec.definition())
-                                       .searchDocument(spec.searchDocument())
-                                       .sortInfos(spec.sortInfos())
-                                       .pageSize(spec.pageSize())
-                                       .currentPage(spec.currentPage())
-                                       .currentPageOffset(spec.currentPageOffset())
-                                       .properties(spec.properties())
-                                       .property(CORE_SESSION_PROPERTY, (Serializable) session)
-                                       .highlights(spec.highlights())
-                                       .quickFilters(spec.quickFilters())
-                                       .parameters(parameters)
-                                       .build();
-        return Framework.getService(PageProviderService.class).getPageProvider(resolved);
     }
 
     public static DocumentModel getSearchDocumentModel(CoreSession session, String providerName,

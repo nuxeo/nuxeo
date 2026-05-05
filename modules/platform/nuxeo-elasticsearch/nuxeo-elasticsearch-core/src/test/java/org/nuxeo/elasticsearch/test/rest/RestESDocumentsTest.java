@@ -25,8 +25,8 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_PAGE_PROVIDER;
 import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_TYPE;
 import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_TITLE_PROPERTY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
-import static org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.List;

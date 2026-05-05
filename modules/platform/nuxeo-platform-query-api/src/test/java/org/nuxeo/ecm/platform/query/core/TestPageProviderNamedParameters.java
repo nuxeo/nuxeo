@@ -21,11 +21,11 @@ package org.nuxeo.ecm.platform.query.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +45,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -92,7 +90,7 @@ public class TestPageProviderNamedParameters {
     }
 
     protected Map<String, Serializable> getPageProviderProps() {
-        return Collections.singletonMap(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
+        return Map.of(CORE_SESSION_PROPERTY, (AbstractSession) session);
     }
 
     protected DocumentModel getSearchDocWithNamedParam(String propName, Serializable propValue) {
@@ -184,7 +182,6 @@ public class TestPageProviderNamedParameters {
      */
     @Test
     public void testPageProviderWithNamedParametersAndList() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
         Map<String, Serializable> ppp = getPageProviderProps();
         // test with an array
         DocumentModel searchDoc = getSearchDocWithNamedParam("types", new String[] { "File", "Folder" });

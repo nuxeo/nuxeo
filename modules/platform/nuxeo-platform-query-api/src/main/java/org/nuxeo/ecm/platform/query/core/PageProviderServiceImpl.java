@@ -73,24 +73,9 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public PageProvider<?> getPageProvider(@Nonnull PageProviderSpec spec) {
         var desc = spec.definition();
-        if (desc == null) {
-            desc = providerReg.getPageProvider(name);
-            if (desc == null) {
-                throw new NuxeoException("Could not resolve page provider with name '%s'".formatted(spec.name()));
-            }
-        }
         PageProvider<?> pageProvider = newPageProviderInstance(spec.name(), desc);
-        // Definition properties are already merged into spec.properties() by the builder when the definition was set
-        // there. When the definition was resolved late (by name) we still need to fold them in here, with explicit
-        // spec-provided properties winning.
-        Map<String, Serializable> allProps = new HashMap<>();
-        if (spec.definition() == null) {
-            Map<String, String> localProps = desc.getProperties();
-            if (localProps != null) {
-                allProps.putAll(localProps);
-            }
-        }
-        allProps.putAll(spec.properties());
+        // Definition properties are already merged into spec.properties() by the builder.
+        Map<String, Serializable> allProps = new HashMap<>(spec.properties());
         pageProvider.setProperties(allProps);
         pageProvider.setSortable(desc.isSortable());
         pageProvider.setParameters(spec.parameters());

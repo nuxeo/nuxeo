@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.document.AdditionalDocumentAuditParams;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentAuditHelper;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 
 public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
@@ -121,7 +122,7 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
                 uuid = doc.getId();
                 session = doc.getCoreSession();
             } else {
-                session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
+                session = (CoreSession) getProperties().get(PageProviderSpec.CORE_SESSION_PROPERTY);
                 uuid = params[0].toString();
             }
             if (session != null) {

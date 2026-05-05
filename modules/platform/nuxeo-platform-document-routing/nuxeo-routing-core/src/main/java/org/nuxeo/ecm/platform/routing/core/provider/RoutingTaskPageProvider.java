@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.routing.core.provider;
 
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
@@ -101,7 +101,7 @@ public class RoutingTaskPageProvider extends AbstractPageProvider<Task> {
 
     protected CoreSession getCoreSession() {
         Map<String, Serializable> props = getProperties();
-        CoreSession coreSession = (CoreSession) props.get(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY);
+        CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
         if (coreSession == null) {
             throw new NuxeoException("cannot find core session");
         }

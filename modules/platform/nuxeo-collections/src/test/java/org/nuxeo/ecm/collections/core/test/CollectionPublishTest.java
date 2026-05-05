@@ -21,10 +21,7 @@ package org.nuxeo.ecm.collections.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -36,8 +33,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -55,9 +50,6 @@ public class CollectionPublishTest {
     CoreSession session;
 
     @Inject
-    PageProviderService pps;
-
-    @Inject
     protected EventService eventService;
 
     @Test
@@ -71,8 +63,6 @@ public class CollectionPublishTest {
         assertTrue(favoritesManager.isFavorite(testFile, session));
 
         waitForAsyncCompletion();
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         DocumentModel favoritesDoc = favoritesManager.getFavorites(session);
         List<String> list = favoritesDoc.getAdapter(Collection.class).getCollectedDocumentIds();
         assertEquals(1, list.size());

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
@@ -48,8 +49,8 @@ import org.nuxeo.runtime.api.Framework;
  * WARNING: this page provider does not handle sorting, and its pagination management is not efficient (done in post
  * filter).
  * <p>
- * This page provider requires the property {@link #CORE_SESSION_PROPERTY} to be filled with a core session. It also
- * accepts an optional property {@link #FILTER_DOCS_FROM_TRASH}, defaulting to true.
+ * This page provider requires the property {@link PageProviderSpec#CORE_SESSION_PROPERTY} to be filled with a core
+ * session. It also accepts an optional property {@link #FILTER_DOCS_FROM_TRASH}, defaulting to true.
  *
  * @since 5.5
  */
@@ -59,7 +60,11 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
 
     private static final Logger log = LogManager.getLogger(UserTaskPageProvider.class);
 
-    public static final String CORE_SESSION_PROPERTY = "coreSession";
+    /**
+     * @deprecated since 2025.20, use {@link PageProviderSpec#CORE_SESSION_PROPERTY} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public static final String CORE_SESSION_PROPERTY = PageProviderSpec.CORE_SESSION_PROPERTY;
 
     public static final String FILTER_DOCS_FROM_TRASH = "filterDocumentsFromTrash";
 
