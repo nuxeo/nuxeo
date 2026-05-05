@@ -210,7 +210,8 @@ public class ConstraintViolation implements ValidationViolation {
         pathTokens.add(constraint.getMessageKey());
         pathTokens.add(schema.getName());
         for (PathNode node : path) {
-            String name = node.getField().getName().getLocalName();
+            // For list items, use "item" instead of the actual field name
+            String name = node.isListItem() ? "item" : node.getField().getName().getLocalName();
             pathTokens.add(name);
         }
         return StringUtils.join(pathTokens, '.');

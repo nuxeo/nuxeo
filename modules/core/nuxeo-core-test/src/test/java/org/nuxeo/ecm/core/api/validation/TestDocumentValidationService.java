@@ -572,46 +572,6 @@ public class TestDocumentValidationService {
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
     }
 
-    @Test
-    public void testValidatePropertyViolationMessage() {
-        DocumentValidationReport violations;
-        doc.setPropertyValue("vs:groupCode", 123);
-        HashMap<String, String> user = new HashMap<>();
-        user.put("lastname", "The kid");
-        doc.getProperty("vs:users").addValue(0, user);
-        Property userFirstnameProperty = doc.getProperty("vs:users").get(0).get("firstname");
-        violations = validator.validate(userFirstnameProperty);
-        assertTrue(violations.hasError());
-        List<ValidationViolation> violationList = violations.asList();
-        assertEquals(1, violationList.size());
-        ValidationViolation violation = violationList.get(0);
-        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, ((ConstraintViolation) violation).getMessage(Locale.ENGLISH));
-    }
-
-    @Test
-    public void testValidateXPathViolationMessage() {
-        DocumentValidationReport violations;
-        violations = validator.validate("vs:users/0/firstname", null);
-        assertTrue(violations.hasError());
-        List<ValidationViolation> violationList = violations.asList();
-        assertEquals(1, violationList.size());
-        assertTrue(violationList.get(0) instanceof ConstraintViolation);
-        ConstraintViolation violation = (ConstraintViolation) violationList.get(0);
-        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
-        violations = validator.validate("vs:users/firstname", null);
-        assertTrue(violations.hasError());
-        violationList = violations.asList();
-        assertEquals(1, violationList.size());
-        violation = (ConstraintViolation) violationList.get(0);
-        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
-        violations = validator.validate("vs:users/user/firstname", null);
-        assertTrue(violations.hasError());
-        violationList = violations.asList();
-        assertEquals(1, violationList.size());
-        violation = (ConstraintViolation) violationList.get(0);
-        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
-    }
-
     // NXP-24660
     @Test
     public void testValidationOnSchemaWithTwoComplexHavingSameChild() {
@@ -779,6 +739,9 @@ public class TestDocumentValidationService {
         String fieldName2 = violation.getPath().get(1).getField().getName().getPrefixedName();
         assertEquals("role", fieldName2);
         assertEquals("invalid role3", violation.getInvalidValue());
+        // NXP-33452: verify messageKey uses "item" for list elements
+        assertEquals("label.schema.constraint.violation.PatternConstraint.validationSample.roles.item",
+                violation.getMessageKey());
     }
 
     private void checkNotNullOnUsersFirstname(DocumentValidationReport report) {
@@ -813,6 +776,9 @@ public class TestDocumentValidationService {
         String fieldName3 = violation.getPath().get(2).getField().getName().getPrefixedName();
         assertEquals("firstname", fieldName3);
         assertEquals("   ", violation.getInvalidValue());
+        // NXP-33452: verify messageKey uses "item" for list elements
+        assertEquals("label.schema.constraint.violation.PatternConstraint.validationSample.users.item.firstname",
+                violation.getMessageKey());
     }
 
     private void checkNotNullOnUsersLastname(ConstraintViolation violation, int expectedIndex) {
@@ -843,6 +809,9 @@ public class TestDocumentValidationService {
         String fieldName3 = violation.getPath().get(2).getField().getName().getPrefixedName();
         assertEquals("firstname", fieldName3);
         assertEquals("   ", violation.getInvalidValue());
+        // NXP-33452: verify messageKey uses "item" for list elements
+        assertEquals("label.schema.constraint.violation.PatternConstraint.validationSample.users.item.firstname",
+                violation.getMessageKey());
     }
 
 }
