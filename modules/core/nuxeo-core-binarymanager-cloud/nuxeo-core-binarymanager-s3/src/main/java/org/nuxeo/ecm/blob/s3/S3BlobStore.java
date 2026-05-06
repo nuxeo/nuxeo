@@ -611,6 +611,11 @@ public class S3BlobStore extends AbstractBlobStore {
                     && (digest = sourceBlobStore.getMD5DigestFromETag(sourceBucketKey)) != null) {
                 // we have a usable MD5 digest
                 key = digest;
+            } else if (keyStrategy instanceof KeyStrategyDigest ksd && ksd.hasThreshold()
+                    && sourceBlobStore.lengthOfBlob(sourceObjectKey) > ksd.maxSize.bytes()) {
+                // above digest threshold: assign a UUIDv7 key directly, skip async digest to avoid
+                // downloading the blob from S3 just to hash it
+                key = ksd.generateUUIDv7Key();
             } else {
                 // async: use a random key for now; and do async computation of real digest
                 key = randomString();
