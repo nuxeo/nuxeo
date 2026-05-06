@@ -134,14 +134,14 @@ public class KeyStrategyDigest implements KeyStrategy {
      * @return {@code true} if a finite size threshold is configured
      * @since 2025.19
      */
-    protected boolean hasThreshold() {
+    public boolean hasThreshold() {
         return maxSize.bytes() >= 0;
     }
 
     /**
      * @since 2025.19
      */
-    protected String generateUUIDv7Key() {
+    public String generateUUIDv7Key() {
         return Generators.timeBasedEpochGenerator().generate().toString();
     }
 

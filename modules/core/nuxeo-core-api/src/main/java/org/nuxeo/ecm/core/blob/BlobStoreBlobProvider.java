@@ -283,7 +283,9 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
                 // missing or temporary digest
                 String digest = stripBlobKeyVersionSuffix(stripBlobKeyPrefix(key));
                 if (KeyStrategyDigest.isUUIDv7(digest)) {
-                    // UUID key (above threshold): no content-based digest available
+                    // UUID key (above threshold): no content-based digest available, expose the
+                    // key as digest so callers don't see a missing/temporary digest
+                    blob.setDigest(digest);
                     return;
                 }
                 blob.setDigest(digest);
