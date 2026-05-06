@@ -26,6 +26,7 @@ import static org.nuxeo.audit.api.LogEntryConstants.LOG_EVENT_DATE;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_EVENT_ID;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_EXTENDED;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_ID;
+import static org.nuxeo.audit.api.LogEntryConstants.LOG_LOG_DATE;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_REPOSITORY_ID;
 import static org.nuxeo.audit.service.AuditBackend.Capability.EXTENDED_INFO_SEARCH;
 import static org.nuxeo.audit.service.AuditComponent.DEFAULT_AUDIT_BACKEND;
@@ -43,6 +44,8 @@ import static org.nuxeo.ecm.core.query.sql.model.Predicates.noteq;
 import static org.nuxeo.ecm.core.query.sql.model.Predicates.or;
 import static org.nuxeo.ecm.core.query.sql.model.Predicates.startsWith;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -251,13 +254,32 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     /**
      * Returns the last available log id in the audit log table (primary key) to be used as the upper bound of the event
      * log id range clause in the change query.
+     * <p>
+     * To avoid an expensive full-index sort on backends like OpenSearch, the lookup is first attempted with a
+     * {@code logDate} lower bound that is widened on each iteration (1, 2, 4, 8, 16, 32 days). The lower bound is
+     * truncated to the day so that concurrent calls share the same query and benefit from the backend cache. If no
+     * entry is found within the last 32 days, the method falls back to an unbounded query.
      */
     @Override
     public long getUpperBound() {
+        var auditBackend = Framework.getService(AuditService.class).getAuditBackend(DEFAULT_AUDIT_BACKEND);
+        var today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        // scroll on previous days with a times 2 step up to 32
+        for (int i = 1; i <= 32; i = i * 2) {
+            var lowerLogDate = today.minusDays(i);
+            var queryBuilder = new AuditQueryBuilder().predicate(gt(LOG_LOG_DATE, lowerLogDate))
+                                                      .order(desc(LOG_ID))
+                                                      .limit(1);
+            log.debug("Querying audit log for greatest id with logDate > {}", lowerLogDate);
+            List<LogEntry> entries = auditBackend.queryLogs(queryBuilder);
+            if (!entries.isEmpty()) {
+                return entries.getFirst().getId();
+            }
+        }
+        // fallback to an unbounded query in case the most recent entry is older than 32 days
+        log.debug("Found no audit log entries within the last 32 days, falling back to an unbounded query");
         var queryBuilder = new AuditQueryBuilder().order(desc(LOG_ID)).limit(1);
-        List<LogEntry> entries = Framework.getService(AuditService.class)
-                                          .getAuditBackend(DEFAULT_AUDIT_BACKEND)
-                                          .queryLogs(queryBuilder);
+        List<LogEntry> entries = auditBackend.queryLogs(queryBuilder);
         if (entries.isEmpty()) {
             log.debug("Found no audit log entries, returning -1");
             return -1;
