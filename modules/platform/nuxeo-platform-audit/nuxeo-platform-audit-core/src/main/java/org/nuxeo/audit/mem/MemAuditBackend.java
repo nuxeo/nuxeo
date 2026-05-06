@@ -82,7 +82,7 @@ public class MemAuditBackend extends AbstractAuditBackend
     public void insertLogs(Collection<LogEntry> entries) {
         var conflicts = new ArrayList<String>();
         for (var entry : entries) {
-            synchronized (this) {
+            synchronized (this.entries) {
                 if (entry.getId() == 0L || entry.getLogDate() == null) {
                     throw new IllegalArgumentException("Log entry must have an id and log date to be inserted");
                 } else if (this.entries.containsKey(entry.getId())) {
@@ -136,15 +136,9 @@ public class MemAuditBackend extends AbstractAuditBackend
         // create Comparator order
         Comparator<LogEntry> comparator = createComparator(queryOrders);
 
-        var result = entries.values()
-                            .stream()
-                            .filter(predicate)
-                            .sorted(comparator)
-                            .skip(queryOffset)
-                            .limit(queryLimit)
-                            .toList();
-        long totalCount = entries.values().stream().filter(predicate).count();
-        return new LogEntryList(result, totalCount);
+        List<LogEntry> allEntries = safeGetEntries(predicate, comparator);
+        var result = allEntries.stream().skip(queryOffset).limit(queryLimit).toList();
+        return new LogEntryList(result, allEntries.size());
     }
 
     /** @since 2025.18 */
@@ -161,7 +155,7 @@ public class MemAuditBackend extends AbstractAuditBackend
         // create Comparator order
         Comparator<LogEntry> comparator = createComparator(queryOrders);
 
-        var iterator = entries.values().stream().filter(predicate).sorted(comparator).iterator();
+        var iterator = safeGetEntries(predicate, comparator).iterator();
         return new CursorResult<>(iterator, batchSize, (int) keepAlive.toSeconds());
     }
 
@@ -305,6 +299,12 @@ public class MemAuditBackend extends AbstractAuditBackend
             return comparator.reversed();
         }
         return comparator;
+    }
+
+    protected List<LogEntry> safeGetEntries(Predicate<LogEntry> predicate, Comparator<LogEntry> comparator) {
+        synchronized (entries) {
+            return entries.values().stream().filter(predicate).sorted(comparator).toList();
+        }
     }
 
     @Override
