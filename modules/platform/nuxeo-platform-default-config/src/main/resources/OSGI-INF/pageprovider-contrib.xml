@@ -35,7 +35,7 @@
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Document WHERE ecm:fulltext LIKE '?*' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:isVersion = 0 AND
-        ecm:isTrashed = 0
+        ecm:isTrashed = 0 AND ecm:parentId IS NOT NULL
       </pattern>
       <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
       <pageSize>5</pageSize>

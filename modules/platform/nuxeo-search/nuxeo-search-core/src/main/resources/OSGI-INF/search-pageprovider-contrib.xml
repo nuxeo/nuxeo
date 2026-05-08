@@ -190,7 +190,7 @@
         <fixedPart>
           ecm:isVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:isTrashed = 0
+          'HiddenInNavigation' AND ecm:isTrashed = 0 AND ecm:parentId IS NOT NULL
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="expired_search" name="title" />
