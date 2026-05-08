@@ -13,7 +13,7 @@
           <field schema="adobe-connector-all-images_pp" name="system_fulltext" />
         </predicate>
         <fixedPart>
-          ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND (ecm:primaryType = 'Picture' OR ecm:mixinType = 'Picture')
+          ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND (ecm:primaryType = 'Picture' OR ecm:mixinType = 'Picture') AND ecm:parentId IS NOT NULL
         </fixedPart>
       </whereClause>
       <searchDocumentType>adobe-connector-all-images_pp</searchDocumentType>
