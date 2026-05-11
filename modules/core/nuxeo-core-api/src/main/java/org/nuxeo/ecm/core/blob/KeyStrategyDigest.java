@@ -211,8 +211,8 @@ public class KeyStrategyDigest implements KeyStrategy {
 
     @Override
     public boolean isValidKey(String key) {
-        // accept the content digest, and (when threshold is configured) UUIDv7 keys
-        return isValidDigest(key) || (hasThreshold() && isUUIDv7(key));
+        // accept the content digest and UUIDv7 keys, which may have been generated when a threshold was configured
+        return isValidDigest(key) || isUUIDv7(key);
     }
 
 }
