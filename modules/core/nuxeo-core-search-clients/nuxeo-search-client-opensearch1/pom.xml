@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-search-clients</artifactId>
-    <version>2025.19-SNAPSHOT</version>
+    <version>2025.20-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-search-client-opensearch1</artifactId>
