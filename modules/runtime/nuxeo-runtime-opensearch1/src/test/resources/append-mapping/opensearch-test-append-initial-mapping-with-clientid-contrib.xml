@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.opensearch.test.append.initial.mapping.with.clientid.contrib">
+  <extension target="org.nuxeo.runtime.opensearch1.OpenSearchComponent" point="index">
+    <index name="nxutest-mapping" enabled="true">
+      <client id="my-client" />
+    </index>
+  </extension>
+</component>

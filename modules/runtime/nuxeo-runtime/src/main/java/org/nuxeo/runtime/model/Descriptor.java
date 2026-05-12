@@ -128,4 +128,13 @@ public interface Descriptor {
         }));
         return map;
     }
+
+    /**
+     * In an equivalent way as {@code ObjectUtils.getIfNull} with empty support.
+     *
+     * @since 2025.20
+     */
+    static <O> List<O> getIfEmpty(List<O> other, List<O> current) {
+        return emptyIfNull(other).isEmpty() ? current : other;
+    }
 }

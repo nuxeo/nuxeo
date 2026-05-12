@@ -20,6 +20,7 @@ package org.nuxeo.runtime.opensearch1;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+import static org.nuxeo.runtime.model.Descriptor.getIfEmpty;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -180,7 +181,7 @@ public class OpenSearchIndexConfig implements Descriptor {
         merged.name = getIfNull(other.name, name);
         merged.enabled = getIfNull(other.enabled, enabled);
         merged.create = getIfNull(other.create, create);
-        merged.clientIds = getIfNull(other.clientIds, clientIds);
+        merged.clientIds = getIfEmpty(other.clientIds, clientIds);
         merged.settingsContent = getIfNull(other.settingsContent, settingsContent);
         // propagate extraMappings only if descriptor append mapping
         if (other.mappingAppend) {

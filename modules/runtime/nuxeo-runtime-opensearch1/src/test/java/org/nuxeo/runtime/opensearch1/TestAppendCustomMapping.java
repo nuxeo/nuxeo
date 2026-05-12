@@ -35,13 +35,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LoggerLevel;
 
 /**
  * @since 2021.17
  */
 @RunWith(FeaturesRunner.class)
-@Features(OpenSearchFeature.class)
+@Features({ OpenSearchFeature.class, LogCaptureFeature.class })
 // allows to not create index on start and control its creation with OpenSearchComponent#dropAndInitIndex
 @Deploy("org.nuxeo.runtime.opensearch1.test:append-mapping/opensearch-test-append-disable-mapping-contrib.xml")
 public class TestAppendCustomMapping {
@@ -50,10 +51,31 @@ public class TestAppendCustomMapping {
     protected HotDeployer deployer;
 
     @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
+
+    @Inject
     protected OpenSearchClientService clientService;
 
     @Inject
     protected OpenSearchClient client;
+
+    // NXP-33620
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "DEBUG", loggerClass = OpenSearchComponent.class)
+    @LoggerLevel(klass = OpenSearchComponent.class, level = "DEBUG")
+    public void testAppendMappingPreservesIndexClientIds() throws Exception {
+        deployer.deploy(
+                "org.nuxeo.runtime.opensearch1.test:append-mapping/opensearch-test-append-initial-mapping-with-clientid-contrib.xml",
+                "org.nuxeo.runtime.opensearch1.test:append-mapping/opensearch-test-append-true-mapping-without-mappingfile-contrib.xml");
+        logCaptureResult.assertHasEvent();
+        logCaptureResult.getCaughtEventMessages()
+                        .stream()
+                        .filter("Creating mapping on index: nxutest-mapping with client: my-client"::equals)
+                        .findFirst()
+                        .orElseThrow(
+                                () -> new AssertionError("Unable to find mapping creation log within captured logs: "
+                                        + logCaptureResult.getCaughtEvents()));
+    }
 
     @Test
     public void testMappingWithMapping() {
@@ -193,17 +215,19 @@ public class TestAppendCustomMapping {
                 e.getMessage());
     }
 
-    protected void deployAndReinitIndex(String... files) {
+    protected void deploy(String... files) {
         try {
             var contributions = Stream.of(files)
                                       .map(c -> "org.nuxeo.runtime.opensearch1.test:append-mapping/" + c)
                                       .toArray(String[]::new);
             deployer.deploy(contributions);
-            ((OpenSearchComponent) clientService).dropAndInitIndex("nxutest-mapping");
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected void deployAndReinitIndex(String... files) {
+        deploy(files);
+        ((OpenSearchComponent) clientService).dropAndInitIndex("nxutest-mapping");
     }
 }
