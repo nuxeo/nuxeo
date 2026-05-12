@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.audit.mongodb.green.contrib">
+<#if (nuxeo.audit.backend.green.mongodb.collection.name)?has_content>
+
+  <extension target="org.nuxeo.runtime.mongodb.MongoDBComponent" point="connection">
+    <connection id="audit/green">
+      <server>${nuxeo.audit.backend.green.mongodb.server}</server>
+      <dbname>${nuxeo.audit.backend.green.mongodb.dbname}</dbname>
+      <ssl>${nuxeo.audit.backend.green.mongodb.ssl}</ssl>
+      <trustStorePath>${nuxeo.audit.backend.green.mongodb.truststore.path}</trustStorePath>
+      <trustStorePassword>${nuxeo.audit.backend.green.mongodb.truststore.password}</trustStorePassword>
+      <trustStoreType>${nuxeo.audit.backend.green.mongodb.truststore.type}</trustStoreType>
+      <keyStorePath>${nuxeo.audit.backend.green.mongodb.keystore.path}</keyStorePath>
+      <keyStorePassword>${nuxeo.audit.backend.green.mongodb.keystore.password}</keyStorePassword>
+      <keyStoreType>${nuxeo.audit.backend.green.mongodb.keystore.type}</keyStoreType>
+    </connection>
+  </extension>
+
+  <extension target="org.nuxeo.audit.service.AuditComponent" point="backendFactory">
+    <backend name="green" factory="org.nuxeo.audit.mongodb.MongoDBAuditBackendFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.audit.mongodb.MongoDBAuditBackendFactory" point="backend">
+    <backend name="green" connectionId="audit/green"
+             collectionName="${nuxeo.audit.backend.green.mongodb.collection.name}" />
+  </extension>
+
+  <extension target="org.nuxeo.audit.service.AuditComponent" point="routes">
+    <documentation>
+      Catch-all green route mirroring every event captured by the `default` route to the `green` Audit Backend.
+      <p />
+      Override this contribution to narrow down the events mirrored to the green backend.
+    </documentation>
+    <route name="green" copy="default">
+      <backend name="green" />
+    </route>
+  </extension>
+
+</#if>
+</component>

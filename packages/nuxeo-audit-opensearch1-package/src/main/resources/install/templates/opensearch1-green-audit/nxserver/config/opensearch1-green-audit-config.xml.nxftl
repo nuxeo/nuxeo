@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.audit.opensearch1.green.contrib">
+<#if (nuxeo.audit.backend.green.opensearch1.index.name)?has_content>
+
+  <extension target="org.nuxeo.runtime.opensearch1.OpenSearchComponent" point="client">
+    <client id="audit/green">
+<#if "${(nuxeo.opensearch1.embed.enabled)!}" == "true" && "${nuxeo.audit.backend.green.opensearch1.client.server}" == "">
+      <embedServer>${nuxeo.opensearch1.embed.name}</embedServer>
+<#else>
+      <server>${nuxeo.audit.backend.green.opensearch1.client.server}</server>
+</#if>
+      <connectionTimeout>${nuxeo.audit.backend.green.opensearch1.client.connectionTimeout}</connectionTimeout>
+      <socketTimeout>${nuxeo.audit.backend.green.opensearch1.client.socketTimeout}</socketTimeout>
+      <sslCertificateVerification>${nuxeo.audit.backend.green.opensearch1.client.sslCertificateVerification}</sslCertificateVerification>
+<#if (nuxeo.audit.backend.green.opensearch1.client.username)?has_content>
+      <username>${nuxeo.audit.backend.green.opensearch1.client.username}</username>
+      <password>${nuxeo.audit.backend.green.opensearch1.client.password}</password>
+</#if>
+<#if (nuxeo.audit.backend.green.opensearch1.client.trustStore.type)?has_content>
+      <trustStore type="${nuxeo.audit.backend.green.opensearch1.client.trustStore.type}">
+        <path>${nuxeo.audit.backend.green.opensearch1.client.trustStore.path}</path>
+        <password>${nuxeo.audit.backend.green.opensearch1.client.trustStore.password}</password>
+      </trustStore>
+</#if>
+<#if (nuxeo.audit.backend.green.opensearch1.client.keyStore.type)?has_content>
+      <keyStore type="${nuxeo.audit.backend.green.opensearch1.client.keyStore.type}">
+        <path>${nuxeo.audit.backend.green.opensearch1.client.keyStore.path}</path>
+        <password>${nuxeo.audit.backend.green.opensearch1.client.keyStore.password}</password>
+      </keyStore>
+</#if>
+    </client>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.opensearch1.OpenSearchComponent" point="index">
+    <index name="${nuxeo.audit.backend.green.opensearch1.index.name}">
+      <client id="audit/green" />
+      <mapping file="opensearch1-audit-mapping.json" />
+      <settings file="opensearch1-audit-settings.json" />
+    </index>
+  </extension>
+
+  <extension target="org.nuxeo.audit.service.AuditComponent" point="backendFactory">
+    <backend name="green" factory="org.nuxeo.audit.opensearch1.OpenSearchAuditBackendFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.audit.opensearch1.OpenSearchAuditBackendFactory" point="backend">
+    <backend name="green" clientId="audit/green"
+             indexName="${nuxeo.audit.backend.green.opensearch1.index.name}" />
+  </extension>
+
+  <extension target="org.nuxeo.audit.service.AuditComponent" point="routes">
+    <documentation>
+      Catch-all green route mirroring every event captured by the `default` route to the `green` Audit Backend.
+      <p />
+      Override this contribution to narrow down the events mirrored to the green backend.
+    </documentation>
+    <route name="green" copy="default">
+      <backend name="green" />
+    </route>
+  </extension>
+
+</#if>
+</component>
