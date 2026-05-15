@@ -21,6 +21,8 @@ package org.nuxeo.runtime.metrics.reporter.patch;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Builds metric payload lines in StatsD / DogStatsD protocol format.
  * <p>
@@ -50,8 +52,13 @@ public class StatsDPayloadBuilder {
         if (Double.isNaN(value) || Double.isInfinite(value)) {
             return;
         }
-        // Metric name with prefix, sanitized for StatsD
-        sb.append(sanitizeMetricName(prefix)).append('.').append(sanitizeMetricName(metricName));
+        // Metric name with optional prefix, sanitized for StatsD
+        String sanitizedName = sanitizeMetricName(metricName);
+        if (StringUtils.isBlank(prefix)) {
+            sb.append(sanitizedName);
+        } else {
+            sb.append(sanitizeMetricName(prefix)).append('.').append(sanitizedName);
+        }
 
         // Value and type (always gauge for simplicity)
         sb.append(':').append(formatValue(value)).append("|g");
