@@ -79,7 +79,8 @@ public class DynatraceReporter extends AbstractMetricsReporter {
     public void start(MetricRegistry registry, MetricFilter filter, Set<MetricAttribute> deniedExpansions) {
         String host = getOption("host", DEFAULT_HOST);
         int port = getOptionAsInt("port", DEFAULT_PORT);
-        String prefix = getOption("prefix", DEFAULT_PREFIX);
+        // Use getOrDefault to allow an explicitly empty prefix (getOption treats blank as absent)
+        String prefix = options.getOrDefault("prefix", DEFAULT_PREFIX);
         Map<String, String> dimensions = parseDimensions(getOption("dimensions", ""));
         boolean emptyTimerAsCount = getOptionAsBoolean("emptyTimerAsCount", false);
 
