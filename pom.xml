@@ -93,7 +93,7 @@
     <box.api.version>1.1.0</box.api.version>
     <pdfbox.version>3.0.7</pdfbox.version>
     <pdfbox.jbig2.version>3.0.4</pdfbox.jbig2.version>
-    <aws.version>2.44.6</aws.version>
+    <aws.version>2.44.7</aws.version>
     <gcp.version>2.68.0</gcp.version>
     <jackson1.version>1.9.13</jackson1.version>
     <jackson.bom.version>2.21.3</jackson.bom.version>
@@ -3584,7 +3584,7 @@
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
-        <version>2.0.2</version>
+        <version>2.0.3</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
@@ -3839,7 +3839,7 @@
       <dependency>
         <groupId>com.azure</groupId>
         <artifactId>azure-storage-blob</artifactId>
-        <version>12.33.4</version>
+        <version>12.34.0</version>
       </dependency>
 
       <dependency>
