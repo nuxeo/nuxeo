@@ -22,6 +22,7 @@
 package org.nuxeo.common.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * RFC-2231 specifies how a MIME parameter value, like {@code Content-Disposition}'s {@code filename}, can be encoded to
@@ -91,21 +92,56 @@ public class RFC2231 {
     }
 
     /**
+     * Escapes a value for use in a quoted-string per RFC 2616 Section 2.2. Backslash and double-quote characters are
+     * escaped with backslash. Control characters (CTL: 0x00-0x1F and 0x7F) are stripped to prevent header injection
+     * attacks.
+     *
+     * @param value the value to escape
+     * @return the escaped value with control characters removed
+     * @since 2025.20
+     */
+    private static String escapeForQuotedString(String value) {
+        var sb = new StringBuilder(value.length() + 10);
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            // Strip control characters (0x00-0x1F, 0x7F) to prevent header injection
+            if (c < 0x20 || c == 0x7F) {
+                continue; // Skip control characters
+            }
+            if (c == '\\' || c == '"') {
+                sb.append('\\');
+            }
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    /**
      * Encodes a {@code Content-Disposition} header following RFC 6266 best practice. When encoding is needed, both
      * {@code filename} (raw fallback) and {@code filename*} (RFC 2231 encoded) parameters are included.
+     * <p>
+     * If the filename is {@code null} or blank, defaults to {@code "file"} to avoid NPEs and ensure valid headers.
      *
-     * @param filename the filename
+     * @param filename the filename, or {@code null}/{@code ""} to default to {@code "file"}
      * @param inline {@code true} for an inline disposition, {@code false} for an attachment
      * @return a full string to set as value of a {@code Content-Disposition} header
      * @since 2025.18
      */
     public static String encodeContentDisposition(String filename, boolean inline) {
+        // Default to "file" if filename is null or blank, following DownloadServiceImpl pattern
+        if (isBlank(filename)) {
+            return (inline ? "inline" : "attachment") + "; filename=file";
+        }
         var sb = new StringBuilder();
         sb.append(inline ? "inline" : "attachment");
-        sb.append("; filename=").append(filename);
+        sb.append("; filename=");
+        // Per RFC 6266, use quoted-string form when filename contains non-token characters
         if (needsEncoding(filename)) {
+            sb.append('"').append(escapeForQuotedString(filename)).append('"');
             sb.append("; filename*=UTF-8''");
             encodeRFC2231(sb, filename);
+        } else {
+            sb.append(filename);
         }
         return sb.toString();
     }

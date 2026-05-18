@@ -129,7 +129,8 @@ public class TestDownloadService {
         // ascii filename is used directly
         doTestBasicDownload(head, inline, "cafe.txt", "filename=cafe.txt");
         // non-ascii filename gets RFC2231 encoding with raw fallback (RFC 6266 best practice)
-        doTestBasicDownload(head, inline, "caf\u00e9.txt", "filename=caf\u00e9.txt; filename*=UTF-8''caf%C3%A9.txt");
+        doTestBasicDownload(head, inline, "caf\u00e9.txt",
+                "filename=\"caf\u00e9.txt\"; filename*=UTF-8''caf%C3%A9.txt");
     }
 
     protected void doTestBasicDownload(boolean head, boolean inline, String filename, String filenameInHeader)
