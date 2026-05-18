@@ -284,6 +284,47 @@ public class TestNxqlConversion {
                 }""", es);
     }
 
+    /**
+     * @since 2025.20
+     */
+    @Test
+    public void testConverterSelectFromDocumentCaseInsensitive() {
+        // "document" (lowercase) must behave like "Document" (match all doc types)
+        String es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM document").toString();
+        assertEqualsEvenUnderWindows("""
+                {
+                  "bool" : {
+                    "must" : [
+                      {
+                        "match_all" : {
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "filter" : [
+                      {
+                        "terms" : {
+                          "ecm:primaryType" : [
+                            %s
+                          ],
+                          "boost" : 1.0
+                        }
+                      }
+                    ],
+                    "adjust_pure_negative" : true,
+                    "boost" : 1.0
+                  }
+                }""".formatted(getAllDocumentPrimaryTypeClauseValue()), es);
+        // "document, Relation" (lowercase Document, canonical Relation) must behave like "Document, Relation"
+        es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM document, Relation").toString();
+        assertEqualsEvenUnderWindows("""
+                {
+                  "match_all" : {
+                    "boost" : 1.0
+                  }
+                }""", es);
+    }
+
     @Test
     public void testConverterEQUALS() {
         String es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document, Relation WHERE f1=1").toString();
