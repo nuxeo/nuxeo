@@ -160,4 +160,45 @@ public class TestSearchDocument {
         ret = service.search(newSearchQuery(session, "SELECT * FROM Relation"));
         assertEquals(1, ret.getTotal());
     }
+
+    /**
+     * @since 2025.20
+     */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
+    public void testSearchFromDocumentCaseInsensitive() {
+        var doc = session.createDocumentModel("/", "myDocument", COMMON_DOC_TYPE);
+        session.createDocument(doc);
+        txFeature.nextTransaction();
+
+        // lowercase "document" must behave like "Document" (match all doc types)
+        var ret = service.search(newSearchQuery(session, "SELECT * FROM document"));
+        assertEquals(1, ret.getTotal());
+
+        // uppercase "DOCUMENT" must also work
+        ret = service.search(newSearchQuery(session, "SELECT * FROM DOCUMENT"));
+        assertEquals(1, ret.getTotal());
+    }
+
+    /**
+     * @since 2025.20
+     */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfSearchClientDoesNotHaveIndexingCapability.class)
+    @WithFrameworkProperty(name = RELATION_INDEXING_ENABLED_PROP, value = "true")
+    public void testSearchFromDocumentCaseInsensitiveWithRelationEnabled() {
+        var doc = session.createDocumentModel("/", "myDocument", COMMON_DOC_TYPE);
+        session.createDocument(doc);
+        var relation = session.createDocumentModel(null, "myRelation", "Relation");
+        session.createDocument(relation);
+        txFeature.nextTransaction();
+
+        // "FROM document" (lowercase) must behave like "FROM Document": exclude Relation documents
+        var ret = service.search(newSearchQuery(session, "SELECT * FROM document"));
+        assertEquals(1, ret.getTotal());
+
+        // "FROM document, Relation" (lowercase Document, canonical Relation) must behave like "FROM Document, Relation"
+        ret = service.search(newSearchQuery(session, "SELECT * FROM document, Relation"));
+        assertEquals(2, ret.getTotal());
+    }
 }

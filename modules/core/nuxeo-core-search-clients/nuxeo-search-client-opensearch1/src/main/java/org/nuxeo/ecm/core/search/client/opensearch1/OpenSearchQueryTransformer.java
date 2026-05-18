@@ -179,9 +179,11 @@ public class OpenSearchQueryTransformer implements SearchQueryTransformer<Search
             @Override
             public void visitFromClause(FromClause node) {
                 var elements = node.elements.values();
-                if (elements.contains(TYPE_DOCUMENT)
-                        && (!Framework.isBooleanPropertyTrue(RELATION_INDEXING_ENABLED_PROP)
-                                || elements.contains(TYPE_RELATION))) {
+                // Document is a pseudo-type matched case-insensitively (consistent with VCS/NXQLQueryMaker)
+                // Relation is a real document type matched case-sensitively like File, Folder, etc.
+                var hasDocument = elements.stream().anyMatch(TYPE_DOCUMENT::equalsIgnoreCase);
+                var hasRelation = elements.contains(TYPE_RELATION);
+                if (hasDocument && (!Framework.isBooleanPropertyTrue(RELATION_INDEXING_ENABLED_PROP) || hasRelation)) {
                     // if Relations are indexed, "FROM Document, Relation" means all doc types
                     // otherwise, "FROM Document" also means all doc types
                     // leave fromList empty so no type filter is applied
@@ -189,6 +191,10 @@ public class OpenSearchQueryTransformer implements SearchQueryTransformer<Search
                 }
                 SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                 for (String type : elements) {
+                    // normalize Document pseudo-type to canonical casing for SchemaManager lookup
+                    if (TYPE_DOCUMENT.equalsIgnoreCase(type)) {
+                        type = TYPE_DOCUMENT;
+                    }
                     Set<String> types = schemaManager.getDocumentTypeNamesExtending(type);
                     if (types == null) {
                         throw new QueryParseException("Unknown type: " + type);
