@@ -65,8 +65,11 @@ public class TestMemPubSubProvider {
         BiConsumer<String, byte[]> subscriber = this::subscriber;
         pubSubService.registerSubscriber("topicTest", subscriber);
         pubSubService.publish("topicTest", "foo".getBytes(UTF_8));
-        if (!messageReceivedLatch.await(5, TimeUnit.SECONDS)) {
-            fail("message not received in 5s");
+        // we've observed this could sometimes take more than 5 seconds,
+        // probably linked to Kafka slowness in CI
+        // see NXP-33642
+        if (!messageReceivedLatch.await(1, TimeUnit.MINUTES)) {
+            fail("message not received in 1m");
         }
         assertEquals(Collections.singletonList("topicTest=foo"), messages);
 
