@@ -138,9 +138,9 @@ updates:
       - dependency-name: "io.prometheus:simpleclient*"
         versions: [">0.11"]
 
-      # NXP-33565: Confluent patch release breaking build
+      # NXP-33565: Confluent patch releases breaking build
       - dependency-name: "io.confluent:*"
-        versions: ["7.9.7"]
+        versions: ["7.9.6", "7.9.7"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
