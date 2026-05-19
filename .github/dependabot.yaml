@@ -164,8 +164,8 @@ updates:
         patterns:
           - "*"
 
-# Branch 2027
-# Maven
+  # Branch 2027
+  # Maven
   - package-ecosystem: "maven"
     target-branch: "2027"
     directory: "/"
@@ -176,58 +176,57 @@ updates:
     # Limit version updates to 10 to prevent CI overload
     open-pull-requests-limit: 10
     ignore:
+      # Spurious major version updates
+      - dependency-name: "com.google.apis:google-api-services-drive"
+        versions: [">v2-rev20201130-1.31.0"]
+      - dependency-name: "net.oauth.core:oauth"
+        versions: [">20090531"] # 20100527 is detected as more recent but is actually older
 
-    # Spurious major version updates
-    - dependency-name: "com.google.apis:google-api-services-drive"
-      versions: [">v2-rev20201130-1.31.0"]
-    - dependency-name: "net.oauth.core:oauth"
-      versions: [">20090531"] # 20100527 is detected as more recent but is actually older
+      # Jakarta EE minor updates
+      - dependency-name: "jakarta.*:*"
+        update-types: ["version-update:semver-minor"]
 
-    # Jakarta EE minor updates
-    - dependency-name: "jakarta.*:*"
-      update-types: ["version-update:semver-minor"]
+      # Pre-release version that is taking precedence over the regular one
+      - dependency-name: "jakarta.inject:jakarta.inject-api"
+        versions: ["2.0.1.MR"]
 
-    # Pre-release version that is taking precedence over the regular one
-    - dependency-name: "jakarta.inject:jakarta.inject-api"
-      versions: ["2.0.1.MR"]
+      # Minor version updates breaking compilation
+      - dependency-name: "org.osgi:org.osgi.core"
+        versions: ["[4.4,)"]
+      - dependency-name: "io.gatling*:*"
+        versions: ["[3.13.0,)"]
 
-    # Minor version updates breaking compilation
-    - dependency-name: "org.osgi:org.osgi.core"
-      versions: ["[4.4,)"]
-    - dependency-name: "io.gatling*:*"
-      versions: ["[3.13.0,)"]
+      # Patch version updates breaking compilation
+      - dependency-name: "org.apache.directory.server:*"
+        versions: [">1.5.1"]
+      - dependency-name: "org.apache.directory.shared:*"
+        versions: [">0.9.7"]
 
-    # Patch version updates breaking compilation
-    - dependency-name: "org.apache.directory.server:*"
-      versions: [">1.5.1"]
-    - dependency-name: "org.apache.directory.shared:*"
-      versions: [">0.9.7"]
+      # Patch version containing regression
+      - dependency-name: "org.quartz-scheduler:quartz"
+        versions: ["2.5.1"]
 
-    # Patch version containing regression
-    - dependency-name: "org.quartz-scheduler:quartz"
-      versions: ["2.5.1"]
+      # Nuxeo patch needed
+      - dependency-name: "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer"
+        versions: [">20211018.2.NX1"]
 
-    # Nuxeo patch needed
-    - dependency-name: "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer"
-      versions: [">20211018.2.NX1"]
+      # Not in our artifact repository
+      - dependency-name: "commons-httpclient:commons-httpclient"
+        versions: [ ">3.1" ] # no update to 3.1-jenkins-x
+      - dependency-name: "org.glassfish.web:jakarta.servlet.jsp.jstl"
+        versions: [ ">3.0.1" ] # no update to 3.0.1-jbossorg-1
+      - dependency-name: "org.codehaus.mojo:license-maven-plugin"
+        versions: ["[1.20, 1.21)"] # no update to 1.20.jbossorg-3
 
-    # Not in our artifact repository
-    - dependency-name: "commons-httpclient:commons-httpclient"
-      versions: [ ">3.1" ] # no update to 3.1-jenkins-x
-    - dependency-name: "org.glassfish.web:jakarta.servlet.jsp.jstl"
-      versions: [ ">3.0.1" ] # no update to 3.0.1-jbossorg-1
-    - dependency-name: "org.codehaus.mojo:license-maven-plugin"
-      versions: ["[1.20, 1.21)"] # no update to 1.20.jbossorg-3
+      # Prometheus simpleclient 0.12 contains breaking change
+      - dependency-name: "io.prometheus:simpleclient*"
+        versions: [">0.11"]
 
-    # Prometheus simpleclient 0.12 contains breaking change
-    - dependency-name: "io.prometheus:simpleclient*"
-      versions: [">0.11"]
+      # NXP-33565: Confluent patch release breaking build
+      - dependency-name: "io.confluent:*"
+        versions: ["7.9.6"]
 
-    # NXP-33565: Confluent patch release breaking build
-    - dependency-name: "io.confluent:*"
-      versions: ["7.9.6"]
-
-# GitHub Actions
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     target-branch: "2027"
     directory: "/"
@@ -237,4 +236,4 @@ updates:
     groups:
       version-updates:
         patterns:
-        - "*"
+          - "*"
