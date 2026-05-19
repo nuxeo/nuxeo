@@ -150,7 +150,7 @@ updates:
 
       # NXP-33565: Confluent patch release breaking build
       - dependency-name: "io.confluent:*"
-        versions: ["7.9.6"]
+        versions: ["7.9.7"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -221,10 +221,6 @@ updates:
       # Prometheus simpleclient 0.12 contains breaking change
       - dependency-name: "io.prometheus:simpleclient*"
         versions: [">0.11"]
-
-      # NXP-33565: Confluent patch release breaking build
-      - dependency-name: "io.confluent:*"
-        versions: ["7.9.6"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
