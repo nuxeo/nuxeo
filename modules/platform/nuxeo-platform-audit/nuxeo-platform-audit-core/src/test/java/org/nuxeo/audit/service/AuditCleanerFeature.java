@@ -84,5 +84,10 @@ public class AuditCleanerFeature implements RunnerFeature {
         // then clear audit entries
         var auditComponent = (AuditComponent) Framework.getService(AuditService.class);
         auditComponent.clearEntriesFromBackends();
+        // drain any audit events emitted during the index drop/recreate above, so that stream records
+        // arriving after the first drain are checkpointed against the fresh index; without this second
+        // wait the stream may replay those records on the next run with IDs starting from 1, causing
+        // create-conflict errors (ConcurrentUpdateException) when insertLogs uses create semantics
+        runner.getFeature(TransactionalFeature.class).nextTransaction();
     }
 }
