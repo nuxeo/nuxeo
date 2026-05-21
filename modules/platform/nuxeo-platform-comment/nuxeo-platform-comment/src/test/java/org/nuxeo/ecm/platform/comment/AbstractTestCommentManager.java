@@ -429,9 +429,9 @@ public abstract class AbstractTestCommentManager {
 
         // test get replies
         assertEquals(Set.of(c3, c4),
-                new HashSet<>(commentManager.getComments(session, List.of(c1.getId(), c2.getId()))));
+                new HashSet<>(commentManager.getComments(session, Set.of(c1.getId(), c2.getId()))));
         assertEquals(Set.of(c1, c2, c3, c4),
-                new HashSet<>(commentManager.getComments(session, List.of(commentedDocModel.getId()))));
+                new HashSet<>(commentManager.getComments(session, Set.of(commentedDocModel.getId()))));
     }
 
     @Test

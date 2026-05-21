@@ -34,6 +34,7 @@ import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PRO
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -258,7 +259,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                 PageProviderSpec.builder(GET_COMMENTS_FOR_DOCS_PAGEPROVIDER_NAME)
                                 .property(CORE_SESSION_PROPERTY, (Serializable) session)
-                                .parameter(documentIds)
+                                .parameter(new ArrayList<>(documentIds))
                                 .build());
         return pageProvider.getCurrentPage().stream().map(doc -> doc.getAdapter(Comment.class)).collect(toList());
     }
