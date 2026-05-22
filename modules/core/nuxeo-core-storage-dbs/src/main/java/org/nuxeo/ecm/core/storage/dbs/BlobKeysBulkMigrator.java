@@ -78,7 +78,8 @@ public class BlobKeysBulkMigrator extends AbstractBulkMigrator {
     }
 
     @Override
-    public void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+    public void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties,
+            AbstractBulkMigrator.MigrationProgress progress) {
         BaseSession internalSession = (BaseSession) ((AbstractSession) session).getSession();
         if (internalSession instanceof DBSSession dbSSession) {
             for (var id : ids) {

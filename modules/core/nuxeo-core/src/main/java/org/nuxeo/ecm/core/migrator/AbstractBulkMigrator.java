@@ -128,8 +128,9 @@ public abstract class AbstractBulkMigrator implements Migrator {
         List<String> bulkIds = getRunningBulkCommands(id, step);
         long processed = 0;
         long total = -1;
+        long skipCount = 0;
         if (bulkIds.isEmpty()) {
-            migrationContext.reportProgress("Initializing", processed, total);
+            migrationContext.reportProgress("Initializing", processed, total, skipCount);
             bulkIds = Framework.getService(RepositoryService.class)
                                .getRepositoryNames()
                                .stream()
@@ -141,13 +142,13 @@ public abstract class AbstractBulkMigrator implements Migrator {
             saveRunningBulkCommands(id, step, bulkIds);
         } else {
             log.warn("Migration: {}, step: {} resuming bulk commands: {}", id, step, bulkIds);
-            migrationContext.reportProgress("Resuming", processed, total);
+            migrationContext.reportProgress("Resuming", processed, total, skipCount);
         }
         boolean finish;
         do {
             if (migrationContext.isShutdownRequested()) {
                 log.warn("Migration: {}, step: {} suspending", id, step);
-                migrationContext.reportProgress("Suspending", processed, total);
+                migrationContext.reportProgress("Suspending", processed, total, skipCount);
                 return;
             }
             try {
@@ -159,12 +160,13 @@ public abstract class AbstractBulkMigrator implements Migrator {
             }
             // check if all bulk actions have finished and compute progress
             finish = true;
-            processed = total = 0;
+            processed = total = skipCount = 0;
             for (var bulkId : bulkIds) {
                 var bulkStatus = bulkService.getStatus(bulkId);
                 finish = finish && bulkStatus.getState() == COMPLETED;
                 processed += bulkStatus.getProcessed();
                 total += bulkStatus.getTotal();
+                skipCount += bulkStatus.getSkipCount();
                 if (bulkStatus.getState() == ABORTED) {
                     log.warn("Migration: {}, step: {} aborted on bulk command: {}", id, step, bulkStatus);
                     migrationContext.reportError("Aborted bulk command: " + bulkId, SC_INTERNAL_SERVER_ERROR);
@@ -181,7 +183,7 @@ public abstract class AbstractBulkMigrator implements Migrator {
                     throw new NuxeoException(errorMessage, errorCode);
                 }
             }
-            migrationContext.reportProgress(finish ? "Done" : "Migrating content", processed, total);
+            migrationContext.reportProgress(finish ? "Done" : "Migrating content", processed, total, skipCount);
         } while (!finish);
         clearRunningBulkCommands(id, step);
         var noMigrationRunning = Framework.getService(MigrationService.class)
@@ -236,12 +238,56 @@ public abstract class AbstractBulkMigrator implements Migrator {
     protected abstract String getNXQLScrollQuery();
 
     /**
+     * Reports per-batch progress information from a {@link AbstractBulkMigrator#compute compute} call back to the
+     * underlying bulk computation, so the migration's bulk status reflects skipped documents and per-document errors.
+     *
+     * @since 2025.20
+     */
+    public interface MigrationProgress {
+
+        /** Reports {@code count} documents skipped by the migrator in the current batch. */
+        void skipped(long count);
+
+        /**
+         * Reports {@code count} documents that errored in the current batch with the given message.
+         * <p>
+         * This will cause the bulk command to be aborted and the migration step to fail.
+         */
+        default void inError(long count, String message) {
+            inError(count, message, SC_INTERNAL_SERVER_ERROR);
+        }
+
+        /**
+         * Reports {@code count} documents that errored, with a custom HTTP-style status code.
+         * <p>
+         * This will cause the bulk command to be aborted and the migration step to fail.
+         */
+        void inError(long count, String message, int code);
+    }
+
+    /**
      * Executes the migration on the given batch. The migration step is given through {@code properties} with the key
-     * {@link #PARAM_MIGRATION_STEP}.
+     * {@link #PARAM_MIGRATION_STEP}. Subclasses should override this overload to report skipped documents or
+     * per-document errors via {@code progress}.
      * <p>
      * This method is called by the {@link MigrationComputation}, the transaction is handled by it.
+     *
+     * @since 2025.20
      */
-    public abstract void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties);
+    public void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties,
+            MigrationProgress progress) {
+        // @deprecated since 2025.20, remove #compute(CoreSession, List, Map) and turn this method abstract
+        compute(session, ids, properties);
+    }
+
+    /**
+     * @deprecated since 2025.20, override {@link #compute(CoreSession, List, Map, MigrationProgress)} instead
+     */
+    @Deprecated(since = "2025.20", forRemoval = true)
+    public void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+        throw new UnsupportedOperationException("Subclasses must override compute(CoreSession, List, Map) or "
+                + "compute(CoreSession, List, Map, MigrationProgress)");
+    }
 
     public static class MigrationAction implements StreamProcessorTopology {
 
@@ -293,7 +339,17 @@ public abstract class AbstractBulkMigrator implements Migrator {
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            migrator.compute(session, ids, properties);
+            migrator.compute(session, ids, properties, new MigrationProgress() {
+                @Override
+                public void skipped(long count) {
+                    delta.setSkipCount(delta.getSkipCount() + count);
+                }
+
+                @Override
+                public void inError(long count, String message, int code) {
+                    delta.inError(count, message, code);
+                }
+            });
         }
     }
 

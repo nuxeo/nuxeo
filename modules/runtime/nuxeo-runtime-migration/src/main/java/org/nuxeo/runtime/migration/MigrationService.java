@@ -83,8 +83,20 @@ public interface MigrationService {
          * @param message an informative message about what is being migrated
          * @param num the current number of things migrated
          * @param total the total number of things to migrate, or {@code -1} if unknown
+         * @param skipCount the current number of things skipped
          */
-        void reportProgress(String message, long num, long total);
+        default void reportProgress(String message, long num, long total, long skipCount) {
+            // @deprecated since 2025.20, remove default impl
+            reportProgress(message, num, total);
+        }
+
+        /**
+         * @deprecated since 2025.20, use {@link #reportProgress(String, long, long, long)} instead
+         */
+        @Deprecated(since = "2025.20", forRemoval = true)
+        default void reportProgress(String message, long num, long total) {
+            // no-ops
+        }
 
         /**
          * Notifies the migration context of an error.
@@ -148,6 +160,11 @@ public interface MigrationService {
          */
         protected final int errorCode;
 
+        /**
+         * @since 2025.20
+         */
+        protected final long skipCount;
+
         public MigrationStatus(String state) {
             this.state = state;
             step = null;
@@ -158,6 +175,7 @@ public interface MigrationService {
             progressTotal = 0;
             errorMessage = null;
             errorCode = 0;
+            skipCount = 0;
         }
 
         @Override
@@ -175,15 +193,24 @@ public interface MigrationService {
             progressTotal = 0;
             this.errorMessage = errorMessage;
             this.errorCode = errorCode;
+            skipCount = 0;
         }
 
         public MigrationStatus(String step, long startTime, long pingTime, String progressMessage, long progressNum,
                 long progressTotal) {
-            this(step, startTime, pingTime, progressMessage, progressNum, progressTotal, null, 0);
+            this(step, startTime, pingTime, progressMessage, progressNum, progressTotal, null, 0, 0);
         }
 
         public MigrationStatus(String step, long startTime, long pingTime, String progressMessage, long progressNum,
                 long progressTotal, String errorMessage, int errorCode) {
+            this(step, startTime, pingTime, progressMessage, progressNum, progressTotal, errorMessage, errorCode, 0);
+        }
+
+        /**
+         * @since 2025.20
+         */
+        public MigrationStatus(String step, long startTime, long pingTime, String progressMessage, long progressNum,
+                long progressTotal, String errorMessage, int errorCode, long skipCount) {
             state = null;
             this.step = step;
             this.startTime = startTime;
@@ -193,6 +220,7 @@ public interface MigrationService {
             this.progressTotal = progressTotal;
             this.errorMessage = errorMessage;
             this.errorCode = errorCode;
+            this.skipCount = skipCount;
         }
 
         /**
@@ -269,6 +297,15 @@ public interface MigrationService {
          */
         public int getErrorCode() {
             return errorCode;
+        }
+
+        /**
+         * Gets the skip count if any.
+         *
+         * @since 2025.20
+         */
+        public long getSkipCount() {
+            return skipCount;
         }
 
         /**

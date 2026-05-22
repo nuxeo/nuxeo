@@ -62,6 +62,7 @@ public class MigrationJsonWriter extends ExtensibleEntityJsonWriter<Migration> {
         jg.writeStringField("progressMessage", status.getProgressMessage());
         jg.writeNumberField("progressNum", status.getProgressNum());
         jg.writeNumberField("progressTotal", status.getProgressTotal());
+        jg.writeNumberField("skipCount", status.getSkipCount());
         jg.writeStringField("errorMessage", status.getErrorMessage());
         jg.writeNumberField("errorCode", status.getErrorCode());
         jg.writeBooleanField("running", status.isRunning());

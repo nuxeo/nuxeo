@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2023 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,35 +24,34 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationDescriptor;
-import org.nuxeo.runtime.migration.MigrationService;
 
 /**
- * @since 2023.3
+ * Test migrator that reports skip and error counts via {@link MigrationProgress}.
+ *
+ * @since 2025.20
  */
-public class DummyFailingBulkMigrator extends AbstractBulkMigrator {
+public class ProgressReportingBulkMigrator extends AbstractBulkMigrator {
 
-    public static final String MIGRATION_ID = "dummy-failing-bulk-migration";
+    public static final String MIGRATION_ID = "progress-reporting-bulk-migration";
 
     public static final String MIGRATION_BEFORE_STATE = "before";
 
     public static final String MIGRATION_AFTER_STATE = "after";
 
-    protected static String dummyState = MIGRATION_BEFORE_STATE;
-
-    public DummyFailingBulkMigrator(MigrationDescriptor descriptor) {
+    public ProgressReportingBulkMigrator(MigrationDescriptor descriptor) {
         super(descriptor);
     }
 
     @Override
     protected String probeSession(CoreSession session) {
-        return dummyState.equals(MIGRATION_AFTER_STATE) ? MIGRATION_AFTER_STATE : MIGRATION_BEFORE_STATE;
+        return session.queryProjection(getNXQLScrollQuery(), 1, 0).isEmpty() ? MIGRATION_AFTER_STATE
+                : MIGRATION_BEFORE_STATE;
     }
 
     @Override
     protected String getNXQLScrollQuery() {
-        return "Invalid query for testing purpose !!!";
+        return "SELECT * FROM Document WHERE dc:title = 'Progress content to migrate'";
     }
 
     @Override
@@ -60,6 +59,21 @@ public class DummyFailingBulkMigrator extends AbstractBulkMigrator {
             AbstractBulkMigrator.MigrationProgress progress) {
         for (var id : ids) {
             var doc = session.getDocument(new IdRef(id));
+            var description = (String) doc.getPropertyValue("dc:description");
+
+            // Skip documents with "skip" description
+            if ("skip".equals(description)) {
+                progress.skipped(1);
+                continue;
+            }
+
+            // Report error for documents with "error" description
+            if ("error".equals(description)) {
+                progress.inError(1, "Intentional error for testing: " + id);
+                continue;
+            }
+
+            // Migrate normally
             doc.setPropertyValue("dc:title", "Content migrated");
             session.saveDocument(doc);
         }
@@ -68,9 +82,6 @@ public class DummyFailingBulkMigrator extends AbstractBulkMigrator {
 
     @Override
     public void notifyStatusChange() {
-        if (MIGRATION_AFTER_STATE.equals(
-                Framework.getService(MigrationService.class).getStatus(MIGRATION_ID).getState())) {
-            dummyState = MIGRATION_AFTER_STATE;
-        }
+        // nothing to do
     }
 }

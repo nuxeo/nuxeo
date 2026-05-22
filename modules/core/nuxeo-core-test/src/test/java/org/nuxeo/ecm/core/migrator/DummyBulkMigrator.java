@@ -53,7 +53,8 @@ public class DummyBulkMigrator extends AbstractBulkMigrator {
     }
 
     @Override
-    public void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+    public void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties,
+            AbstractBulkMigrator.MigrationProgress progress) {
         for (var id : ids) {
             var doc = session.getDocument(new IdRef(id));
             doc.setPropertyValue("dc:title", "Content migrated");
