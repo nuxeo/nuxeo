@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * @since 9.1
@@ -38,6 +39,19 @@ public class CacheWrapper implements CacheManagement {
     @Override
     public Serializable get(String key) {
         return cache.get(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Delegates to the wrapped cache to preserve single-flight loading semantics implemented by the underlying cache.
+     * </p>
+     *
+     * @since 2025.20
+     */
+    @Override
+    public <V extends Serializable> V computeIfAbsent(String key, Supplier<V> supplier) {
+        return cache.computeIfAbsent(key, supplier);
     }
 
     @Override

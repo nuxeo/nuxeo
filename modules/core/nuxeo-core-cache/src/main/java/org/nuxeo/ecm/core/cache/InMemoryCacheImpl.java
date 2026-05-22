@@ -25,13 +25,19 @@ import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
+import com.google.common.util.concurrent.ExecutionError;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * Default in memory implementation for cache management based on guava
@@ -107,6 +113,39 @@ public class InMemoryCacheImpl extends AbstractCache {
             cache.put(key, value);
         } else {
             log.warn("Can't put a null key nor a null value in the cache: {}!", name);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation delegates to {@link com.google.common.cache.Cache#get(Object, java.util.concurrent.Callable)}
+     * which provides single-flight loading: if multiple threads request the same absent key concurrently, only one
+     * invokes the supplier and the others wait for that result, avoiding a thundering herd.
+     * </p>
+     *
+     * @since 2025.20
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <V extends Serializable> V computeIfAbsent(String key, Supplier<V> supplier) {
+        try {
+            return (V) cache.get(key, supplier::get);
+        } catch (InvalidCacheLoadException e) {
+            // supplier returned null: this is expected (e.g. unknown user), not an error
+            return null;
+        } catch (UncheckedExecutionException e) {
+            // supplier threw a RuntimeException, unwrap and rethrow as-is
+            throw (RuntimeException) e.getCause();
+        } catch (ExecutionError e) {
+            // supplier threw an Error (e.g. OutOfMemoryError), rethrow as-is to avoid masking fatal JVM conditions
+            throw (Error) e.getCause();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException re) {
+                throw re;
+            }
+            throw new NuxeoException("Error computing cache value for key: " + key, cause);
         }
     }
 

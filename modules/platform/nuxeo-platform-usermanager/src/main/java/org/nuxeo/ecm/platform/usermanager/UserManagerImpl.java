@@ -59,7 +59,6 @@ import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.CacheManagement;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -630,15 +629,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected NuxeoPrincipal getPrincipalUsingCache(String username) {
-        NuxeoPrincipal ret = (NuxeoPrincipal) principalCache.get(username);
-        if (ret == null) {
-            ret = getPrincipal(username, null);
-            if (ret == null) {
-                return ret;
-            }
-            ((CacheManagement) principalCache).putLocal(username, ret);
-        }
-        return ((NuxeoPrincipalImpl) ret).cloneTransferable(); // should not return cached principal
+        var ret = principalCache.computeIfAbsent(username, () -> getPrincipal(username, null));
+        return ret == null ? null : ((NuxeoPrincipalImpl) ret).cloneTransferable();
     }
 
     @Override

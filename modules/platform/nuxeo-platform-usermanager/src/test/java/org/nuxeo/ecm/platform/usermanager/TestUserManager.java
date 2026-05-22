@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -43,6 +44,11 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -598,7 +604,7 @@ public class TestUserManager extends UserManagerTestCase {
 
         // G2 = (u2,u2bis)
         // |->G1 = (u1)
-        //    |->G3 = (u3)
+        // |->G3 = (u3)
 
         DocumentModel u1 = getUser("test_u1");
         DocumentModel u2 = getUser("test_u2");
@@ -1485,6 +1491,56 @@ public class TestUserManager extends UserManagerTestCase {
         QueryBuilder queryBuilder = um.getQueryForPattern(pattern, um.getUserDirectoryName(), um.userSearchFields,
                 um.getUserOrderBy());
         return queryBuilder.predicate().toString();
+    }
+
+    /**
+     * Tests that concurrent getPrincipal calls return independent copies under
+     * {@link UserManagerImpl#getPrincipalUsingCache}. Does not assert single-flight loading.
+     *
+     * @since 2025.20
+     */
+    @Test
+    public void testConcurrentGetPrincipal() throws Exception {
+        int threadCount = 10;
+        // Ensure cache is empty
+        userManager.getPrincipal("Administrator").getAllGroups(); // warm up
+        ((UserManagerImpl) userManager).principalCache.invalidateAll();
+
+        CountDownLatch startLatch = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        try {
+            List<Future<NuxeoPrincipal>> futures = new ArrayList<>();
+            for (int i = 0; i < threadCount; i++) {
+                futures.add(executor.submit(() -> {
+                    startLatch.await();
+                    return Framework.doPrivileged(() -> userManager.getPrincipal("Administrator"));
+                }));
+            }
+
+            // Release all threads at once
+            startLatch.countDown();
+
+            List<NuxeoPrincipal> results = new ArrayList<>();
+            for (Future<NuxeoPrincipal> future : futures) {
+                results.add(future.get(30, TimeUnit.SECONDS));
+            }
+
+            assertEquals(threadCount, results.size());
+            // All results should be non-null and independent copies
+            for (NuxeoPrincipal principal : results) {
+                assertNotNull(principal);
+                assertEquals("Administrator", principal.getName());
+            }
+            // Verify they are different object instances (deep copies)
+            for (int i = 0; i < results.size() - 1; i++) {
+                for (int j = i + 1; j < results.size(); j++) {
+                    assertNotSame(results.get(i), results.get(j));
+                }
+            }
+        } finally {
+            executor.shutdownNow();
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        }
     }
 
 }
