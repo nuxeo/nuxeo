@@ -96,6 +96,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     public static final String PROGRESS_TOTAL = ":total";
 
+    /**
+     * @since 2025.20
+     */
+    public static final String SKIP_COUNT = ":skipcount";
+
     public static final long WRITE_LOCK_TTL = 10; // 10 sec for a few k/v writes is plenty enough
 
     public static final String MIGRATION_INVAL_PUBSUB_TOPIC = "migrationinval";
@@ -227,13 +232,14 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         }
 
         /**
-         * Reports progress. If num or total are -2 then null is used.
+         * Reports progress. If num, total, or skipCount are -2 then null is used.
          */
-        public void reportProgress(String message, long num, long total, boolean ping) {
+        public void reportProgress(String message, long num, long total, long skipCount, boolean ping) {
             KeyValueStore keyValueStore = getKeyValueStore();
             keyValueStore.put(id + PROGRESS_MESSAGE, message);
             keyValueStore.put(id + PROGRESS_NUM, num == -2 ? null : String.valueOf(num));
             keyValueStore.put(id + PROGRESS_TOTAL, total == -2 ? null : String.valueOf(total));
+            keyValueStore.put(id + SKIP_COUNT, skipCount == -2 ? null : String.valueOf(skipCount));
             keyValueStore.put(id + PING_TIME, ping ? String.valueOf(System.currentTimeMillis()) : null);
         }
 
@@ -245,6 +251,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             keyValueStore.put(id + ERROR_MESSAGE, message);
             keyValueStore.put(id + ERROR_CODE, String.valueOf(code));
         }
+
     }
 
     /**
@@ -263,8 +270,8 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         }
 
         @Override
-        public void reportProgress(String message, long num, long total) {
-            progressReporter.reportProgress(message, num, total, true);
+        public void reportProgress(String message, long num, long total, long skipCount) {
+            progressReporter.reportProgress(message, num, total, skipCount, true);
         }
 
         @Override
@@ -414,11 +421,12 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         String progressMessage = kv.getString(id + PROGRESS_MESSAGE);
         long progressNum = parseLong(kv, id + PROGRESS_NUM);
         long progressTotal = parseLong(kv, id + PROGRESS_TOTAL);
+        long skipCount = parseLong(kv, id + SKIP_COUNT);
         if (progressMessage == null) {
             progressMessage = "";
         }
         return new MigrationStatus(step, startTime, pingTime, progressMessage, progressNum, progressTotal, errorMessage,
-                errorCode);
+                errorCode, skipCount);
     }
 
     protected long parseLong(KeyValueStore kv, String key) {
@@ -454,7 +462,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         kv.put(id, state);
         kv.put(id + STEP, (String) null);
         kv.put(id + START_TIME, (String) null);
-        progressReporter.reportProgress(null, -2, -2, false);
+        progressReporter.reportProgress(null, -2, -2, -2, false);
     }
 
     @Override
@@ -495,7 +503,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                 String time = String.valueOf(System.currentTimeMillis());
                 kv.put(id + STEP, step);
                 kv.put(id + START_TIME, time);
-                progressReporter.reportProgress("", 0, -1, true);
+                progressReporter.reportProgress("", 0, -1, 0, true);
                 kv.put(id, (String) null);
             });
         }

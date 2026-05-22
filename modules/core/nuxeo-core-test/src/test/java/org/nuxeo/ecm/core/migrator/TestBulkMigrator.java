@@ -59,6 +59,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-dummy-bulk-migrator.xml")
+@Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-progress-reporting-bulk-migrator.xml")
 public class TestBulkMigrator {
 
     @Inject
@@ -200,5 +201,86 @@ public class TestBulkMigrator {
         // assert before state because there was a failure
         var afterState = migrationService.probeAndSetState(DummyFailingBulkMigrator.MIGRATION_ID);
         assertEquals(DummyFailingBulkMigrator.MIGRATION_BEFORE_STATE, afterState);
+    }
+
+    @Test
+    public void testMigrationProgressSkipCount() {
+        // create documents: 7 normal, 3 to skip
+        for (var i = 0; i < 10; i++) {
+            var doc = session.createDocumentModel("/", String.format("Progress%03d", i), "File");
+            doc.setPropertyValue("dc:title", "Progress content to migrate");
+            if (i >= 7) {
+                // mark 3 documents to be skipped
+                doc.setPropertyValue("dc:description", "skip");
+            }
+            session.createDocument(doc);
+        }
+        session.save();
+        txFeature.nextTransaction();
+
+        // assert before state
+        var beforeState = migrationService.probeAndSetState(ProgressReportingBulkMigrator.MIGRATION_ID);
+        assertEquals(ProgressReportingBulkMigrator.MIGRATION_BEFORE_STATE, beforeState);
+
+        // run the migration
+        migrationService.runStep(ProgressReportingBulkMigrator.MIGRATION_ID, "before-to-after");
+
+        // await its end
+        await().atMost(ONE_MINUTE)
+               .until(() -> !migrationService.getStatus(ProgressReportingBulkMigrator.MIGRATION_ID).isRunning());
+
+        // retrieve the bulk status to verify skip count
+        var bulkStatus = await().atMost(ONE_MINUTE)
+                                .until(() -> bulkService.getStatuses(SYSTEM_USERNAME)
+                                                        .stream()
+                                                        .filter(s -> MigrationAction.ACTION_NAME.equals(s.getAction()))
+                                                        .filter(s -> {
+                                                            var cmd = bulkService.getCommand(s.getId());
+                                                            return ProgressReportingBulkMigrator.MIGRATION_ID.equals(
+                                                                    cmd.getParam(PARAM_MIGRATION_ID));
+                                                        })
+                                                        .findFirst()
+                                                        .orElse(null),
+                                        Objects::nonNull);
+
+        assertEquals(BulkStatus.State.COMPLETED, bulkStatus.getState());
+        assertEquals(10, bulkStatus.getTotal());
+        assertEquals(10, bulkStatus.getProcessed());
+        assertEquals(3, bulkStatus.getSkipCount()); // 3 documents were skipped
+        assertEquals(0, bulkStatus.getErrorCount()); // no errors
+    }
+
+    @Test
+    public void testMigrationProgressErrorAbortsMigration() {
+        // create documents with one error document
+        var errorDoc = session.createDocumentModel("/", "ErrorDoc", "File");
+        errorDoc.setPropertyValue("dc:title", "Progress content to migrate");
+        errorDoc.setPropertyValue("dc:description", "error");
+        var created = session.createDocument(errorDoc);
+        session.save();
+        txFeature.nextTransaction();
+
+        // assert before state
+        var beforeState = migrationService.probeAndSetState(ProgressReportingBulkMigrator.MIGRATION_ID);
+        assertEquals(ProgressReportingBulkMigrator.MIGRATION_BEFORE_STATE, beforeState);
+
+        // run the migration
+        migrationService.runStep(ProgressReportingBulkMigrator.MIGRATION_ID, "before-to-after");
+
+        // await migration to finish (it will error out)
+        await().dontCatchUncaughtExceptions().atMost(ONE_MINUTE).until(() -> {
+            var status = migrationService.getStatus(ProgressReportingBulkMigrator.MIGRATION_ID);
+            return !status.isRunning() && status.hasError();
+        });
+
+        // verify the migration failed with the expected error message
+        var status = migrationService.getStatus(ProgressReportingBulkMigrator.MIGRATION_ID);
+        assertTrue(status.hasError());
+        assertTrue(status.getErrorMessage().contains("Intentional error for testing"));
+        assertTrue(status.getErrorMessage().contains(created.getId()));
+
+        // assert still in before state because migration failed
+        var afterState = migrationService.probeAndSetState(ProgressReportingBulkMigrator.MIGRATION_ID);
+        assertEquals(ProgressReportingBulkMigrator.MIGRATION_BEFORE_STATE, afterState);
     }
 }

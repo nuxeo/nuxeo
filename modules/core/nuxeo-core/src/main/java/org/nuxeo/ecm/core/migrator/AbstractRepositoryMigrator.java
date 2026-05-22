@@ -69,7 +69,7 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
 
     protected void reportProgress(String message, long num, long total) {
         log.debug("{}: {}/{}", message, num, total);
-        migrationContext.reportProgress(message, num, total);
+        migrationContext.reportProgress(message, num, total, -2);
     }
 
     protected void reportProgress(String repositoryName, String message, long num, long total) {
@@ -81,8 +81,8 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
      */
     @Deprecated(since = "11.1", forRemoval = true)
     protected void migrateRepository(String repositoryName) {
-        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName,
-                (CoreSession session) -> migrateSession(session)));
+        TransactionHelper.runInTransaction(
+                () -> CoreInstance.doPrivileged(repositoryName, (CoreSession session) -> migrateSession(session)));
     }
 
     /**

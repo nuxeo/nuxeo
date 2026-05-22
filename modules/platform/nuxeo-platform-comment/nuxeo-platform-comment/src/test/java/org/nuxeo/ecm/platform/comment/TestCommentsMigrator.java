@@ -749,7 +749,7 @@ public class TestCommentsMigrator {
         }
 
         @Override
-        public void reportProgress(String message, long num, long total) {
+        public void reportProgress(String message, long num, long total, long skipCount) {
             progressLines.add(String.format("%s: %s/%s", message, num, total));
         }
 
