@@ -1056,17 +1056,17 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                     SubstringMatchType substringMatchType = dir.getDescriptor().getSubstringMatchType();
                     String value;
                     switch (substringMatchType) {
-                    case subany:
-                        value = '%' + likePattern + '%';
-                        break;
-                    case subinitial:
-                        value = likePattern + '%';
-                        break;
-                    case subfinal:
-                        value = '%' + likePattern;
-                        break;
-                    default:
-                        throw new IllegalStateException(substringMatchType.toString());
+                        case subany:
+                            value = '%' + likePattern + '%';
+                            break;
+                        case subinitial:
+                            value = likePattern + '%';
+                            break;
+                        case subfinal:
+                            value = '%' + likePattern;
+                            break;
+                        default:
+                            throw new IllegalStateException(substringMatchType.toString());
                     }
                     predicate = Predicates.ilike(key, value);
                 } else { // MatchType.EXACT
