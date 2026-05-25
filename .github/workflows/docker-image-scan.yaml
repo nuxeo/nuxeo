@@ -34,7 +34,7 @@ jobs:
           echo imageName = ${{ inputs.imageName }}
 
       - name: Log in to Docker registry
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ env.DOCKER_REGISTRY_USERNAME }}
@@ -77,6 +77,6 @@ jobs:
 
       - name: Upload SARIF file
         if: always() # necessary as using a failure threshold in the scan step
-        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba # v4.35.5
+        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
         with:
           sarif_file: ${{ steps.scan-sarif.outputs.sarif }}
