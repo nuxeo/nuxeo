@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.api.impl.blob.AbstractBlob.TEXT_PLAIN;
 import static org.nuxeo.ecm.core.blob.AbstractBlobStore.BYTE_RANGE_SEP;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.DIRECTDOWNLOAD_EXPIRE_PROPERTY;
 
@@ -49,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.blob.BlobStore.OptionalOrUnknown;
 import org.nuxeo.ecm.core.blob.LocalBlobStore.LocalBlobGarbageCollector;
@@ -660,6 +662,23 @@ public abstract class TestAbstractBlobStore {
         if (cacheOther != null) {
             assertTrue(Files.exists(cacheOther));
         }
+    }
+
+    @Test
+    public void testWriteWithFilename() throws IOException {
+        // store blob with filename containing special character
+        var id = "specialChar";
+        assertNoBlob(id);
+        var blobContext = new BlobContext(new StringBlob("FOO", TEXT_PLAIN, AbstractBlob.UTF_8, "café.txt"), id, XPATH);
+        var key = bp.writeBlob(blobContext);
+        assertBlob(key, "FOO");
+
+        // store blob with filename without special character
+        id = "noSpecialChar";
+        assertNoBlob(id);
+        blobContext = new BlobContext(new StringBlob("BAR", TEXT_PLAIN, AbstractBlob.UTF_8, "tea.txt"), id, XPATH);
+        key = bp.writeBlob(blobContext);
+        assertBlob(key, "BAR");
     }
 
 }
