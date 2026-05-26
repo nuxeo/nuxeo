@@ -24,6 +24,8 @@ package org.nuxeo.common.utils;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import java.text.Normalizer;
+
 /**
  * RFC-2231 specifies how a MIME parameter value, like {@code Content-Disposition}'s {@code filename}, can be encoded to
  * contain arbitrary character sets.
@@ -92,33 +94,40 @@ public class RFC2231 {
     }
 
     /**
-     * Escapes a value for use in a quoted-string per RFC 2616 Section 2.2. Backslash and double-quote characters are
-     * escaped with backslash. Control characters (CTL: 0x00-0x1F and 0x7F) are stripped to prevent header injection
-     * attacks.
-     *
-     * @param value the value to escape
-     * @return the escaped value with control characters removed
      * @since 2025.20
      */
-    private static String escapeForQuotedString(String value) {
-        var sb = new StringBuilder(value.length() + 10);
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
-            // Strip control characters (0x00-0x1F, 0x7F) to prevent header injection
-            if (c < 0x20 || c == 0x7F) {
-                continue; // Skip control characters
+    private static String toAsciiFallback(String value) {
+        // Keep a canonical UTF-8 decomposition
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD);
+        var sb = new StringBuilder(normalized.length() + 8);
+        for (int i = 0; i < normalized.length(); i++) {
+            char c = normalized.charAt(i);
+            int type = Character.getType(c);
+            // strip any accentuation marker i.e. turns "café" into "cafe"
+            if (type == Character.NON_SPACING_MARK || type == Character.COMBINING_SPACING_MARK
+                    || type == Character.ENCLOSING_MARK) {
+                continue;
             }
+            // Keep only printable ASCII; replace anything else (CTLs, non-Latin scripts, ...) with '_'
+            if (c < 0x20 || c > 0x7E) {
+                sb.append('_');
+                continue;
+            }
+            // Escape backslashes and quotes
             if (c == '\\' || c == '"') {
                 sb.append('\\');
             }
             sb.append(c);
         }
-        return sb.toString();
+        // defaults to "file" if empty
+        return sb.isEmpty() ? "file" : sb.toString();
     }
 
     /**
      * Encodes a {@code Content-Disposition} header following RFC 6266 best practice. When encoding is needed, both
-     * {@code filename} (raw fallback) and {@code filename*} (RFC 2231 encoded) parameters are included.
+     * {@code filename} (ASCII fallback per RFC 6266 Appendix D) and {@code filename*} (RFC 2231 / RFC 5987 encoded)
+     * parameters are included. The fallback is a best-effort ASCII transliteration of the original filename, so legacy
+     * user agents that ignore {@code filename*} still receive a usable name.
      * <p>
      * If the filename is {@code null} or blank, defaults to {@code "file"} to avoid NPEs and ensure valid headers.
      *
@@ -135,9 +144,16 @@ public class RFC2231 {
         var sb = new StringBuilder();
         sb.append(inline ? "inline" : "attachment");
         sb.append("; filename=");
-        // Per RFC 6266, use quoted-string form when filename contains non-token characters
+        // Per RFC 6266, use quoted-string form and add a filename* parameter when the filename contains characters
+        // that require RFC 2231 encoding (bytes outside the RFC 2231 / RFC 5987 attr-char set).
         if (needsEncoding(filename)) {
-            sb.append('"').append(escapeForQuotedString(filename)).append('"');
+            String ascii = toAsciiFallback(filename);
+            // Quote the ASCII fallback only when it contains non-token characters (spaces, parentheses, ...).
+            if (needsEncoding(ascii)) {
+                sb.append('"').append(ascii).append('"');
+            } else {
+                sb.append(ascii);
+            }
             sb.append("; filename*=UTF-8''");
             encodeRFC2231(sb, filename);
         } else {
