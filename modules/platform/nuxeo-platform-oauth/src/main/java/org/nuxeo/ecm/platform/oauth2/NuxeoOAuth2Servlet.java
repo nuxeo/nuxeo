@@ -451,7 +451,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     }
 
     protected boolean userExists(String username) {
-        return Framework.doPrivileged(() -> Framework.getService(UserManager.class).getPrincipal(username) != null);
+        return Framework.doPrivileged(
+                () -> Framework.getService(UserManager.class).getPrincipal(username, false) != null);
     }
 
     protected void getAndSendToken(HttpServletResponse response, String clientId, String username) throws IOException {
