@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.thumbnail.disabled.other.test">
+
+  <require>org.nuxeo.ecm.platform.thumbnail.config</require>
+
+  <extension target="org.nuxeo.ecm.core.api.thumbnail.ThumbnailService" point="thumbnailConfiguration">
+    <thumbnailConfig repository="other" enabled="false" />
+  </extension>
+
+</component>

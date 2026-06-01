@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,5 +38,16 @@ public interface ThumbnailService {
      * Compute the thumbnail (related to the document type/facet)
      */
     Blob computeThumbnail(DocumentModel doc, CoreSession session);
+
+    /**
+     * Returns the thumbnail service configuration for the given repository.
+     * <p>
+     * The descriptor with id {@link ThumbnailConfigDescriptor#DEFAULT_ID} is overlaid by the descriptor matching
+     * {@code repositoryName} (if any). Never returns {@code null}: when no contribution is present, a descriptor with
+     * default values is returned.
+     *
+     * @since 2025.22
+     */
+    ThumbnailConfigDescriptor getConfiguration(String repositoryName);
 
 }

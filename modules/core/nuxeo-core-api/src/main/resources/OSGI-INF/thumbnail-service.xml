@@ -32,4 +32,16 @@
 
   </extension-point>
 
+  <extension-point name="thumbnailConfiguration">
+    <documentation>
+      Per-repository thumbnail service configuration. The descriptor with no @repository attribute is the default,
+      overlaid by per-repository contributions.
+      @since 2025.22
+      <code>
+        <thumbnailConfig repository="other" enabled="false" />
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.core.api.thumbnail.ThumbnailConfigDescriptor" />
+  </extension-point>
+
 </component>

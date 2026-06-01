@@ -47,7 +47,7 @@ public class UpdateThumbnailListener implements PostCommitFilteringEventListener
     public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
 
     // @since 11.5
-    protected ThumbnailHelper thumbnailHelper = new ThumbnailHelper();
+    protected ThumbnailHelper thumbnailHelper = ThumbnailHelper.INSTANCE;
 
     @Override
     public String getDisabledPropertyName() {

@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.thumbnail.ThumbnailService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -46,6 +47,18 @@ import org.nuxeo.runtime.api.Framework;
 public class CheckBlobUpdateListener implements EventListener {
 
     private static final Logger log = LogManager.getLogger(CheckBlobUpdateListener.class);
+
+    /**
+     * @return whether automatic thumbnail generation is disabled for the given document's repository
+     * @since 2025.22
+     */
+    protected static boolean isDisabled(DocumentModel doc) {
+        ThumbnailService service = Framework.getService(ThumbnailService.class);
+        if (service == null) {
+            return false;
+        }
+        return service.getConfiguration(doc.getRepositoryName()).isDisabled();
+    }
 
     @Override
     public void handleEvent(Event event) {
@@ -71,6 +84,18 @@ public class CheckBlobUpdateListener implements EventListener {
             }
 
             if (content.getValue() != null) {
+                if (isDisabled(doc)) {
+                    // When disabled
+                    if (DOCUMENT_CREATED.equals(event.getName())) {
+                        // Never auto-generate at creation
+                        return;
+                    }
+                    if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                        return;
+                    }
+                    // But refresh existing thumbnail at update
+                }
+
                 doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
 
                 // only skip sending the event: facet addition is needed for later recomputation

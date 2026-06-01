@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Enrich {@link DocumentModel} Json.

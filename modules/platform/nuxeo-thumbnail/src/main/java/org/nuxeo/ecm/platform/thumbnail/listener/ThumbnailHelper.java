@@ -18,6 +18,7 @@
  * Laurent Doguin <ldoguin@nuxeo.com>
  * Nelson Silva <nsilva@nuxeo.com>
  * bdelbosc
+ * Guillaume Renard
  */
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.DownloadBlobGuard;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -57,11 +59,18 @@ public class ThumbnailHelper {
 
     private static final Logger log = LogManager.getLogger(ThumbnailHelper.class);
 
+    protected static volatile Integer transactionTimeout; // volatile: INSTANCE is shared across threads
+
     public static final String THUMBNAIL_TX_TIMEOUT_PROPERTY = "nuxeo.thumbnail.transaction.timeout.seconds";
 
     public static final int DEFAULT_TX_TIMEOUT_SECONDS = 300;
 
-    protected Integer transactionTimeout;
+    /**
+     * Shared instance for callers.
+     *
+     * @since 2025.22
+     */
+    public static final ThumbnailHelper INSTANCE = new ThumbnailHelper();
 
     /**
      * Creates a thumbnail if needed and synchronizes the document facet.
@@ -96,20 +105,55 @@ public class ThumbnailHelper {
             doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, (Serializable) thumbnailBlob);
         }
         if (forceUpdate || doc.isDirty()) {
-            doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
-            doc.putContextData(DISABLE_AUTOMATIC_VERSIONING, Boolean.TRUE);
-            doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-            doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
-            doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
-            doc.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
-            doc.putContextData(CoreSession.DISABLE_AUDIT_LOGGER, Boolean.TRUE);
-            if (doc.isVersion()) {
-                doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-            }
-            doc.putContextData(THUMBNAIL_UPDATED, true);
+            disableListenersForThumbnailUpdate(doc);
             session.saveDocument(doc);
             log.debug("Thumbnail updated for doc: {}", doc::getId);
         }
+    }
+
+    /**
+     * Removes the thumbnail blob and the {@code Thumbnail} facet from the given document.
+     *
+     * @since 2025.22
+     */
+    public void removeThumbnail(CoreSession session, DocumentModel doc) {
+        if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+            log.debug("No thumbnail facet to remove for doc: {}", doc::getId);
+            return;
+        }
+        DownloadBlobGuard.enable();
+        boolean hasBlob = doc.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME) != null;
+        // Nullify the blob property first so that the orphan blob is garbage collected.
+        if (hasBlob) {
+            doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
+            disableListenersForThumbnailUpdate(doc);
+            session.saveDocument(doc);
+        }
+        doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
+        disableListenersForThumbnailUpdate(doc);
+        session.saveDocument(doc);
+        log.debug("Removed thumbnail facet from doc: {}", doc::getId);
+    }
+
+    /**
+     * Disables listeners and versioning on the given document via context data, so that a thumbnail-related save is
+     * silent (no audit entry, no notification, no Dublin Core update, no automatic versioning, no picture views
+     * regeneration) and does not trigger a new thumbnail computation.
+     *
+     * @since 2025.22
+     */
+    protected void disableListenersForThumbnailUpdate(DocumentModel doc) {
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+        doc.putContextData(DISABLE_AUTOMATIC_VERSIONING, Boolean.TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
+        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
+        doc.putContextData(DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, Boolean.TRUE);
+        doc.putContextData(CoreSession.DISABLE_AUDIT_LOGGER, Boolean.TRUE);
+        if (doc.isVersion()) {
+            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
+        doc.putContextData(THUMBNAIL_UPDATED, true);
     }
 
     /**

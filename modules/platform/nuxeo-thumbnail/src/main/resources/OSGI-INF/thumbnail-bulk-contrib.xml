@@ -6,6 +6,8 @@
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <action name="recomputeThumbnails" defaultScroller="repository" inputStream="bulk/recomputeThumbnails"
       bucketSize="25" batchSize="1" httpEnabled="false" />
+    <action name="removeThumbnails" defaultScroller="repository" inputStream="bulk/removeThumbnails"
+      bucketSize="25" batchSize="1" httpEnabled="false" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
@@ -14,6 +16,12 @@
       defaultConcurrency="${nuxeo.bulk.action.recomputeThumbnails.defaultConcurrency:=2}"
       defaultPartitions="${nuxeo.bulk.action.recomputeThumbnails.defaultPartitions:=6}">
       <policy name="default" maxRetries="${nuxeo.bulk.action.recomputeThumbnails.maxRetries:=1}" delay="5s" maxDelay="10s" continueOnFailure="true" />
+    </streamProcessor>
+    <streamProcessor name="removeThumbnails"
+      class="org.nuxeo.ecm.platform.thumbnail.action.RemoveThumbnailsAction"
+      defaultConcurrency="${nuxeo.bulk.action.removeThumbnails.defaultConcurrency:=1}"
+      defaultPartitions="${nuxeo.bulk.action.removeThumbnails.defaultPartitions:=1}">
+      <policy name="default" maxRetries="${nuxeo.bulk.action.removeThumbnails.maxRetries:=1}" delay="5s" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>
   </extension>
 

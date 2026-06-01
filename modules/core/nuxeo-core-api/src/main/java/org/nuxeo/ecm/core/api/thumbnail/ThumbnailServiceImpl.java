@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
  */
 package org.nuxeo.ecm.core.api.thumbnail;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +36,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Thumbnail service providing 3 kind of factories: by facet, by doctype, and thumbnail default one
+ * Thumbnail service providing 3 kind of factories: by facet, by doctype, and thumbnail default one.
  *
  * @since 5.7
  */
@@ -43,6 +45,9 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
     private static final Logger log = LogManager.getLogger(ThumbnailServiceImpl.class);
 
     public static final String THUMBNAILFACTORY_EP = "thumbnailFactory";
+
+    /** @since 2025.22 */
+    public static final String THUMBNAIL_CONFIGURATION_EP = "thumbnailConfiguration";
 
     protected ThumbnailFactory defaultFactory;
 
@@ -65,6 +70,8 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
             if (docType == null && facet == null) {
                 defaultFactory = desc.getFactory();
             }
+        } else if (THUMBNAIL_CONFIGURATION_EP.equals(extensionPoint)) {
+            super.registerContribution(contribution, extensionPoint, contributor);
         } else {
             log.error("Unknown extension point: {}", extensionPoint);
         }
@@ -72,6 +79,9 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (THUMBNAIL_CONFIGURATION_EP.equals(extensionPoint)) {
+            super.unregisterContribution(contribution, extensionPoint, contributor);
+        }
     }
 
     public Set<String> getFactoryByDocTypeNames() {
@@ -96,6 +106,18 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
     public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
         ThumbnailFactory factory = getThumbnailFactory(doc, session);
         return factory.computeThumbnail(doc, session);
+    }
+
+    @Override
+    public ThumbnailConfigDescriptor getConfiguration(String repositoryName) {
+        var def = this.<ThumbnailConfigDescriptor> getDescriptor(THUMBNAIL_CONFIGURATION_EP,
+                ThumbnailConfigDescriptor.DEFAULT_ID);
+        var perRepo = (repositoryName == null || ThumbnailConfigDescriptor.DEFAULT_ID.equals(repositoryName)) ? null
+                : this.<ThumbnailConfigDescriptor> getDescriptor(THUMBNAIL_CONFIGURATION_EP, repositoryName);
+        if (def != null && perRepo != null) {
+            return def.merge(perRepo);
+        }
+        return getIfNull(perRepo, () -> getIfNull(def, ThumbnailConfigDescriptor::new));
     }
 
     public ThumbnailFactory getThumbnailFactory(DocumentModel doc, CoreSession session) {

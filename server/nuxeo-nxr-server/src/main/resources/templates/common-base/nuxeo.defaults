@@ -117,6 +117,8 @@ nuxeo.work.queue.picture.threads=2
 # Queue for DBS Read ACL Update
 nuxeo.work.queue.raclupdate.enabled=true
 nuxeo.work.queue.raclupdate.threads=4
+# Thumbnail disablement
+nuxeo.thumbnail.enabled=true
 # Explicit timeout for thumbnail generation
 nuxeo.thumbnail.transaction.timeout.seconds=300
 # Explicit timeout for picture views generation
@@ -371,6 +373,9 @@ nuxeo.bulk.action.processRetentionEvent.defaultPartitions=4
 nuxeo.bulk.action.recomputeThumbnails.defaultConcurrency=2
 nuxeo.bulk.action.recomputeThumbnails.defaultPartitions=6
 nuxeo.bulk.action.recomputeThumbnails.maxRetries=1
+nuxeo.bulk.action.removeThumbnails.defaultConcurrency=1
+nuxeo.bulk.action.removeThumbnails.defaultPartitions=4
+nuxeo.bulk.action.removeThumbnails.maxRetries=1
 nuxeo.bulk.action.recomputeViews.defaultConcurrency=2
 nuxeo.bulk.action.recomputeViews.defaultPartitions=6
 nuxeo.bulk.action.recomputeViews.maxRetries=1
