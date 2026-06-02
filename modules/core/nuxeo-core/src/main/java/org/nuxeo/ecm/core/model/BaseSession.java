@@ -22,8 +22,10 @@ import static org.nuxeo.runtime.api.Framework.isBooleanPropertyFalse;
 import static org.nuxeo.runtime.api.Framework.isBooleanPropertyTrue;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -229,6 +231,7 @@ public abstract class BaseSession implements Session<QueryFilter> {
         ACP acp = getACP(doc, replaceReadVersionPermission);
         ACP mergedAcp = acp;
         ACL inherited = new ACLImpl(ACL.INHERITED_ACL, true); // collected inherited ACEs
+        Set<ACE> seenAces = new HashSet<>();
         for (;;) {
             if (acp != null && acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) == Access.DENY) {
                 // blocking, no need to continue
@@ -247,7 +250,12 @@ public abstract class BaseSession implements Session<QueryFilter> {
             // collect inherited ACEs for this level
             acp = getACP(doc, replaceReadVersionPermission);
             if (acp != null) {
-                inherited.addAll(acp.getMergedACLs(ACL.INHERITED_ACL));
+                // dedup: keep nearest-ancestor occurrence (first wins) - NXP-33571
+                for (ACE ace : acp.getMergedACLs(ACL.INHERITED_ACL)) {
+                    if (seenAces.add(ace)) {
+                        inherited.add(ace);
+                    }
+                }
             }
         }
         if (!inherited.isEmpty()) {
