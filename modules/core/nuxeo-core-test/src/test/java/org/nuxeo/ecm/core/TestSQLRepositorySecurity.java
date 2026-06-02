@@ -43,6 +43,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -382,6 +383,46 @@ public class TestSQLRepositorySecurity {
         acp = doc.getACP();
         acl = acp.getACL(ACL.INHERITED_ACL);
         assertNull(acl);
+    }
+
+    /**
+     * NXP-33571: when the same ACE is granted on multiple ancestors, the synthetic {@code inherited} ACL produced by
+     * {@code BaseSession#getMergedACP} must contain it only once, not once per ancestor.
+     */
+    @Test
+    public void testNoDuplicateACEsInInheritedACL() {
+        var parent1 = session.createDocument(session.createDocumentModel("/", "parent1", "Folder"));
+        var parent2 = session.createDocument(session.createDocumentModel("/parent1", "parent2", "Folder"));
+        var parent3 = session.createDocument(session.createDocumentModel("/parent1/parent2", "parent3", "Folder"));
+        var folder1 = session.createDocument(
+                session.createDocumentModel("/parent1/parent2/parent3", "folder1", "Folder"));
+
+        // grant the exact same ACE on each of the 3 ancestors
+        ACE user1Read = new ACE("user1", READ, true);
+
+        ACP parent1Acp = parent1.getACP();
+        parent1Acp.getOrCreateACL().add(user1Read);
+        parent1.setACP(parent1Acp, true);
+
+        ACP parent2Acp = parent2.getACP();
+        parent2Acp.getOrCreateACL().add(user1Read);
+        parent2.setACP(parent2Acp, true);
+
+        ACP parent3Acp = parent3.getACP();
+        parent3Acp.getOrCreateACL().add(user1Read);
+        parent3.setACP(parent3Acp, true);
+
+        session.save();
+
+        ACP acp = session.getACP(folder1.getRef());
+        ACL inherited = acp.getACL(ACL.INHERITED_ACL);
+        assertNotNull(inherited);
+
+        // sanity check: no ACE should appear twice in the inherited ACL
+        var seen = new HashSet<ACE>();
+        for (ACE ace : inherited) {
+            assertTrue("Duplicate ACE found in inherited ACL: " + ace, seen.add(ace));
+        }
     }
 
     @Test

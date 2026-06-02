@@ -18,10 +18,17 @@
  */
 package org.nuxeo.ecm.permissions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.inject.Inject;
 
@@ -45,6 +52,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Features(PermissionsFeature.class)
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
@@ -170,5 +179,63 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         JsonAssert ace = json.has("ace").get(0);
         ace.has("username").isText();
         ace.has("creator").isNull();
+    }
+
+    /**
+     * NXP-33571: when the same ACE is granted on multiple ancestors, the {@code inherited} ACL serialized by the
+     * enricher must contain it only once.
+     */
+    @Test
+    public void testNoDuplicateACEsInInheritedACL() throws IOException {
+        var parent1 = session.createDocument(session.createDocumentModel("/", "parent1", "Folder"));
+        var parent2 = session.createDocument(session.createDocumentModel("/parent1", "parent2", "Folder"));
+        var parent3 = session.createDocument(session.createDocumentModel("/parent1/parent2", "parent3", "Folder"));
+        DocumentModel folder1 = session.createDocument(
+                session.createDocumentModel("/parent1/parent2/parent3", "folder1", "Folder"));
+
+        // grant the exact same ACE on each of the 3 ancestors
+        ACE user1Read = new ACE("user1", READ, true);
+
+        ACP parent1Acp = parent1.getACP();
+        parent1Acp.getOrCreateACL().add(user1Read);
+        parent1.setACP(parent1Acp, true);
+
+        ACP parent2Acp = parent2.getACP();
+        parent2Acp.getOrCreateACL().add(user1Read);
+        parent2.setACP(parent2Acp, true);
+
+        ACP parent3Acp = parent3.getACP();
+        parent3Acp.getOrCreateACL().add(user1Read);
+        parent3.setACP(parent3Acp, true);
+
+        session.save();
+
+        // check inherited ACLs
+        JsonAssert json = jsonAssert(folder1, CtxBuilder.enrichDoc("acls").get());
+        JsonNode aclsNode = json.has("contextParameters").has("acls").isArray().getNode();
+
+        JsonNode inheritedAces = null;
+        for (JsonNode acl : aclsNode) {
+            if ("inherited".equals(acl.get("name").asText())) {
+                inheritedAces = acl.get("aces");
+                break;
+            }
+        }
+        assertNotNull("Expected an 'inherited' ACL in the enricher response", inheritedAces);
+
+        int user1ReadCount = 0;
+        Set<String> seen = new HashSet<>();
+        for (JsonNode ace : inheritedAces) {
+            String username = ace.get("username").asText();
+            String permission = ace.get("permission").asText();
+            boolean granted = ace.get("granted").asBoolean();
+            if ("user1".equals(username) && SecurityConstants.READ.equals(permission) && granted) {
+                user1ReadCount++;
+            }
+            // sanity check: no duplicate (username, permission, granted) triplet
+            String key = username + "|" + permission + "|" + granted;
+            assertTrue("Duplicate ACE found in inherited ACL: " + key, seen.add(key));
+        }
+        assertEquals("user1:Read should appear exactly once in the inherited ACL", 1, user1ReadCount);
     }
 }
