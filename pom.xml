@@ -4591,7 +4591,7 @@
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>
-          <version>2.46.1</version>
+          <version>3.6.0</version>
           <dependencies>
             <dependency>
               <groupId>org.nuxeo</groupId>
@@ -4601,9 +4601,6 @@
           </dependencies>
           <configuration>
             <ratchetFrom>origin/2025</ratchetFrom>
-            <upToDateChecking>
-              <enabled>false</enabled>
-            </upToDateChecking>
             <java>
               <excludes>
                 <exclude>src/main/java/org/nuxeo/ecm/core/query/sql/parser/parser.java</exclude>
@@ -4616,7 +4613,7 @@
                 <spacesPerTab>4</spacesPerTab>
               </indent>
               <removeUnusedImports />
-              <removeWildcardImports />
+              <forbidWildcardImports />
               <importOrder>
                 <file>nuxeo.importorder</file>
               </importOrder>
