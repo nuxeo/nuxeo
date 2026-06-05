@@ -50,12 +50,16 @@ public interface Cache {
     /**
      * Retrieves the value from the cache and returns it. If the associated value is null, retrieves it from the
      * {@code supplier} and put it into the cache.
+     * <p>
+     * Since 2025.21 the key can be null, in this case the {@code supplier} is invoked and the value is not cached.
      *
-     * @implNote The key must not be null
      * @since 11.5
      */
     @SuppressWarnings("unchecked")
     default <V extends Serializable> V computeIfAbsent(String key, Supplier<V> supplier) {
+        if (key == null) {
+            return supplier.get();
+        }
         var value = (V) get(key);
         if (value == null) {
             value = supplier.get();

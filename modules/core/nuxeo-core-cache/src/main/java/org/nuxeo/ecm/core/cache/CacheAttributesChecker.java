@@ -78,8 +78,7 @@ public class CacheAttributesChecker extends CacheWrapper {
     @Override
     public <V extends Serializable> V computeIfAbsent(String key, Supplier<V> supplier) {
         if (key == null) {
-            throw new IllegalArgumentException(
-                    "Can't computeIfAbsent a null key for the cache '%s'!".formatted(cache.getName()));
+            return supplier.get();
         }
         return super.computeIfAbsent(key, supplier);
     }

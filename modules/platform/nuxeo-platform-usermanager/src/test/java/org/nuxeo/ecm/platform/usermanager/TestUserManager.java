@@ -931,6 +931,18 @@ public class TestUserManager extends UserManagerTestCase {
         assertFalse(principal1.isMemberOf("group1"));
     }
 
+    /**
+     * A null username must return null rather than throwing.
+     *
+     * @since 2025.21
+     */
+    @Test
+    public void testGetPrincipalNullUsername() {
+        assertNull(userManager.getPrincipal(null));
+        assertNull(userManager.getPrincipal(null, true));
+        assertNull(userManager.getPrincipal(null, false));
+    }
+
     @Test
     public void testPasswordAuthenticate() {
         assertTrue(userManager.checkUsernamePassword("Administrator", "Administrator"));
