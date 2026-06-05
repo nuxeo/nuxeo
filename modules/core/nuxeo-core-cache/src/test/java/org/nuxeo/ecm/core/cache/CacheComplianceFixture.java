@@ -27,8 +27,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,6 +100,27 @@ public class CacheComplianceFixture {
         } catch (Exception e) {
             assertEquals("Can't put a null key for the cache 'default-test-cache'!", e.getMessage());
         }
+    }
+
+    /**
+     * @since 2025.21
+     */
+    @Test
+    public void computeIfAbsentNullKey() {
+        // Null key must not throw: the supplier is invoked and its value returned without being cached,
+        // mirroring the null-safe behavior of get(null). Regression test for NXP-33676.
+        int[] counter = new int[1];
+        Supplier<Serializable> supplier = () -> {
+            counter[0]++;
+            return "val-null";
+        };
+        assertEquals("val-null", defaultCache.computeIfAbsent(null, supplier));
+        assertEquals(1, counter[0]);
+        // No caching: a second call invokes the supplier again.
+        assertEquals("val-null", defaultCache.computeIfAbsent(null, supplier));
+        assertEquals(2, counter[0]);
+        // And get(null) still returns null.
+        assertNull(defaultCache.get(null));
     }
 
     @Test
