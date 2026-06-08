@@ -286,10 +286,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void readSettings() {
         if (Framework.isTestModeSet() && Framework.isBooleanPropertyTrue(DISABLE_ECM_BLOB_KEYS)) {
-            // For test purpose only
-            // As soon as we have the DISABLE_ECM_BLOB_KEYS true, ecm:blobKeys computation is skipped
-            // Better persist in mongodb settings the capability is lost for safety
-            initSettings();
+            // For test purpose only: honor the per-test property without persisting it to the DB.
+            supportsDenormalizedBlobKeys = false;
+            initCapabilities();
             return;
         }
         Document doc = settingsColl.find(eq(MONGODB_ID, SETTING_DENORMALIZED_BLOB_KEYS)).first();
@@ -303,6 +302,24 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void initCapabilities() {
         capabilities.put(CAPABILITY_QUERY_BLOB_KEYS, supportsDenormalizedBlobKeys);
+    }
+
+    /**
+     * In test mode, honor {@code nuxeo.test.repository.disable.blobKeys} at query time.
+     * <p>
+     * The capability is normally set once at startup (before per-test {@code @WithFrameworkProperty} annotations take
+     * effect). Overriding here ensures that the REST capabilities endpoint reflects the per-test property even without
+     * opening a new MongoDB connection.
+     *
+     * @since 2025.20
+     */
+    @Override
+    public Object getCapability(String name) {
+        if (CAPABILITY_QUERY_BLOB_KEYS.equals(name) && Framework.isTestModeSet()
+                && Framework.isBooleanPropertyTrue(DISABLE_ECM_BLOB_KEYS)) {
+            return false;
+        }
+        return super.getCapability(name);
     }
 
     @Override
