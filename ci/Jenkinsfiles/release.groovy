@@ -19,7 +19,7 @@
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-library identifier: "platform-ci-shared-library@v0.0.85"
+library identifier: "platform-ci-shared-library@v0.0.87"
 
 void getCurrentVersion() {
   return readMavenPom().getVersion()

@@ -1,0 +1,69 @@
+name: Scan for vulnerabilities
+
+on:
+  # Run manually or with the GitHub CLI
+  workflow_dispatch:
+    inputs:
+      image-name:
+        description: Name of the Docker image to scan, excluding registry and tag.
+        type: string
+        default: nuxeo/nuxeo
+        required: true
+      packages:
+        description: |
+          Comma-separated list of packages to scan, as Maven artifacts in the "groupId:artifactId:version:extension"
+          format.
+        type: string
+        required: true
+      version:
+        description: Version of the Docker image to scan, also used for workflow artifact naming.
+        type: string
+        required: true
+
+jobs:
+  scan-docker-image:
+    name: Scan Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Display workflow inputs in job summary
+        env:
+          IMAGE_NAME: ${{ inputs.image-name }}
+          PACKAGES: ${{ inputs.packages }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          {
+            echo '### Workflow Inputs'
+            echo ''
+            echo "**image-name:** $IMAGE_NAME"
+            echo ''
+            echo '**packages:**'
+            echo "$PACKAGES" | tr ',' '\n' | sed 's/^/- /'
+            echo ''
+            echo "**version:** $VERSION"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Scan Docker image
+        uses: nuxeo/gh-build-tools/.github/actions/scan-docker-image@2d46383a4e36e051f7f633a9452ab048e5697b38 # v0.14.0
+        with:
+          image-name: ${{ inputs.image-name }}
+          image-tag: ${{ inputs.version }}
+          output-filename: grype-docker-image-${{ inputs.version }}
+          registry: ${{ vars.DOCKER_REGISTRY_PRIVATE }}
+          registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
+          registry-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
+          vex: docker/vex.json
+
+  scan-packages:
+    name: Scan packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scan Maven artifacts
+        uses: nuxeo/gh-build-tools/.github/actions/scan-maven-artifacts@2d46383a4e36e051f7f633a9452ab048e5697b38 # v0.14.0
+        with:
+          artifacts: ${{ inputs.packages }}
+          java-version: '21'
+          mvn-repo-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
+          mvn-repo-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
+          output-filename:  grype-packages-${{ inputs.version }}
