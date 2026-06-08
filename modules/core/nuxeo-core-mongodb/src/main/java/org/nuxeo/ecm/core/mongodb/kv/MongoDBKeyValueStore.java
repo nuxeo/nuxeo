@@ -492,7 +492,10 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             // Cannot apply $inc to a value of non-numeric type; code: 16837
             // - MongoDB: "Cannot apply $inc"
             // - DocumentDB: "Cannot update value"
-            if (!e.getMessage().contains("Cannot apply $inc") && !e.getMessage().contains("Cannot update value")) {
+            // - DocumentDB local emulator: "Operation $inc cannot be performed"
+            String msg = e.getMessage();
+            if (!msg.contains("Cannot apply $inc") && !msg.contains("Cannot update value")
+                    && !msg.contains("Operation $inc cannot be performed")) {
                 throw new NuxeoException(e);
             }
             // for compatibility with other backends that don't have datatypes,
