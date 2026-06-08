@@ -17,7 +17,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *     Thomas Roger <troger@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.85"
+library identifier: "platform-ci-shared-library@v0.0.87"
 
 // we can not allocate directly the variable, we have to use an `if` to make Jenkins Groovy working
 def abortPrevious = false
@@ -246,7 +246,6 @@ pipeline {
     AWS_CREDENTIALS_SECRET = 'aws-credentials'
     AZURE_CREDENTIALS_SECRET = 'azure-credentials'
     AWS_SES_MAIL_SENDER = 'platform@hyland.com'
-    GITHUB_WORKFLOW_DOCKER_SCAN = 'docker-image-scan.yaml'
   }
 
   stages {
@@ -458,43 +457,6 @@ pipeline {
                   dockerRun(image, 'nuxeoctl start')
                   echo 'Run image as an arbitrary user (800)'
                   dockerRun(image, 'nuxeoctl start', '800')
-                }
-              }
-            }
-          }
-        }
-
-        stage('Scan Docker image') {
-          when {
-            anyOf {
-              expression {
-                !nxUtils.isPullRequest()
-              }
-              expression {
-                pullRequest.labels.contains('docker-scan')
-              }
-            }
-          }
-          steps {
-            container('maven') {
-              nxWithGitHubStatus(context: 'docker/scan', message: 'Scan Docker image') {
-                script {
-                  def imageName = "${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
-                  echo """
-                  ----------------------------------------
-                  Scan Docker image
-                  ----------------------------------------
-                  Image full name: ${DOCKER_REGISTRY}/${imageName}
-                  """
-                  nxGitHub.runAndWatchWorkflow(
-                    workflowId: "${GITHUB_WORKFLOW_DOCKER_SCAN}",
-                    branch: "${CHANGE_BRANCH}",
-                    rawFields: [
-                      internalRegistry: true,
-                      imageName: "${imageName}",
-                    ],
-                    exitStatus: true
-                  )
                 }
               }
             }
@@ -764,6 +726,36 @@ pipeline {
             echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
             dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
             dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_BENCHMARK_IMAGE_NAME}")
+          }
+        }
+      }
+    }
+
+    stage('Scan for vulnerabilities') {
+      when {
+        expression {
+          !nxUtils.isPullRequest()
+        }
+      }
+      steps {
+        container('maven') {
+          nxWithGitHubStatus(context: 'scan-vulnerabilities', message: 'Scan Docker image and Nuxeo packages for vulnerabilities') {
+            script {
+              echo """
+              ----------------------------------------
+              Scan Docker image and Nuxeo packages
+              ----------------------------------------""".stripIndent()
+              def parameters = [
+                string(name: 'NUXEO_BRANCH', value: CHANGE_BRANCH),
+              ]
+              nxUtils.buildWrapped(
+                job: 'nuxeo/lts/scan-nuxeo',
+                parameters: parameters,
+                // Don't wait, as the downstream job doesn't fail if it finds some vulnerabilities, it just creates
+                // some Jira issues and notify in Teams. Thus, the current build cannot be blocked.
+                wait: false,
+              )
+            }
           }
         }
       }
