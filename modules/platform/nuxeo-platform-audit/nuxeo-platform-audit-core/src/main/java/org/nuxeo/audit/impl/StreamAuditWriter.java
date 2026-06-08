@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.service.AuditRouter;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -76,12 +77,23 @@ public class StreamAuditWriter implements StreamProcessorTopology {
                     log.error("Discard invalid record: {}", record, e);
                 }
             }
-            Framework.getService(AuditRouter.class).routeToBackends(logEntries);
+            try {
+                getAuditRouter().routeToBackends(logEntries);
+            } catch (ConcurrentUpdateException e) {
+                // Records were already inserted by a previous attempt; treat as a no-op
+                // so the batch is checkpointed and not retried indefinitely.
+                log.warn("Ignoring duplicate audit log entries on replay, count: {}", e.getInfos().size());
+                log.debug("Duplicate audit entries: {}", e.getMessage(), e);
+            }
         }
 
         @Override
         public void batchFailure(ComputationContext context, String inputStreamName, List<Record> records) {
             // error log already done by abstract
+        }
+
+        protected AuditRouter getAuditRouter() {
+            return Framework.getService(AuditRouter.class);
         }
 
         protected LogEntry getLogEntryFromJson(byte[] data) {
