@@ -108,6 +108,9 @@ public class CSVImporterWork extends TransientStoreWork {
 
     public static final String NUXEO_CSV_MAIL_TO = "nuxeo.csv.mail.to";
 
+    /** @since 2025.21 */
+    public static final String NUXEO_CSV_IMPORTER_MAX_LINES_PROP_NAME = "nuxeo.csv.importer.max.lines";
+
     public static final String LABEL_CSV_IMPORTER_NOT_EXISTING_FIELD = "label.csv.importer.notExistingField";
 
     public static final String LABEL_CSV_IMPORTER_CANNOT_CONVERT_FIELD_VALUE = "label.csv.importer.cannotConvertFieldValue";
@@ -146,6 +149,12 @@ public class CSVImporterWork extends TransientStoreWork {
 
     public static final String LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT = "label.csv.importer.errorDuringImport";
 
+    /** @since 2025.21 */
+    public static final String LABEL_CSV_IMPORTER_ERROR_NB_LINES_UNKNOWN = "label.csv.importer.errorNbLinesUnknown";
+
+    /** @since 2025.21 */
+    public static final String LABEL_CSV_IMPORTER_ERROR_NB_LINES_EXCEEDED = "label.csv.importer.errorNbLinesExceeded";
+
     public static final String LABEL_CSV_IMPORTER_EMPTY_LINE = "label.csv.importer.emptyLine";
 
     private static final long serialVersionUID = 1L;
@@ -179,6 +188,9 @@ public class CSVImporterWork extends TransientStoreWork {
 
     protected boolean computeTotal = false;
 
+    /** @since 2025.21 */
+    protected long maxCSVLines = -1L;
+
     protected long total = -1L;
 
     /** @since 11.1 */
@@ -198,6 +210,13 @@ public class CSVImporterWork extends TransientStoreWork {
         setOriginatingUsername(username);
         this.parentPath = parentPath;
         this.username = username;
+        String maxCSVLinesProp = Framework.getProperty(NUXEO_CSV_IMPORTER_MAX_LINES_PROP_NAME, "-1");
+        try {
+            this.maxCSVLines = Long.parseLong(maxCSVLinesProp);
+        } catch (NumberFormatException e) {
+            log.warn("Invalid value: '{}' for property: '{}', no limit will be enforced", maxCSVLinesProp,
+                    NUXEO_CSV_IMPORTER_MAX_LINES_PROP_NAME);
+        }
         if (csvBlob.getLength() >= 0 && csvBlob.getLength() < options.getComputeTotalThresholdSize()) {
             computeTotal = true;
         }
@@ -224,18 +243,20 @@ public class CSVImporterWork extends TransientStoreWork {
         TransientStore store = getStore();
         setStatus("Importing");
         openUserSession();
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader()
-                                               .withEscape(options.getEscapeCharacter())
-                                               .withCommentMarker(options.getCommentMarker())
-                                               .withIgnoreSurroundingSpaces();
-        try (Reader in = newReader(getBlob()); CSVParser parser = csvFormat.parse(in)) {
-            doImport(parser);
-        } catch (IOException e) {
-            logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
-            log.debug(e, e);
-        } catch (IllegalArgumentException e) {
-            logError(0, "Invalid CSV file: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
-            log.debug(e, e);
+        if (checkLineLimit()) {
+            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader()
+                                                   .withEscape(options.getEscapeCharacter())
+                                                   .withCommentMarker(options.getCommentMarker())
+                                                   .withIgnoreSurroundingSpaces();
+            try (Reader in = newReader(getBlob()); CSVParser parser = csvFormat.parse(in)) {
+                doImport(parser);
+            } catch (IOException e) {
+                logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
+                log.debug(e, e);
+            } catch (IllegalArgumentException e) {
+                logError(0, "Invalid CSV file: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
+                log.debug(e, e);
+            }
         }
         store.putParameter(id, "logs", importLogs);
         if (options.sendEmail()) {
@@ -243,6 +264,36 @@ public class CSVImporterWork extends TransientStoreWork {
             sendMail();
         }
         setStatus(null);
+    }
+
+    /**
+     * Performs a low-level line count of the CSV blob and reports an error if the number of data lines (lines minus the
+     * header) exceeds {@link #maxCSVLines}.
+     *
+     * @return {@code true} if the import may proceed, {@code false} if the limit was exceeded
+     * @since 2025.21
+     */
+    protected boolean checkLineLimit() {
+        if (maxCSVLines <= 0) {
+            return true;
+        }
+        try (BufferedReader reader = newReader(getBlob())) {
+            // CSV has a header line plus data lines, so the total tolerated is maxCSVLines + 1.
+            long maxAllowedLines = maxCSVLines + 1;
+            long lineCount = 0;
+            while (reader.readLine() != null) {
+                if (++lineCount > maxAllowedLines) {
+                    logError(0, "The CSV file contains too many lines to be processed, the current limit is %s lines.",
+                            LABEL_CSV_IMPORTER_ERROR_NB_LINES_EXCEEDED, String.valueOf(maxCSVLines));
+                    return false;
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            logError(0, "Could not compute total number of documents to be imported: %s",
+                    LABEL_CSV_IMPORTER_ERROR_NB_LINES_UNKNOWN, e.getMessage());
+            return false;
+        }
     }
 
     @Override
