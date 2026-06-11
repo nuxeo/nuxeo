@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.webdav.resource;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.OK;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -35,18 +34,38 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.HEAD;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jugs.webdav.jaxrs.methods.COPY;
+import org.jugs.webdav.jaxrs.methods.LOCK;
+import org.jugs.webdav.jaxrs.methods.MKCOL;
+import org.jugs.webdav.jaxrs.methods.MOVE;
+import org.jugs.webdav.jaxrs.methods.PROPPATCH;
+import org.jugs.webdav.jaxrs.methods.UNLOCK;
+import org.jugs.webdav.jaxrs.xml.elements.ActiveLock;
+import org.jugs.webdav.jaxrs.xml.elements.Depth;
+import org.jugs.webdav.jaxrs.xml.elements.HRef;
+import org.jugs.webdav.jaxrs.xml.elements.LockRoot;
+import org.jugs.webdav.jaxrs.xml.elements.LockScope;
+import org.jugs.webdav.jaxrs.xml.elements.LockToken;
+import org.jugs.webdav.jaxrs.xml.elements.LockType;
+import org.jugs.webdav.jaxrs.xml.elements.MultiStatus;
+import org.jugs.webdav.jaxrs.xml.elements.Owner;
+import org.jugs.webdav.jaxrs.xml.elements.Prop;
+import org.jugs.webdav.jaxrs.xml.elements.PropStat;
+import org.jugs.webdav.jaxrs.xml.elements.Status;
+import org.jugs.webdav.jaxrs.xml.elements.TimeOut;
+import org.jugs.webdav.jaxrs.xml.properties.LockDiscovery;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -63,27 +82,6 @@ import org.nuxeo.ecm.webdav.jaxrs.Win32CreationTime;
 import org.nuxeo.ecm.webdav.jaxrs.Win32FileAttributes;
 import org.nuxeo.ecm.webdav.jaxrs.Win32LastAccessTime;
 import org.nuxeo.ecm.webdav.jaxrs.Win32LastModifiedTime;
-
-import net.java.dev.webdav.jaxrs.methods.COPY;
-import net.java.dev.webdav.jaxrs.methods.LOCK;
-import net.java.dev.webdav.jaxrs.methods.MKCOL;
-import net.java.dev.webdav.jaxrs.methods.MOVE;
-import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
-import net.java.dev.webdav.jaxrs.methods.UNLOCK;
-import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
-import net.java.dev.webdav.jaxrs.xml.elements.Depth;
-import net.java.dev.webdav.jaxrs.xml.elements.HRef;
-import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
-import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
-import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
-import net.java.dev.webdav.jaxrs.xml.elements.LockType;
-import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
-import net.java.dev.webdav.jaxrs.xml.elements.Owner;
-import net.java.dev.webdav.jaxrs.xml.elements.Prop;
-import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
-import net.java.dev.webdav.jaxrs.xml.elements.Status;
-import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
-import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 
 /**
  * An existing resource corresponds to an existing object (folder or file) in the repository.
@@ -272,7 +270,7 @@ public class ExistingResource extends AbstractResource {
         // @TODO: patch properties if need.
         // Fake proppatch response
         @SuppressWarnings("deprecation")
-        final net.java.dev.webdav.jaxrs.xml.elements.Response response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+        final org.jugs.webdav.jaxrs.xml.elements.Response response = new org.jugs.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()), null, null, null,
                 new PropStat(new Prop(new Win32CreationTime()), new Status(OK)),
                 new PropStat(new Prop(new Win32FileAttributes()), new Status(OK)),

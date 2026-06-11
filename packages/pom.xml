@@ -55,6 +55,7 @@
     <module>nuxeo-tree-snapshot-package</module>
     <module>nuxeo-uidgen-opensearch1-package</module>
     <module>nuxeo-uidgen-sql-package</module>
+    <module>nuxeo-webdav-package</module>
     <module>nuxeo-wopi-package</module>
   </modules>
 

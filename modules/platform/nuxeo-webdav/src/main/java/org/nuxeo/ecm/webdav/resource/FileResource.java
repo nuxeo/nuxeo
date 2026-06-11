@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,41 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.webdav.resource;
 
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.OK;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.xml.bind.JAXBException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jugs.webdav.jaxrs.methods.PROPFIND;
+import org.jugs.webdav.jaxrs.xml.elements.HRef;
+import org.jugs.webdav.jaxrs.xml.elements.LockEntry;
+import org.jugs.webdav.jaxrs.xml.elements.LockScope;
+import org.jugs.webdav.jaxrs.xml.elements.LockType;
+import org.jugs.webdav.jaxrs.xml.elements.MultiStatus;
+import org.jugs.webdav.jaxrs.xml.elements.Prop;
+import org.jugs.webdav.jaxrs.xml.elements.PropFind;
+import org.jugs.webdav.jaxrs.xml.elements.PropStat;
+import org.jugs.webdav.jaxrs.xml.elements.Status;
+import org.jugs.webdav.jaxrs.xml.properties.SupportedLock;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,29 +60,6 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.jaxrs.Util;
 import org.xml.sax.SAXException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.webdav.backend.Backend;
-import org.nuxeo.ecm.webdav.jaxrs.Util;
-
-import net.java.dev.webdav.jaxrs.methods.PROPFIND;
-import net.java.dev.webdav.jaxrs.xml.elements.HRef;
-import net.java.dev.webdav.jaxrs.xml.elements.LockEntry;
-import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
-import net.java.dev.webdav.jaxrs.xml.elements.LockType;
-import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
-import net.java.dev.webdav.jaxrs.xml.elements.Prop;
-import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
-import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
-import net.java.dev.webdav.jaxrs.xml.elements.Status;
-import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
 /**
  * Resource representing a file-like object in the repository. (I.e. not a folder).
@@ -152,25 +140,25 @@ public class FileResource extends ExistingResource {
             propStatNotFound = props.notFound(prop);
         }
 
-        net.java.dev.webdav.jaxrs.xml.elements.Response response;
+        org.jugs.webdav.jaxrs.xml.elements.Response response;
         URI uri = uriInfo.getRequestUri();
         PropStat filePropStat = new PropStat(
                 new Prop(new SupportedLock(new LockEntry(LockScope.EXCLUSIVE, LockType.WRITE))), new Status(OK));
         if (doc.isLocked()) {
             PropStat lockDiscoveryPropStat = new PropStat(new Prop(getLockDiscovery(doc, uriInfo)), new Status(OK));
             if (propStatNotFound != null) {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
+                response = new org.jugs.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound, propStatNotFound, lockDiscoveryPropStat);
             } else {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
+                response = new org.jugs.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound, lockDiscoveryPropStat);
             }
         } else {
             if (propStatNotFound != null) {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
+                response = new org.jugs.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound, propStatNotFound);
             } else {
-                response = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
+                response = new org.jugs.webdav.jaxrs.xml.elements.Response(new HRef(uri), null, null, null,
                         filePropStat, propStatFound);
             }
         }

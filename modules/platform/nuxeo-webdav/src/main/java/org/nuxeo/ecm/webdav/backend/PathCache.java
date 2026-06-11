@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ public class PathCache {
         if (pathToUuidCache.size() >= maxSize) {
             clean();
         }
-        pathToUuidCache.put(path, new Value(System.currentTimeMillis()
-                + (model.isFolder() ? FOLDER_LIFE_TIME : FILE_LIFE_TIME), model.getId()));
+        pathToUuidCache.put(path, new Value(
+                System.currentTimeMillis() + (model.isFolder() ? FOLDER_LIFE_TIME : FILE_LIFE_TIME), model.getId()));
     }
 
     public DocumentModel get(String path) {

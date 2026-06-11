@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package type="addon" name="nuxeo-webdav" version="@VERSION@">
+  <title>Nuxeo WebDAV</title>
+  <description>
+    <p>Provides a WebDAV interface to the Nuxeo repository, allowing users to browse, read and write documents using any WebDAV-compatible client (macOS Finder, Windows Explorer, third-party tools).</p>
+  </description>
+  <vendor>Nuxeo</vendor>
+  <target-platform>
+    <name>@DISTRIBUTION_NAME@</name>
+    <version>@VERSION@</version>
+  </target-platform>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+</package>

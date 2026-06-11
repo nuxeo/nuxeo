@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
@@ -165,7 +165,8 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testPropFindOnFolderDepthInfinity() throws Exception {
-        HttpPropfind request = new HttpPropfind(getRootUri(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_INFINITY);
+        HttpPropfind request = new HttpPropfind(getRootUri(), DavConstants.PROPFIND_ALL_PROP,
+                DavConstants.DEPTH_INFINITY);
         try (CloseableHttpResponse response = client.execute(request, context)) {
             MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
             // Not quite nice, but for a example ok

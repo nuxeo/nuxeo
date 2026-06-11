@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.webdav.resource;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static net.java.dev.webdav.jaxrs.xml.properties.ResourceType.COLLECTION;
+import static jakarta.ws.rs.core.Response.Status.OK;
+import static org.jugs.webdav.jaxrs.xml.properties.ResourceType.COLLECTION;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,45 +27,44 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import net.java.dev.webdav.jaxrs.methods.COPY;
-import net.java.dev.webdav.jaxrs.methods.LOCK;
-import net.java.dev.webdav.jaxrs.methods.MKCOL;
-import net.java.dev.webdav.jaxrs.methods.MOVE;
-import net.java.dev.webdav.jaxrs.methods.PROPFIND;
-import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
-import net.java.dev.webdav.jaxrs.methods.UNLOCK;
-import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
-import net.java.dev.webdav.jaxrs.xml.elements.Depth;
-import net.java.dev.webdav.jaxrs.xml.elements.HRef;
-import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
-import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
-import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
-import net.java.dev.webdav.jaxrs.xml.elements.LockType;
-import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
-import net.java.dev.webdav.jaxrs.xml.elements.Owner;
-import net.java.dev.webdav.jaxrs.xml.elements.Prop;
-import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
-import net.java.dev.webdav.jaxrs.xml.elements.Status;
-import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
-import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
-import net.java.dev.webdav.jaxrs.xml.properties.DisplayName;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
-import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
-import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
-import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HEAD;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.jugs.webdav.jaxrs.methods.COPY;
+import org.jugs.webdav.jaxrs.methods.LOCK;
+import org.jugs.webdav.jaxrs.methods.MKCOL;
+import org.jugs.webdav.jaxrs.methods.MOVE;
+import org.jugs.webdav.jaxrs.methods.PROPFIND;
+import org.jugs.webdav.jaxrs.methods.PROPPATCH;
+import org.jugs.webdav.jaxrs.methods.UNLOCK;
+import org.jugs.webdav.jaxrs.xml.elements.ActiveLock;
+import org.jugs.webdav.jaxrs.xml.elements.Depth;
+import org.jugs.webdav.jaxrs.xml.elements.HRef;
+import org.jugs.webdav.jaxrs.xml.elements.LockRoot;
+import org.jugs.webdav.jaxrs.xml.elements.LockScope;
+import org.jugs.webdav.jaxrs.xml.elements.LockToken;
+import org.jugs.webdav.jaxrs.xml.elements.LockType;
+import org.jugs.webdav.jaxrs.xml.elements.MultiStatus;
+import org.jugs.webdav.jaxrs.xml.elements.Owner;
+import org.jugs.webdav.jaxrs.xml.elements.Prop;
+import org.jugs.webdav.jaxrs.xml.elements.PropStat;
+import org.jugs.webdav.jaxrs.xml.elements.Status;
+import org.jugs.webdav.jaxrs.xml.elements.TimeOut;
+import org.jugs.webdav.jaxrs.xml.properties.CreationDate;
+import org.jugs.webdav.jaxrs.xml.properties.DisplayName;
+import org.jugs.webdav.jaxrs.xml.properties.GetContentLength;
+import org.jugs.webdav.jaxrs.xml.properties.GetContentType;
+import org.jugs.webdav.jaxrs.xml.properties.GetLastModified;
+import org.jugs.webdav.jaxrs.xml.properties.LockDiscovery;
+import org.jugs.webdav.jaxrs.xml.properties.SupportedLock;
 import org.nuxeo.ecm.webdav.EscapeUtils;
 import org.nuxeo.ecm.webdav.jaxrs.IsCollection;
 import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
@@ -113,7 +112,7 @@ public class VirtualFolderResource extends AbstractResource {
         Date creationDate = new Date();
 
         @SuppressWarnings("deprecation")
-        final net.java.dev.webdav.jaxrs.xml.elements.Response response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+        final org.jugs.webdav.jaxrs.xml.elements.Response response = new org.jugs.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()), null, null, null, new PropStat(new Prop(new DisplayName("nuxeo"), /*
                                                                                                                       * @
                                                                                                                       * TODO
@@ -125,16 +124,17 @@ public class VirtualFolderResource extends AbstractResource {
                                                                                                                       * root
                                                                                                                       * name
                                                                                                                       */
-                new LockDiscovery(), new SupportedLock(), new IsFolder("t"), new IsCollection(Integer.valueOf(1)),
-                        new IsHidden(Integer.valueOf(0)), new GetContentType("application/octet-stream"),
-                        new GetContentLength(0), new CreationDate(creationDate), new GetLastModified(lastModified),
-                        COLLECTION), new Status(OK)));
+                        new LockDiscovery(), new SupportedLock(), new IsFolder("t"),
+                        new IsCollection(Integer.valueOf(1)), new IsHidden(Integer.valueOf(0)),
+                        new GetContentType("application/octet-stream"), new GetContentLength(0),
+                        new CreationDate(creationDate), new GetLastModified(lastModified), COLLECTION),
+                        new Status(OK)));
 
         if (depth.equals("0")) {
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
-        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<>();
+        List<org.jugs.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<>();
         responses.add(response);
 
         for (String name : rootFolderNames) {
@@ -146,17 +146,17 @@ public class VirtualFolderResource extends AbstractResource {
 
             PropStat found = props.build();
 
-            net.java.dev.webdav.jaxrs.xml.elements.Response childResponse;
+            org.jugs.webdav.jaxrs.xml.elements.Response childResponse;
             URI childUri = uriInfo.getRequestUriBuilder().path(name).build();
 
-            childResponse = new net.java.dev.webdav.jaxrs.xml.elements.Response(new HRef(childUri), null, null, null,
+            childResponse = new org.jugs.webdav.jaxrs.xml.elements.Response(new HRef(childUri), null, null, null,
                     found);
 
             responses.add(childResponse);
         }
 
         MultiStatus st = new MultiStatus(
-                responses.toArray(new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
+                responses.toArray(new org.jugs.webdav.jaxrs.xml.elements.Response[responses.size()]));
         return Response.status(207).entity(st).build();
     }
 

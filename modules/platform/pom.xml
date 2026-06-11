@@ -101,6 +101,7 @@
     <module>nuxeo-web-resources-core</module>
     <module>nuxeo-web-resources-wro</module>
     <module>nuxeo-webengine</module>
+    <module>nuxeo-webdav</module>
     <module>nuxeo-wopi</module>
     <module>rest-api</module>
   </modules>

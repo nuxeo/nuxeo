@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2023 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,63 +22,63 @@ package org.nuxeo.ecm.webdav.jaxrs;
 
 import java.io.InputStream;
 
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 
+import jakarta.ws.rs.core.Response;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+
+import org.jugs.webdav.jaxrs.xml.conditions.CannotModifyProtectedProperty;
+import org.jugs.webdav.jaxrs.xml.conditions.LockTokenMatchesRequestUri;
+import org.jugs.webdav.jaxrs.xml.conditions.LockTokenSubmitted;
+import org.jugs.webdav.jaxrs.xml.conditions.NoConflictingLock;
+import org.jugs.webdav.jaxrs.xml.conditions.NoExternalEntities;
+import org.jugs.webdav.jaxrs.xml.conditions.PreservedLiveProperties;
+import org.jugs.webdav.jaxrs.xml.conditions.PropFindFiniteDepth;
+import org.jugs.webdav.jaxrs.xml.elements.ActiveLock;
+import org.jugs.webdav.jaxrs.xml.elements.AllProp;
+import org.jugs.webdav.jaxrs.xml.elements.Collection;
+import org.jugs.webdav.jaxrs.xml.elements.Depth;
+import org.jugs.webdav.jaxrs.xml.elements.Exclusive;
+import org.jugs.webdav.jaxrs.xml.elements.HRef;
+import org.jugs.webdav.jaxrs.xml.elements.Include;
+import org.jugs.webdav.jaxrs.xml.elements.Location;
+import org.jugs.webdav.jaxrs.xml.elements.LockEntry;
+import org.jugs.webdav.jaxrs.xml.elements.LockInfo;
+import org.jugs.webdav.jaxrs.xml.elements.LockRoot;
+import org.jugs.webdav.jaxrs.xml.elements.LockScope;
+import org.jugs.webdav.jaxrs.xml.elements.LockToken;
+import org.jugs.webdav.jaxrs.xml.elements.LockType;
+import org.jugs.webdav.jaxrs.xml.elements.MultiStatus;
+import org.jugs.webdav.jaxrs.xml.elements.Owner;
+import org.jugs.webdav.jaxrs.xml.elements.Prop;
+import org.jugs.webdav.jaxrs.xml.elements.PropFind;
+import org.jugs.webdav.jaxrs.xml.elements.PropName;
+import org.jugs.webdav.jaxrs.xml.elements.PropStat;
+import org.jugs.webdav.jaxrs.xml.elements.PropertyUpdate;
+import org.jugs.webdav.jaxrs.xml.elements.Remove;
+import org.jugs.webdav.jaxrs.xml.elements.ResponseDescription;
+import org.jugs.webdav.jaxrs.xml.elements.Set;
+import org.jugs.webdav.jaxrs.xml.elements.Shared;
+import org.jugs.webdav.jaxrs.xml.elements.Status;
+import org.jugs.webdav.jaxrs.xml.elements.TimeOut;
+import org.jugs.webdav.jaxrs.xml.elements.Write;
+import org.jugs.webdav.jaxrs.xml.properties.CreationDate;
+import org.jugs.webdav.jaxrs.xml.properties.DisplayName;
+import org.jugs.webdav.jaxrs.xml.properties.GetContentLanguage;
+import org.jugs.webdav.jaxrs.xml.properties.GetContentLength;
+import org.jugs.webdav.jaxrs.xml.properties.GetContentType;
+import org.jugs.webdav.jaxrs.xml.properties.GetETag;
+import org.jugs.webdav.jaxrs.xml.properties.GetLastModified;
+import org.jugs.webdav.jaxrs.xml.properties.LockDiscovery;
+import org.jugs.webdav.jaxrs.xml.properties.ResourceType;
+import org.jugs.webdav.jaxrs.xml.properties.SupportedLock;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import net.java.dev.webdav.jaxrs.xml.conditions.CannotModifyProtectedProperty;
-import net.java.dev.webdav.jaxrs.xml.conditions.LockTokenMatchesRequestUri;
-import net.java.dev.webdav.jaxrs.xml.conditions.LockTokenSubmitted;
-import net.java.dev.webdav.jaxrs.xml.conditions.NoConflictingLock;
-import net.java.dev.webdav.jaxrs.xml.conditions.NoExternalEntities;
-import net.java.dev.webdav.jaxrs.xml.conditions.PreservedLiveProperties;
-import net.java.dev.webdav.jaxrs.xml.conditions.PropFindFiniteDepth;
-import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
-import net.java.dev.webdav.jaxrs.xml.elements.AllProp;
-import net.java.dev.webdav.jaxrs.xml.elements.Collection;
-import net.java.dev.webdav.jaxrs.xml.elements.Depth;
-import net.java.dev.webdav.jaxrs.xml.elements.Exclusive;
-import net.java.dev.webdav.jaxrs.xml.elements.HRef;
-import net.java.dev.webdav.jaxrs.xml.elements.Include;
-import net.java.dev.webdav.jaxrs.xml.elements.Location;
-import net.java.dev.webdav.jaxrs.xml.elements.LockEntry;
-import net.java.dev.webdav.jaxrs.xml.elements.LockInfo;
-import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
-import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
-import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
-import net.java.dev.webdav.jaxrs.xml.elements.LockType;
-import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
-import net.java.dev.webdav.jaxrs.xml.elements.Owner;
-import net.java.dev.webdav.jaxrs.xml.elements.Prop;
-import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
-import net.java.dev.webdav.jaxrs.xml.elements.PropName;
-import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
-import net.java.dev.webdav.jaxrs.xml.elements.PropertyUpdate;
-import net.java.dev.webdav.jaxrs.xml.elements.Remove;
-import net.java.dev.webdav.jaxrs.xml.elements.ResponseDescription;
-import net.java.dev.webdav.jaxrs.xml.elements.Set;
-import net.java.dev.webdav.jaxrs.xml.elements.Shared;
-import net.java.dev.webdav.jaxrs.xml.elements.Status;
-import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
-import net.java.dev.webdav.jaxrs.xml.elements.Write;
-import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
-import net.java.dev.webdav.jaxrs.xml.properties.DisplayName;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentLanguage;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
-import net.java.dev.webdav.jaxrs.xml.properties.GetETag;
-import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
-import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
-import net.java.dev.webdav.jaxrs.xml.properties.ResourceType;
-import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
 /**
  * Utility functions.
@@ -99,7 +99,7 @@ public class Util {
                 CreationDate.class, //
                 Depth.class, //
                 DisplayName.class, //
-                net.java.dev.webdav.jaxrs.xml.elements.Error.class, //
+                org.jugs.webdav.jaxrs.xml.elements.Error.class, //
                 Exclusive.class, //
                 GetContentLanguage.class, //
                 GetContentLength.class, //

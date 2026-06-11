@@ -18,16 +18,25 @@
  */
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.jaxrs.xml.elements.Prop;
-import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
-import net.java.dev.webdav.jaxrs.xml.properties.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
+import jakarta.ws.rs.core.Response.Status;
+
+import org.jugs.webdav.jaxrs.xml.elements.Prop;
+import org.jugs.webdav.jaxrs.xml.elements.PropStat;
+import org.jugs.webdav.jaxrs.xml.properties.CreationDate;
+import org.jugs.webdav.jaxrs.xml.properties.DisplayName;
+import org.jugs.webdav.jaxrs.xml.properties.GetContentLength;
+import org.jugs.webdav.jaxrs.xml.properties.GetContentType;
+import org.jugs.webdav.jaxrs.xml.properties.GetLastModified;
+import org.jugs.webdav.jaxrs.xml.properties.ResourceType;
 import org.nuxeo.ecm.webdav.jaxrs.IsHidden;
 import org.w3c.dom.Element;
-
-import javax.ws.rs.core.Response.Status;
-
-import java.util.*;
 
 /**
  * Copy-pasted then modified from jaxrs-webdav.
@@ -135,7 +144,7 @@ public class PropStatBuilderExt {
         if (!empty) {
             Object[] objects = notFound.toArray(new Object[properties.size()]);
             Prop prop = new Prop(objects);
-            stat = new PropStat(prop, new net.java.dev.webdav.jaxrs.xml.elements.Status(Status.NOT_FOUND));
+            stat = new PropStat(prop, new org.jugs.webdav.jaxrs.xml.elements.Status(Status.NOT_FOUND));
         }
 
         return stat;
@@ -150,7 +159,7 @@ public class PropStatBuilderExt {
     public PropStat build() {
         Object[] objects = properties.toArray(new Object[properties.size()]);
         Prop prop = new Prop(objects);
-        PropStat stat = new PropStat(prop, new net.java.dev.webdav.jaxrs.xml.elements.Status(status));
+        PropStat stat = new PropStat(prop, new org.jugs.webdav.jaxrs.xml.elements.Status(status));
 
         return stat;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.webdav;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import org.nuxeo.ecm.webdav.jaxrs.Util;
 
@@ -46,7 +46,8 @@ public class WebDavContextResolver implements ContextResolver<JAXBContext> {
 
     @Override
     public JAXBContext getContext(Class<?> type) {
-        if (type.getPackage().getName().startsWith("net.java.dev.webdav.jaxrs.xml.elements")) {
+        String pkg = type.getPackage().getName();
+        if (pkg.startsWith("org.jugs.webdav.jaxrs.xml") || pkg.startsWith("org.nuxeo.ecm.webdav.jaxrs")) {
             return ctx;
         } else {
             return null;

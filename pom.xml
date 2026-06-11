@@ -1943,6 +1943,13 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
+      <!-- WebDAV -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-webdav</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+
       <!-- WOPI -->
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
@@ -2226,6 +2233,12 @@
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-uidgen-sql-package</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-webdav-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>
       </dependency>
@@ -3145,6 +3158,11 @@
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-jaxb</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
         <artifactId>jersey-media-multipart</artifactId>
         <version>${jersey.version}</version>
       </dependency>
@@ -3267,6 +3285,30 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>20250107</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jugs.webdav</groupId>
+        <artifactId>webdav-jaxrs</artifactId>
+        <version>3.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-ri</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>2.22.3</version>
       </dependency>
       <dependency>
         <groupId>net.oauth.core</groupId>

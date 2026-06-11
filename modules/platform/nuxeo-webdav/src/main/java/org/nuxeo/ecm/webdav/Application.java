@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,24 @@
 
 package org.nuxeo.ecm.webdav;
 
-import org.nuxeo.ecm.webdav.resource.RootResource;
-import org.nuxeo.ecm.webengine.model.io.BlobWriter;
-import org.nuxeo.ecm.webengine.model.io.DocumentBlobHolderWriter;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.nuxeo.ecm.webdav.resource.RootResource;
+import org.nuxeo.ecm.webengine.app.WebContextProvider;
+import org.nuxeo.ecm.webengine.model.io.BlobWriter;
+import org.nuxeo.ecm.webengine.model.io.DocumentBlobHolderWriter;
 
 /**
  * Registers the application (root resource classes and providers) in a standard / container-neutral way.
  */
-public class Application extends javax.ws.rs.core.Application {
+public class Application extends jakarta.ws.rs.core.Application {
 
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
         classes.add(RootResource.class);
+        classes.add(WebContextProvider.class);
         return classes;
     }
 

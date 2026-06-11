@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,18 @@
 
 package org.nuxeo.ecm.webdav;
 
-import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
-import net.java.dev.webdav.jaxrs.xml.elements.PropertyUpdate;
-
-import org.junit.Test;
-import org.nuxeo.ecm.webdav.jaxrs.Util;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 import java.io.InputStream;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
+
+import org.jugs.webdav.jaxrs.xml.elements.PropFind;
+import org.jugs.webdav.jaxrs.xml.elements.PropertyUpdate;
+import org.junit.Test;
+import org.nuxeo.ecm.webdav.jaxrs.Util;
 
 /**
  * Tests that some sample files are properly parsed by JAXB.

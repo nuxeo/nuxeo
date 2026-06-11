@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.webdav.resource;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.OPTIONS;
+import jakarta.ws.rs.core.Response;
 
 import org.nuxeo.common.utils.Path;
 
@@ -65,10 +64,13 @@ public class AbstractResource {
 
     @OPTIONS
     public Response options() {
-        return Response.status(204).entity("").header("DAV", "1,2") // not 1,2 for now.
-        .header("Allow",
-                "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, "
-                        + "PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK").build();
+        return Response.status(204)
+                       .entity("")
+                       .header("DAV", "1,2") // not 1,2 for now.
+                       .header("Allow",
+                               "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, "
+                                       + "PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK")
+                       .build();
     }
 
 }

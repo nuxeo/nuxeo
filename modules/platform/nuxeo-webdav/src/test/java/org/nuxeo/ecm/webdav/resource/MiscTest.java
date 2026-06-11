@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,18 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import org.junit.Test;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.net.URI;
-import java.net.URLEncoder;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.net.URI;
+import java.net.URLEncoder;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.junit.Test;
 
 public class MiscTest {
 
