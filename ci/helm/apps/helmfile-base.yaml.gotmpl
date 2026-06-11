@@ -1,8 +1,4 @@
 repositories:
-- name: nuxeo-internal
-  # Unfortunately, the version of the postgresql Bitnami chart we're using is too old to be available as an OCI package
-  # in the bitnamicharts DockerHub organization. Thus, we are fetching it from our internal ChartMuseum.
-  url: https://chartmuseum.platform.dev.nuxeo.com/
 - name: opensearch
   url: https://opensearch-project.github.io/helm-charts/
 - name: nuxeo
@@ -58,7 +54,10 @@ releases:
   - base/values/benchmark/values-mongodb.yaml.gotmpl
   {{- end }}
 - name: postgresql
-  chart: nuxeo-internal/postgresql
+  # As we use a very old postgres chart that is only available on the somewhat
+  # flaky bitnami legacy registry (not available on OCI registry), we have
+  # mirrored it on Nuxeo packages (only used for 2023 versions)
+  chart: nuxeo/postgresql
   version: 10.16.2 # latest chart version for app version 13
   namespace: {{ requiredEnv "NAMESPACE" }}
   condition: postgresql.enabled
