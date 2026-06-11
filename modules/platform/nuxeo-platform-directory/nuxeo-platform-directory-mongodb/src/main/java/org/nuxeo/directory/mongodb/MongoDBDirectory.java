@@ -145,7 +145,7 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     protected void createIndexes() {
         var schemaManager = Framework.getService(SchemaManager.class);
-        var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, collection);
+        var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, database, collection);
         mongoDBIndexCreator.createIndexes(schemaManager.getSchema(descriptor.schemaName));
         if (types.contains(EXTERNAL_ID_TYPE)) {
             mongoDBIndexCreator.createIndexes(schemaManager.getSchema(SYSTEM_SCHEMA));

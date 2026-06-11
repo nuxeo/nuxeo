@@ -38,8 +38,11 @@ import org.nuxeo.ecm.core.schema.PropertyCharacteristicHandler;
 import org.nuxeo.ecm.core.schema.PropertyIndexOrder;
 import org.nuxeo.ecm.core.schema.PropertyIndexOrder.IndexOrder;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
+import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexModel;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
@@ -51,14 +54,31 @@ public class MongoDBIndexCreator {
 
     private static final Logger log = LogManager.getLogger(MongoDBIndexCreator.class);
 
+    /** MongoDB error code returned when an unsupported index option is used (e.g. partialFilterExpression). */
+    private static final int ERROR_UNSUPPORTED_INDEX_OPTION = 303;
+
     protected final PropertyCharacteristicHandler handler;
+
+    protected final MongoDatabase database;
 
     protected final MongoCollection<Document> collection;
 
     protected Map<String, Document> existingIndexes;
 
+    /**
+     * @deprecated since 2025.21, use
+     *             {@link #MongoDBIndexCreator(PropertyCharacteristicHandler, MongoDatabase, MongoCollection)} instead
+     */
+    @Deprecated(since = "2025.21", forRemoval = true)
     public MongoDBIndexCreator(PropertyCharacteristicHandler handler, MongoCollection<Document> collection) {
+        this(handler, null, collection);
+    }
+
+    /** @since 2025.21 */
+    public MongoDBIndexCreator(PropertyCharacteristicHandler handler, MongoDatabase database,
+            MongoCollection<Document> collection) {
         this.handler = handler;
+        this.database = database;
         this.collection = collection;
     }
 
@@ -75,6 +95,9 @@ public class MongoDBIndexCreator {
     }
 
     public void createIndexes(List<IndexModel> indexes) {
+        if (database != null) {
+            MongoDBConnectionHelper.ensureCollectionExists(database, collection.getNamespace().getCollectionName());
+        }
         var existingIndexes = getExistingIndexes();
         var toCreate = new ArrayList<IndexModel>();
         for (var index : indexes) {
@@ -90,8 +113,55 @@ public class MongoDBIndexCreator {
             }
         }
         if (!toCreate.isEmpty()) {
-            collection.createIndexes(toCreate);
+            try {
+                collection.createIndexes(toCreate);
+            } catch (MongoCommandException e) {
+                if (e.getErrorCode() == ERROR_UNSUPPORTED_INDEX_OPTION) {
+                    // Amazon DocumentDB Elastic does not support certain index options
+                    // Retry after stripping all unsupported options from each index in the batch
+                    log.warn("Unsupported index option (DocumentDB Elastic?), retrying without unsupported options"
+                            + " on indexes: {}", toCreate.stream().map(this::getIndexName).toList());
+                    collection.createIndexes(
+                            toCreate.stream().map(MongoDBIndexCreator::withoutUnsupportedIndexOptions).toList());
+                } else {
+                    throw e;
+                }
+            }
         }
+    }
+
+    /**
+     * Returns a copy of the given {@link IndexModel} with all options unsupported by Amazon DocumentDB Elastic removed.
+     * <p>
+     * Stripped options: {@code partialFilterExpression}, {@code hidden}, {@code collation}, {@code storageEngine},
+     * {@code wildcardProjection}. All other options are preserved. Used as a fallback when the database returns error
+     * 303 (unsupported field in command).
+     *
+     * @since 2025.21
+     */
+    protected static IndexModel withoutUnsupportedIndexOptions(IndexModel index) {
+        var src = index.getOptions();
+        if (src.getPartialFilterExpression() == null && !Boolean.TRUE.equals(src.isHidden())
+                && src.getCollation() == null && src.getStorageEngine() == null
+                && src.getWildcardProjection() == null) {
+            return index;
+        }
+        // partialFilterExpression, hidden, collation, storageEngine, wildcardProjection are intentionally NOT copied
+        var opts = new IndexOptions().background(src.isBackground())
+                                     .unique(src.isUnique())
+                                     .sparse(src.isSparse())
+                                     .name(src.getName())
+                                     .expireAfter(src.getExpireAfter(TimeUnit.SECONDS), TimeUnit.SECONDS)
+                                     .version(src.getVersion())
+                                     .weights(src.getWeights())
+                                     .defaultLanguage(src.getDefaultLanguage())
+                                     .languageOverride(src.getLanguageOverride())
+                                     .textVersion(src.getTextVersion())
+                                     .sphereVersion(src.getSphereVersion())
+                                     .bits(src.getBits())
+                                     .min(src.getMin())
+                                     .max(src.getMax());
+        return new IndexModel(index.getKeys(), opts);
     }
 
     /**

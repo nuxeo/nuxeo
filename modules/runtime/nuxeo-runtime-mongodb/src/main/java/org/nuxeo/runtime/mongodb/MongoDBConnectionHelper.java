@@ -48,6 +48,7 @@ import org.nuxeo.runtime.RuntimeServiceException;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCommandException;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadConcernLevel;
 import com.mongodb.ReadPreference;
@@ -196,7 +197,8 @@ public class MongoDBConnectionHelper {
      *
      * @since 11.4
      */
-    protected static void populateProperties(MongoDBConnectionConfig config, MongoClientSettings.Builder settingsBuilder) {
+    protected static void populateProperties(MongoDBConnectionConfig config,
+            MongoClientSettings.Builder settingsBuilder) {
         ConvertUtilsBean convertUtils = new ConvertUtilsBean();
         convertUtils.register(ReadPreferenceConverter.INSTANCE, ReadPreference.class);
         convertUtils.register(ReadConcernConverter.INSTANCE, ReadConcern.class);
@@ -267,5 +269,22 @@ public class MongoDBConnectionHelper {
         MongoIterable<String> collections = mongoDatabase.listCollectionNames();
         boolean found = StreamSupport.stream(collections.spliterator(), false).anyMatch(collection::equals);
         return found && mongoDatabase.getCollection(collection).estimatedDocumentCount() > 0;
+    }
+
+    /**
+     * Ensures the named collection exists, creating it explicitly if it does not.
+     * <p>
+     * Amazon DocumentDB Elastic does not support implicit collection creation via index operations (error 85).
+     *
+     * @since 2025.21
+     */
+    public static void ensureCollectionExists(MongoDatabase database, String collectionName) {
+        try {
+            database.createCollection(collectionName);
+        } catch (MongoCommandException e) {
+            if (e.getErrorCode() != 48) { // 48 = NamespaceExists — collection already exists, nothing to do
+                throw e;
+            }
+        }
     }
 }

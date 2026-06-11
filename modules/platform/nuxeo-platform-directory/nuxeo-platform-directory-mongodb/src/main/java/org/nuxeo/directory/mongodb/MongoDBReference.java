@@ -42,6 +42,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -333,6 +334,7 @@ public class MongoDBReference extends AbstractReference {
     }
 
     protected void createIndexes(MongoDBSession session) {
+        MongoDBConnectionHelper.ensureCollectionExists(session.getDirectory().database, collection);
         var mongoCollection = getCollection(session);
         if (isGroupToGroup()) {
             mongoCollection.createIndex(Indexes.ascending(GROUP_TO_GROUP_CHILD_GROUP_ID));

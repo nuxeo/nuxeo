@@ -48,6 +48,7 @@ import org.bson.Document;
 import org.bson.types.Binary;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.ts.AbstractTransientDataStoreProvider;
 import org.nuxeo.runtime.ts.TransientDataStoreDescriptor;
@@ -177,6 +178,7 @@ public class MongoDBTransientDataStore extends AbstractTransientDataStoreProvide
                     coll = database.getCollection(collectionName);
                     log.trace("The store with name: {} using collection: {} is initializing", descriptor::getName,
                             coll::getNamespace);
+                    MongoDBConnectionHelper.ensureCollectionExists(database, collectionName);
                     // make sure TTL works by creating the appropriate index
                     IndexOptions indexOptions = new IndexOptions().expireAfter(0L, TimeUnit.SECONDS);
                     coll.createIndex(new Document(TTL_KEY, 1), indexOptions);

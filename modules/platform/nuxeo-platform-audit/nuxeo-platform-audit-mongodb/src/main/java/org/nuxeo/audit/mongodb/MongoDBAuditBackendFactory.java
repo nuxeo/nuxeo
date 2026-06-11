@@ -32,6 +32,7 @@ import org.nuxeo.audit.service.AuditBackendFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
 import com.mongodb.client.model.Indexes;
@@ -58,7 +59,9 @@ public class MongoDBAuditBackendFactory extends DefaultComponent implements Audi
         // Get a connection to MongoDB
         var mongoService = Framework.getService(MongoDBConnectionService.class);
         var database = mongoService.getDatabase(descriptor.getConnectionId());
-        var collection = database.getCollection(descriptor.getCollectionName());
+        var collectionName = descriptor.getCollectionName();
+        MongoDBConnectionHelper.ensureCollectionExists(database, collectionName);
+        var collection = database.getCollection(collectionName);
         collection.createIndex(Indexes.ascending(LOG_DOC_UUID)); // query by doc id
         collection.createIndex(Indexes.ascending(LOG_EVENT_DATE)); // query by date range
         collection.createIndex(Indexes.ascending(LOG_EVENT_ID)); // query by type of event

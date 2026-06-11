@@ -312,7 +312,7 @@ public class MongoDBConnection extends DBSConnectionBase {
         indexes.add(new IndexModel(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_GRANT)));
 
         var schemaManager = Framework.getService(SchemaManager.class);
-        var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, coll);
+        var mongoDBIndexCreator = new MongoDBIndexCreator(schemaManager, mongoDBRepository.getDatabase(), coll);
         mongoDBIndexCreator.createIndexes(indexes);
         // create contributed indexes
         // lookup the schemas used in documents and facets

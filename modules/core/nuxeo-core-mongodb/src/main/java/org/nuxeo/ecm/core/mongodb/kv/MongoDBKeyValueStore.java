@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.mongodb.MongoDBConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
 import com.mongodb.ErrorCategory;
@@ -112,6 +113,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
         MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
         MongoDatabase database = mongoService.getDatabase(KEYVALUE_CONNECTION_ID);
         coll = database.getCollection(collectionName);
+        MongoDBConnectionHelper.ensureCollectionExists(database, collectionName);
         // make sure TTL works by creating the appropriate index
         IndexOptions indexOptions = new IndexOptions().expireAfter(Long.valueOf(0), TimeUnit.SECONDS);
         coll.createIndex(new Document(TTL_KEY, ONE), indexOptions);

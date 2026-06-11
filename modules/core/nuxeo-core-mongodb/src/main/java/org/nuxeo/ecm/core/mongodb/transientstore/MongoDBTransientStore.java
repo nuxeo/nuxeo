@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -198,6 +199,7 @@ public class MongoDBTransientStore implements TransientStoreProvider {
             MongoDatabase database = mongoService.getDatabase(TRANSIENT_DATABASE_ID);
             coll = database.getCollection(collName);
             log.trace("TransientStore: {} is using collection: {}", config.getName(), coll.getNamespace());
+            MongoDBConnectionHelper.ensureCollectionExists(database, collName);
             // make sure TTL works by creating the appropriate index
             IndexOptions indexOptions = new IndexOptions().expireAfter(0L, TimeUnit.SECONDS);
             coll.createIndex(new Document(TTL_KEY, ONE), indexOptions);

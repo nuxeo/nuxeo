@@ -152,6 +152,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected final MongoCollection<Document> settingsColl;
 
+    /** @since 2025.21 */
+    protected final MongoDatabase database;
+
     protected final boolean supportsSessions;
 
     protected final boolean supportsTransactions;
@@ -179,7 +182,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         String connectionId = REPOSITORY_CONNECTION_PREFIX + descriptor.name;
         mongoClient = mongoService.getClient(connectionId);
         String dbname = mongoService.getDatabaseName(connectionId);
-        MongoDatabase database = mongoClient.getDatabase(dbname);
+        database = mongoClient.getDatabase(dbname);
         coll = database.getCollection(descriptor.name);
         countersColl = database.getCollection(descriptor.name + ".counters");
         settingsColl = database.getCollection(descriptor.name + ".settings");
@@ -331,6 +334,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected MongoCollection<Document> getCollection() {
         return coll;
+    }
+
+    /**
+     * @since 2025.21
+     */
+    protected MongoDatabase getDatabase() {
+        return database;
     }
 
     protected MongoCollection<Document> getCountersCollection() {
