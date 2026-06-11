@@ -234,35 +234,35 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             Object value = m.group(3);
             Op op;
             switch (ops) {
-            case "=":
-                op = Op.EQ;
-                break;
-            case "!=":
-                op = Op.NEQ;
-                break;
-            case "<":
-                op = Op.LT;
-                break;
-            case "<=":
-                op = Op.LTE;
-                break;
-            case ">":
-                op = Op.GT;
-                break;
-            case ">=":
-                op = Op.GTE;
-                break;
-            case "~":
-                op = Op.GLOB;
-                value = getPatternFromGlob((String) value);
-                break;
-            case "^":
-                op = Op.RE;
-                value = Pattern.compile((String) value);
-                break;
-            default:
-                log.error("Invalid dispatcher configuration operator: {}", ops);
-                return null;
+                case "=":
+                    op = Op.EQ;
+                    break;
+                case "!=":
+                    op = Op.NEQ;
+                    break;
+                case "<":
+                    op = Op.LT;
+                    break;
+                case "<=":
+                    op = Op.LTE;
+                    break;
+                case ">":
+                    op = Op.GT;
+                    break;
+                case ">=":
+                    op = Op.GTE;
+                    break;
+                case "~":
+                    op = Op.GLOB;
+                    value = getPatternFromGlob((String) value);
+                    break;
+                case "^":
+                    op = Op.RE;
+                    value = Pattern.compile((String) value);
+                    break;
+                default:
+                    log.error("Invalid dispatcher configuration operator: {}", ops);
+                    return null;
             }
             return new Clause(xpath, op, value);
         } else {
@@ -328,21 +328,21 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         }
         if (xpath.startsWith(BLOB_PREFIX)) {
             switch (xpath.substring(BLOB_PREFIX.length())) {
-            case BLOB_NAME:
-                return blob.getFilename();
-            case BLOB_MIME_TYPE:
-                return blob.getMimeType();
-            case BLOB_ENCODING:
-                return blob.getEncoding();
-            case BLOB_DIGEST:
-                return blob.getDigest();
-            case BLOB_LENGTH:
-                return blob.getLength();
-            case BLOB_XPATH:
-                return blobXPath;
-            default:
-                log.error("Invalid dispatcher configuration property name: {}", xpath);
-                throw new PropertyNotFoundException(xpath);
+                case BLOB_NAME:
+                    return blob.getFilename();
+                case BLOB_MIME_TYPE:
+                    return blob.getMimeType();
+                case BLOB_ENCODING:
+                    return blob.getEncoding();
+                case BLOB_DIGEST:
+                    return blob.getDigest();
+                case BLOB_LENGTH:
+                    return blob.getLength();
+                case BLOB_XPATH:
+                    return blobXPath;
+                default:
+                    log.error("Invalid dispatcher configuration property name: {}", xpath);
+                    throw new PropertyNotFoundException(xpath);
             }
         }
         try {
@@ -361,23 +361,23 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     protected boolean match(Object value, Clause clause) {
         switch (clause.op) {
-        case EQ:
-            return compare(value, clause, true, cmp -> cmp == 0);
-        case NEQ:
-            return compare(value, clause, true, cmp -> cmp != 0);
-        case LT:
-            return compare(value, clause, false, cmp -> cmp < 0);
-        case LTE:
-            return compare(value, clause, false, cmp -> cmp <= 0);
-        case GT:
-            return compare(value, clause, false, cmp -> cmp > 0);
-        case GTE:
-            return compare(value, clause, false, cmp -> cmp >= 0);
-        case GLOB:
-        case RE:
-            return ((Pattern) clause.value).matcher(String.valueOf(value)).matches();
-        default:
-            throw new AssertionError("notreached");
+            case EQ:
+                return compare(value, clause, true, cmp -> cmp == 0);
+            case NEQ:
+                return compare(value, clause, true, cmp -> cmp != 0);
+            case LT:
+                return compare(value, clause, false, cmp -> cmp < 0);
+            case LTE:
+                return compare(value, clause, false, cmp -> cmp <= 0);
+            case GT:
+                return compare(value, clause, false, cmp -> cmp > 0);
+            case GTE:
+                return compare(value, clause, false, cmp -> cmp >= 0);
+            case GLOB:
+            case RE:
+                return ((Pattern) clause.value).matcher(String.valueOf(value)).matches();
+            default:
+                throw new AssertionError("notreached");
         }
     }
 
