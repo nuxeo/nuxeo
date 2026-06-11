@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,12 +64,14 @@ import org.nuxeo.runtime.api.Framework;
  * instead of the repository name.
  * <p>
  * The property name is a list of comma-separated clauses, with each clause consisting of a property, an operator and a
- * value. The property can be a {@link Document} xpath, {@code ecm:repositoryName}, {@code ecm:path}, or, to match the
- * current blob being dispatched, {@code blob:name}, {@code blob:mime-type}, {@code blob:encoding}, {@code blob:digest},
+ * value. The property can be a {@link Document} xpath, {@code ecm:repositoryName}, {@code ecm:path},
+ * {@code ecm:isRecord}, {@code ecm:isFlexibleRecord}, {@code ecm:mixinType}, or, to match the current blob being
+ * dispatched, {@code blob:name}, {@code blob:mime-type}, {@code blob:encoding}, {@code blob:digest},
  * {@code blob:length} or {@code blob:xpath}.
  * <p>
- * Comma-separated clauses are ANDed together. The special name {@code default} defines the default provider, and must
- * be present.
+ * Comma-separated clauses within a single rule are ANDed together. Multiple {@code <property>} entries form an ordered
+ * list of rules, and the first rule whose clauses all match wins. The special name {@code default} defines the default
+ * provider, and must be present.
  * <p>
  * Available operators between property and value are =, !=, &lt;, &lt;= ,&gt;, &gt;=, ~ and ^.
  * <p>
@@ -78,10 +81,23 @@ import org.nuxeo.runtime.api.Framework;
  * The operator ~ does glob matching using {@code ?} to match a single arbitrary character, and {@code *} to match any
  * number of characters (including none). The operator ^ does full regexp matching.
  * <p>
+ * The {@code ecm:mixinType} pseudo-property is multivalued (a document carries zero or more facets) and supports only
+ * the {@code =} and {@code !=} operators, with element-level membership semantics: {@code ecm:mixinType=Foo} matches
+ * when the document carries facet {@code Foo}, and {@code ecm:mixinType!=Foo} matches when it does not. To dispatch on
+ * any of several facets, declare one rule per facet pointing to the same provider and rely on the
+ * first-matching-rule-wins evaluation order.
+ * <p>
+ * Note that re-dispatch is only triggered by blob/property writes and a few explicitly-wired events (lifecycle state /
+ * policy changes, {@code makeRecord}, copy). It is <em>not</em> triggered by changes to {@code ecm:path} (document
+ * moves) or to {@code ecm:mixinType} (facets added/removed): for those, blobs are re-evaluated only on the next blob
+ * write on the document.
+ * <p>
  * For example, to dispatch to the "first" provider if dc:format is "video", to the "second" provider if the blob's MIME
  * type is "video/mp4", to the "third" provider if the blob is stored as a secondary attached file, to the "fourth"
  * provider if the lifecycle state is "approved", to the "fifth" provider if the blob's document is stored in under an
- * "images" folder, and the document is in the default repository, and otherwise to the "other" provider:
+ * "images" folder, and the document is in the default repository, to the "sixth" provider if the document carries the
+ * "Versionable" facet, to the "seventh" provider if the document carries either the "Commentable" or the "Auditable"
+ * facet, and otherwise to the "other" provider:
  *
  * <pre>
  * {@code
@@ -89,7 +105,10 @@ import org.nuxeo.runtime.api.Framework;
  * <property name="blob:mime-type=video/mp4">second</property>
  * <property name="blob:xpath~files/*&#47;file">third</property>
  * <property name="ecm:repositoryName=default,ecm:lifeCycleState=approved">fourth</property>
- * <property name="ecm:path^.*&#47images&#47.*">fifth</property>
+ * <property name="ecm:path^.*&#47;images&#47;.*">fifth</property>
+ * <property name="ecm:mixinType=Versionable">sixth</property>
+ * <property name="ecm:mixinType=Commentable">seventh</property>
+ * <property name="ecm:mixinType=Auditable">seventh</property>
  * <property name="default">other</property>
  * }
  * </pre>
@@ -135,6 +154,13 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
      */
     protected static final String IS_FLEXIBLE_RECORD = "ecm:isFlexibleRecord";
 
+    /**
+     * Pseudo-property for the document facets (mixin types).
+     *
+     * @since 2025.21
+     */
+    protected static final String MIXIN_TYPE = "ecm:mixinType";
+
     protected static final String BLOB_PREFIX = "blob:";
 
     protected static final String BLOB_NAME = "name";
@@ -164,6 +190,30 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             this.xpath = xpath;
             this.op = op;
             this.value = value;
+        }
+
+        protected boolean isSupportedMultiValue(Object object) {
+            // We only want to handle Collection/array-valued for MIXIN_TYPE
+            // Do not introduce change of behavior for other multivalued schema properties
+            return MIXIN_TYPE.equals(xpath) && (object instanceof Collection<?> || object instanceof Object[]);
+        }
+
+        /**
+         * Tests whether the multivalued {@code object} (a {@link Collection} or array) contains the clause's
+         * {@code value}.
+         *
+         * @since 2025.21
+         */
+        protected boolean isContainedIn(Object object) {
+            Stream<?> stream;
+            if (object instanceof Collection<?> coll) {
+                stream = coll.stream();
+            } else if (object instanceof Object[] arr) {
+                stream = Arrays.stream(arr);
+            } else {
+                return false;
+            }
+            return stream.map(String::valueOf).anyMatch(((String) this.value)::equals);
         }
     }
 
@@ -200,18 +250,13 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             String clausesString = en.getKey();
             String providerId = en.getValue();
             providerIds.add(providerId);
-            if (clausesString.equals(NAME_RECORDS)) {
-                Clause recordClause = new Clause(IS_RECORD, Op.EQ, "true");
-                Clause notFlexibleRecordClause = new Clause(IS_FLEXIBLE_RECORD, Op.NEQ, "true");
-                rules.add(new Rule(List.of(recordClause, notFlexibleRecordClause), providerId));
-                rulesXPaths.add(recordClause.xpath);
-                rulesXPaths.add(notFlexibleRecordClause.xpath);
-            } else if (clausesString.equals(NAME_DEFAULT)) {
+            if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
                 List<Clause> clauses = Arrays.stream(clausesString.split(","))
-                                             .map(this::getClause)
+                                             .map(this::getClauses)
                                              .filter(Objects::nonNull)
+                                             .flatMap(Collection::stream)
                                              .collect(toList());
                 if (!clauses.isEmpty()) {
                     rules.add(new Rule(clauses, providerId));
@@ -226,7 +271,12 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         }
     }
 
-    protected Clause getClause(String name) {
+    protected List<Clause> getClauses(String name) {
+        if (name.equals(NAME_RECORDS)) {
+            Clause recordClause = new Clause(IS_RECORD, Op.EQ, "true");
+            Clause notFlexibleRecordClause = new Clause(IS_FLEXIBLE_RECORD, Op.NEQ, "true");
+            return List.of(recordClause, notFlexibleRecordClause);
+        }
         Matcher m = NAME_PATTERN.matcher(name);
         if (m.matches()) {
             String xpath = m.group(1);
@@ -264,7 +314,13 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                     log.error("Invalid dispatcher configuration operator: {}", ops);
                     return null;
             }
-            return new Clause(xpath, op, value);
+            if (MIXIN_TYPE.equals(xpath) && op != Op.EQ && op != Op.NEQ) {
+                log.error(
+                        "Invalid dispatcher configuration: operator: {} is not supported for: {}, only = and != are supported",
+                        ops, MIXIN_TYPE);
+                return null;
+            }
+            return List.of(new Clause(xpath, op, value));
         } else {
             log.error("Invalid dispatcher configuration property name: {}", name);
             return null;
@@ -326,6 +382,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         if (xpath.equals(IS_FLEXIBLE_RECORD)) {
             return doc.isFlexibleRecord() && (blobXPath != null && doc.isRetainable(blobXPath));
         }
+        if (xpath.equals(MIXIN_TYPE)) {
+            return doc.getAllFacets();
+        }
         if (xpath.startsWith(BLOB_PREFIX)) {
             switch (xpath.substring(BLOB_PREFIX.length())) {
                 case BLOB_NAME:
@@ -362,9 +421,11 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     protected boolean match(Object value, Clause clause) {
         switch (clause.op) {
             case EQ:
-                return compare(value, clause, true, cmp -> cmp == 0);
+                return clause.isSupportedMultiValue(value) ? clause.isContainedIn(value)
+                        : compare(value, clause, true, cmp -> cmp == 0);
             case NEQ:
-                return compare(value, clause, true, cmp -> cmp != 0);
+                return clause.isSupportedMultiValue(value) ? !clause.isContainedIn(value)
+                        : compare(value, clause, true, cmp -> cmp != 0);
             case LT:
                 return compare(value, clause, false, cmp -> cmp < 0);
             case LTE:
