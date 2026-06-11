@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -410,7 +411,6 @@ public class TestDefaultBlobDispatcher {
         assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
     }
 
-
     // ===== Names =====
 
     @Test
@@ -537,6 +537,110 @@ public class TestDefaultBlobDispatcher {
         when(doc.isRetainable("content")).thenReturn(true);
         assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, "content"));
         assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, "files/1/file"));
+    }
+
+    // ===== ecm:mixinType =====
+
+    @Test
+    public void testNameMixinTypeEq() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("ecm:mixinType=Versionable");
+        Document doc = mock(Document.class);
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Foo", "Bar"));
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Versionable", "Foo"));
+        assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of());
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
+    }
+
+    @Test
+    public void testNameMixinTypeNeq() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("ecm:mixinType!=Versionable");
+        Document doc = mock(Document.class);
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Versionable", "Foo"));
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Foo", "Bar"));
+        assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of());
+        assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, null));
+    }
+
+    @Test
+    public void testNameMixinTypeCombinedClause() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("ecm:mixinType=Versionable,blob:mime-type=image/png");
+        Document doc = mock(Document.class);
+        Blob blob = mock(Blob.class);
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Versionable"));
+        when(blob.getMimeType()).thenReturn("image/png");
+        assertEquals(CUSTOM, dispatcher.getProviderId(doc, blob, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Versionable"));
+        when(blob.getMimeType()).thenReturn("image/jpeg");
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, blob, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Foo"));
+        when(blob.getMimeType()).thenReturn("image/png");
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, blob, null));
+    }
+
+    @Test
+    public void testNameMixinTypeMultipleClauses() {
+        DefaultBlobDispatcher dispatcher = new DefaultBlobDispatcher();
+        var properties = new LinkedHashMap<String, String>();
+        properties.put("ecm:mixinType=Foo", "first");
+        properties.put("ecm:mixinType=Bar", "second");
+        properties.put("default", DEFAULT);
+        dispatcher.initialize(properties);
+        Document doc = mock(Document.class);
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Foo"));
+        assertEquals("first", dispatcher.getProviderId(doc, null, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Bar"));
+        assertEquals("second", dispatcher.getProviderId(doc, null, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Bar", "Foo"));
+        assertEquals("first", dispatcher.getProviderId(doc, null, null));
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Versionable"));
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
+    }
+
+    @Test
+    public void testNameMixinTypeRecordsCombinedClause() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("records,ecm:mixinType=Foo");
+        Document doc = mock(Document.class);
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Foo"));
+        when(doc.isRecord()).thenReturn(false);
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
+
+        when(doc.isRecord()).thenReturn(true);
+        when(doc.isFlexibleRecord()).thenReturn(false);
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
+
+        when(doc.isRecord()).thenReturn(true);
+        when(doc.isRetainable("content")).thenReturn(true);
+        assertEquals(CUSTOM, dispatcher.getProviderId(doc, null, "content"));
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, "files/1/file"));
+    }
+
+    @Test
+    public void testNameMixinTypeInvalidOperatorIgnored() {
+        // ~ (glob) is not a supported operator for ecm:mixinType: the clause is rejected at parse time
+        // so the rule has no clauses left, only the default applies.
+        DefaultBlobDispatcher dispatcher = dispatcherWith("ecm:mixinType~Foo*");
+        Document doc = mock(Document.class);
+
+        when(doc.getAllFacets()).thenReturn(Set.of("Foobar"));
+        assertEquals(DEFAULT, dispatcher.getProviderId(doc, null, null));
     }
 
 }
