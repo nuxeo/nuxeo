@@ -269,7 +269,6 @@ public class ExistingResource extends AbstractResource {
 
         // @TODO: patch properties if need.
         // Fake proppatch response
-        @SuppressWarnings("deprecation")
         final org.jugs.webdav.jaxrs.xml.elements.Response response = new org.jugs.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()), null, null, null,
                 new PropStat(new Prop(new Win32CreationTime()), new Status(OK)),

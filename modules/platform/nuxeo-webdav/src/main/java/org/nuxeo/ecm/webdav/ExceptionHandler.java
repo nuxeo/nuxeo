@@ -49,8 +49,8 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
         e.printStackTrace(new PrintWriter(sw));
         int status = 500;
         // String msg;
-        if (e instanceof WebApplicationException) {
-            status = ((WebApplicationException) e).getResponse().getStatus();
+        if (e instanceof WebApplicationException wae) {
+            status = wae.getResponse().getStatus();
             if (status < 400 || status >= 500) {
                 log.error("Status: {}", status);
                 log.error(e, e);

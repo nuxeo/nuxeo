@@ -117,7 +117,7 @@ public class RootResource {
         }
 
         if (!backend.hasPermission(doc.getRef(), SecurityConstants.READ)) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
         var docPath = getDocumentPath(doc);
@@ -132,7 +132,7 @@ public class RootResource {
             return backend.getDocument(path);
         } catch (DocumentNotFoundException e) {
             log.error("Error during resolving path: {}", path, e);
-            throw new WebApplicationException(Response.Status.CONFLICT);
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
 
@@ -142,10 +142,13 @@ public class RootResource {
      */
     private String resolveRawPath() {
         var requestUri = request.getRequestURI();
-        var prefix = request.getContextPath() + request.getServletPath() + "/";
+        var prefix = request.getContextPath() + request.getServletPath();
         var rawPath = requestUri.substring(prefix.length());
+        if (rawPath.isEmpty()) {
+            return "";
+        }
         // Percent-decode using URI (not URLDecoder which treats '+' as space)
-        return URI.create("/" + rawPath).getPath().substring(1);
+        return URI.create(rawPath).getPath().substring(1);
     }
 
     private String getDocumentPath(DocumentModel source) {

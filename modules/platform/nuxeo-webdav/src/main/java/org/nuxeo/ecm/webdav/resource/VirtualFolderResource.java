@@ -111,7 +111,6 @@ public class VirtualFolderResource extends AbstractResource {
         Date lastModified = new Date();
         Date creationDate = new Date();
 
-        @SuppressWarnings("deprecation")
         final org.jugs.webdav.jaxrs.xml.elements.Response response = new org.jugs.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()), null, null, null, new PropStat(new Prop(new DisplayName("nuxeo"), /*
                                                                                                                       * @
