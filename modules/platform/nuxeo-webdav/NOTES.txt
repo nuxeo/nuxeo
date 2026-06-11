@@ -1,0 +1,29 @@
+Some performance benchmarks
+===========================
+
+All tests run on the samemachine (my Macbook).
+
+Specific Benchmark (bench.py)
+-----------------------------
+
+Embedded (H2): 19s / 16s / 17s
+JBoss (Postgres 9.0): 73s / 61s / 65s
+
+Reference:
+
+Jackrabbit: 10s
+Zope: 14s
+
+PostMark benchmark results
+--------------------------
+
+JBoss: 1.85 transaction/s.
+Embedded: 4.76 transactions/s.
+
+Profiling
+=========
+
+Hot spots in the embedded server:
+
+- 25% time spent on Util.getSession()
+- 50% in CoreSession.exists(docmodel)
