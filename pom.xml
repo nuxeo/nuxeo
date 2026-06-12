@@ -142,7 +142,7 @@
 
     <!-- MongoDB -->
     <mongo.java.driver.version>5.7.0</mongo.java.driver.version>
-    <quartz.mongodb.version>2.3.0</quartz.mongodb.version>
+    <quartz.mongodb.version>2.4.0</quartz.mongodb.version>
 
     <kafka.version>3.9.2</kafka.version>
     <confluent.version>7.9.5</confluent.version>

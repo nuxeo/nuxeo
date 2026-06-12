@@ -39,3 +39,6 @@ org.quartz.jobStore.checkInErrorHandler=com.novemberain.quartz.mongodb.cluster.N
 
 org.quartz.jobStore.mongoOptionWriteConcernTimeoutMillis=${org.quartz.jobStore.mongoOptionWriteConcernTimeoutMillis}
 org.quartz.jobStore.mongoOptionWriteConcernW=${org.quartz.jobStore.mongoOptionWriteConcernW}
+<#if "${org.quartz.jobStore.mongoOptionUseServerDefaultWriteConcern}"?lower_case == "true">
+org.quartz.jobStore.mongoOptionUseServerDefaultWriteConcern=true
+</#if>

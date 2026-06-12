@@ -21,6 +21,17 @@ nuxeo.db.indexes.create=true
 nuxeo.quartz.enable=true
 org.quartz.jobStore.mongoOptionWriteConcernTimeoutMillis=5000
 org.quartz.jobStore.mongoOptionWriteConcernW=Majority
+# IMPORTANT: AWS DocumentDB Elastic clusters MUST set this to true.
+# When true, the Quartz scheduler uses the driver's server-default write concern
+# (ACKNOWLEDGED), so the MongoDB driver omits the writeConcern field from every
+# command. DocumentDB Elastic rejects any command that carries writeConcern with
+# error 303 "Field 'writeConcern' is currently not supported".
+# When false (default), the scheduler uses the Majority write concern configured
+# above, which is appropriate for standard MongoDB Replica Set deployments.
+# Note: this property is only written to quartz.properties when set to true, so
+# older quartz-mongodb versions (< 2.4.0) without the corresponding setter are
+# not broken by the default value.
+org.quartz.jobStore.mongoOptionUseServerDefaultWriteConcern=false
 
 ## MongoDB directories activation
 nuxeo.mongodb.directories.enabled=true
