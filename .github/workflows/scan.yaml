@@ -66,4 +66,5 @@ jobs:
           java-version: '17'
           mvn-repo-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
           mvn-repo-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
-          output-filename:  grype-packages-${{ inputs.version }}
+          output-filename: grype-packages-${{ inputs.version }}
+          vex: packages/vex.json
