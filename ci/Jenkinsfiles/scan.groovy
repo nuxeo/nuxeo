@@ -16,14 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <antoine.taillefer@hyland.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.87"
-
-String getPackageArtifacts(version) {
-  def packagePoms = findFiles(glob: 'packages/nuxeo-*-package/pom.xml')
-  return packagePoms.collect {
-    "org.nuxeo.packages:${it.path.tokenize('/')[-2]}:${version}:zip"
-  }.join(',')
-}
+library identifier: "platform-ci-shared-library@v0.0.88"
 
 pipeline {
   agent {
@@ -37,8 +30,6 @@ pipeline {
     BUILD_VERSION = nxUtils.getLatestBuildVersion() // 202x.y.z
     RELEASE_VERSION = nxUtils.getLatestReleaseVersion() // 202x.(y-1)
     RELEASE_BUILD_VERSION = nxUtils.getLatestReleaseBuildVersion() // 202x.(y-1).z pointed by 202x.(y-1)
-    BUILD_PACKAGE_ARTIFACTS = getPackageArtifacts(BUILD_VERSION)
-    RELEASE_PACKAGE_ARTIFACTS = getPackageArtifacts(RELEASE_BUILD_VERSION)
     DOCKER_IMAGE_NAME = "nuxeo/nuxeo"
     DOCKER_IMAGE_FULLNAME = "${PRIVATE_DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}"
     JIRA_PROJECT = 'NXP'
@@ -64,13 +55,17 @@ pipeline {
       steps {
         container('maven') {
           script {
+            def releasePackageArtifacts = nxUtils.getPackageArtifacts(
+              groupId: 'org.nuxeo.packages',
+              version: RELEASE_BUILD_VERSION,
+            )
             echo """
             ---------------------------------------------------------------------
             Scan Docker image and packages for latest release: ${RELEASE_VERSION}
             Docker image: ${DOCKER_IMAGE_FULLNAME}:${RELEASE_VERSION}
             Associated build version: ${RELEASE_BUILD_VERSION}
             Package artifacts:
-              ${RELEASE_PACKAGE_ARTIFACTS.split(',').join('\n              ')}
+              ${releasePackageArtifacts.split(',').join('\n              ')}
             ---------------------------------------------------------------------
             """.stripIndent()
 
@@ -81,7 +76,7 @@ pipeline {
                 branch: NUXEO_BRANCH,
                 rawFields: [
                   'image-name': DOCKER_IMAGE_NAME,
-                  packages: RELEASE_PACKAGE_ARTIFACTS,
+                  packages: releasePackageArtifacts,
                   version: RELEASE_VERSION,
                 ],
                 exitStatus: false,
@@ -107,12 +102,16 @@ pipeline {
       steps {
         container('maven') {
           script {
+            def buildPackageArtifacts = nxUtils.getPackageArtifacts(
+              groupId: 'org.nuxeo.packages',
+              version: BUILD_VERSION,
+            )
             echo """
             -----------------------------------------------------------------
             Scan Docker image and packages for latest build: ${BUILD_VERSION}
             Docker image: ${DOCKER_IMAGE_FULLNAME}:${BUILD_VERSION}
             Package artifacts:
-            ${BUILD_PACKAGE_ARTIFACTS.split(',').join('\n              ')}
+            ${buildPackageArtifacts.split(',').join('\n              ')}
             -----------------------------------------------------------------
             """.stripIndent()
 
@@ -123,7 +122,7 @@ pipeline {
                 branch: NUXEO_BRANCH,
                 rawFields: [
                   'image-name': DOCKER_IMAGE_NAME,
-                  packages: BUILD_PACKAGE_ARTIFACTS,
+                  packages: buildPackageArtifacts,
                   version: BUILD_VERSION,
                 ],
                 exitStatus: false,
