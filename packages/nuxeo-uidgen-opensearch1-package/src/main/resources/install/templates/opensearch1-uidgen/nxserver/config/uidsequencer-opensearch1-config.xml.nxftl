@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <?xml version="1.0"?>
 <component name="org.nuxeo.uidsequencer.opensearch1.config">
 
@@ -52,3 +53,4 @@
   </extension>
 
 </component>
+</#escape>

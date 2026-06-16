@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.search.client.opensearch1.green.contrib">
 <#if (nuxeo.search.client.green.opensearch1.index.name)?has_content>
@@ -54,3 +55,4 @@
   </extension>
 </#if>
 </component>
+</#escape>
