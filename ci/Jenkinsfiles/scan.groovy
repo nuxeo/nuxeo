@@ -30,7 +30,7 @@ pipeline {
     label 'jenkins-nuxeo-package-lts-2023'
   }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 3, unit: 'HOURS')
   }
   environment {
     NUXEO_BRANCH = "${params.NUXEO_BRANCH}" // 202x
