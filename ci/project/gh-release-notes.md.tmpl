@@ -11,9 +11,20 @@ Upgrade notes: https://doc.nuxeo.com/nxdoc/{{ env "RELEASE_MAJOR_VERSION" }}/hot
 ## Complete Changelog
 
 {{ $groupByType := groupBy "type" .Issues -}}
+{{- $allBugs := index $groupByType "Bug" -}}
+{{- $securityFixes := list -}}
+{{- $regularBugs := list -}}
+{{- range $allBugs -}}
+  {{- if and .defectCategory (has "Security Vulnerability" .defectCategory) -}}
+    {{- $securityFixes = append $securityFixes . -}}
+  {{- else -}}
+    {{- $regularBugs = append $regularBugs . -}}
+  {{- end -}}
+{{- end }}
+{{- template "print-issue-block" (dict "type" "Security Fixes" "issues" $securityFixes) }}
 {{- template "print-issue-block" (dict "type" "New Features" "issues" (concat (index $groupByType "Epic") (index $groupByType "New Feature"))) }}
 {{- template "print-issue-block" (dict "type" "Improvements" "issues" (index $groupByType "Improvement")) }}
-{{- template "print-issue-block" (dict "type" "Bugs" "issues" (index $groupByType "Bug")) }}
+{{- template "print-issue-block" (dict "type" "Bugs" "issues" $regularBugs) }}
 {{- template "print-issue-block" (dict "type" "Tasks" "issues" (index $groupByType "Task")) }}
 {{- template "print-issue-block" (dict "type" "Clean Up" "issues" (index $groupByType "Clean up")) }}
 {{- template "print-issue-block" (dict "type" "Dependencies" "issues" (index $groupByType "Dependency")) }}
