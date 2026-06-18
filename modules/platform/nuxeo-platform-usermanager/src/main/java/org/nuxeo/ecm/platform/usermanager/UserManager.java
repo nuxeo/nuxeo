@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -174,6 +175,21 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      */
     DocumentModelList searchUsers(QueryBuilder queryBuilder);
 
+    /**
+     * Returns a predicate matching user directory entries against the given search pattern.
+     * <p>
+     * The predicate is built from the configured {@link #getUserSearchFields() user search fields} and honors the user
+     * directory's {@link org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType substring match type}
+     * ({@code subinitial}, {@code subany} or {@code subfinal}) for {@link MatchType#SUBSTRING} fields.
+     *
+     * @param pattern the search pattern
+     * @return the search predicate, or {@code null} if {@code pattern} is blank
+     * @since 2025.22
+     */
+    default MultiExpression getUserSearchPredicate(String pattern) {
+        throw new UnsupportedOperationException();
+    }
+
     String getUserListingMode();
 
     String getUserSortField();
@@ -203,6 +219,21 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 10.3
      */
     DocumentModelList searchGroups(QueryBuilder queryBuilder);
+
+    /**
+     * Returns a predicate matching group directory entries against the given search pattern.
+     * <p>
+     * The predicate is built from the configured {@link #getGroupSearchFields() group search fields} and honors the
+     * group directory's {@link org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType substring match type}
+     * ({@code subinitial}, {@code subany} or {@code subfinal}) for {@link MatchType#SUBSTRING} fields.
+     *
+     * @param pattern the search pattern
+     * @return the search predicate, or {@code null} if {@code pattern} is blank
+     * @since 2025.22
+     */
+    default MultiExpression getGroupSearchPredicate(String pattern) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Creates a group from given model

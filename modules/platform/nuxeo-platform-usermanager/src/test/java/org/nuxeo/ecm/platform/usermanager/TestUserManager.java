@@ -65,11 +65,14 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.storage.mongodb.IgnoreIfDBSMongoDBRepository;
+import org.nuxeo.ecm.core.storage.sql.IgnoreIfVCSRepository;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
+import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -1530,6 +1533,84 @@ public class TestUserManager extends UserManagerTestCase {
         QueryBuilder queryBuilder = um.getQueryForPattern(pattern, um.getUserDirectoryName(), um.userSearchFields,
                 um.getUserOrderBy());
         return queryBuilder.predicate().toString();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    public void testGetUserSearchPredicateSubinitial() {
+        // userDirectory uses the default substring match type: subinitial
+        // user search fields default to {username, firstName, lastName} (all SUBSTRING, see
+        // UserService#recomputeUserManager), backed by a HashMap so iteration order is not guaranteed
+        String predicate = userManager.getUserSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("firstName ILIKE 'foo%'"));
+        assertTrue(predicate, predicate.contains("lastName ILIKE 'foo%'"));
+        assertTrue(predicate, predicate.contains("username ILIKE 'foo%'"));
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfDBSMongoDBRepository.class, cause = "SQL-only test variant")
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subany-sql.xml")
+    public void testGetUserSearchPredicateSubanySQL() {
+        assertSubanyPredicate();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfVCSRepository.class, cause = "MongoDB-only test variant")
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subany-mongodb.xml")
+    public void testGetUserSearchPredicateSubanyMongoDB() {
+        assertSubanyPredicate();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfDBSMongoDBRepository.class, cause = "SQL-only test variant")
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subfinal-sql.xml")
+    public void testGetUserSearchPredicateSubfinalSQL() {
+        assertSubfinalPredicate();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfVCSRepository.class, cause = "MongoDB-only test variant")
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subfinal-mongodb.xml")
+    public void testGetUserSearchPredicateSubfinalMongoDB() {
+        assertSubfinalPredicate();
+    }
+
+    protected void assertSubanyPredicate() {
+        String predicate = userManager.getUserSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("firstName ILIKE '%foo%'"));
+        assertTrue(predicate, predicate.contains("lastName ILIKE '%foo%'"));
+        assertTrue(predicate, predicate.contains("username ILIKE '%foo%'"));
+    }
+
+    protected void assertSubfinalPredicate() {
+        String predicate = userManager.getUserSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("firstName ILIKE '%foo'"));
+        assertTrue(predicate, predicate.contains("lastName ILIKE '%foo'"));
+        assertTrue(predicate, predicate.contains("username ILIKE '%foo'"));
+    }
+
+    /** @since 2025.22 */
+    @Test
+    public void testGetUserSearchPredicateBlankPattern() {
+        assertNull(userManager.getUserSearchPredicate(null));
+        assertNull(userManager.getUserSearchPredicate(""));
+        assertNull(userManager.getUserSearchPredicate("   "));
+    }
+
+    /** @since 2025.22 */
+    @Test
+    public void testGetGroupSearchPredicate() {
+        // groupDirectory uses the default substring match type: subinitial
+        // group search fields default to {groupname, grouplabel} (both SUBSTRING, see UserService.recomputeUserManager)
+        String predicate = userManager.getGroupSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("groupname ILIKE 'foo%'"));
+        assertTrue(predicate, predicate.contains("grouplabel ILIKE 'foo%'"));
+        assertNull(userManager.getGroupSearchPredicate(null));
+        assertNull(userManager.getGroupSearchPredicate(""));
     }
 
     /**

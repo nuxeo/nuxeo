@@ -1055,41 +1055,71 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     protected QueryBuilder getQueryForPattern(String pattern, String dirName, Map<String, MatchType> searchFields,
             OrderByExpr orderBy) {
         QueryBuilder queryBuilder = new QueryBuilder();
-        if (!StringUtils.isBlank(pattern)) {
-            // build query
-            pattern = pattern.trim().toLowerCase();
-            String likePattern;
-            if (!useSearchEscapeCompat()) {
-                // replace characters that are meaningful in a LIKE pattern
-                likePattern = pattern.replace("\\", "\\\\");
-                likePattern = likePattern.replace("%", "\\%");
-                likePattern = likePattern.replace("_", "\\_");
-            } else {
-                // compat: don't do any escaping
-                likePattern = pattern;
-            }
-            List<Predicate> predicates = new ArrayList<>();
-            for (Entry<String, MatchType> fieldEntry : searchFields.entrySet()) {
-                String key = fieldEntry.getKey();
-                Predicate predicate;
-                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    Directory dir = dirService.getDirectory(dirName);
-                    SubstringMatchType substringMatchType = dir.getDescriptor().getSubstringMatchType();
-                    String value = switch (substringMatchType) {
-                        case subany -> '%' + likePattern + '%';
-                        case subinitial -> likePattern + '%';
-                        case subfinal -> '%' + likePattern;
-                    };
-                    predicate = Predicates.ilike(key, value);
-                } else { // MatchType.EXACT
-                    predicate = Predicates.eq(key, pattern);
-                }
-                predicates.add(predicate);
-            }
-            queryBuilder.filter(new MultiExpression(Operator.OR, predicates));
+        MultiExpression predicate = getSearchPredicate(pattern, dirName, searchFields);
+        if (predicate != null) {
+            queryBuilder.filter(predicate);
         }
         queryBuilder.order(orderBy);
         return queryBuilder;
+    }
+
+    /**
+     * Builds a predicate matching directory entries against the given search pattern.
+     * <p>
+     * The predicate is the disjunction (OR) of one sub-predicate per search field, honoring the directory's
+     * {@link SubstringMatchType} ({@code subinitial}, {@code subany} or {@code subfinal}) for
+     * {@link MatchType#SUBSTRING} fields.
+     *
+     * @param pattern the search pattern
+     * @param dirName the directory name
+     * @param searchFields the search fields mapped to their match type
+     * @return the search predicate, or {@code null} if {@code pattern} is blank
+     * @since 2025.22
+     */
+    protected MultiExpression getSearchPredicate(String pattern, String dirName, Map<String, MatchType> searchFields) {
+        if (StringUtils.isBlank(pattern)) {
+            return null;
+        }
+        pattern = pattern.trim().toLowerCase();
+        String likePattern;
+        if (!useSearchEscapeCompat()) {
+            // replace characters that are meaningful in a LIKE pattern
+            likePattern = pattern.replace("\\", "\\\\");
+            likePattern = likePattern.replace("%", "\\%");
+            likePattern = likePattern.replace("_", "\\_");
+        } else {
+            // compat: don't do any escaping
+            likePattern = pattern;
+        }
+        List<Predicate> predicates = new ArrayList<>();
+        for (Entry<String, MatchType> fieldEntry : searchFields.entrySet()) {
+            String key = fieldEntry.getKey();
+            Predicate predicate;
+            if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                Directory dir = dirService.getDirectory(dirName);
+                SubstringMatchType substringMatchType = dir.getDescriptor().getSubstringMatchType();
+                String value = switch (substringMatchType) {
+                    case subany -> '%' + likePattern + '%';
+                    case subinitial -> likePattern + '%';
+                    case subfinal -> '%' + likePattern;
+                };
+                predicate = Predicates.ilike(key, value);
+            } else { // MatchType.EXACT
+                predicate = Predicates.eq(key, pattern);
+            }
+            predicates.add(predicate);
+        }
+        return new MultiExpression(Operator.OR, predicates);
+    }
+
+    @Override
+    public MultiExpression getUserSearchPredicate(String pattern) {
+        return getSearchPredicate(pattern, userDirectoryName, userSearchFields);
+    }
+
+    @Override
+    public MultiExpression getGroupSearchPredicate(String pattern) {
+        return getSearchPredicate(pattern, groupDirectoryName, groupSearchFields);
     }
 
     @Override

@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
-import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -325,13 +324,13 @@ public class SuggestUserEntries {
         return userManager.searchUsers(queryBuilder);
     }
 
-    protected MultiExpression getUserSearchPredicate(String prefix) {
-        String pattern = prefix.trim() + '%';
-        List<Predicate> predicates = userManager.getUserSearchFields()
-                                                .stream()
-                                                .map(key -> Predicates.ilike(key, pattern))
-                                                .collect(Collectors.toList());
-        return new MultiExpression(Operator.OR, predicates);
+    /**
+     * @since 5.7.3
+     * @implNote since 2025.22, delegates to {@link UserManager#getUserSearchPredicate(String)} to honor the user
+     *           directory's substring match type ({@code subinitial}, {@code subany} or {@code subfinal}).
+     */
+    protected MultiExpression getUserSearchPredicate(String pattern) {
+        return userManager.getUserSearchPredicate(pattern);
     }
 
     /**
