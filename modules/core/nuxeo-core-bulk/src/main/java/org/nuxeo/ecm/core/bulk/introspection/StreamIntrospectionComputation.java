@@ -274,7 +274,10 @@ public class StreamIntrospectionComputation extends AbstractComputation {
                                        .map(json -> json.get("nodeId").asText())
                                        .collect(Collectors.toList());
         toRemove.forEach(metrics::remove);
-        Set<String> toKeep = metrics.values().stream().map(json -> json.get("nodeId").asText()).collect(Collectors.toSet());
+        Set<String> toKeep = metrics.values()
+                                    .stream()
+                                    .map(json -> json.get("nodeId").asText())
+                                    .collect(Collectors.toSet());
         if (!toRemove.isEmpty()) {
             log.warn("Node(s) removed from the cluster: {}, alive: {}.", toRemove, toKeep);
         } else {
