@@ -67,6 +67,8 @@ public class StreamIntrospectionComputation extends AbstractComputation {
 
     public static final String INTROSPECTION_KEY = "streamIntrospection";
 
+    protected static final String METRICS_ENABLED_PROP = "metrics.enabled";
+
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     protected final Map<String, JsonNode> streams = new HashMap<>();
@@ -89,6 +91,8 @@ public class StreamIntrospectionComputation extends AbstractComputation {
 
     protected long lastMetricsReceived;
 
+    protected boolean disabled;
+
     public StreamIntrospectionComputation() {
         super(NAME, 2, 0);
     }
@@ -103,12 +107,21 @@ public class StreamIntrospectionComputation extends AbstractComputation {
             log.info("Spare instance nothing to report");
             return;
         }
+        if (!isMetricsEnabled()) {
+            log.warn("Stream introspection is disabled when {}=false.", METRICS_ENABLED_PROP);
+            disabled = true;
+            return;
+        }
         log.warn("Instance elected to introspect Nuxeo Stream activity");
         loadModel(getKvStore().getString(INTROSPECTION_KEY));
         registry.register(scaleMetric, (Gauge<Integer>) this::getScaleMetric);
         registry.register(workerMetric, (Gauge<Integer>) this::getCurrentWorkerNodes);
         context.setTimer("check", System.currentTimeMillis() + 2 * CHECK_INTERVAL_MS);
         lastMetricsReceived = 0;
+    }
+
+    protected boolean isMetricsEnabled() {
+        return Boolean.parseBoolean(Framework.getProperty(METRICS_ENABLED_PROP, "false"));
     }
 
     protected int getCurrentWorkerNodes() {
@@ -156,12 +169,19 @@ public class StreamIntrospectionComputation extends AbstractComputation {
 
     @Override
     public void processTimer(ComputationContext context, String key, long timestamp) {
+        if (disabled) {
+            return;
+        }
         removeOldNodes();
         context.setTimer("check", System.currentTimeMillis() + CHECK_INTERVAL_MS);
     }
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
+        if (disabled) {
+            context.askForCheckpoint();
+            return;
+        }
         JsonNode json = getJson(record);
         if (json != null) {
             if (INPUT_1.equals(inputStreamName)) {
