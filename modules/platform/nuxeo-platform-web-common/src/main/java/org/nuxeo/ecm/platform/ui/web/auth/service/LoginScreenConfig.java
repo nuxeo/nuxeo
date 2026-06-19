@@ -22,7 +22,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.net.URLDecoder;
@@ -35,7 +34,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -52,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
 @XObject("loginScreenConfig")
 public class LoginScreenConfig {
 
+    /** @deprecated since 2023.49, the nuxeo.com news page is no longer available */
+    @Deprecated(since = "2023.49", forRemoval = true)
     public static final String NUXEO_NEWS_URL = "//www.nuxeo.com/login-page-embedded-1/";
 
     /**
@@ -282,7 +282,7 @@ public class LoginScreenConfig {
     }
 
     public boolean getDisplayNews() {
-        return isNotTrue(removeNews) && isNotBlank(internalGetNewsIframeUrl());
+        return isNotTrue(removeNews) && isNotBlank(newsIframeUrl);
     }
 
     /**
@@ -344,24 +344,20 @@ public class LoginScreenConfig {
         newsIframeFullUrl = null;
     }
 
+    /** @deprecated since 2023.49, use {@link #getNewsIframeUrl()} instead */
+    @Deprecated(since = "2023.49", forRemoval = true)
     protected String internalGetNewsIframeUrl() {
-        return firstNonNull(newsIframeUrl, NUXEO_NEWS_URL);
+        return newsIframeUrl;
     }
 
     public String getNewsIframeUrl() {
         if (newsIframeFullUrl == null) {
-            UriBuilder newsIFrameBuilder = UriBuilder.fromPath(internalGetNewsIframeUrl());
-            if (NUXEO_NEWS_URL.equals(internalGetNewsIframeUrl())) {
-                newsIFrameBuilder.queryParam(Environment.PRODUCT_VERSION,
-                        Framework.getProperty(Environment.PRODUCT_VERSION))
-                                 .queryParam(Environment.DISTRIBUTION_VERSION,
-                                         Framework.getProperty(Environment.DISTRIBUTION_VERSION))
-                                 .queryParam(Environment.DISTRIBUTION_PACKAGE,
-                                         Framework.getProperty(Environment.DISTRIBUTION_PACKAGE));
+            if (newsIframeUrl == null) {
+                return null;
             }
-            newsIframeFullUrl = newsIFrameBuilder.build().toString();
+            newsIframeFullUrl = URLDecoder.decode(UriBuilder.fromPath(newsIframeUrl).build().toString(), UTF_8);
         }
-        return URLDecoder.decode(newsIframeFullUrl, UTF_8);
+        return newsIframeFullUrl;
     }
 
     /**
