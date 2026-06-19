@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.METRICS_ENABLED_PROP;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionD2Writer.PARAMETER_EXCLUDE_FILTER;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionD2Writer.PARAMETER_EXCLUDE_INACTIVE;
 import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_D2;
@@ -38,6 +39,7 @@ import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
  * @since 2021.35
  */
 @WithFrameworkProperty(name = StreamObject.ENABLED_OPTION, value = "true")
+@WithFrameworkProperty(name = METRICS_ENABLED_PROP, value = "true")
 public class TestStreamObject extends ManagementBaseTest {
 
     @Test
