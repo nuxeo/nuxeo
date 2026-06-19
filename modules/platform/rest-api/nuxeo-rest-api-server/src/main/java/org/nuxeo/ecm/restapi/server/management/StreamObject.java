@@ -27,6 +27,7 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KEY;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.INTROSPECTION_KV_STORE;
+import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionComputation.METRICS_ENABLED_PROP;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionProcessorTopologyJsonWriter.FORMAT_PARAMETER;
 import static org.nuxeo.ecm.core.bulk.introspection.StreamIntrospectionProcessorTopologyJsonWriter.OutputFormat.PRETTIER;
 import static org.nuxeo.ecm.core.io.marshallers.NuxeoMediaType.TEXT_D2;
@@ -322,6 +323,11 @@ public class StreamObject extends AbstractResource<ResourceTypeImpl> {
     protected void checkStreamMetricEnabled() {
         if (!Boolean.parseBoolean(Framework.getProperty(ENABLED_OPTION, "false"))) {
             throw new NuxeoException("This endpoint requires the following configuration: " + ENABLED_OPTION + "=true",
+                    SC_FORBIDDEN);
+        }
+        if (!Boolean.parseBoolean(Framework.getProperty(METRICS_ENABLED_PROP, "false"))) {
+            throw new NuxeoException(
+                    "This endpoint requires the following configuration: " + METRICS_ENABLED_PROP + "=true",
                     SC_FORBIDDEN);
         }
     }

@@ -67,7 +67,7 @@ public class StreamIntrospectionComputation extends AbstractComputation {
 
     public static final String INTROSPECTION_KEY = "streamIntrospection";
 
-    protected static final String METRICS_ENABLED_PROP = "metrics.enabled";
+    public static final String METRICS_ENABLED_PROP = "metrics.enabled";
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
