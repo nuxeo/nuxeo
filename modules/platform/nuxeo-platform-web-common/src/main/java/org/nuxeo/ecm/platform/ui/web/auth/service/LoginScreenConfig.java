@@ -35,7 +35,6 @@ import java.util.Map;
 
 import jakarta.ws.rs.core.UriBuilder;
 
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -53,6 +52,8 @@ import org.nuxeo.runtime.model.Descriptor;
 @XObject("loginScreenConfig")
 public class LoginScreenConfig implements Descriptor {
 
+    /** @deprecated since 2025.21, the nuxeo.com news page is no longer available */
+    @Deprecated(since = "2025.21", forRemoval = true)
     public static final String NUXEO_NEWS_URL = "//www.nuxeo.com/login-page-embedded-1/";
 
     /** @since 8.4 */
@@ -233,7 +234,7 @@ public class LoginScreenConfig implements Descriptor {
     }
 
     public boolean getDisplayNews() {
-        return isNotTrue(removeNews) && isNotBlank(internalGetNewsIframeUrl());
+        return isNotTrue(removeNews) && isNotBlank(newsIframeUrl);
     }
 
     public Boolean getFieldAutocomplete() {
@@ -287,24 +288,20 @@ public class LoginScreenConfig implements Descriptor {
         newsIframeFullUrl = null;
     }
 
+    /** @deprecated since 2025.21, use {@link #getNewsIframeUrl()} instead */
+    @Deprecated(since = "2025.21", forRemoval = true)
     protected String internalGetNewsIframeUrl() {
-        return getIfNull(newsIframeUrl, NUXEO_NEWS_URL);
+        return newsIframeUrl;
     }
 
     public String getNewsIframeUrl() {
         if (newsIframeFullUrl == null) {
-            UriBuilder newsIFrameBuilder = UriBuilder.fromPath(internalGetNewsIframeUrl());
-            if (NUXEO_NEWS_URL.equals(internalGetNewsIframeUrl())) {
-                newsIFrameBuilder.queryParam(Environment.PRODUCT_VERSION,
-                        Framework.getProperty(Environment.PRODUCT_VERSION))
-                                 .queryParam(Environment.DISTRIBUTION_VERSION,
-                                         Framework.getProperty(Environment.DISTRIBUTION_VERSION))
-                                 .queryParam(Environment.DISTRIBUTION_PACKAGE,
-                                         Framework.getProperty(Environment.DISTRIBUTION_PACKAGE));
+            if (newsIframeUrl == null) {
+                return null;
             }
-            newsIframeFullUrl = newsIFrameBuilder.build().toString();
+            newsIframeFullUrl = URLDecoder.decode(UriBuilder.fromPath(newsIframeUrl).build().toString(), UTF_8);
         }
-        return URLDecoder.decode(newsIframeFullUrl, UTF_8);
+        return newsIframeFullUrl;
     }
 
     /**
