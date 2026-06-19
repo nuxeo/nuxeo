@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.search.BaseCoreSearchFeature.assertIndexedContains;
 import static org.nuxeo.ecm.core.search.BaseCoreSearchFeature.newSearchQuery;
 
 import java.time.temporal.ChronoUnit;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.search.index.commands.ThreadLocalIndexingCommandsStacker;
 import org.nuxeo.ecm.core.test.CoreSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -171,6 +173,44 @@ public class TestSearchTreeIndexing {
 
         docs = searchAll(restrictedSession).loadDocuments(restrictedSession);
         assertEquals(3, docs.totalSize());
+    }
+
+    /**
+     * Checks that an ACL change indexed asynchronously updates the index for the folder itself and not only for its
+     * descendants.
+     */
+    @Test
+    public void shouldFilterTreeOnSecurityAsync() {
+        DocumentModelList docs = searchAll().loadDocuments(session);
+        assertEquals(10, docs.totalSize());
+
+        // check for user with no rights
+        CoreSession restrictedSession = CoreInstance.getCoreSession(null, "toto");
+        docs = searchAll(restrictedSession).loadDocuments(restrictedSession);
+        assertEquals(0, docs.totalSize());
+
+        // add READ rights on a folder using asynchronous indexing
+        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
+        ACP acp = new ACPImpl();
+        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("toto", SecurityConstants.READ, true));
+        acp.addACL(acl);
+        boolean syncIndexing = ThreadLocalIndexingCommandsStacker.useSyncIndexing.get();
+        ThreadLocalIndexingCommandsStacker.useSyncIndexing.set(false);
+        try {
+            session.setACP(ref, acp, true);
+        } finally {
+            ThreadLocalIndexingCommandsStacker.useSyncIndexing.set(syncIndexing);
+        }
+        txFeature.nextTransaction();
+
+        // the folder itself must be reindexed, not only its descendants
+        DocumentModel folder = session.getDocument(ref);
+        assertIndexedContains(folder.getId(), "toto");
+
+        // the user can see the folder and its descendants
+        docs = searchAll(restrictedSession).loadDocuments(restrictedSession);
+        assertEquals(8, docs.totalSize());
     }
 
     @Test

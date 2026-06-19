@@ -113,10 +113,10 @@ public class IndexingProcessor implements StreamProcessorTopology {
                     } else {
                         request = IndexingRequest.delete(event.getDocId());
                     }
-                } else if (!event.isRecurse()) {
-                    request = IndexingRequest.upsert(event.getDocId());
                 } else {
-                    continue;
+                    // a recurse event indexes its descendants with a bulk command, the document itself is always
+                    // indexed here with a simple upsert
+                    request = IndexingRequest.upsert(event.getDocId());
                 }
                 requestBuilder.add(request);
             }
