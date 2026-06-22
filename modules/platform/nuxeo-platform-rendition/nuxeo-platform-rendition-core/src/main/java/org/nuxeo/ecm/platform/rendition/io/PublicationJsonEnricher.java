@@ -29,6 +29,9 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.search.SearchQuery;
+import org.nuxeo.ecm.core.search.SearchService;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -48,14 +51,11 @@ public class PublicationJsonEnricher extends AbstractJsonEnricher<DocumentModel>
                 return;
             }
             jg.writeObjectFieldStart(NAME);
-            int resultCount;
             String escapedId = NXQL.escapeString(document.getId());
-            resultCount = wrapper.getSession()
-                                 .queryProjection(
-                                         String.format(ALL_PUBLICATION_QUERY,
-                                                 escapedId, escapedId),
-                                         0, 0)
-                                 .size();
+            var query = String.format(ALL_PUBLICATION_QUERY, escapedId, escapedId);
+            long resultCount = Framework.getService(SearchService.class)
+                                        .search(SearchQuery.builder(query, wrapper.getSession()).limit(0).build())
+                                        .getTotal();
             jg.writeNumberField("resultsCount", resultCount);
             jg.writeEndObject();
         }

@@ -35,21 +35,26 @@ import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
+import org.nuxeo.ecm.core.test.CoreSearchFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.IgnoreIfWindows;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 10.3
  */
-@Features(RenditionFeature.class)
+@Features({ CoreSearchFeature.class, RenditionFeature.class })
 public class PublicationJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     @Inject
     private CoreSession session;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Before
     public void setup() {
@@ -58,7 +63,8 @@ public class PublicationJsonEnricherTest extends AbstractJsonWriterTest.Local<Do
         document = session.createDocument(document);
         Blob blob = Blobs.createBlob("I am a Blob");
         document.setPropertyValue("file:content", (Serializable) blob);
-        document = session.saveDocument(document);
+        session.saveDocument(document);
+        txFeature.nextTransaction();
     }
 
     @Test
@@ -75,6 +81,7 @@ public class PublicationJsonEnricherTest extends AbstractJsonWriterTest.Local<Do
 
         session.publishDocument(file, parent);
         session.save();
+        txFeature.nextTransaction();
         json = jsonAssert(file, CtxBuilder.enrichDoc(PublicationJsonEnricher.NAME).get());
         json = json.has("contextParameters").isObject();
         json.properties(1);
@@ -84,6 +91,7 @@ public class PublicationJsonEnricherTest extends AbstractJsonWriterTest.Local<Do
 
         Framework.getService(RenditionService.class).publishRendition(file, parent, "pdf", false);
         session.save();
+        txFeature.nextTransaction();
         json = jsonAssert(file, CtxBuilder.enrichDoc(PublicationJsonEnricher.NAME).get());
         json = json.has("contextParameters").isObject();
         json.properties(1);
