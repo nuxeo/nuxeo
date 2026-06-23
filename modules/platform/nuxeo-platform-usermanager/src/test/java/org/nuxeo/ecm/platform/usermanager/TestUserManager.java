@@ -51,6 +51,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Ignore;
@@ -67,12 +69,16 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.storage.sql.IgnoreNonPostgreSQL;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
+import org.nuxeo.runtime.mongodb.IgnoreNoMongoDB;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * @author George Lefter
@@ -81,6 +87,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
  */
 @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUserManager extends UserManagerTestCase {
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     public void testExistingSetup() throws Exception {
@@ -1501,6 +1510,88 @@ public class TestUserManager extends UserManagerTestCase {
         QueryBuilder queryBuilder = um.getQueryForPattern(pattern, um.getUserDirectoryName(), um.userSearchFields,
                 um.getUserOrderBy());
         return queryBuilder.predicate().toString();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    public void testGetUserSearchPredicateSubinitial() {
+        // userDirectory uses the default substring match type: subinitial
+        // user search fields default to {username, firstName, lastName} (all SUBSTRING, see
+        // UserService#recomputeUserManager), backed by a HashMap so iteration order is not guaranteed
+        String predicate = userManager.getUserSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("firstName ILIKE 'foo%'"));
+        assertTrue(predicate, predicate.contains("lastName ILIKE 'foo%'"));
+        assertTrue(predicate, predicate.contains("username ILIKE 'foo%'"));
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgreSQL.class, cause = "SQL-only test variant")
+    public void testGetUserSearchPredicateSubanySQL() throws Exception {
+        hotDeployer.deploy(
+                "org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subany-sql.xml");
+        assertSubanyPredicate();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class, cause = "MongoDB-only test variant")
+    public void testGetUserSearchPredicateSubanyMongoDB() throws Exception {
+        hotDeployer.deploy(
+                "org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subany-mongodb.xml");
+        assertSubanyPredicate();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgreSQL.class, cause = "SQL-only test variant")
+    public void testGetUserSearchPredicateSubfinalSQL() throws Exception {
+        hotDeployer.deploy(
+                "org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subfinal-sql.xml");
+        assertSubfinalPredicate();
+    }
+
+    /** @since 2025.22 */
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class, cause = "MongoDB-only test variant")
+    public void testGetUserSearchPredicateSubfinalMongoDB() throws Exception {
+        hotDeployer.deploy(
+                "org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-user-directory-substring-match-subfinal-mongodb.xml");
+        assertSubfinalPredicate();
+    }
+
+    protected void assertSubanyPredicate() {
+        String predicate = userManager.getUserSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("firstName ILIKE '%foo%'"));
+        assertTrue(predicate, predicate.contains("lastName ILIKE '%foo%'"));
+        assertTrue(predicate, predicate.contains("username ILIKE '%foo%'"));
+    }
+
+    protected void assertSubfinalPredicate() {
+        String predicate = userManager.getUserSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("firstName ILIKE '%foo'"));
+        assertTrue(predicate, predicate.contains("lastName ILIKE '%foo'"));
+        assertTrue(predicate, predicate.contains("username ILIKE '%foo'"));
+    }
+
+    /** @since 2025.22 */
+    @Test
+    public void testGetUserSearchPredicateBlankPattern() {
+        assertNull(userManager.getUserSearchPredicate(null));
+        assertNull(userManager.getUserSearchPredicate(""));
+        assertNull(userManager.getUserSearchPredicate("   "));
+    }
+
+    /** @since 2025.22 */
+    @Test
+    public void testGetGroupSearchPredicate() {
+        // groupDirectory uses the default substring match type: subinitial
+        // group search fields default to {groupname, grouplabel} (both SUBSTRING, see UserService.recomputeUserManager)
+        String predicate = userManager.getGroupSearchPredicate("foo").toString();
+        assertTrue(predicate, predicate.contains("groupname ILIKE 'foo%'"));
+        assertTrue(predicate, predicate.contains("grouplabel ILIKE 'foo%'"));
+        assertNull(userManager.getGroupSearchPredicate(null));
+        assertNull(userManager.getGroupSearchPredicate(""));
     }
 
     /**
