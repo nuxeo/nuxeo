@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="perf-nothumb-config">
-  <require>org.nuxeo.ecm.platform.thumbnail.listener</require>
-    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="updateThumbListener" enabled="false"/>
-    <listener name="checkBlobUpdate" enabled="false"/>
-   </extension>
-</component>

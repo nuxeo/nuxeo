@@ -50,3 +50,5 @@ nuxeo.stream.audit.batch.threshold.ms=1000
 # No incremental blob GC
 nuxeo.bulk.action.blobGC.enabled=false
 
+# No thumbnail generation
+nuxeo.thumbnail.enabled=false
