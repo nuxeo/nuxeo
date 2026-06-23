@@ -80,6 +80,9 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         if (notificationService == null) {
             return false;
         }
+        if (Boolean.TRUE.equals(event.getContext().getProperty(NotificationConstants.DISABLE_NOTIFICATION_SERVICE))) {
+            return false;
+        }
         return notificationService.getNotificationEventNames().contains(event.getName());
     }
 

@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
@@ -40,15 +40,19 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
  *
  * @since 5.7
  */
-public class UpdateThumbnailListener implements PostCommitEventListener {
+public class UpdateThumbnailListener implements PostCommitFilteringEventListener {
 
-    // @since 11.1
     private static final Logger log = LogManager.getLogger(UpdateThumbnailListener.class);
 
     public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
 
     // @since 11.5
     protected ThumbnailHelper thumbnailHelper = new ThumbnailHelper();
+
+    @Override
+    public String getDisabledPropertyName() {
+        return ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION;
+    }
 
     protected void processDoc(CoreSession session, DocumentModel doc) {
         thumbnailHelper.createThumbnailIfNeeded(session, doc);

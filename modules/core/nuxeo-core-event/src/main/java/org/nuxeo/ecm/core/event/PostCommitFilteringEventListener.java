@@ -36,11 +36,40 @@ public interface PostCommitFilteringEventListener extends PostCommitEventListene
      * method may not be able to get to all the information it would get from a standard DocumentModel implementation.
      * If there is not enough information in the ShallowDocumentModel to decide whether this event is of interest, then
      * this method should accept it an let the actual logic done in {@link #handleEvent} do the final filtering.
+     * <p>
+     * The default implementation rejects the event when the {@link EventContext} property named by
+     * {@link #getDisabledPropertyName()} is {@code true}, and accepts it otherwise.
      *
      * @param event the event
      * @return {@code true} to accept it, or {@code false} to ignore it
      * @since 5.6
      */
-    boolean acceptEvent(Event event);
+    default boolean acceptEvent(Event event) {
+        String disabledProperty = getDisabledPropertyName();
+        if (disabledProperty == null) {
+            return true;
+        }
+        return !Boolean.TRUE.equals(event.getContext().getProperty(disabledProperty));
+    }
+
+    /**
+     * Returns the name of the {@link EventContext} property that, when set to {@code true}, signals that this listener
+     * should be skipped entirely for that event.
+     * <p>
+     * When this method returns a non-{@code null} value, the default {@link #acceptEvent} implementation automatically
+     * filters out events carrying that flag, preventing a {@code ListenerWork} from being scheduled through the
+     * {@code WorkManager} pipeline for nothing.
+     * <p>
+     * Listeners that already override {@link #acceptEvent} directly can ignore this method (it is not called by the
+     * default {@link #acceptEvent} in that case).
+     * <p>
+     * Returns {@code null} by default (no automatic filtering).
+     *
+     * @return the context property name used as a disabled flag, or {@code null} if none
+     * @since 2025.22
+     */
+    default String getDisabledPropertyName() {
+        return null;
+    }
 
 }
