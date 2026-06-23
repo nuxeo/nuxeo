@@ -20,15 +20,19 @@ package org.nuxeo.ecm.platform.rendition.io;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-import static org.nuxeo.ecm.platform.rendition.Constants.ALL_PUBLICATION_QUERY;
+import static org.nuxeo.ecm.platform.query.api.PageProviderSpec.CORE_SESSION_PROPERTY;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.PageProviderSpec;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -42,20 +46,24 @@ public class PublicationJsonEnricher extends AbstractJsonEnricher<DocumentModel>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         try (SessionWrapper wrapper = ctx.getSession(document)) {
             if (document.getId() == null || !wrapper.getSession().exists(document.getRef())) {
                 return;
             }
             jg.writeObjectFieldStart(NAME);
-            int resultCount;
-            String escapedId = NXQL.escapeString(document.getId());
-            resultCount = wrapper.getSession()
-                                 .queryProjection(
-                                         String.format(ALL_PUBLICATION_QUERY,
-                                                 escapedId, escapedId),
-                                         0, 0)
-                                 .size();
+            var ppService = Framework.getService(PageProviderService.class);
+            var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    PageProviderSpec.builder("ALL_PUBLICATION_QUERY")
+                                    .pageSize(1L)
+                                    .currentPage(0L)
+                                    .property(CORE_SESSION_PROPERTY, (Serializable) wrapper.getSession())
+                                    .parameters(document.getId(), document.getId())
+                                    .build());
+            // Force compute total count
+            pageProvider.getCurrentPage();
+            long resultCount = pageProvider.getResultsCount();
             jg.writeNumberField("resultsCount", resultCount);
             jg.writeEndObject();
         }
