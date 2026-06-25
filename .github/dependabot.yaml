@@ -163,8 +163,16 @@ updates:
       interval: "daily"
       time: "02:00"
       timezone: "Europe/Paris"
-    # Limit version updates to 10 to prevent CI overload
-    open-pull-requests-limit: 10
+    # Limit version updates to 20 to leave room for both the grouped minor/patch PR
+    # and the ungrouped major-update PRs
+    open-pull-requests-limit: 20
+    # Group minor and patch version updates, keep major updates ungrouped
+    groups:
+      version-updates:
+        applies-to: "version-updates"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       # Spurious major version updates
       - dependency-name: "net.oauth.core:oauth"
