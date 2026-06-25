@@ -1385,9 +1385,15 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             boolean updateSimpleText = docsWithDirtyStrings.contains(id);
             boolean updateBinaryText = okToDownloadBlob && docsWithDirtyBinaries.contains(id);
             if (updateSimpleText || updateBinaryText) {
+                log.trace("Scheduling FulltextExtractorWork for doc: {} updateSimpleText: {} updateBinaryText: {}", id,
+                        updateSimpleText, updateBinaryText);
                 Work work = new FulltextExtractorWork(repository.getName(), id, updateSimpleText, updateBinaryText,
                         true);
                 works.add(work);
+            } else {
+                log.trace(
+                        "Skipping FulltextExtractorWork for doc: {} updateSimpleText: {} updateBinaryText: {} DownloadBlobGuard: {}",
+                        id, updateSimpleText, updateBinaryText, !okToDownloadBlob);
             }
         }
         return works;
@@ -1434,16 +1440,30 @@ public class DBSTransactionState implements LockManager, AutoCloseable {
             for (String path : paths) {
                 Set<String> indexesSimple = fulltextConfiguration.indexesByPropPathSimple.get(path);
                 if (indexesSimple != null && !indexesSimple.isEmpty()) {
-                    dirtyStrings = true;
-                    if (dirtyBinaries) {
-                        break;
+                    // a path excluded from all its matching indexes must not trigger extraction
+                    Set<String> excludedSimple = fulltextConfiguration.indexesByPropPathExcludedSimple.get(path);
+                    if (excludedSimple != null && excludedSimple.containsAll(indexesSimple)) {
+                        log.trace("Dirty simple path skipped, excluded from all indexes: {}", path);
+                    } else {
+                        log.trace("Dirty simple path triggers fulltext indexing: {}", path);
+                        dirtyStrings = true;
+                        if (dirtyBinaries) {
+                            break;
+                        }
                     }
                 }
                 Set<String> indexesBinary = fulltextConfiguration.indexesByPropPathBinary.get(path);
                 if (indexesBinary != null && !indexesBinary.isEmpty()) {
-                    dirtyBinaries = true;
-                    if (dirtyStrings) {
-                        break;
+                    // a path excluded from all its matching indexes must not trigger extraction
+                    Set<String> excludedBinary = fulltextConfiguration.indexesByPropPathExcludedBinary.get(path);
+                    if (excludedBinary != null && excludedBinary.containsAll(indexesBinary)) {
+                        log.trace("Dirty binary path skipped, excluded from all indexes: {}", path);
+                    } else {
+                        log.trace("Dirty binary path triggers fulltext indexing: {}", path);
+                        dirtyBinaries = true;
+                        if (dirtyStrings) {
+                            break;
+                        }
                     }
                 }
             }

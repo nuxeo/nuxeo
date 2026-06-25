@@ -158,6 +158,37 @@ public class FulltextConfigurationFactory {
                         continue;
                     }
                     Type baseType = getBaseType(field.getType());
+                    if (!include && baseType instanceof ComplexType complexBaseType) {
+                        // An excludeField on a complex type must suppress FulltextExtractorWork scheduling, not just
+                        // blob extraction. Exclusion is checked in findDirtyDocuments() per subpath, so all
+                        // subpaths (binary data, string metadata) must be registered as excluded.
+                        // For schemas without a namespace prefix (e.g. "file"), DirtyPathsFinder produces
+                        // both the prefixed form (file:content/data) and the unprefixed form (content/data),
+                        // so we must exclude both.
+                        Set<String> subSimplePaths = new HashSet<>();
+                        Set<String> subBinaryPaths = new HashSet<>();
+                        PathsFinder subPathsFinder = new PathsFinder(subSimplePaths, subBinaryPaths);
+                        subPathsFinder.walkComplexType(complexBaseType, path, null);
+                        if (field.getDeclaringType() instanceof ComplexType declaringComplexType
+                                && !declaringComplexType.getNamespace().hasPrefix()) {
+                            // schema has no namespace prefix: DirtyPathsFinder produces unprefixed paths
+                            // (e.g. content/data) in addition to prefixed ones (e.g. file:content/data),
+                            // so both forms must be excluded
+                            String unprefixedPath = path.contains(":") ? path.substring(path.indexOf(':') + 1) : path;
+                            subPathsFinder.walkComplexType(complexBaseType, unprefixedPath, null);
+                        }
+                        for (String subPath : subSimplePaths) {
+                            ftc.indexesByPropPathExcludedSimple.computeIfAbsent(subPath, p -> new HashSet<>())
+                                                               .add(name);
+                            ftc.propPathsExcludedByIndexSimple.computeIfAbsent(name, n -> new HashSet<>()).add(subPath);
+                        }
+                        for (String subPath : subBinaryPaths) {
+                            ftc.indexesByPropPathExcludedBinary.computeIfAbsent(subPath, p -> new HashSet<>())
+                                                               .add(name);
+                            ftc.propPathsExcludedByIndexBinary.computeIfAbsent(name, n -> new HashSet<>()).add(subPath);
+                        }
+                        continue;
+                    }
                     Map<String, Set<String>> indexesByPropPath;
                     Map<String, Set<String>> propPathsByIndex;
                     if (baseType instanceof ComplexType && TypeConstants.isContentType(baseType)) {

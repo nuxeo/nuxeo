@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.fulltext.excludefield">
+  <!-- Contrib for MongoDB backend -->
+  <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" point="repository">
+    <repository name="test">
+      <fulltext>
+        <index> <!-- name="default" implied -->
+          <excludeField>file:content</excludeField>
+        </index>
+      </fulltext>
+    </repository>
+  </extension>
+  <!-- Contrib for in-memory backend -->
+  <extension target="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" point="repository">
+    <repository name="test">
+      <fulltext>
+        <index> <!-- name="default" implied -->
+          <excludeField>file:content</excludeField>
+        </index>
+      </fulltext>
+    </repository>
+  </extension>
+</component>
