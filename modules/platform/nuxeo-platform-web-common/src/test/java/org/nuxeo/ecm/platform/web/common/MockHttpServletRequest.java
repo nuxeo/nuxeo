@@ -55,6 +55,15 @@ public class MockHttpServletRequest {
 
     protected final Map<String, Object> sessionAttributes;
 
+    /**
+     * Backing store for request parameters. Drives both {@link HttpServletRequest#getParameter(String)} and
+     * {@link HttpServletRequest#getParameterMap()} so callers using the new OpenSAML 5.2.2+ code path (which reads
+     * {@code getParameterMap().keySet().stream()}) get a consistent view.
+     *
+     * @since 2025.22
+     */
+    protected final Map<String, String[]> parameters;
+
     protected List<Cookie> cookies;
 
     protected MockHttpServletRequest(HttpServletRequest request) {
@@ -76,6 +85,16 @@ public class MockHttpServletRequest {
             attributes.remove(key);
             return null;
         }).when(mock).removeAttribute(anyString());
+        // initialize parameters
+        parameters = new HashMap<>();
+        when(mock.getParameter(anyString())).thenAnswer(invocation -> {
+            String[] values = parameters.get(invocation.<String> getArgument(0));
+            return values != null && values.length > 0 ? values[0] : null;
+        });
+        when(mock.getParameterValues(anyString())).thenAnswer(
+                invocation -> parameters.get(invocation.<String> getArgument(0)));
+        when(mock.getParameterMap()).thenAnswer(invocation -> Collections.unmodifiableMap(parameters));
+        when(mock.getParameterNames()).thenAnswer(invocation -> Collections.enumeration(parameters.keySet()));
         // initialize session
         session = Mockito.mock(HttpSession.class, RETURNS_DEEP_STUBS);
         when(mock.getSession()).thenReturn(session);
@@ -151,7 +170,9 @@ public class MockHttpServletRequest {
     }
 
     public MockHttpServletRequest whenGetParameterThenReturn(String name, String value) {
-        when(mock.getParameter(name)).thenReturn(value);
+        // store in the backing map so getParameter, getParameterValues, getParameterMap and getParameterNames stay
+        // consistent (e.g. OpenSAML 5.2.2+ reads getParameterMap().keySet().stream() in SAMLBindingSupport)
+        parameters.put(name, new String[] { value });
         return this;
     }
 

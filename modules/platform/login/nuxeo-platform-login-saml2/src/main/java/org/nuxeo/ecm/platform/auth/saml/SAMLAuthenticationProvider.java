@@ -83,6 +83,25 @@ public class SAMLAuthenticationProvider
      */
     public static final String ERROR_USER = "error.saml.userMapping";
 
+    /**
+     * System property used by JAXP {@code FactoryFinder} to select a {@link javax.xml.parsers.DocumentBuilderFactory}
+     * implementation.
+     *
+     * @since 2025.22
+     */
+    protected static final String JAXP_DBF_PROP = "javax.xml.parsers.DocumentBuilderFactory";
+
+    /**
+     * JDK built-in {@link javax.xml.parsers.DocumentBuilderFactory} implementation class name.
+     * <p>
+     * Used as a temporary override during {@link #initOpenSAML()} because OpenSAML 5.2.2+ sets the JDK-JAXP-specific
+     * {@code jdk.xml.maxElementDepth} attribute on the parser pool factory, which is not recognized by Apache
+     * {@code xerces:xercesImpl}. The durable fix is to remove Apache Xerces from the runtime classpath.
+     *
+     * @since 2025.22
+     */
+    protected static final String JDK_DBF_IMPL = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
+
     protected SAMLConfiguration configuration;
 
     protected UserResolver userResolver;
@@ -110,8 +129,14 @@ public class SAMLAuthenticationProvider
         }
     }
 
-    protected static void initOpenSAML() {
+    protected static synchronized void initOpenSAML() {
+        // Apache xerces:xercesImpl does not recognize jdk.xml.maxElementDepth, which OpenSAML 5.2.2+ sets on
+        // its parser pool factory. Temporarily force the JDK built-in JAXP factory for the duration of OpenSAML init.
+        // BasicParserPool captures DocumentBuilderFactory.newInstance() once into its builderFactory field during
+        // doInitialize(), so this JVM-wide window only needs to wrap initOpenSAML.
+        String savedDbfProp = System.getProperty(JAXP_DBF_PROP);
         try {
+            System.setProperty(JAXP_DBF_PROP, JDK_DBF_IMPL);
             // don't use InitializationService.initialize
             // because it tries to configure MetricRegistry for version 4.x whereas we have 5.x
             new org.opensaml.core.xml.config.impl.XMLObjectProviderInitializer().init();
@@ -120,8 +145,17 @@ public class SAMLAuthenticationProvider
             new GlobalParserPoolInitializer().init();
             new GlobalAlgorithmRegistryInitializer().init();
             new DecryptionParserPoolInitializer().init();
+            // SAMLConfiguration is required by OpenSAML 5.2.2+ binding code paths
+            // (SAMLBindingSupport size-limit checks).
+            new org.opensaml.saml.config.impl.SAMLConfigurationInitializer().init();
         } catch (InitializationException e) {
             throw new NuxeoException("Failed to initialize OpenSAML library", e);
+        } finally {
+            if (savedDbfProp == null) {
+                System.clearProperty(JAXP_DBF_PROP);
+            } else {
+                System.setProperty(JAXP_DBF_PROP, savedDbfProp);
+            }
         }
     }
 

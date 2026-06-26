@@ -33,6 +33,7 @@ import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.extractQueryParam;
 import static org.nuxeo.ecm.platform.auth.saml.SAMLFeature.format;
 
 import java.time.Instant;
+import java.util.Locale;
 import java.util.UUID;
 
 import jakarta.inject.Inject;
@@ -230,6 +231,9 @@ public class SAMLSecondaryAuthenticatorTest {
         when(req.getMethod()).thenReturn("POST");
         when(req.getRequestURL()).thenReturn(new StringBuffer(url));
         when(req.getParameter("SAMLResponse")).thenReturn(encodedSamlResponse);
+        // OpenSAML 5.2.2+ triggers the error-handling path here, which calls req.getLocale() via
+        // SAMLUtils.setLoginError
+        when(req.getLocale()).thenReturn(Locale.ENGLISH);
 
         var info = samlAuth.handleRetrieveIdentity(req, resp);
         assertNull(info);
