@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
+import org.nuxeo.ecm.core.cache.CacheManagement;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
@@ -222,6 +223,11 @@ public abstract class AbstractDirectory implements Directory {
 
     @Override
     public void invalidateCaches() {
+        if (log.isTraceEnabled()) {
+            long size = cache.getEntryCache() instanceof CacheManagement cm ? cm.getSize() : -1;
+            log.trace("Invalidating all caches for directory: {}, entry cache size: {}", getName(), size,
+                    new Throwable("stack trace"));
+        }
         cache.invalidateAll();
         for (Reference ref : getReferences()) {
             Directory targetDir = ref.getTargetDirectory();

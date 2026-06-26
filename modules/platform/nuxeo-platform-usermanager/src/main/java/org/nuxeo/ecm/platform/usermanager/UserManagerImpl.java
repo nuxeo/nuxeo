@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheManagement;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -956,6 +957,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     protected void invalidateAllPrincipals() {
         if (useCache()) {
+            if (log.isTraceEnabled()) {
+                long size = principalCache instanceof CacheManagement cm ? cm.getSize() : -1;
+                log.trace("Invalidating all principals cache, size: {}", size, new Throwable("stack trace"));
+            }
             principalCache.invalidateAll();
         }
     }
