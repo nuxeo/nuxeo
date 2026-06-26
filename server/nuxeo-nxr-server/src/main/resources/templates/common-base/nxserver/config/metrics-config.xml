@@ -39,6 +39,9 @@
           <prefix>jvm.memory.total</prefix>
           <prefix>jvm.garbage.G1_Old_Generation.time</prefix>
           <prefix>jvm.garbage.G1_Young_Generation.time</prefix>
+          <prefix>nuxeo.cache.default-cache.</prefix>
+          <prefix>nuxeo.directories.directory.userDirectory</prefix>
+          <prefix>nuxeo.directories.directory.groupDirectory</prefix>
         </allow>
         <deny>
           <prefix>jvm.</prefix>
