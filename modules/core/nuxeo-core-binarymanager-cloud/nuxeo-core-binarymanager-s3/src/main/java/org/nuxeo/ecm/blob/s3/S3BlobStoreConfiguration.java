@@ -201,7 +201,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      * @deprecated since 2025.0, merged with {@link #MINIMUM_UPLOAD_PART_SIZE_PROPERTY}
      */
     @Deprecated(since = "2025.0")
-    public static final String MULTIPART_COPY_PART_SIZE_PROPERTY = "nuxeo.s3storage.multipart.copy.part.size";
+    public static final String MULTIPART_COPY_PART_SIZE_PROPERTY = "multipart.copy.part.size";
 
     /**
      * The default value for the multipart copy part size.
@@ -219,7 +219,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      * @deprecated since 2025.0, merged with {@link #MULTIPART_UPLOAD_THRESHOLD_PROPERTY}
      */
     @Deprecated(since = "2025.0")
-    public static final String MULTIPART_COPY_THRESHOLD_PROPERTY = "nuxeo.s3storage.multipart.copy.threshold";
+    public static final String MULTIPART_COPY_THRESHOLD_PROPERTY = "multipart.copy.threshold";
 
     /**
      * The default value for the multipart copy threshold.
@@ -237,7 +237,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      *
      * @since 2021.11
      */
-    public static final String MULTIPART_UPLOAD_THRESHOLD_PROPERTY = "nuxeo.s3storage.multipart.upload.threshold";
+    public static final String MULTIPART_UPLOAD_THRESHOLD_PROPERTY = "multipart.upload.threshold";
 
     /**
      * The default value for the multipart upload threshold.
@@ -253,7 +253,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      *
      * @since 2021.11
      */
-    public static final String MINIMUM_UPLOAD_PART_SIZE_PROPERTY = "nuxeo.s3storage.minimum.upload.part.size";
+    public static final String MINIMUM_UPLOAD_PART_SIZE_PROPERTY = "minimum.upload.part.size";
 
     /**
      * The default value for the minimum upload part size.
@@ -269,7 +269,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      *
      * @since 2021.14
      */
-    public static final String TRANSFER_MANAGER_THREAD_POOL_SIZE_PROPERTY = "nuxeo.s3storage.transfer.manager.thread.pool.size";
+    public static final String TRANSFER_MANAGER_THREAD_POOL_SIZE_PROPERTY = "transfer.manager.thread.pool.size";
 
     /**
      * The default value for the transfer manager thread pool size.
@@ -711,7 +711,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
             }
         }
         // nuxeo.conf property
-        return getLongProperty(MULTIPART_COPY_PART_SIZE_PROPERTY, MULTIPART_COPY_PART_SIZE_DEFAULT);
+        return getLongProperty(SYSTEM_PROPERTY_PREFIX + "." + MULTIPART_COPY_PART_SIZE_PROPERTY,
+                MULTIPART_COPY_PART_SIZE_DEFAULT);
     }
 
     /**
