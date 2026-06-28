@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -327,10 +328,24 @@ public class SuggestUserEntries {
     /**
      * @since 5.7.3
      * @implNote since 2025.22, delegates to {@link UserManager#getUserSearchPredicate(String)} to honor the user
-     *           directory's substring match type ({@code subinitial}, {@code subany} or {@code subfinal}).
+     *           directory's substring match type ({@code subinitial}, {@code subany} or {@code subfinal}). If a custom
+     *           {@link UserManager} implementation does not override this method (and does not extend
+     *           {@link org.nuxeo.ecm.platform.usermanager.UserManagerImpl UserManagerImpl}), falls back to the legacy
+     *           {@code subinitial}-only behavior so existing customizations keep working at runtime.
      */
     protected MultiExpression getUserSearchPredicate(String pattern) {
-        return userManager.getUserSearchPredicate(pattern);
+        try {
+            return userManager.getUserSearchPredicate(pattern);
+        } catch (UnsupportedOperationException e) {
+            // fall back to the legacy subinitial-only behavior for custom UserManager
+            // implementations that do not override UserManager#getUserSearchPredicate
+            String legacyPattern = pattern.trim() + '%';
+            List<Predicate> predicates = userManager.getUserSearchFields()
+                                                    .stream()
+                                                    .map(key -> Predicates.ilike(key, legacyPattern))
+                                                    .collect(Collectors.toList());
+            return new MultiExpression(Operator.OR, predicates);
+        }
     }
 
     /**
