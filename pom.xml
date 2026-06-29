@@ -82,7 +82,7 @@
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX02</jxls.version>
     <jxls2.version>2.14.0</jxls2.version>
-    <keycloak.version>26.6.1</keycloak.version>
+    <keycloak.version>26.6.2</keycloak.version>
     <keycloak.policy.enforcer.version>26.0.9</keycloak.policy.enforcer.version>
     <keycloak.adapters.version>25.0.3</keycloak.adapters.version>
     <xdocreport.version>2.0.6</xdocreport.version>
