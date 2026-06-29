@@ -1,0 +1,5 @@
+## versitygw-init base values
+##
+## CI-injected scheduling selectors (tolerations + nodeSelector) so the
+## bucket-init Job lands on the right node pool.
+{{- toYaml .Values.global.selectors | nindent 0 }}

@@ -1,0 +1,30 @@
+## PVC that will be shared with the versitygw release.
+## The name must match persistence.claimName in values-versitygw.yaml.gotmpl.
+pvcName: versitygw-data
+
+persistence:
+  size: 10Gi
+  accessMode: ReadWriteOnce
+  ## storageClassName: ""  # use the cluster default
+
+## Bucket name to pre-create on the POSIX backend.
+## Must match amazonS3.bucket in values-nuxeo.yaml.gotmpl.
+bucket: nuxeo-platform-benchmark
+
+## Image for the bucket-init Job.
+busyboxImage:
+  repository: busybox
+  tag: "1.36"
+  pullPolicy: IfNotPresent
+
+## Security context applied to the bucket-init Job pod and container.
+## Must match the fsGroup/runAsUser of the VersityGW pod so the directory
+## is owned by the same UID that the gateway process runs as.
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+
+tolerations: []
+nodeSelector: {}
