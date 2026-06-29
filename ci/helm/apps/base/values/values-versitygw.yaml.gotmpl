@@ -1,0 +1,41 @@
+## VersityGW base values — upstream chart schema (oci://ghcr.io/versity/versitygw/charts/versitygw)
+##
+## CI-injected labels and scheduling selectors are merged here so every
+## environment that uses VersityGW picks them up automatically.
+
+# Pod labels: CI tracking labels + the dev.nuxeo.com/app selector used by
+# affinity rules in other releases.
+podLabels: {{- toYaml .Values.global.labels | nindent 2 }}
+  dev.nuxeo.com/app: versitygw
+  dev.nuxeo.com/resource: pod
+
+# Scheduling: tolerations and nodeSelector from the helmfile environment.
+{{- toYaml .Values.global.selectors | nindent 0 }}
+
+# Root S3 credentials. Only reachable from inside the cluster — not a
+# production secret.  Must stay in sync with the accessKeyId/secretKey
+# values in values-nuxeo.yaml.gotmpl (USE_VERSITYGW branch).
+auth:
+  accessKey: benchmark
+  secretKey: benchmark-secret-key
+
+gateway:
+  backend:
+    type: posix
+    # /mnt/data is the PVC mount path used by the upstream chart.
+    args: /mnt/data
+  port: 7070
+
+image:
+  # Pin to the same version used previously in the custom chart.
+  tag: "v1.7.0"
+
+persistence:
+  # The PVC is managed by the versitygw-init release so that the bucket
+  # directory is guaranteed to exist before VersityGW starts.
+  create: false
+  claimName: versitygw-data
+
+# Recreate strategy avoids rollout deadlocks with ReadWriteOnce volumes.
+strategy:
+  type: Recreate

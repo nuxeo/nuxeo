@@ -459,15 +459,20 @@ pipeline {
 
     stage('Trigger Benchmark tests') {
       when {
-        expression { nxUtils.isPullRequest() && pullRequest.labels.contains('benchmark') }
+        expression {
+          nxUtils.isPullRequest() && (pullRequest.labels.contains('benchmark') || pullRequest.labels.contains('benchmark-versitygw'))
+        }
       }
       steps {
         container('maven') {
           script {
+            // 'benchmark-versitygw' takes precedence over 'benchmark'
+            def useVersityGW = pullRequest.labels.contains('benchmark-versitygw')
             def parameters = [
               string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
               string(name: 'NUXEO_DOCKER_IMAGE', value: "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_BENCHMARK_IMAGE_NAME}:${VERSION}"),
               booleanParam(name: 'INSTALL_NEEDED_PACKAGES', value: false),
+              booleanParam(name: 'USE_VERSITYGW', value: useVersityGW),
             ]
             echo """
             -----------------------------------------------------------

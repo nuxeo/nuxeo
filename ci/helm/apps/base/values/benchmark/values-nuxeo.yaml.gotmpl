@@ -17,8 +17,14 @@ podAnnotations:
 amazonS3:
   enabled: true
   auth:
+{{- if eq (env "USE_VERSITYGW" | default "false") "true" }}
+    # Must stay in sync with auth.accessKey/auth.secretKey in ci/helm/apps/base/values/values-versitygw.yaml.gotmpl.
+    accessKeyId: benchmark
+    secretKey: benchmark-secret-key
+{{- else }}
     accessKeyId: {{ requiredEnv "AWS_ACCESS_KEY_ID" }}
     secretKey: {{ requiredEnv "AWS_SECRET_ACCESS_KEY" }}
+{{- end }}
   region: us-east-1
   bucket: nuxeo-platform-benchmark
   ## The bucket prefix needs to end with /
@@ -51,6 +57,12 @@ customProperties:
     metrics.datadog.udp=true
     metrics.datadog.host=${env:DD_AGENT_HOST}
     metrics.datadog.port=8125
+{{- if eq (env "USE_VERSITYGW" | default "false") "true" }}
+  versitygw: |
+    nuxeo.s3storage.endpoint=http://versitygw:7070
+    nuxeo.s3storage.pathstyleaccess=true
+    nuxeo.s3storage.accelerateMode=false
+{{- end }}
 {{- if eq (env "INSTALL_NEEDED_PACKAGES") "true" }}
 packages: amazon-s3-online-storage nuxeo-audit-opensearch1 nuxeo-platform-importer nuxeo-search-client-opensearch1 nuxeo-web-ui
 {{- end }}
@@ -111,6 +123,9 @@ affinity:
           - nuxeo
           - opensearch
           - mongodb
+          {{- if eq (env "USE_VERSITYGW" | default "false") "true" }}
+          - versitygw
+          {{- end }}
       topologyKey: "kubernetes.io/hostname"
   podAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:

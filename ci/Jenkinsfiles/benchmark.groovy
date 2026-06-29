@@ -76,6 +76,8 @@ pipeline {
     BRANCH_NAME = "${params.NUXEO_BRANCH.replaceAll('/', '-')}"
     NUXEO_DOCKER_IMAGE_WITH_VERSION = resolveDockerImageVersion("${params.NUXEO_DOCKER_IMAGE}")
     INSTALL_NEEDED_PACKAGES = "${params.INSTALL_NEEDED_PACKAGES}"
+    USE_VERSITYGW = "${params.USE_VERSITYGW ?: false}"
+    BENCHMARK_STATUS_CONTEXT = "${params.USE_VERSITYGW?.toBoolean() ? 'benchmark/versitygw-tests' : 'benchmark/tests'}"
     NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
     NX_WORKER_COUNT = "${params.NUXEO_NB_WORKER_NODE.toInteger()}"
 
@@ -111,7 +113,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', state: 'PENDING', commitSha: env.SCM_REF)
+            nxGitHub.setStatus(context: env.BENCHMARK_STATUS_CONTEXT, message: 'Benchmark tests', state: 'PENDING', commitSha: env.SCM_REF)
             nxK8s.setPodLabels()
           }
         }
@@ -163,7 +165,10 @@ s.close()
           """
           nxWithHelmfileDeployment(namespace: "${BENCHMARK_NAMESPACE}", environment: 'benchmark',
               secrets: [[name: 'platform-tls', namespace: 'platform'], [name: 'instance-clid', namespace: 'platform']],
-              envVars: ["BUCKET_PREFIX=benchmark-tests-${BRANCH_NAME}-BUILD-${BUILD_NUMBER}/"]) {
+              envVars: [
+                "BUCKET_PREFIX=benchmark-tests-${BRANCH_NAME}-BUILD-${BUILD_NUMBER}/",
+                "USE_VERSITYGW=${USE_VERSITYGW}",
+              ]) {
             script {
               try {
                 dir("${GATLING_TESTS_PATH}") {
@@ -192,6 +197,11 @@ s.close()
                 // Redis is in the Jenkins agent pod. Not in the nuxeo-benchmark namespace and deployment.
                 nxK8s.describePod(namespace: "${CURRENT_NAMESPACE}", pod: "${JENKINS_AGENT_NAME}")
                 nxK8s.getPodLogs(namespace: "${CURRENT_NAMESPACE}", pod: "${JENKINS_AGENT_NAME} -c redis", file: "${namespace}_redis.log")
+                // VersityGW S3 gateway runs in the benchmark namespace
+                if (params.USE_VERSITYGW?.toBoolean()) {
+                  nxK8s.describePod(namespace: "${BENCHMARK_NAMESPACE}", pod: 'versitygw')
+                  nxK8s.getPodLogs(namespace: "${BENCHMARK_NAMESPACE}", selector: 'app.kubernetes.io/instance=versitygw', file: "${namespace}_versitygw.log")
+                }
                 // archiveArtifacts doesn't support absolute path so do not use GATLING_TESTS_PATH
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'ftests/nuxeo-server-gatling-tests/target/gatling/**/*'
                 if (params.DEBUG.toBoolean()) {
@@ -278,10 +288,11 @@ s.close()
               sh "echo 'bench_suite: \"${BENCHMARK_BENCH_SUITE}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo \"nuxeonodes: \$(( \${NX_REPLICA_COUNT} + \${NX_WORKER_COUNT} ))\" >> ${REPORT_PATH}/data.yml"
               sh "echo 'esnodes: 1' >> ${REPORT_PATH}/data.yml"
-              sh "echo 'classifier: \"\"' >> ${REPORT_PATH}/data.yml"
+              sh "echo 'classifier: \"${params.USE_VERSITYGW?.toBoolean() ? 'versitygw' : 'aws-s3'}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'distribution: \"${VERSION}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'default_category: \"${BENCHMARK_CATEGORY}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'kafka: true' >> ${REPORT_PATH}/data.yml"
+              sh "echo 'versitygw: ${USE_VERSITYGW}' >> ${REPORT_PATH}/data.yml"
               sh "echo 'import_docs: ${BENCHMARK_NB_DOCS}' >> ${REPORT_PATH}/data.yml"
               // Calculate benchmark duration between import and fullgc
               sh """
@@ -367,7 +378,7 @@ s.close()
   post {
     always {
       script {
-        nxGitHub.setStatus(context: 'benchmark/tests', message: 'Benchmark tests', commitSha: env.SCM_REF)
+        nxGitHub.setStatus(context: env.BENCHMARK_STATUS_CONTEXT, message: 'Benchmark tests', commitSha: env.SCM_REF)
         nxUtils.setDescription(default: "Benchmark URL: ${BENCHMARK_RESULT_URL}")
         if (isTriggeredByCron() || isTriggeredByNuxeoPromotion()) {
           nxUtils.callIfBuildRecoverOrFail(

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: versitygw-init
+description: >
+  Provisions the PVC for VersityGW and pre-creates the S3 bucket directory on
+  the POSIX backend. A post-install/post-upgrade hook Job guarantees the bucket
+  directory exists before the versitygw release starts.
+type: application
+version: 1.0.0

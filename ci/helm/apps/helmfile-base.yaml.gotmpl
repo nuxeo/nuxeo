@@ -25,6 +25,9 @@ releases:
   {{- if .Values.kafka.enabled }}
   - kafka
   {{- end }}
+  {{- if and (eq .Environment.Name "benchmark") (eq (env "USE_VERSITYGW" | default "false") "true") }}
+  - versitygw
+  {{- end }}
   {{- end }}
   values:
   - base/values/values-nuxeo.yaml.gotmpl
@@ -94,3 +97,24 @@ releases:
   {{- if eq .Environment.Name "benchmark" }}
   - base/values/benchmark/values-kafka.yaml.gotmpl
   {{- end }}
+{{- if and (eq .Environment.Name "benchmark") (eq (env "USE_VERSITYGW" | default "false") "true") }}
+# versitygw-init provisions the PVC and pre-creates the S3 bucket directory
+# before VersityGW starts. The upstream versitygw chart reuses the PVC it
+# creates (persistence.create=false) so the bucket is guaranteed to exist
+# when VersityGW accepts its first request from Nuxeo.
+- name: versitygw-init
+  chart: ./versitygw-init
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  values:
+  - base/values/values-versitygw-init.yaml.gotmpl
+  - base/values/benchmark/values-versitygw-init.yaml.gotmpl
+- name: versitygw
+  chart: oci://ghcr.io/versity/versitygw/charts/versitygw
+  version: "0.3.5"
+  namespace: {{ requiredEnv "NAMESPACE" }}
+  needs:
+  - versitygw-init
+  values:
+  - base/values/values-versitygw.yaml.gotmpl
+  - base/values/benchmark/values-versitygw.yaml.gotmpl
+{{- end }}
