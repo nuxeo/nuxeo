@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.search;
 
 import static org.nuxeo.ecm.core.search.SearchServiceImpl.getFromClause;
 import static org.nuxeo.ecm.platform.query.api.PageProvider.HIGHLIGHT_CTX_DATA;
+import static org.nuxeo.ecm.platform.query.api.PageProvider.SCORE_CTX_DATA;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -163,6 +164,16 @@ public class SearchResponseImpl implements SearchResponse {
                .filter(d -> hit.getDocId().equals(d.getId()))
                .findFirst()
                .ifPresent(doc -> doc.putContextData(HIGHLIGHT_CTX_DATA, (Serializable) hit.getHighlights()));
+        }
+        // Attach scores
+        for (var hit : hits) {
+            if (hit.getDocId() == null || hit.getScore() == null) {
+                continue;
+            }
+            ret.stream()
+               .filter(d -> hit.getDocId().equals(d.getId()))
+               .findFirst()
+               .ifPresent(doc -> doc.putContextData(SCORE_CTX_DATA, hit.getScore()));
         }
         return ret;
     }

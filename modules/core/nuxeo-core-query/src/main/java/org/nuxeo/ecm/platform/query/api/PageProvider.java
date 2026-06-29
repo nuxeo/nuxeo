@@ -74,6 +74,14 @@ public interface PageProvider<T> extends Serializable {
     String HIGHLIGHT_CTX_DATA = "highlight";
 
     /**
+     * Score context data property name. Used to store the relevance score in document context data when fetching search
+     * results.
+     *
+     * @since 2025.22
+     */
+    String SCORE_CTX_DATA = "score";
+
+    /**
      * @since 10.2
      */
     String SKIP_AGGREGATES_PROP = "skipAggregates";

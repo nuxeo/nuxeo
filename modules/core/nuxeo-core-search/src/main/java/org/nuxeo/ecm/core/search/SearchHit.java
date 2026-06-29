@@ -46,6 +46,15 @@ public class SearchHit {
 
     protected final Map<String, List<String>> highlights;
 
+    /**
+     * The relevance score assigned by the search backend (e.g. BM25 for full-text, cosine similarity for vector
+     * search). {@code null} when no score is available.
+     *
+     * @since 2025.22
+     */
+    @Nullable
+    protected final Double score;
+
     protected SearchHit(Builder builder) {
         this.index = builder.index;
         this.id = builder.id;
@@ -53,6 +62,7 @@ public class SearchHit {
         this.docId = builder.docId;
         this.fields = builder.fields;
         this.highlights = builder.highlights;
+        this.score = builder.score;
     }
 
     public String getIndex() {
@@ -81,6 +91,16 @@ public class SearchHit {
         return highlights;
     }
 
+    /**
+     * Returns the relevance score, or {@code null} if no score is available.
+     *
+     * @since 2025.22
+     */
+    @Nullable
+    public Double getScore() {
+        return score;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -106,6 +126,9 @@ public class SearchHit {
 
         protected Map<String, List<String>> highlights = Map.of();
 
+        @Nullable
+        protected Double score;
+
         protected Builder(String index, String id) {
             this.index = index;
             this.id = id;
@@ -128,6 +151,16 @@ public class SearchHit {
 
         public Builder highlights(Map<String, List<String>> highlights) {
             this.highlights = Collections.unmodifiableMap(highlights);
+            return this;
+        }
+
+        /**
+         * Sets the relevance score for this hit.
+         *
+         * @since 2025.22
+         */
+        public Builder score(Double score) {
+            this.score = score;
             return this;
         }
 

@@ -122,6 +122,7 @@ public class OpenSearchResponseTransformer
                                   .docId(docId)
                                   .fields(makeFields(searchQuery, source, osHit.getScore()))
                                   .highlights(makeHighlights(osHit))
+                                  .score(Float.isNaN(osHit.getScore()) ? null : (double) osHit.getScore())
                                   .build());
             }
         }

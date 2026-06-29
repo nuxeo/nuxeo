@@ -35,6 +35,7 @@
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.UserVisiblePermissionsJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.BlobAppLinksJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.HighlightJsonEnricher" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ScoreJsonEnricher" enable="true" />
     <!-- @deprecated since 2025.17 -->
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.HasFolderishChildJsonEnricher" enable="true" />
   </extension>
