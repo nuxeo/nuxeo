@@ -93,6 +93,7 @@ public class TestKeycloakAuthenticationPlugin {
         Mockito.when(requestMock.getRequestURL())
                .thenReturn(new StringBuffer().append("https://example.com:443/foo/path/to/resource"));
         Mockito.when(requestMock.getScheme()).thenReturn("https");
+        Mockito.when(requestMock.isSecure()).thenReturn(true);
         Mockito.when(requestMock.getServerName()).thenReturn("example.com");
         Mockito.when(requestMock.getServerPort()).thenReturn(443);
         Mockito.when(requestMock.getContextPath()).thenReturn("/foo");

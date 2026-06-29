@@ -34,9 +34,7 @@ import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.AdapterTokenStore;
 import org.keycloak.adapters.KeycloakDeployment;
-import org.keycloak.adapters.OAuthRequestAuthenticator;
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
-import org.keycloak.adapters.RequestAuthenticator;
 import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.spi.HttpFacade;
 import org.keycloak.adapters.tomcat.CatalinaCookieTokenStore;
@@ -140,7 +138,7 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
 
     @Override
     protected OAuthRequestAuthenticator createOAuthAuthenticator() {
-        return new OAuthRequestAuthenticator(this, facade, deployment, sslRedirectPort, tokenStore) {
+        return new OAuthRequestAuthenticator(this, facade, deployment, sslRedirectPort, tokenStore, request) {
 
             @Override
             protected String getRequestUrl() {
