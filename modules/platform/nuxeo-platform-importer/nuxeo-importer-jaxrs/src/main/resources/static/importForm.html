@@ -439,14 +439,14 @@ $(document).ready(function() {
        <legend>Random Importer configuration</legend>
 
   <label for="nbNodes">Number of documents to generate: </label>
-   <input type="range" name="nbNodes" onchange="$('#rangeValue').html(this.value)" style="width:300px"
+   <input type="range" name="nbNodes" onchange="$('#rangeValue').text(this.value)" style="width:300px"
        min="100"
        max="50000"
        step="100"
        value="200"><span id="rangeValue">200</span> docs<br/>
 
   <label for="fileSize">Size in KB of the files: </label>
-   <input type="range" name="fileSizeKB" onchange="$('#fileSizeValue').html(this.value)" style="width:300px"
+   <input type="range" name="fileSizeKB" onchange="$('#fileSizeValue').text(this.value)" style="width:300px"
        min="1"
        max="1000"
        step="1"

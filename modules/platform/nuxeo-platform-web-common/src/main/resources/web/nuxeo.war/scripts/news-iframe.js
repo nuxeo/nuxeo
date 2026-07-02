@@ -24,6 +24,18 @@ window.addEventListener('load', () => {
 // Don't load iframe on mobile devices
 if (window.matchMedia("(min-device-width: 850px)").matches) {
   if (newsIframe) {
-    newsIframe.src = newsIframe.getAttribute('data-src');
+    // Validate data-src before assigning to iframe.src: parse as URL and
+    // require an http(s) scheme. Silently drop malformed or unsafe values.
+    const dataSrc = newsIframe.getAttribute('data-src');
+    if (dataSrc) {
+      try {
+        const parsed = new URL(dataSrc, window.location.href);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+          newsIframe.src = parsed.href;
+        }
+      } catch (e) {
+        // Invalid URL: leave iframe unloaded.
+      }
+    }
   }
 }
