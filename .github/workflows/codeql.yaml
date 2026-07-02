@@ -50,6 +50,13 @@ jobs:
           # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
 
+          # Exclude Maven build output from analysis. Files under target/classes are
+          # copies of source files (e.g. web resources under src/main/resources) and
+          # produce duplicate alerts that shadow the true source-file alerts.
+          config: |
+            paths-ignore:
+              - '**/target/**'
+
       # Run the build manually, we need several Maven commands with custom parameters to build the whole codebase
       - name: Build
         env:
@@ -68,29 +75,3 @@ jobs:
         uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
         with:
           category: "/language:${{matrix.language}}"
-
-      - name: Slack notification
-        if: failure() && (github.event_name == 'push' || github.event_name == 'schedule')
-        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
-        env:
-          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        with:
-          channel-id: 'platform-notifs'
-          payload: |
-            {
-              "attachments": [
-                {
-                  "color": "#A30200",
-                  "blocks": [
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "<${{ env.REPO_URL }}/actions/runs/${{ github.run_id }}|Code scanning> failed in nuxeo/nuxeo-lts <${{ env.REPO_URL }}/commit/${{ github.sha }}|${{ github.ref_name }}>"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
