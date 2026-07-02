@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.content.template.factories;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -28,13 +30,24 @@ import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 /**
  * Specific factory for Root. Since some other {@link RepositoryInitializationListener} have run before, root won't be
  * empty but we may still have to run this initializer.
+ * <p>
+ * A factory binding for the Root <b>must</b> define template items. If it doesn't, the whole initialization (including
+ * the Root ACL) is skipped: without template children there is no reliable way to detect whether the Root has already
+ * been initialized.
  *
  * @author Thierry Delprat
  */
 public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
 
+    private static final Logger log = LogManager.getLogger(SimpleTemplateBasedRootFactory.class);
+
     @Override
     public void createContentStructure(DocumentModel eventDoc) {
+        if (template.isEmpty()) {
+            log.warn("Factory binding must define template items. Ignoring ACLs initialization on Root.");
+            return;
+        }
+
         initSession(eventDoc);
 
         boolean initRootAcl = shouldInitAcl(eventDoc);
