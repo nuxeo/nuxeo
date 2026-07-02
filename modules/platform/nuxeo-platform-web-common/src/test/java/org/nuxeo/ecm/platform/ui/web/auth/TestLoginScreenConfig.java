@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -349,6 +349,42 @@ public class TestLoginScreenConfig {
         assertFalse(query.containsKey(PRODUCT_VERSION));
         assertThat(query.get("why")).contains("testing");
         assertTrue(config.getDisplayNews());
+    }
+
+    /**
+     * NXP-33553: getNewsIframeUrl must reject URLs whose scheme is not http(s) so that a malicious configuration cannot
+     * inject a javascript: (or similar) URL into the login page news iframe. Schemeless URLs (relative or
+     * protocol-relative) are still accepted for backward compatibility.
+     *
+     * @since 2025.22
+     */
+    @Test
+    public void testNewsIframeUrlRejectsUnsafeSchemes() {
+        var config = new LoginScreenConfig();
+
+        // Absolute http(s) URLs are accepted, including query strings.
+        config.setNewsIframeUrl("http://example.com?why=testing");
+        assertEquals("http://example.com?why=testing", config.getNewsIframeUrl());
+        config.setNewsIframeUrl("https://example.com/news");
+        assertEquals("https://example.com/news", config.getNewsIframeUrl());
+
+        // Schemeless URLs (relative or protocol-relative) are accepted; they cannot introduce a script scheme.
+        config.setNewsIframeUrl("someurl");
+        assertEquals("someurl", config.getNewsIframeUrl());
+        config.setNewsIframeUrl("//example.com/news");
+        assertEquals("//example.com/news", config.getNewsIframeUrl());
+
+        // Script-capable schemes are rejected (getNewsIframeUrl returns null).
+        config.setNewsIframeUrl("javascript:alert(1)");
+        assertNull(config.getNewsIframeUrl());
+        config.setNewsIframeUrl("vbscript:msgbox(1)");
+        assertNull(config.getNewsIframeUrl());
+        config.setNewsIframeUrl("file:///etc/passwd");
+        assertNull(config.getNewsIframeUrl());
+
+        // Malformed URLs are rejected without throwing.
+        config.setNewsIframeUrl("http://[malformed");
+        assertNull(config.getNewsIframeUrl());
     }
 
     // NXP-30831

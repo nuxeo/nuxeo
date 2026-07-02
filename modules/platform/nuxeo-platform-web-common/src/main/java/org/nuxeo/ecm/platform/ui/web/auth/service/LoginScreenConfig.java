@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
@@ -26,15 +25,15 @@ import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-import java.net.URLDecoder;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.ws.rs.core.UriBuilder;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -51,6 +50,8 @@ import org.nuxeo.runtime.model.Descriptor;
  */
 @XObject("loginScreenConfig")
 public class LoginScreenConfig implements Descriptor {
+
+    private static final Logger log = LogManager.getLogger(LoginScreenConfig.class);
 
     /** @deprecated since 2025.21, the nuxeo.com news page is no longer available */
     @Deprecated(since = "2025.21", forRemoval = true)
@@ -299,7 +300,22 @@ public class LoginScreenConfig implements Descriptor {
             if (newsIframeUrl == null) {
                 return null;
             }
-            newsIframeFullUrl = URLDecoder.decode(UriBuilder.fromPath(newsIframeUrl).build().toString(), UTF_8);
+            // Parse the configured URL and only accept schemeless (relative or
+            // protocol-relative) URLs, or http/https absolute URLs. Reject
+            // schemes such as javascript:, data:, vbscript:, file:, ... which
+            // would enable XSS when the URL is later assigned to iframe.src.
+            try {
+                var uri = URI.create(newsIframeUrl);
+                var scheme = uri.getScheme();
+                if (scheme != null && !"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+                    log.debug("Rejecting newsIframeUrl with unsupported scheme: {}", scheme);
+                    return null;
+                }
+                newsIframeFullUrl = uri.toString();
+            } catch (IllegalArgumentException e) {
+                log.debug("Rejecting malformed newsIframeUrl: {}", newsIframeUrl);
+                return null;
+            }
         }
         return newsIframeFullUrl;
     }
