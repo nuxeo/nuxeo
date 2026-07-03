@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2026 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,9 @@ public class RootResource extends ModuleRoot {
 
     @GET
     public String index() {
-        String sid = getContext().getCoreSession().toString();
-        return "ok :sid =" + sid;
+        // Return a static response: reflecting the CoreSession identity leaked server internals
+        // and was a java/xss taint source with no legitimate use (no callers, no tests).
+        return "ok";
     }
 
     protected CoreSession getCoreSession() {
