@@ -145,7 +145,6 @@ mvn test \
   -nsu \
   -Dnuxeo.test.s3storage.bucket=nuxeo-platform-unit-tests \
   -Dnuxeo.test.s3storage.transient.bucket=nuxeo-platform-unit-tests-transient \
-  -Dnuxeo.test.s3storage.policy.bucket=nuxeo-platform-unit-tests-policy \
   -Dnuxeo.test.s3storage.bucket_prefix=BUCKET_PREFIX \
   -Dnuxeo.test.s3storage.provider.test.bucket_prefix=TEST_BLOB_PROVIDER_PREFIX \
   -Dnuxeo.test.s3storage.provider.other.bucket_prefix=OTHER_BLOB_PROVIDER_PREFIX
