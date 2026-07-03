@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -621,7 +621,7 @@ public class TestNuxeoAuthenticationFilter {
 
         // forceAnonymousLogin is removed
         assertTrue(entity, entity.contains(
-                "window.location = 'http://localhost:8080/nuxeo/dummy_login.jsp?requestedUrl=mystart%2Ffoo';"));
+                "window.location = 'http:\\/\\/localhost:8080\\/nuxeo\\/dummy_login.jsp?requestedUrl=mystart%2Ffoo';"));
     }
 
     /**
@@ -707,7 +707,7 @@ public class TestNuxeoAuthenticationFilter {
         writer.flush();
         String entity = out.toString(UTF_8);
         assertTrue(entity, entity.contains(
-                "window.location = 'http://localhost:8080/nuxeo/dummy_login.jsp?requestedUrl=mystart%2Ffoo';"));
+                "window.location = 'http:\\/\\/localhost:8080\\/nuxeo\\/dummy_login.jsp?requestedUrl=mystart%2Ffoo';"));
 
         // check that start url was saved
         assertEquals("mystart/foo", sessionAttributes.get(START_PAGE_SAVE_KEY));
@@ -783,7 +783,7 @@ public class TestNuxeoAuthenticationFilter {
         // check that the redirect is to our dummy login page (defined in the auth plugin)
         writer.flush();
         String entity = out.toString(UTF_8);
-        assertTrue(entity, entity.contains("window.location = 'http://localhost:8080/nuxeo/dummy_login.jsp';"));
+        assertTrue(entity, entity.contains("window.location = 'http:\\/\\/localhost:8080\\/nuxeo\\/dummy_login.jsp';"));
     }
 
     /**
@@ -1019,8 +1019,8 @@ public class TestNuxeoAuthenticationFilter {
         writer.flush();
         String entity = out.toString(UTF_8);
         String expectedRedirect = URLEncoder.encode("http://localhost:8080//nuxeo/mystart/foo?bar=baz", "UTF-8");
-        assertTrue(entity,
-                entity.contains("window.location = 'http://sso.example.com/login?redirect=" + expectedRedirect + "';"));
+        assertTrue(entity, entity.contains(
+                "window.location = 'http:\\/\\/sso.example.com\\/login?redirect=" + expectedRedirect + "';"));
     }
 
     /**

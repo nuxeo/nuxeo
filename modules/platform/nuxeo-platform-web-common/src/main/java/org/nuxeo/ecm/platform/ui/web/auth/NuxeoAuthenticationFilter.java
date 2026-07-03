@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2025 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,6 +85,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.logging.log4j.LogManager;
@@ -982,13 +983,16 @@ public class NuxeoAuthenticationFilter implements Filter {
                                 return;
                             }
                             HttpServletResponse response = (HttpServletResponse) getResponse();
+                            // Escape 'location' for a JavaScript string literal context before embedding
+                            // into the inline <script> block. Prevents XSS when the location URL is derived
+                            // from user-influenced request data.
                             StringBuilder sb = new StringBuilder();
                             sb.append("<script type=\"text/javascript\">\n")
                               .append("document.cookie = '")
                               .append(NXAuthConstants.START_PAGE_FRAGMENT_KEY)
                               .append("=' + encodeURIComponent(window.location.hash.substring(1) || '') + '; path=/';\n")
                               .append("window.location = '")
-                              .append(location)
+                              .append(StringEscapeUtils.escapeEcmaScript(location))
                               .append("';\n");
                             sb.append("</script>");
                             String script = sb.toString();
@@ -1014,7 +1018,11 @@ public class NuxeoAuthenticationFilter implements Filter {
             String loginUrl = VirtualHostHelper.getBaseURL(req) + LOGIN_PAGE;
             resp.addHeader("Location", loginUrl);
             resp.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-            resp.getWriter().write("Please log in at: " + loginUrl);
+            // HTML-escape loginUrl before reflecting it in the response body: the base URL is derived from
+            // request headers (Nuxeo-VirtualHost, X-Forwarded-*, Host) which are attacker-controllable.
+            // The message itself is preserved (NXP-19143 introduced it for REST clients that cannot follow
+            // redirects blindly and need to see the login endpoint).
+            resp.getWriter().write("Please log in at: " + StringEscapeUtils.escapeHtml4(loginUrl));
         } catch (IOException e) {
             log.error("Unable to write login page on unauthorized response", e);
         }
