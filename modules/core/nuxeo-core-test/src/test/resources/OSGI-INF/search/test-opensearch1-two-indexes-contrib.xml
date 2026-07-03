@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.search.client.opensearch1.test.two-indexes">
+  <!-- Adds a second, non-default index on the 'test' repository to exercise the
+       routing of sync events to the default index only and non-default indexes
+       being fed asynchronously (NXP-33776). -->
+  <require>org.nuxeo.ecm.core.search.opensearch1.test</require>
+
+  <!-- second physical OpenSearch index, reuse the default test settings and mapping -->
+  <extension target="org.nuxeo.runtime.opensearch1.OpenSearchComponent" point="index">
+    <index name="nxutest-secondary">
+      <client id="search/default" />
+      <settings file="OSGI-INF/opensearch-test-search-settings.json" />
+      <mapping file="OSGI-INF/opensearch-test-search-mapping.json" />
+    </index>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.client.opensearch1" point="searchClient">
+    <searchClient name="opensearch" clientId="search/default">
+      <searchIndex name="secondary" technicalName="nxutest-secondary" />
+    </searchClient>
+  </extension>
+
+  <!-- non-default index on the same repository as the default 'enhanced' index -->
+  <extension target="org.nuxeo.ecm.core.search" point="searchIndex">
+    <searchIndex name="secondary" searchClient="opensearch" repository="test" default="false" />
+  </extension>
+
+</component>

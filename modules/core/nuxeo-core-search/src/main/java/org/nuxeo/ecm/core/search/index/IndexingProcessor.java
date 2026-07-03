@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.search.index;
 
+import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.nuxeo.ecm.core.search.SearchClient.Capability.INDEXING;
 import static org.nuxeo.ecm.core.search.index.IndexingAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.search.index.IndexingDomainEventProducer.CODEC_NAME;
@@ -27,7 +29,6 @@ import static org.nuxeo.runtime.api.login.LoginComponent.SYSTEM_USERNAME;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,6 +79,7 @@ public class IndexingProcessor implements StreamProcessorTopology {
             codec = Framework.getService(CodecService.class).getCodec(CODEC_NAME, IndexingDomainEvent.class);
         }
 
+        /** Indexes the events on all indexes of the repositories targeted by the events. */
         protected int indexSimpleEvents(List<IndexingDomainEvent> events, boolean refresh) {
             if (events.isEmpty()) {
                 log.debug("No indexing events");
@@ -86,24 +88,43 @@ public class IndexingProcessor implements StreamProcessorTopology {
             return events.stream()
                          .map(IndexingDomainEvent::getRepository)
                          .distinct()
-                         .mapToInt(repo -> indexSimpleEvents(repo, events, refresh))
+                         .mapToInt(repo -> indexSimpleEvents(repo, events, refresh,
+                                 Framework.getService(SearchService.class).getIndexNames(repo)))
                          .sum();
         }
 
-        protected int indexSimpleEvents(String repository, List<IndexingDomainEvent> allEvents, boolean refresh) {
-            var events = allEvents.stream().filter(event -> repository.equals(event.getRepository())).toList();
+        /**
+         * Indexes the events on the default index of the repositories targeted by the events when
+         * {@code onDefaultIndex} is {@code true}, or on all their other indexes when {@code false}.
+         */
+        protected int indexSimpleEvents(List<IndexingDomainEvent> events, boolean refresh, boolean onDefaultIndex) {
             if (events.isEmpty()) {
                 log.debug("No indexing events");
                 return 0;
             }
             SearchService searchService = Framework.getService(SearchService.class);
-            SearchIndexingService indexingService = Framework.getService(SearchIndexingService.class);
-            var indexes = searchService.getIndexNames(repository);
+            return events.stream().map(IndexingDomainEvent::getRepository).distinct().mapToInt(repo -> {
+                String defaultIndex = searchService.getDefaultIndexName(repo);
+                var indexes = searchService.getIndexNames(repo)
+                                           .stream()
+                                           .filter(index -> onDefaultIndex == index.equals(defaultIndex))
+                                           .toList();
+                return indexSimpleEvents(repo, events, refresh, indexes);
+            }).sum();
+        }
+
+        protected int indexSimpleEvents(String repository, List<IndexingDomainEvent> allEvents, boolean refresh,
+                List<String> indexes) {
             if (indexes.isEmpty()) {
-                log.warn("No SearchIndex found for repository: {}, skipping indexing of {} events", repository,
-                        events.size());
                 return 0;
             }
+            var events = allEvents.stream().filter(event -> repository.equals(event.getRepository())).toList();
+            if (events.isEmpty()) {
+                return 0;
+            }
+            log.debug("Indexing {} events on repository: {}, indexes: {}", events.size(), repository, indexes);
+            SearchService searchService = Framework.getService(SearchService.class);
+            SearchIndexingService indexingService = Framework.getService(SearchIndexingService.class);
             var requestBuilder = BulkIndexingRequest.buildRequest(refresh);
             for (IndexingDomainEvent event : events) {
                 IndexingRequest request;
@@ -144,12 +165,15 @@ public class IndexingProcessor implements StreamProcessorTopology {
                                                       .map(r -> codec.decode(r.getData()))
                                                       .filter(IndexingDomainEvent::isSync)
                                                       .toList();
-            if (!events.isEmpty()) {
-                // noinspection deprecation
-                log.info("Indexing sync events, up to offset: {}", context::getLastOffset);
-                int count = indexSimpleEvents(events, true);
-                log.info("Indexing of {}/{} completed", count, events.size());
+            if (events.isEmpty()) {
+                return;
             }
+            // Sync search-after-save is provided only by the default index, the user thread waits for it.
+            // The other (slow) indexes are updated asynchronously by AsynchronousIndexingComputation.
+            // noinspection deprecation
+            log.info("Indexing sync events on default index, up to offset: {}", context::getLastOffset);
+            int count = indexSimpleEvents(events, true, true);
+            log.info("Indexing of {}/{} completed", count, events.size());
         }
 
         @Override
@@ -166,24 +190,31 @@ public class IndexingProcessor implements StreamProcessorTopology {
 
         @Override
         protected void batchProcess(ComputationContext context, String inputStreamName, List<Record> records) {
-            List<IndexingDomainEvent> events = records.stream()
-                                                      .map(Record::getData)
-                                                      .map(codec::decode)
-                                                      .filter(Predicate.not(IndexingDomainEvent::isSync))
-                                                      .toList();
+            List<IndexingDomainEvent> events = records.stream().map(Record::getData).map(codec::decode).toList();
             if (events.isEmpty()) {
                 log.debug("No async events to process");
                 return;
             }
+            Map<Boolean, List<IndexingDomainEvent>> partitioned = events.stream()
+                                                                        .collect(partitioningBy(
+                                                                                IndexingDomainEvent::isSync,
+                                                                                toUnmodifiableList()));
+            List<IndexingDomainEvent> syncEvents = partitioned.get(true);
+            List<IndexingDomainEvent> asyncEvents = partitioned.get(false);
+
             // noinspection deprecation
             log.info("Indexing async simple events, up to offset: {}", context::getLastOffset);
-            int count = indexSimpleEvents(events, false);
+            // sync events were already indexed on the default index, index them on the other (slow) indexes here
+            int count = indexSimpleEvents(syncEvents, false, false);
+            // async events are indexed on all indexes
+            count += indexSimpleEvents(asyncEvents, false);
             log.info("Async indexing of {}/{} completed", count, events.size());
 
             // noinspection deprecation
             log.debug("Indexing async recurse events, up to offset: {}", context::getLastOffset);
             count = 0;
-            for (IndexingDomainEvent event : events) {
+            // recurse descendants are always async (sync recurse is only allowed for DELETE, handled as simple events)
+            for (IndexingDomainEvent event : asyncEvents) {
                 if (!event.isRecurse()) {
                     continue;
                 }
