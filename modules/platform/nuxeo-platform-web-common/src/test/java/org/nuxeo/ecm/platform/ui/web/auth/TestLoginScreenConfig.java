@@ -355,6 +355,42 @@ public class TestLoginScreenConfig {
         assertTrue(config.getDisplayNews());
     }
 
+    /**
+     * NXP-33553: getNewsIframeUrl must reject URLs whose scheme is not http(s) so that a malicious configuration cannot
+     * inject a javascript: (or similar) URL into the login page news iframe. Schemeless URLs (relative or
+     * protocol-relative) are still accepted for backward compatibility.
+     *
+     * @since 2023.50
+     */
+    @Test
+    public void testNewsIframeUrlRejectsUnsafeSchemes() {
+        var config = new LoginScreenConfig();
+
+        // Absolute http(s) URLs are accepted, including query strings.
+        config.setNewsIframeUrl("http://example.com?why=testing");
+        assertEquals("http://example.com?why=testing", config.getNewsIframeUrl());
+        config.setNewsIframeUrl("https://example.com/news");
+        assertEquals("https://example.com/news", config.getNewsIframeUrl());
+
+        // Schemeless URLs (relative or protocol-relative) are accepted; they cannot introduce a script scheme.
+        config.setNewsIframeUrl("someurl");
+        assertEquals("someurl", config.getNewsIframeUrl());
+        config.setNewsIframeUrl("//example.com/news");
+        assertEquals("//example.com/news", config.getNewsIframeUrl());
+
+        // Script-capable schemes are rejected (getNewsIframeUrl returns null).
+        config.setNewsIframeUrl("javascript:alert(1)");
+        assertNull(config.getNewsIframeUrl());
+        config.setNewsIframeUrl("vbscript:msgbox(1)");
+        assertNull(config.getNewsIframeUrl());
+        config.setNewsIframeUrl("file:///etc/passwd");
+        assertNull(config.getNewsIframeUrl());
+
+        // Malformed URLs are rejected without throwing.
+        config.setNewsIframeUrl("http://[malformed");
+        assertNull(config.getNewsIframeUrl());
+    }
+
     // NXP-30831
     @Test
     public void testRemoveNewsDisplayMobileBannerMerge() throws Exception {
@@ -365,7 +401,8 @@ public class TestLoginScreenConfig {
         assertTrue(config.getDisplayMobileBanner());
         assertEquals("someurl", config.getNewsIframeUrl());
 
-        hotDeployer.deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge-removeNews-displayMobileBanner.xml");
+        hotDeployer.deploy(
+                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge-removeNews-displayMobileBanner.xml");
 
         config = authService.getLoginScreenConfig();
 
@@ -374,14 +411,16 @@ public class TestLoginScreenConfig {
         assertFalse(config.getDisplayMobileBanner());
         assertEquals("someurl", config.getNewsIframeUrl());
 
-        hotDeployer.deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge-removeNews-displayMobileBanner2.xml");
+        hotDeployer.deploy(
+                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge-removeNews-displayMobileBanner2.xml");
 
         config = authService.getLoginScreenConfig();
 
         assertNotNull(config);
         assertFalse(config.getDisplayNews());
         assertFalse(config.getDisplayMobileBanner());
-        assertEquals("aNewURLWhichShouldntCauseNewsActivationAsRemoveNewsIsTrueInPreviousContrib", config.getNewsIframeUrl());
+        assertEquals("aNewURLWhichShouldntCauseNewsActivationAsRemoveNewsIsTrueInPreviousContrib",
+                config.getNewsIframeUrl());
     }
 
     // this test should be the last one because it un-deploys a contribution deployed by annotation on the class

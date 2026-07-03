@@ -6,7 +6,7 @@
 <%@ page import="java.util.Locale"%>
 <%@ page import="java.util.stream.Stream"%>
 <%@ page import="org.apache.commons.lang3.StringUtils"%>
-<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
+<%@ page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@ page import="org.joda.time.DateTime"%>
 <%@ page import="org.nuxeo.ecm.core.api.repository.RepositoryManager"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
@@ -503,9 +503,9 @@ if (selectedLanguage != null) { %>
         <%}%>
       </form>
     </div>
-    <% if (showNews && !isTesting) { %>
+    <% if (showNews && !isTesting && iframeUrl != null) { %>
     <div class="news">
-      <iframe id="news" name="news" title="news" class="news-container" style="visibility: hidden" data-src="<%=iframeUrl%>">
+      <iframe id="news" name="news" title="news" class="news-container" style="visibility: hidden" data-src="<%=StringEscapeUtils.escapeHtml4(iframeUrl)%>">
       </iframe>
     </div>
 
@@ -522,7 +522,7 @@ if (selectedLanguage != null) { %>
 </div>
 
 <script type="text/javascript" src="<%=context%>/scripts/username-focus.js"></script>
-<% if (showNews && !isTesting) { %>
+<% if (showNews && !isTesting && iframeUrl != null) { %>
 <script type="text/javascript" src="<%=context%>/scripts/news-iframe.js"></script>
 <% } %>
 
