@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+  Sets substringMatchType=subany on the multi-directories themselves. Also sets a
+  different (subinitial) value on the primary sub-directories to verify that the
+  multi-level value wins over any per-sub-directory configuration.
+-->
+<component name="org.nuxeo.ecm.platform.usermanager.tests.multi-directory.substring-match.multi-level.sql">
+
+  <require>org.nuxeo.ecm.platform.usermanager.tests.multi-directory-config</require>
+
+  <extension target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory" point="directories">
+    <directory name="multiUserDirectory">
+      <substringMatchType>subany</substringMatchType>
+    </directory>
+    <directory name="multiGroupDirectory">
+      <substringMatchType>subany</substringMatchType>
+    </directory>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+    <directory name="userDirectory">
+      <substringMatchType>subinitial</substringMatchType>
+    </directory>
+    <directory name="groupDirectory">
+      <substringMatchType>subinitial</substringMatchType>
+    </directory>
+  </extension>
+
+</component>

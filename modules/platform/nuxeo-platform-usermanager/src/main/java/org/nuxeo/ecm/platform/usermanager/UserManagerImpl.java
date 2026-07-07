@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -75,6 +76,7 @@ import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.AbstractDirectory;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
@@ -82,6 +84,9 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryExpressionEvaluator;
+import org.nuxeo.ecm.directory.multi.MultiDirectoryDescriptor;
+import org.nuxeo.ecm.directory.multi.SourceDescriptor;
+import org.nuxeo.ecm.directory.multi.SubDirectoryDescriptor;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -1080,6 +1085,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
      * @param searchFields the search fields mapped to their match type
      * @return the search predicate, or {@code null} if {@code pattern} is blank
      * @since 2025.22
+     * @implNote the {@link SubstringMatchType} is resolved via {@link #resolveSubstringMatchType(String)} to also honor
+     *           per-sub-directory configuration when {@code dirName} refers to a multi-directory.
      */
     protected MultiExpression getSearchPredicate(String pattern, String dirName, Map<String, MatchType> searchFields) {
         if (StringUtils.isBlank(pattern)) {
@@ -1096,13 +1103,16 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             // compat: don't do any escaping
             likePattern = pattern;
         }
+        // resolve the substring match type once per predicate build, not per field
+        SubstringMatchType substringMatchType = null;
         List<Predicate> predicates = new ArrayList<>();
         for (Entry<String, MatchType> fieldEntry : searchFields.entrySet()) {
             String key = fieldEntry.getKey();
             Predicate predicate;
             if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                Directory dir = dirService.getDirectory(dirName);
-                SubstringMatchType substringMatchType = dir.getDescriptor().getSubstringMatchType();
+                if (substringMatchType == null) {
+                    substringMatchType = resolveSubstringMatchType(dirName);
+                }
                 String value = switch (substringMatchType) {
                     case subany -> '%' + likePattern + '%';
                     case subinitial -> likePattern + '%';
@@ -1115,6 +1125,103 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             predicates.add(predicate);
         }
         return new MultiExpression(Operator.OR, predicates);
+    }
+
+    /**
+     * Resolves the effective {@link SubstringMatchType} for the given directory.
+     * <p>
+     * For a single directory, returns the directory's own {@code substringMatchType}.
+     * <p>
+     * For a {@link MultiDirectoryDescriptor multi-directory}, applies the following rule:
+     * <ol>
+     * <li>If the multi-directory itself explicitly declares {@code <substringMatchType>}, that value wins.</li>
+     * <li>Otherwise, the explicit values declared on the sub-directories are collected. If none, the
+     * {@linkplain BaseDirectoryDescriptor#SUBSTRING_MATCH_TYPE_DEFAULT default} ({@code subinitial}) is used. If all
+     * agree, that value is used. If they disagree, the most permissive one wins
+     * ({@code subany > subfinal > subinitial}) and a warning is logged.</li>
+     * </ol>
+     *
+     * @param dirName the directory name
+     * @return the effective {@link SubstringMatchType}
+     * @since 2025.22
+     */
+    protected SubstringMatchType resolveSubstringMatchType(String dirName) {
+        BaseDirectoryDescriptor descriptor = dirService.getDirectoryDescriptor(dirName);
+        if (!(descriptor instanceof MultiDirectoryDescriptor multi)) {
+            return descriptor.getSubstringMatchType();
+        }
+        // 1. Multi-level explicit config wins
+        if (StringUtils.isNotBlank(multi.substringMatchType)) {
+            return multi.getSubstringMatchType();
+        }
+        // 2. Otherwise, collect explicit values from sub-directories
+        Set<SubstringMatchType> explicit = collectExplicitSubDirectorySubstringMatchTypes(multi);
+        if (explicit.isEmpty()) {
+            return BaseDirectoryDescriptor.SUBSTRING_MATCH_TYPE_DEFAULT;
+        }
+        if (explicit.size() == 1) {
+            return explicit.iterator().next();
+        }
+        // 3. Conflict: most permissive wins
+        SubstringMatchType chosen = pickMostPermissiveSubstringMatchType(explicit);
+        log.warn(
+                "Multi-directory: '{}' has conflicting substringMatchType across sub-directories: {}. "
+                        + "Using: '{}' (the most permissive value). "
+                        + "Set <substringMatchType> explicitly on: '{}' to override.",
+                dirName, explicit, chosen, dirName);
+        return chosen;
+    }
+
+    /**
+     * Collects the {@link SubstringMatchType} values that are <strong>explicitly</strong> declared on the
+     * sub-directories of the given multi-directory. Sub-directories that leave {@code <substringMatchType>} unset (and
+     * thus fall back to the enum default) do not contribute to the returned set.
+     *
+     * @param multi the multi-directory descriptor
+     * @return the set of explicit values, possibly empty
+     * @since 2025.22
+     */
+    protected Set<SubstringMatchType> collectExplicitSubDirectorySubstringMatchTypes(MultiDirectoryDescriptor multi) {
+        var result = EnumSet.noneOf(SubstringMatchType.class);
+        SourceDescriptor[] sources = multi.getSources();
+        if (sources == null) {
+            return result;
+        }
+        for (SourceDescriptor source : sources) {
+            if (source == null || source.subDirectories == null) {
+                continue;
+            }
+            for (SubDirectoryDescriptor sub : source.subDirectories) {
+                if (sub == null || sub.name == null) {
+                    continue;
+                }
+                BaseDirectoryDescriptor subDescriptor = dirService.getDirectoryDescriptor(sub.name);
+                if (subDescriptor != null && StringUtils.isNotBlank(subDescriptor.substringMatchType)) {
+                    // getSubstringMatchType() validates the value; for an unknown raw string, it logs an error and
+                    // falls back to the default, which is the behavior we want here too
+                    result.add(subDescriptor.getSubstringMatchType());
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Picks the most permissive {@link SubstringMatchType} from the given set, using the order
+     * {@code subany > subfinal > subinitial}.
+     *
+     * @param types a non-empty set of substring match types
+     * @return the most permissive value present in {@code types}
+     * @since 2025.22
+     */
+    protected SubstringMatchType pickMostPermissiveSubstringMatchType(Set<SubstringMatchType> types) {
+        if (types.contains(SubstringMatchType.subany)) {
+            return SubstringMatchType.subany;
+        }
+        if (types.contains(SubstringMatchType.subfinal)) {
+            return SubstringMatchType.subfinal;
+        }
+        return SubstringMatchType.subinitial;
     }
 
     @Override

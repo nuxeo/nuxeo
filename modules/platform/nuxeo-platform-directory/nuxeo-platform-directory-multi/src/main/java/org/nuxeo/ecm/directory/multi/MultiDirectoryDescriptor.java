@@ -24,8 +24,8 @@ package org.nuxeo.ecm.directory.multi;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
+import org.nuxeo.ecm.directory.Directory;
 
 /**
  * @author Florent Guillaume
@@ -38,6 +38,14 @@ public class MultiDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     @XNodeList(value = "source", type = SourceDescriptor[].class, componentType = SourceDescriptor.class)
     protected SourceDescriptor[] sources;
+
+    /**
+     * @return the source descriptors of this multi-directory, may be {@code null}
+     * @since 2025.22
+     */
+    public SourceDescriptor[] getSources() {
+        return sources;
+    }
 
     @Override
     public void merge(BaseDirectoryDescriptor other) {

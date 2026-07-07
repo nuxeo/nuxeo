@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+  Configures substringMatchType=subany on ONE sub-directory of each multi-directory (the
+  secondary MongoDB user/group directory). The primary sub-directory has no explicit
+  value. When the userManager is configured to use multiUserDirectory / multiGroupDirectory
+  (see test-user-multi-directories-contrib.xml), the effective substringMatchType must be
+  picked up from the sub-directory.
+
+  @since 2025.22
+-->
+<component name="org.nuxeo.ecm.core.automation.user-directories.multi.single-sub-subany.mongodb">
+
+  <require>org.nuxeo.ecm.core.automation.user-directories.multi</require>
+
+  <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory" point="directories">
+    <directory name="userDirectorySecondary">
+      <substringMatchType>subany</substringMatchType>
+    </directory>
+    <directory name="groupDirectorySecondary">
+      <substringMatchType>subany</substringMatchType>
+    </directory>
+  </extension>
+
+</component>

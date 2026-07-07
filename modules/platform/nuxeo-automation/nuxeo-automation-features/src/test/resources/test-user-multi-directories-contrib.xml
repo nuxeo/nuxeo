@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!--
+  Declares an additional pair of SQL sub-directories (userDirectorySecondary /
+  groupDirectorySecondary) built on the same user/group schemas as the existing
+  userDirectory / groupDirectory (from test-user-directories-contrib.xml), and
+  wraps them in a multi-directory pair (multiUserDirectory / multiGroupDirectory).
+  Finally reconfigures the UserService to use the multi-directories.
+
+  @since 2025.22
+-->
+<component name="org.nuxeo.ecm.core.automation.user-directories.multi">
+
+  <require>org.nuxeo.ecm.core.automation.user-directories</require>
+  <require>org.nuxeo.ecm.directory.multi.MultiDirectoryFactory</require>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="userDirectorySecondary" extends="template-directory">
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <references>
+        <reference field="groups" directory="groupDirectorySecondary" name="user2group_secondary"
+                   source="userId" target="groupId" />
+      </references>
+    </directory>
+
+    <directory name="groupDirectorySecondary" extends="template-directory">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <references>
+        <inverseReference field="members" directory="userDirectorySecondary" dualReferenceField="groups" />
+        <reference field="subGroups" directory="groupDirectorySecondary" name="group2group_secondary"
+                   source="childGroupId" target="parentGroupId" />
+        <inverseReference field="parentGroups" directory="groupDirectorySecondary" dualReferenceField="subGroups" />
+      </references>
+    </directory>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory" point="directories">
+
+    <directory name="multiUserDirectory">
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <source name="userPrimarySource" creation="true">
+        <subDirectory name="userDirectory" />
+      </source>
+      <source name="userSecondarySource">
+        <subDirectory name="userDirectorySecondary" />
+      </source>
+    </directory>
+
+    <directory name="multiGroupDirectory">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <source name="groupPrimarySource" creation="true">
+        <subDirectory name="groupDirectory" />
+      </source>
+      <source name="groupSecondarySource">
+        <subDirectory name="groupDirectorySecondary" />
+      </source>
+    </directory>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService" point="userManager">
+    <userManager>
+      <users>
+        <directory>multiUserDirectory</directory>
+      </users>
+      <groups>
+        <directory>multiGroupDirectory</directory>
+      </groups>
+    </userManager>
+  </extension>
+
+</component>
