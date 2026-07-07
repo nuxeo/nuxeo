@@ -51,6 +51,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @Deploy("org.nuxeo.ecm.platform.usermanager")
+@Deploy("org.nuxeo.ecm.directory.multi")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.ecm.automation.features:test-user-directories-contrib.xml")
@@ -131,6 +132,38 @@ public class TestSuggestUserEntriesSubstringMatch {
         hotDeployer.deploy(
                 "org.nuxeo.ecm.automation.features:test-user-directories-substring-match-subfinal-mongodb-contrib.xml");
         assertSubfinalResults();
+    }
+
+    /**
+     * The user directory is configured as a multi-directory ({@code multiUserDirectory}) with two sub-directories, only
+     * one of which declares {@code substringMatchType=subany}. Verifies that the effective substring match type is
+     * picked up from the sub-directory and that {@code UserGroup.Suggestion} returns infix and suffix matches (SQL
+     * variant).
+     *
+     * @since 2025.22
+     */
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgreSQL.class, cause = "SQL-only test variant")
+    public void testMultiDirectorySingleSubExplicitSubanySQL() throws Exception {
+        hotDeployer.deploy("org.nuxeo.ecm.automation.features:test-user-multi-directories-contrib.xml",
+                "org.nuxeo.ecm.automation.features:test-user-multi-directories-substring-match-single-sub-subany-sql-contrib.xml");
+        assertSubanyResults();
+    }
+
+    /**
+     * The user directory is configured as a multi-directory ({@code multiUserDirectory}) with two sub-directories, only
+     * one of which declares {@code substringMatchType=subany}. Verifies that the effective substring match type is
+     * picked up from the sub-directory and that {@code UserGroup.Suggestion} returns infix and suffix matches (MongoDB
+     * variant).
+     *
+     * @since 2025.22
+     */
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class, cause = "MongoDB-only test variant")
+    public void testMultiDirectorySingleSubExplicitSubanyMongoDB() throws Exception {
+        hotDeployer.deploy("org.nuxeo.ecm.automation.features:test-user-multi-directories-contrib.xml",
+                "org.nuxeo.ecm.automation.features:test-user-multi-directories-substring-match-single-sub-subany-mongodb-contrib.xml");
+        assertSubanyResults();
     }
 
     protected void assertSubanyResults() throws Exception {

@@ -35,6 +35,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-multi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-query-api</artifactId>
     </dependency>
 
@@ -75,11 +79,6 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-mongodb</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-directory-multi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
