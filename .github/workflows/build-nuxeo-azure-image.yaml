@@ -17,8 +17,6 @@ on:
         description: Image tag (defaults to the short commit SHA when empty)
         type: string
         required: false
-  pull_request:
-    branches: [ "2023" ]
 
 jobs:
   build:
@@ -40,13 +38,13 @@ jobs:
             nuxeo-audit-opensearch1
             nuxeo-search-client-opensearch1
             nuxeo-drive
-          # nuxeo-cloud-qa-package: org.nuxeo.connect.update.PackageException: Package not found: nuxeo-cloud-qa-package (probably lack for 2025)
+           # nuxeo-cloud-qa-package: org.nuxeo.connect.update.PackageException: Package not found: nuxeo-cloud-qa-package (probably lack for 2025)
           nuxeo-clid: ${{ secrets.DEVOPS_CLID }}
           registry: docker-internal.packages.nuxeo.com
           registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
           registry-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
-          image-name: ${{ inputs.image-name || 'nuxeo/nuxeo-azure' }}
-          image-tag: ${{ inputs.image-tag || 'test' }}
+          image-name: ${{ inputs.image-name }}
+          image-tag: ${{ inputs.image-tag }}
           image-title: Nuxeo Server (Azure)
           platforms: linux/amd64
           push-image: "true"
