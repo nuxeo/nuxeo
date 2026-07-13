@@ -1,0 +1,50 @@
+name: Build Nuxeo Azure image
+fsasfa
+on:
+  workflow_dispatch:
+    inputs:
+      base-image-tag:
+        description: Base Nuxeo image tag (docker-private.packages.nuxeo.com/nuxeo/nuxeo)
+        type: string
+        default: "2025"
+        required: true
+      image-name:
+        description: Target image name, excluding registry and tag
+        type: string
+        default: nuxeo/nuxeo-azure
+        required: true
+      image-tag:
+        description: Image tag (defaults to the short commit SHA when empty)
+        type: string
+        required: false
+
+jobs:
+  build:
+    name: Build and push Nuxeo Azure image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Nuxeo image
+        uses: nuxeo/gh-build-tools/.github/actions/nuxeo-docker-build@b69f8529e843a9525310d704d1f7a8fe1f5d103b # v0.15.1
+        with:
+          base-image-tag: ${{ inputs.base-image-tag }}
+          base-registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
+          base-registry-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
+          nuxeo-connect-modules: >-
+            replace-administrator-user
+            microsoft-azure-online-storage
+            nuxeo-csv
+            nuxeo-web-ui
+            nuxeo-admin-console
+            nuxeo-cloud-qa-package
+            nuxeo-audit-opensearch1
+            nuxeo-search-client-opensearch1
+            nuxeo-drive
+          nuxeo-clid: ${{ secrets.DEVOPS_CLID }}
+          registry: docker-internal.packages.nuxeo.com
+          registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
+          registry-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
+          image-name: ${{ inputs.image-name }}
+          image-tag: ${{ inputs.image-tag }}
+          image-title: Nuxeo Server (Azure)
+          platforms: linux/amd64
+          push-image: "true"
