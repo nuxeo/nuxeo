@@ -17,6 +17,8 @@ on:
         description: Image tag (defaults to the short commit SHA when empty)
         type: string
         required: false
+  pull_request:
+    branches: [ "2023" ]
 
 jobs:
   build:
@@ -26,7 +28,7 @@ jobs:
       - name: Build Nuxeo image
         uses: nuxeo/gh-build-tools/.github/actions/nuxeo-docker-build@b69f8529e843a9525310d704d1f7a8fe1f5d103b # v0.15.1
         with:
-          base-image-tag: ${{ inputs.base-image-tag }}
+          base-image-tag: ${{ inputs.base-image-tag || '2025' }}
           base-registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
           base-registry-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
           nuxeo-connect-modules: >-
@@ -43,8 +45,8 @@ jobs:
           registry: docker-internal.packages.nuxeo.com
           registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
           registry-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
-          image-name: ${{ inputs.image-name }}
-          image-tag: ${{ inputs.image-tag }}
+          image-name: ${{ inputs.image-name || 'nuxeo/nuxeo-azure' }}
+          image-tag: ${{ inputs.image-tag || 'test' }}
           image-title: Nuxeo Server (Azure)
           platforms: linux/amd64
           push-image: "true"
