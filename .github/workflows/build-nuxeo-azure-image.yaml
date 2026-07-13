@@ -37,10 +37,10 @@ jobs:
             nuxeo-csv
             nuxeo-web-ui
             nuxeo-admin-console
-            nuxeo-cloud-qa-package
             nuxeo-audit-opensearch1
             nuxeo-search-client-opensearch1
             nuxeo-drive
+          # nuxeo-cloud-qa-package: org.nuxeo.connect.update.PackageException: Package not found: nuxeo-cloud-qa-package (probably lack for 2025)
           nuxeo-clid: ${{ secrets.DEVOPS_CLID }}
           registry: docker-internal.packages.nuxeo.com
           registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
