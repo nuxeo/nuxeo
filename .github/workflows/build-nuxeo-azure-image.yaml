@@ -1,5 +1,5 @@
 name: Build Nuxeo Azure image
-fsasfa
+
 on:
   workflow_dispatch:
     inputs:
