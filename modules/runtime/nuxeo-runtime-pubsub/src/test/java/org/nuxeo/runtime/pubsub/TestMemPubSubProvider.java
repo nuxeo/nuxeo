@@ -67,17 +67,26 @@ public class TestMemPubSubProvider {
         messageReceivedLatch = new CountDownLatch(1);
         BiConsumer<String, byte[]> subscriber = this::subscriber;
         pubSubService.registerSubscriber("topicTest", subscriber);
-        pubSubService.publish("topicTest", "foo".getBytes(UTF_8));
-        // we've observed this could sometimes take more than 5 seconds,
-        // probably linked to Kafka slowness in CI
-        // see NXP-33642
-        if (!messageReceivedLatch.await(1, TimeUnit.MINUTES)) {
+        // The stream provider starts its consumer asynchronously and seeks to the end of the log; a message published
+        // before the consumer is assigned and positioned is legitimately skipped. Republish until it is received or the
+        // deadline expires so the test does not depend on that startup race (Kafka can take several seconds in CI).
+        // See NXP-33642.
+        long deadline = System.nanoTime() + TimeUnit.MINUTES.toNanos(1);
+        boolean received = false;
+        do {
+            pubSubService.publish("topicTest", "foo".getBytes(UTF_8));
+            received = messageReceivedLatch.await(2, TimeUnit.SECONDS);
+        } while (!received && System.nanoTime() < deadline);
+        if (!received) {
             fail("message not received in 1m");
         }
-        assertEquals(Collections.singletonList("topicTest=foo"), messages);
+        // at least the first delivery must have been recorded, possibly more if several republished copies arrived
+        assertEquals("topicTest=foo", messages.get(0));
 
         // with subscriber unregistered it receives nothing anymore
         pubSubService.unregisterSubscriber("topicTest", subscriber);
+        // let any republished copies still in flight settle before clearing, so the assertion below is not polluted
+        Thread.sleep(500);
         messages.clear();
         pubSubService.publish("topicTest", "bar".getBytes(UTF_8));
         Thread.sleep(500);
