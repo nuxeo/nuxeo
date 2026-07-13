@@ -44,7 +44,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Scan Docker image
-        uses: nuxeo/gh-build-tools/.github/actions/scan-docker-image@2d46383a4e36e051f7f633a9452ab048e5697b38 # v0.14.0
+        uses: nuxeo/gh-build-tools/.github/actions/scan-docker-image@1b8eb07cc779f1c86ecaed70c021ab7c1f27b441 # v0.15.0
         with:
           image-name: ${{ inputs.image-name }}
           image-tag: ${{ inputs.version }}
@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Scan Maven artifacts
-        uses: nuxeo/gh-build-tools/.github/actions/scan-maven-artifacts@2d46383a4e36e051f7f633a9452ab048e5697b38 # v0.14.0
+        uses: nuxeo/gh-build-tools/.github/actions/scan-maven-artifacts@1b8eb07cc779f1c86ecaed70c021ab7c1f27b441 # v0.15.0
         with:
           artifacts: ${{ inputs.packages }}
           java-version: '17'
