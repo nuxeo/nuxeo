@@ -26,7 +26,7 @@ jobs:
       - name: Build Nuxeo image
         uses: nuxeo/gh-build-tools/.github/actions/nuxeo-docker-build@b69f8529e843a9525310d704d1f7a8fe1f5d103b # v0.15.1
         with:
-          base-image-tag: ${{ inputs.base-image-tag || '2025' }}
+          base-image-tag: ${{ inputs.base-image-tag }}
           base-registry-username: ${{ secrets.REPOSITORY_MANAGER_USERNAME }}
           base-registry-password: ${{ secrets.REPOSITORY_MANAGER_PASSWORD }}
           nuxeo-connect-modules: >-
