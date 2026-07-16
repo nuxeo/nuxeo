@@ -218,4 +218,15 @@ public class TestSearchClientNxql extends AbstractTestSearchClient {
             fail("Expecting a Date prop, bug got: " + first.getFields().get("dc:modified"));
         }
     }
+
+    // a boolean system property (e.g. ecm:isProxy) has no schema type and must not be coerced to String
+    @Test
+    public void testSelectBooleanSystemProperty() {
+        SearchResponse response = searchAndAssertHits(
+                "SELECT ecm:isProxy, ecm:isVersion, dc:title FROM Document WHERE ecm:uuid = 'a00'", 1);
+        SearchHit first = response.getHits().getFirst();
+        assertEquals(Boolean.FALSE, first.getFields().get("ecm:isProxy"));
+        assertEquals(Boolean.FALSE, first.getFields().get("ecm:isVersion"));
+        assertEquals("A file 1", first.getFields().get("dc:title"));
+    }
 }
