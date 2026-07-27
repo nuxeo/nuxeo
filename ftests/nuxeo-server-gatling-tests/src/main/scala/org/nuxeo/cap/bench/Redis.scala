@@ -107,10 +107,15 @@ object Redis {
           map = Map(Constants.END_OF_FEED -> "true")
           println("XXX getNextDoc END OF FEED")
         } else {
-          client.sadd(namespace + ":temp:doc:creating", docKey)
-          map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
-          map = map + ("key" -> docKey)
-          // println("XXX getNextDoc " + docKey + " returns " + map)
+          client.hgetall1[String, String](namespace + ":data:" + docKey) match {
+            case Some(data) =>
+              client.sadd(namespace + ":temp:doc:creating", docKey)
+              map = data + ("key" -> docKey)
+              // println("XXX getNextDoc " + docKey + " returns " + map)
+            case None =>
+              map = Map(Constants.END_OF_FEED -> "true")
+              println("XXX getNextDoc data not found for key: " + docKey)
+          }
         }
       })
     map
@@ -127,10 +132,16 @@ object Redis {
           map = Map(Constants.END_OF_FEED -> "true")
           println("XXX getNextFolder END OF FEED")
         } else {
-          // println("XXX get folder zpop " + docKey)
-          client.sadd(namespace + ":temp:folder:creating", docKey)
-          map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
-          // println("XXX getNextFolder " + docKey + " return " + map)
+          client.hgetall1[String, String](namespace + ":data:" + docKey) match {
+            case Some(data) =>
+              // println("XXX get folder zpop " + docKey)
+              client.sadd(namespace + ":temp:folder:creating", docKey)
+              map = data
+              // println("XXX getNextFolder " + docKey + " return " + map)
+            case None =>
+              map = Map(Constants.END_OF_FEED -> "true")
+              println("XXX getNextFolder data not found for key: " + docKey)
+          }
         }
       })
     map
@@ -166,8 +177,10 @@ object Redis {
     var map = Map[String, String]()
     pool.withClient(
       client => {
-        val docKey = client.srandmember[String](namespace + ":temp:doc:created").get
-        map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
+        val docKey = client.srandmember[String](namespace + ":temp:doc:created")
+          .getOrElse(throw new IllegalStateException("No doc found in Redis set: " + namespace + ":temp:doc:created"))
+        map = client.hgetall1[String, String](namespace + ":data:" + docKey)
+          .getOrElse(throw new IllegalStateException("No data found in Redis for doc key: " + docKey))
         // println("XXX getRandomDoc " + docKey + " returns " + map)
       })
     map
@@ -177,8 +190,10 @@ object Redis {
     var map = Map[String, String]()
     pool.withClient(
       client => {
-        val docKey = client.srandmember[String](namespace + ":temp:folder:created").get
-        map = client.hgetall1[String, String](namespace + ":data:" + docKey).get
+        val docKey = client.srandmember[String](namespace + ":temp:folder:created")
+          .getOrElse(throw new IllegalStateException("No folder found in Redis set: " + namespace + ":temp:folder:created"))
+        map = client.hgetall1[String, String](namespace + ":data:" + docKey)
+          .getOrElse(throw new IllegalStateException("No data found in Redis for folder key: " + docKey))
         // println("XXX getRandomFolder " + docKey + " returns " + map)
       })
     map
