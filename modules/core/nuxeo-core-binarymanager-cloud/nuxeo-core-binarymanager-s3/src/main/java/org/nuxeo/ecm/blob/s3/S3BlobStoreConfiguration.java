@@ -302,6 +302,26 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
             StorageClass.INTELLIGENT_TIERING, StorageClass.GLACIER_IR, StorageClass.STANDARD_IA,
             StorageClass.ONEZONE_IA);
 
+    /**
+     * Boolean property that, when {@code true}, forces blob reads to use the synchronous S3 client instead of the
+     * CRT-based transfer manager.
+     * <p>
+     * For use with S3-compatible gateways that do not support the AWS SDK async S3 clients.
+     *
+     * @since 2025.23
+     */
+    public static final String SYNC_DOWNLOAD_PROPERTY = "syncDownload";
+
+    /**
+     * Boolean property that, when {@code true}, forces blob writes to use the synchronous S3 client instead of the
+     * CRT-based transfer manager.
+     * <p>
+     * For use with S3-compatible gateways that do not support the AWS SDK async S3 clients. Maximum object size: 5 GB.
+     *
+     * @since 2025.23
+     */
+    public static final String SYNC_UPLOAD_PROPERTY = "syncUpload";
+
     public final CloudFrontConfiguration cloudFront;
 
     public S3Client amazonS3;
@@ -321,6 +341,18 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     protected boolean useClientSideEncryption;
 
     public final boolean metadataAddUsername;
+
+    /**
+     * @since 2025.23
+     * @see #SYNC_DOWNLOAD_PROPERTY
+     */
+    public final boolean syncDownload;
+
+    /**
+     * @since 2025.23
+     * @see #SYNC_UPLOAD_PROPERTY
+     */
+    public final boolean syncUpload;
 
     /**
      * Is Object Lock feature enabled at s3 level.
@@ -424,6 +456,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         region = getBucketRegion();
         endpointOverride = initEnpoint();
         metadataAddUsername = getBooleanProperty(METADATA_ADD_USERNAME_PROPERTY);
+        syncDownload = getBooleanProperty(SYNC_DOWNLOAD_PROPERTY);
+        syncUpload = getBooleanProperty(SYNC_UPLOAD_PROPERTY);
         maxErrorRetry = getIntProperty(CONNECTION_RETRY_PROPERTY);
         userAgentPrefix = getProperty(USER_AGENT_PREFIX_PROPERTY);
         userAgentSuffix = getProperty(USER_AGENT_SUFFIX_PROPERTY);

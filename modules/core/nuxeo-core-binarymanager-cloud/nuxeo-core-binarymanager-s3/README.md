@@ -119,6 +119,16 @@ S3 parameters (except `nuxeo.core.binarymanager`) are mandatory, additionally Cl
   - This is useful for very large files (50 GB+) where digest computation can exceed Kafka `max.poll.interval.ms`.
   - Note: with SSE-KMS encryption, S3 ETags are opaque and cannot be used as digests, making this threshold approach the recommended solution for large files.
 
+## Synchronous I/O Configuration
+
+By default, the addon uses the AWS CRT-based S3 transfer manager for both downloads and uploads. The transfer manager exposes an **asynchronous** API on top of `S3AsyncClient` and internally issues parallel range GETs and parallel multipart uploads, yielding significant throughput gains on AWS S3. This is the recommended setting for AWS S3 deployments.
+
+Against some S3-compatible gateways, the CRT-based async client has been observed to hang — on downloads with some gateways, on uploads with others. (The AWS SDK's other async transport, the Netty-based client, has shown similar issues, notably on uploads; this addon does not use it.) When the CRT client misbehaves, you can force one or both directions of I/O onto the **synchronous** Apache HTTP client (`S3Client` with `ApacheHttpClient`), which issues one blocking request per operation and bypasses the async transports entirely. The two properties below are independent — enable each one only when needed.
+
+- `nuxeo.s3storage.syncDownload` : if `true`, downloads use the synchronous Apache HTTP client instead of the CRT-based transfer manager (default `false`).
+
+- `nuxeo.s3storage.syncUpload` : if `true`, uploads use the synchronous Apache HTTP client instead of the CRT-based transfer manager (default `false`). The synchronous client uses a single `PutObject` request and is therefore limited to objects of 5 GiB or less; larger blobs are rejected up-front with a `NuxeoException` before any S3 traffic.
+
 ## Building
 
 ```shell

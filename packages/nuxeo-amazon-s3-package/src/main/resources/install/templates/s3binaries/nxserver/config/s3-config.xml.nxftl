@@ -32,6 +32,8 @@
       <property name="minimumUploadPartSize">${nuxeo.s3storage.minimum.upload.part.size}</property>
       <property name="userAgentPrefix">${nuxeo.s3storage.user.agent.prefix}</property>
       <property name="userAgentSuffix">${nuxeo.s3storage.user.agent.suffix}</property>
+      <property name="syncDownload">${nuxeo.s3storage.syncDownload}</property>
+      <property name="syncUpload">${nuxeo.s3storage.syncUpload}</property>
     </blobprovider>
 <#if "${nuxeo.fulltext.storedInBlob}" == "true">
     <blobprovider name="fulltext">

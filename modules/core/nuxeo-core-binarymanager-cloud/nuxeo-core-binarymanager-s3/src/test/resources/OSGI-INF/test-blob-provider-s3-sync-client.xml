@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.blob.s3.test.syncClient">
+  <require>org.nuxeo.ecm.blob.s3.test</require>
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <property name="syncDownload">true</property>
+      <property name="syncUpload">true</property>
+      <property name="directdownload">false</property>
+    </blobprovider>
+    <blobprovider name="other">
+      <property name="syncDownload">true</property>
+      <property name="syncUpload">true</property>
+      <property name="directdownload">false</property>
+    </blobprovider>
+  </extension>
+</component>

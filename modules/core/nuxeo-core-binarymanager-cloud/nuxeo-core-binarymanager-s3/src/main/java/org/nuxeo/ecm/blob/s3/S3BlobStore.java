@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
+import static jakarta.servlet.http.HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.DELIMITER;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.SUPPORTED_STORAGE_CLASS;
@@ -42,11 +43,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.ByteSize;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -81,6 +84,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.ObjectLockLegalHoldStatus;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.ServerSideEncryption;
 import software.amazon.awssdk.services.s3.model.StorageClass;
@@ -107,6 +111,13 @@ public class S3BlobStore extends AbstractBlobStore {
 
     // x-amz-meta-username header
     protected static final String USER_METADATA_USERNAME = "username";
+
+    /**
+     * Hard limit of S3's single {@code PutObject} request: 5 GiB. Synchronous uploads cannot exceed this size.
+     *
+     * @since 2025.23
+     */
+    protected static final ByteSize MAX_SYNC_UPLOAD_SIZE = ByteSize.ofGibibytes(5);
 
     protected final S3BlobStoreConfiguration config;
 
@@ -256,7 +267,7 @@ public class S3BlobStore extends AbstractBlobStore {
             }
         }
 
-        UploadFileRequest.Builder uploadFileRequestBuilder = UploadFileRequest.builder().putObjectRequest(b -> {
+        Consumer<PutObjectRequest.Builder> putObjectRequestConsumer = b -> {
             b.bucket(bucketName).key(bucketKey);
             if (config.useServerSideEncryption) {
                 if (isNotBlank(config.serverSideKMSKeyID)) {
@@ -270,14 +281,31 @@ public class S3BlobStore extends AbstractBlobStore {
             }
             setMetadata(b, blobContext);
             b.storageClass(config.storageClass);
-        }).addTransferListener(LoggingTransferListener.create()).source(file);
-        logTrace(fileTraceSource, "->", null, "write " + Files.size(file) + " bytes");
+        };
+        long fileSize = Files.size(file);
+        logTrace(fileTraceSource, "->", null, "write " + fileSize + " bytes");
         logTrace("hnote right: " + bucketKey);
         try {
-            FileUpload fileUpload = config.transferManager.uploadFile(uploadFileRequestBuilder.build());
-            CompletedFileUpload uploadResult = fileUpload.completionFuture().join();
-            // if we don't want to use versions, ignore them even though the bucket may be versioned
-            String versionId = hasVersioning() ? uploadResult.response().versionId() : null;
+            String versionId;
+            if (config.syncUpload) {
+                checkSyncUploadSize(fileSize);
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                                                                    .applyMutation(putObjectRequestConsumer)
+                                                                    .build();
+                PutObjectResponse putObjectResponse = amazonS3.putObject(putObjectRequest, file);
+                versionId = hasVersioning() ? putObjectResponse.versionId() : null;
+            } else {
+                UploadFileRequest uploadFileRequest = UploadFileRequest.builder()
+                                                                       .putObjectRequest(putObjectRequestConsumer)
+                                                                       .addTransferListener(
+                                                                               LoggingTransferListener.create())
+                                                                       .source(file)
+                                                                       .build();
+                FileUpload fileUpload = config.transferManager.uploadFile(uploadFileRequest);
+                CompletedFileUpload uploadResult = fileUpload.completionFuture().join();
+                // if we don't want to use versions, ignore them even though the bucket may be versioned
+                versionId = hasVersioning() ? uploadResult.response().versionId() : null;
+            }
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("Wrote s3://{}/{} in {}ms", bucketName, bucketKey, dtms);
@@ -287,8 +315,25 @@ public class S3BlobStore extends AbstractBlobStore {
             }
             return versionId;
         } catch (CompletionException e) {
+            // unwrap the SDK error so callers see a uniform cause shape across sync and async paths
             var cause = e.getCause() instanceof SdkException sdkException ? sdkException : e;
             throw new NuxeoException("Failed to write blob: " + key, cause);
+        } catch (SdkException e) {
+            throw new NuxeoException("Failed to write blob: " + key, e);
+        }
+    }
+
+    /**
+     * Validates that {@code fileSize} fits within S3's single {@code PutObject} limit.
+     *
+     * @since 2025.23
+     */
+    protected static void checkSyncUploadSize(long fileSize) throws NuxeoException {
+        if (fileSize > MAX_SYNC_UPLOAD_SIZE.bytes()) {
+            throw new NuxeoException(
+                    "Cannot upload blob of size: %s via syncUpload: single PutObject is limited to %s.".formatted(
+                            ByteSize.ofBytes(fileSize), MAX_SYNC_UPLOAD_SIZE),
+                    SC_REQUEST_ENTITY_TOO_LARGE);
         }
     }
 
@@ -461,23 +506,32 @@ public class S3BlobStore extends AbstractBlobStore {
         }
         long t0 = System.currentTimeMillis();
         try {
-            FileDownload downloadFile = config.transferManager.downloadFile(
-                    DownloadFileRequest.builder()
-                                       .getObjectRequest(objectRequestBuilder.build())
-                                       .destination(dest)
-                                       .build());
-            downloadFile.completionFuture().join();
-        } catch (CompletionException e) {
-            if (e.getCause() instanceof SdkException sdkException) {
-                if (isMissingKey(sdkException)) {
-                    logTrace("<--", "missing");
-                    logTrace("hnote right: " + s3Key);
-                    log.debug("Blob {} does not exist", debugObject);
-                    return false;
+            if (config.syncDownload) {
+                amazonS3.getObject(objectRequestBuilder.build(), dest);
+            } else {
+                try {
+                    FileDownload downloadFile = config.transferManager.downloadFile(
+                            DownloadFileRequest.builder()
+                                               .getObjectRequest(objectRequestBuilder.build())
+                                               .destination(dest)
+                                               .build());
+                    downloadFile.completionFuture().join();
+                } catch (CompletionException e) {
+                    // unwrap the SDK error so the outer handler can run the missing-key check
+                    if (e.getCause() instanceof SdkException sdkException) {
+                        throw sdkException;
+                    }
+                    throw e;
                 }
-                throw sdkException;
             }
-            throw e;
+        } catch (SdkException sdkException) {
+            if (isMissingKey(sdkException)) {
+                logTrace("<--", "missing");
+                logTrace("hnote right: " + s3Key);
+                log.debug("Blob {} does not exist", debugObject);
+                return false;
+            }
+            throw sdkException;
         }
 
         long dtms = System.currentTimeMillis() - t0;
