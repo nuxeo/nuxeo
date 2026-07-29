@@ -130,7 +130,22 @@ pipeline {
             echo "Download data..."
             nxMvn.copy(artifact: "${DATA_ARTIFACT_FULL_NAME}", outputDirectory: '/tmp')
             echo "Loading data into Redis..."
-            sh "gunzip -c /tmp/${DATA_ARTIFACT} | nc --send-only localhost 6379 > /dev/null"
+            sh """
+              gunzip -c /tmp/${DATA_ARTIFACT} | python3 -c "
+import sys, socket
+s = socket.create_connection(('localhost', 6379))
+chunk = 65536
+while True:
+    data = sys.stdin.buffer.read(chunk)
+    if not data:
+        break
+    s.sendall(data)
+s.shutdown(socket.SHUT_WR)
+while s.recv(chunk):
+    pass
+s.close()
+"
+            """
           }
         }
       }
