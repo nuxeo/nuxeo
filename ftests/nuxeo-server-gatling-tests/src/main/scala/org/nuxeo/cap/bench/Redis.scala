@@ -34,15 +34,16 @@ object Redis {
     val ret = new RedisClientPool(host, port, database = db)
     ret.withClient(
       client => {
-        // clean temp
         zpopSha = client.scriptLoad(zpopLua).get
+        spopAndGetSha = client.scriptLoad(spopAndGetLua).get
         println("XXX redis " + host + ":" + port)
         println("XXX redis zpop sha: " + zpopSha)
+        println("XXX redis spopAndGet sha: " + spopAndGetSha)
       })
     ret
   }
 
-  // Could be simpler once https://github.com/debasishg/scala-redis/pull/129 is fixed and integrated into gatling
+  // Atomically pop a key from a sorted set, used for folder feed
   val zpopLua = """
        local val = redis.call('zrange', KEYS[1], 0, 0)[1]
        if val == nil then
@@ -51,7 +52,24 @@ object Redis {
        redis.call('zremrangebyrank',KEYS[1], 0, 0)
        return val"""
 
+  // Atomically pop a key from a set, move it to the creating set, and return its data hash.
+  // Returns a flat list of field/value pairs (hgetall format), or {'EMPTY_MARKER'} if the set is empty.
+  val spopAndGetLua = """
+       local key = redis.call('spop', KEYS[1])
+       if key == nil or key == false then
+           return {'EMPTY_MARKER'}
+       end
+       redis.call('sadd', KEYS[2], key)
+       local data = redis.call('hgetall', KEYS[3] .. key)
+       if #data == 0 then
+           return {'EMPTY_MARKER'}
+       end
+       data[#data + 1] = 'key'
+       data[#data + 1] = key
+       return data"""
+
   var zpopSha = ""
+  var spopAndGetSha = ""
 
 
   def setupFolderFeed() = {
@@ -102,20 +120,21 @@ object Redis {
     var map = Map[String, String]()
     pool.withClient(
       client => {
-        val docKey = client.spop[String](namespace + ":temp:doc:toCreate").getOrElse(Constants.EMPTY_MARKER)
-        if (Constants.EMPTY_MARKER == docKey) {
+        val result = client.evalSHA(
+          spopAndGetSha,
+          List(namespace + ":temp:doc:toCreate", namespace + ":temp:doc:creating", namespace + ":data:"),
+          List()).get.asInstanceOf[List[Option[Any]]]
+        val first = new String(result.head.get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8)
+        if (Constants.EMPTY_MARKER == first) {
           map = Map(Constants.END_OF_FEED -> "true")
           println("XXX getNextDoc END OF FEED")
         } else {
-          client.hgetall1[String, String](namespace + ":data:" + docKey) match {
-            case Some(data) =>
-              client.sadd(namespace + ":temp:doc:creating", docKey)
-              map = data + ("key" -> docKey)
-              // println("XXX getNextDoc " + docKey + " returns " + map)
-            case None =>
-              map = Map(Constants.END_OF_FEED -> "true")
-              println("XXX getNextDoc data not found for key: " + docKey)
-          }
+          // result is a flat list of Option-wrapped field/value pairs from hgetall
+          map = result.grouped(2).map { pair =>
+            new String(pair(0).get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8) ->
+              new String(pair(1).get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8)
+          }.toMap
+          // println("XXX getNextDoc returns " + map)
         }
       })
     map
