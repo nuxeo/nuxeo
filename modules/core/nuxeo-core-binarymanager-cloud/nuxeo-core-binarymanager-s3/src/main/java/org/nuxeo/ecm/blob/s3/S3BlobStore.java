@@ -287,7 +287,8 @@ public class S3BlobStore extends AbstractBlobStore {
             }
             return versionId;
         } catch (CompletionException e) {
-            throw new NuxeoException("Failed to write blob: " + key, e);
+            var cause = e.getCause() instanceof SdkException sdkException ? sdkException : e;
+            throw new NuxeoException("Failed to write blob: " + key, cause);
         }
     }
 
@@ -474,8 +475,9 @@ public class S3BlobStore extends AbstractBlobStore {
                     log.debug("Blob {} does not exist", debugObject);
                     return false;
                 }
-                throw e;
+                throw sdkException;
             }
+            throw e;
         }
 
         long dtms = System.currentTimeMillis() - t0;
