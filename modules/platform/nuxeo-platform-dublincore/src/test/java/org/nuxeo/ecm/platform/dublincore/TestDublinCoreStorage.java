@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_CONTRIBUTORS_PROPERTY;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 
 import java.util.Arrays;
@@ -156,6 +157,27 @@ public class TestDublinCoreStorage {
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
         assertEquals("Administrator", childFile3.getProperty("dublincore", "creator"));
+    }
+
+    @Test
+    public void testNullContributors() {
+        DocumentModel file = session.createDocumentModel("/", "file-0081", "File");
+        file = session.createDocument(file);
+
+        String[] contributors = (String[]) file.getPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY);
+        assertNotNull(contributors);
+        assertEquals(1, contributors.length);
+        assertEquals("Administrator", contributors[0]);
+
+        // Set a silly list of contributors containing a null value at low-level API
+        file.setPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY, new String[] { null });
+        file = session.saveDocument(file);
+
+        // Assert the null contributor was stripped and the current principal re-added by normal addContributor logic
+        contributors = (String[]) file.getPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY);
+        assertNotNull(contributors);
+        assertEquals(1, contributors.length);
+        assertEquals("Administrator", contributors[0]);
     }
 
     @Test
