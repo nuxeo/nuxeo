@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2026 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
@@ -52,6 +54,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 10.2
  */
 public class DublinCoreStorageServiceImpl extends DefaultComponent implements DublinCoreStorageService {
+
+    private static final Logger log = LogManager.getLogger(DublinCoreStorageServiceImpl.class);
 
     @Override
     public void setCreationDate(DocumentModel doc, Calendar creationDate) {
@@ -78,6 +82,13 @@ public class DublinCoreStorageServiceImpl extends DefaultComponent implements Du
         NuxeoPrincipal principal = Objects.requireNonNull(event.getContext().getPrincipal());
 
         String principalName = principal.getActingUser();
+        if (principalName == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Skipping null principal name for doc: {}", doc.getPath(),
+                        new Throwable("debug stack trace"));
+            }
+            return;
+        }
         if (principal instanceof SystemPrincipal && SYSTEM_USERNAME.equals(principalName)
                 && !ABOUT_TO_CREATE.equals(event.getName())) {
             return;
@@ -108,7 +119,11 @@ public class DublinCoreStorageServiceImpl extends DefaultComponent implements Du
         if (ArrayUtils.isEmpty(contributorsArray)) {
             return new ArrayList<>();
         }
+        if (ArrayUtils.contains(contributorsArray, null)) {
+            log.warn("Skipping null contributor(s) for doc: {}", doc::getPath);
+        }
         return Arrays.stream(contributorsArray)
+                     .filter(Objects::nonNull)
                      .map(DublinCoreStorageServiceImpl::stripPrincipalPrefix)
                      .distinct()
                      .collect(Collectors.toList());
