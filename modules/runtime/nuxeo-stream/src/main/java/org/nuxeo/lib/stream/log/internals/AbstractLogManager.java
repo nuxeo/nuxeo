@@ -48,6 +48,14 @@ import org.nuxeo.lib.stream.log.RebalanceListener;
 public abstract class AbstractLogManager implements LogManager {
     protected static final Name ADMIN_GROUP = Name.of("admin", "tailer");
 
+    // Some implementations (e.g. Kafka) have an eventually consistent metadata propagation: a Log that has just
+    // been created by createIfNotExists may briefly report as non-existent to a subsequent, independent existence
+    // check (a distinct request that can be routed to a broker that hasn't yet caught up). Retry with a short
+    // backoff before giving up, mirroring the resilience already built into Kafka's own producer/consumer clients.
+    protected static final int EXISTS_RETRIES = 5;
+
+    protected static final Duration EXISTS_RETRY_DELAY = Duration.ofMillis(500);
+
     protected final Map<Name, CloseableLogAppender> appenders = new ConcurrentHashMap<>();
 
     protected final Map<LogPartitionGroup, LogTailer> tailersAssignments = new ConcurrentHashMap<>();
@@ -157,7 +165,7 @@ public abstract class AbstractLogManager implements LogManager {
     @Override
     public <M extends Externalizable> LogAppender<M> getAppender(Name name, Codec<M> codec) {
         LogAppender<M> ret = appenders.computeIfAbsent(name, n -> {
-            if (exists(n)) {
+            if (existsWithRetry(n)) {
                 return createAppender(n, codec);
             }
             throw new IllegalArgumentException("Unknown Log name: " + n);
@@ -168,6 +176,32 @@ public abstract class AbstractLogManager implements LogManager {
         throw new IllegalArgumentException(String.format(
                 "The appender for Log %s exists and expecting codec: %s, cannot use a different codec: %s", name,
                 ret.getCodec(), codec));
+    }
+
+    /**
+     * Retries {@link #exists(Name)} with a short backoff before giving up. Protects against the narrow window where a
+     * Log has just been created (e.g. by {@link #createIfNotExists}) but a subsequent, independent existence check has
+     * not yet observed it, because some implementations (e.g. Kafka) have an eventually consistent metadata propagation
+     * (see {@link #EXISTS_RETRIES}).
+     *
+     * @since 2025.24
+     */
+    protected boolean existsWithRetry(Name name) {
+        if (exists(name)) {
+            return true;
+        }
+        for (int i = 0; i < EXISTS_RETRIES; i++) {
+            try {
+                Thread.sleep(EXISTS_RETRY_DELAY.toMillis());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new StreamRuntimeException(e);
+            }
+            if (exists(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected <M extends Externalizable> boolean sameCodec(Codec<M> codec1, Codec<M> codec2) {
