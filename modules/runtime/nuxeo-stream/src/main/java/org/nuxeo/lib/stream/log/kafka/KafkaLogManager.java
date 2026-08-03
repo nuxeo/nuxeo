@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.log.kafka;
 
 import java.io.Externalizable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +37,8 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.utils.Bytes;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogConfig;
 import org.nuxeo.lib.stream.log.LogLag;
@@ -50,6 +53,9 @@ import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
  * @since 9.3
  */
 public class KafkaLogManager extends AbstractLogManager {
+
+    private static final Logger log = LogManager.getLogger(KafkaLogManager.class);
+
     public static final String DISABLE_SUBSCRIBE_PROP = "subscribe.disable";
 
     protected final List<KafkaLogConfig> configs;
@@ -101,6 +107,23 @@ public class KafkaLogManager extends AbstractLogManager {
     public void create(Name name, int size) {
         KafkaLogConfig config = getConfig(name);
         kUtils.get(config).createTopic(config.getResolver().getId(name), size, config.getReplicatorFactor());
+    }
+
+    @Override
+    public synchronized boolean createIfNotExists(Name name, int size) {
+        KafkaLogConfig config = getConfig(name);
+        KafkaUtils utils = kUtils.get(config);
+        String topic = config.getResolver().getId(name);
+        if (!utils.topicExists(topic)) {
+            return utils.createTopic(topic, size, config.getReplicatorFactor());
+        }
+        // Topic already exists but may not yet be visible on all brokers — wait for readiness before returning.
+        utils.waitForTopicCreation(topic, 0, Duration.ofMinutes(3));
+        int actual = utils.partitions(topic);
+        if (size > 0 && actual != size) {
+            log.warn("Topic: {} exists with different partitioning, expected: {}, actual: {}", topic, size, actual);
+        }
+        return false;
     }
 
     @Override
@@ -174,13 +197,13 @@ public class KafkaLogManager extends AbstractLogManager {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, config.getResolver().getId(group));
         props.put(ConsumerConfig.CLIENT_ID_CONFIG, config.getResolver().getId(group) + "-lag");
         // Prevents to create multiple consumers with the same client/group ids
-        synchronized(KafkaLogManager.class) {
+        synchronized (KafkaLogManager.class) {
             try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
                 Set<TopicPartition> topicPartitions = consumer.partitionsFor(config.getResolver().getId(name))
-                                                               .stream()
-                        .map(meta -> new TopicPartition(meta.topic(),
-                                meta.partition()))
-                        .collect(Collectors.toSet());
+                                                              .stream()
+                                                              .map(meta -> new TopicPartition(meta.topic(),
+                                                                      meta.partition()))
+                                                              .collect(Collectors.toSet());
                 LogLag[] ret = new LogLag[topicPartitions.size()];
                 Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
                 Map<TopicPartition, OffsetAndMetadata> committedOffsets = consumer.committed(topicPartitions);
@@ -192,7 +215,7 @@ public class KafkaLogManager extends AbstractLogManager {
                         position = committed.offset();
                     } else {
                         if (beginningOffsets == null) {
-                             beginningOffsets = consumer.beginningOffsets(topicPartitions);
+                            beginningOffsets = consumer.beginningOffsets(topicPartitions);
                         }
                         position = beginningOffsets.get(topicPartition);
                     }
@@ -225,8 +248,7 @@ public class KafkaLogManager extends AbstractLogManager {
     public String toString() {
         // TODO: filter displayed props
         return "KafkaLogManager{" + "configs=" + configs + ", defaultConfig=" + defaultConfig + ", defaultResolver"
-                + defaultConfig.getResolver()
-                + '}';
+                + defaultConfig.getResolver() + '}';
     }
 
     protected String filterDisplayedProperties(Properties properties) {

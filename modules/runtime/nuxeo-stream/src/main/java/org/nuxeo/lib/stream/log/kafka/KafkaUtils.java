@@ -203,14 +203,18 @@ public class KafkaUtils implements AutoCloseable {
     /**
      * Creates a topic with the given partitions and replication. Since 2021.33 partitions (or replications) below 1
      * defaults to broker configuration.
+     *
+     * @return {@code true} if the topic has actually been created, {@code false} if it already existed
+     * @since 2025.24
      */
-    public void createTopic(String topic, int partitions, short replicationFactor) {
+    public boolean createTopic(String topic, int partitions, short replicationFactor) {
         Optional<Integer> parts = (partitions < 1) ? Optional.empty() : Optional.of(partitions);
         Optional<Short> factor = (replicationFactor < 1) ? Optional.empty() : Optional.of(replicationFactor);
         log.info("Creating topic: {}, partitions: {}, replications: {}", topic, parts, factor);
         KafkaFuture<Void> future = adminClient.createTopics(
                 Collections.singletonList(new NewTopic(topic, parts, factor)),
                 new CreateTopicsOptions().timeoutMs(CREATE_TOPIC_TIMEOUT_MS)).all();
+        boolean alreadyExists = false;
         try {
             future.get(CREATE_TOPIC_TIMEOUT_MS + 1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
@@ -219,6 +223,7 @@ public class KafkaUtils implements AutoCloseable {
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TopicExistsException) {
                 log.warn("Cannot create topic: {}, it already exists.", topic);
+                alreadyExists = true;
             } else if (e.getCause() instanceof org.apache.kafka.common.errors.TimeoutException) {
                 throw new StreamRuntimeException("Unable to create topic: " + topic + ", within the request timeout.",
                         e);
@@ -233,16 +238,31 @@ public class KafkaUtils implements AutoCloseable {
         } catch (TimeoutException e) {
             throw new StreamRuntimeException("Unable to create topic: " + topic + " within the timeout.", e);
         }
-        if (!topicReady(topic)) {
-            waitForTopicCreation(topic, Duration.ofMinutes(3));
-        }
-        if (partitions(topic) != partitions) {
-            log.warn("Topic: {} created with different partitioning, expected: {}, actual: {}", topic, partitions,
-                    partitions(topic));
-        }
+        // When the topic already exists it may have a different partition count (e.g. manually scaled by a Kafka
+        // admin) — accept it as-is and only wait for readiness, not for a matching partition count.
+        int expectedPartitions = alreadyExists ? 0 : partitions;
+        waitForTopicCreation(topic, expectedPartitions, Duration.ofMinutes(3));
+        return !alreadyExists;
     }
 
+    /**
+     * @deprecated since 2025.24, use {@link #waitForTopicCreation(String, int, Duration)} instead.
+     */
+    @Deprecated(since = "2025.24", forRemoval = true)
     protected void waitForTopicCreation(String topic, Duration timeout) {
+        waitForTopicCreation(topic, 0, timeout);
+    }
+
+    /**
+     * Waits until the topic is ready (all partitions have a leader) and has the expected number of partitions. Using a
+     * single {@code describeTopics} call per iteration avoids TOCTOU races between separate admin calls.
+     *
+     * @since 2025.24
+     */
+    protected void waitForTopicCreation(String topic, int expectedPartitions, Duration timeout) {
+        if (topicReady(topic, expectedPartitions)) {
+            return;
+        }
         log.warn("Waiting for brokers to become aware that the topic {} has been created.", topic);
         long deadline = System.currentTimeMillis() + timeout.toMillis();
         do {
@@ -256,7 +276,7 @@ public class KafkaUtils implements AutoCloseable {
                 Thread.currentThread().interrupt();
                 throw new StreamRuntimeException("Interrupted while waiting for topic creation " + topic, e);
             }
-        } while (!topicReady(topic));
+        } while (!topicReady(topic, expectedPartitions));
         log.debug("Topic is now available");
     }
 
@@ -265,6 +285,17 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public boolean topicReady(String topic) {
+        return topicReady(topic, 0);
+    }
+
+    /**
+     * Returns true when the topic exists, all its partitions have a leader, and (when {@code expectedPartitions > 0})
+     * the actual partition count matches. Using a single {@code describeTopics} call avoids TOCTOU races between
+     * separate admin calls.
+     *
+     * @since 2025.24
+     */
+    public boolean topicReady(String topic, int expectedPartitions) {
         try {
             TopicDescription desc = adminClient.describeTopics(Collections.singletonList(topic))
                                                .values()
@@ -279,6 +310,11 @@ public class KafkaUtils implements AutoCloseable {
                     log.warn("Topic: {} not ready, no leader for partition: {}", topic, info);
                     return false;
                 }
+            }
+            if (expectedPartitions > 0 && desc.partitions().size() != expectedPartitions) {
+                log.warn("Topic: {} not ready, expected partitions: {}, actual: {}", topic, expectedPartitions,
+                        desc.partitions().size());
+                return false;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
