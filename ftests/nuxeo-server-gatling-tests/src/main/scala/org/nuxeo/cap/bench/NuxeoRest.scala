@@ -72,6 +72,7 @@ object NuxeoRest {
       .header("Content-Type", "application/json")
       .basicAuth("#{user}", "#{password}")
       .body(StringBody("""{ "entity-type": "userPreferences","preferences": {"#{user}Key": "#{user}Value"}}"""))
+      .check(status.saveAs("status"))
       .check(status.in(200, 201))
   }
 

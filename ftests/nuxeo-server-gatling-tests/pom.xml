@@ -141,6 +141,15 @@
                 </configuration>
               </execution>
               <execution>
+                <id>setPreferences</id>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim27SetPreferences</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
                 <id>updateDocuments</id>
                 <goals>
                   <goal>test</goal>

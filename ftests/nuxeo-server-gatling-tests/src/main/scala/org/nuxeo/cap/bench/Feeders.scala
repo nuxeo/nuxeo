@@ -33,6 +33,11 @@ object Feeders {
     Iterator.continually(Redis.getNextDoc())
   }
 
+  def createPreferencesFeeder() = {
+    Redis.setupPreferencesFeed()
+    Iterator.continually(Redis.getNextDocForPreferences())
+  }
+
   def createFolderFeeder() = {
     Redis.setupFolderFeed()
     Iterator.continually(Redis.getNextFolder())

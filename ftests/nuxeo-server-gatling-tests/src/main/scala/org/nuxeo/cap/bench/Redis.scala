@@ -116,6 +116,29 @@ object Redis {
       })
   }
 
+  // Copy the set of created docs to a working set, so preferences can be set on each of them exactly once,
+  // without disturbing :temp:doc:created (still read by other sims, e.g. Sim30UpdateDocuments).
+  def setupPreferencesFeed() = {
+    pool.withClient(
+      client => {
+        // clean temp
+        client.del(namespace + ":temp:doc:toSetPreferences")
+        client.del(namespace + ":temp:doc:settingPreferences")
+        client.del(namespace + ":temp:doc:preferencesSet")
+        // copy set to a temp ns
+        client.sunionstore(namespace + ":temp:doc:toSetPreferences", namespace + ":temp:doc:created")
+        println("XXX number of documents to set preferences on: " + getNumberOfDocumentsToSetPreferences())
+      })
+  }
+
+  def getNumberOfDocumentsToSetPreferences(): Int = {
+    pool.withClient(
+      client => {
+        val ret = client.scard(namespace + ":temp:doc:toSetPreferences").get.toInt
+        ret
+      })
+  }
+
   def getNextDoc() = {
     var map = Map[String, String]()
     pool.withClient(
@@ -135,6 +158,30 @@ object Redis {
               new String(pair(1).get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8)
           }.toMap
           // println("XXX getNextDoc returns " + map)
+        }
+      })
+    map
+  }
+
+  def getNextDocForPreferences() = {
+    var map = Map[String, String]()
+    pool.withClient(
+      client => {
+        val result = client.evalSHA(
+          spopAndGetSha,
+          List(namespace + ":temp:doc:toSetPreferences", namespace + ":temp:doc:settingPreferences", namespace + ":data:"),
+          List()).get.asInstanceOf[List[Option[Any]]]
+        val first = new String(result.head.get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8)
+        if (Constants.EMPTY_MARKER == first) {
+          map = Map(Constants.END_OF_FEED -> "true")
+          println("XXX getNextDocForPreferences END OF FEED")
+        } else {
+          // result is a flat list of Option-wrapped field/value pairs from hgetall
+          map = result.grouped(2).map { pair =>
+            new String(pair(0).get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8) ->
+              new String(pair(1).get.asInstanceOf[Array[Byte]], StandardCharsets.UTF_8)
+          }.toMap
+          // println("XXX getNextDocForPreferences returns " + map)
         }
       })
     map
@@ -186,6 +233,19 @@ object Redis {
         client => {
           client.srem(namespace + ":temp:doc:creating", docKey)
           client.sadd(namespace + ":temp:doc:created", docKey)
+        }
+      )
+    }
+    session
+  }
+
+  def markPreferencesSet(session: Session) = {
+    if (session("status").as[Int] == 200 || session("status").as[Int] == 201) {
+      val docKey = session("key").as[String]
+      pool.withClient(
+        client => {
+          client.srem(namespace + ":temp:doc:settingPreferences", docKey)
+          client.sadd(namespace + ":temp:doc:preferencesSet", docKey)
         }
       )
     }

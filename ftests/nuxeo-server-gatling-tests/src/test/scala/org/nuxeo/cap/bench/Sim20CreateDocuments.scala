@@ -31,7 +31,6 @@ object ScnCreateDocuments {
         feed(documents)
           .feed(Feeders.users)
           .exec(NuxeoRest.createDocument())
-          .exec(NuxeoRest.addPreferencesOnParent())
           .exec(session => Redis.markDocumentCreated(session))
           .pause(pause)
       }
