@@ -111,8 +111,6 @@ updates:
       # Minor version updates breaking compilation
       - dependency-name: "org.osgi:org.osgi.core"
         versions: ["[4.4,)"]
-      - dependency-name: "io.gatling*:*"
-        versions: ["[3.13.0,)"]
 
       # Minor version updates breaking tests
       - dependency-name: "org.hibernate.orm:hibernate-core"
@@ -189,8 +187,6 @@ updates:
       # Minor version updates breaking compilation
       - dependency-name: "org.osgi:org.osgi.core"
         versions: ["[4.4,)"]
-      - dependency-name: "io.gatling*:*"
-        versions: ["[3.13.0,)"]
 
       # Patch version updates breaking compilation
       - dependency-name: "org.apache.directory.server:*"
