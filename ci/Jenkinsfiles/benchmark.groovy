@@ -213,14 +213,16 @@ s.close()
       environment {
         GAT_REPORT_ARTIFACT_GROUP = 'org.nuxeo.tools'
         GAT_REPORT_ARTIFACT_ID = 'gatling-report'
-        GAT_REPORT_ARTIFACT_VERSION = '6.3'
+        GAT_REPORT_ARTIFACT_VERSION = '6.4'
         GAT_REPORT_ARTIFACT_TYPE = 'jar'
         GAT_REPORT_ARTIFACT_CLASSIFIER = 'capsule-fat'
         GAT_REPORT_ARTIFACT = "${GAT_REPORT_ARTIFACT_ID}-${GAT_REPORT_ARTIFACT_VERSION}-${GAT_REPORT_ARTIFACT_CLASSIFIER}.${GAT_REPORT_ARTIFACT_TYPE}"
         GAT_REPORT_ARTIFACT_DIR = "${GATLING_TESTS_PATH}/target"
         GAT_REPORT_ARTIFACT_FULL_NAME = "${GAT_REPORT_ARTIFACT_GROUP}:${GAT_REPORT_ARTIFACT_ID}:${GAT_REPORT_ARTIFACT_VERSION}:${GAT_REPORT_ARTIFACT_TYPE}:${GAT_REPORT_ARTIFACT_CLASSIFIER}"
 
-        JAVA_MODULES_ARGLINE = '--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED'
+        // --add-opens java.base/java.lang required since gatling-report 6.4 to read Gatling 3.13+'s binary
+        // simulation.log format (see SimulationParserV4 in gatling-report)
+        JAVA_MODULES_ARGLINE = '--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED'
         MUSTACHE_TEMPLATE = "${GATLING_TESTS_PATH}/target/report-template.mustache"
       }
       steps {

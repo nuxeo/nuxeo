@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-5level] %logger{15} - %msg%n" />
+    </Console>
+  </Appenders>
+  <Loggers>
+    <!-- Logs the full HTTP request/response for failed (KO) requests, to help diagnose failures in CI -->
+    <Logger name="io.gatling.http.engine.response" level="DEBUG" />
+    <!-- Uncomment for logging ALL HTTP request and responses (very verbose, local debugging only) -->
+    <!-- <Logger name="io.gatling.http.engine.response" level="TRACE" /> -->
+
+    <Root level="INFO">
+      <AppenderRef ref="CONSOLE" />
+    </Root>
+  </Loggers>
+</Configuration>
