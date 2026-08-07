@@ -80,16 +80,21 @@ public class GarbageCollectOrphanVersionsAction implements StreamProcessorTopolo
             versionSeriesIds = new CircularFifoQueue<>(CACHE_SIZE);
         }
 
-        @Override public void startBucket(String bucketKey) {
+        @Override
+        public void startBucket(String bucketKey) {
             super.startBucket(bucketKey);
-            if (getCurrentCommand().getId().equals(currentCommand)) {
+            String commandId = getCurrentCommand().getId();
+            // reset caches only when a new bulk command starts, so entries
+            // accumulated within the same command are reused across buckets
+            if (!commandId.equals(currentCommand)) {
                 deletedVersions.clear();
                 versionSeriesIds.clear();
-                currentCommand = getCurrentCommand().getId();
+                currentCommand = commandId;
             }
         }
 
-        @Override protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+        @Override
+        protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             for (DocumentModel doc : loadDocuments(session, ids)) {
                 if (!doc.isVersion()) {
                     log.debug("Document: {} is not a version", doc::getId);
@@ -107,6 +112,7 @@ public class GarbageCollectOrphanVersionsAction implements StreamProcessorTopolo
                     continue;
                 }
                 List<DocumentRef> deleted = session.removeOrphanVersions(new IdRef(versionSeries));
+                versionSeriesIds.add(versionSeries);
                 if (deleted.isEmpty()) {
                     log.debug("Version: {} cannot be removed", doc::getId);
                     delta.incrementSkipCount();
