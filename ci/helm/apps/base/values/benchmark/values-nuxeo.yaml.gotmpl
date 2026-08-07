@@ -9,6 +9,7 @@ resources:
     cpu: "12"
     memory: "48Gi"
   limits:
+    cpu: "12"
     memory: "48Gi"
 podAnnotations:
   ad.datadoghq.com/nuxeo.logs: '[{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}]'

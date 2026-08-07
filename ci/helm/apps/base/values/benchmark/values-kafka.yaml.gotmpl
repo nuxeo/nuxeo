@@ -10,6 +10,7 @@ controller:
       cpu: "3"
       memory: "8Gi"
     limits:
+      cpu: "3"
       memory: "8Gi"
   podAnnotations:
     ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
