@@ -84,6 +84,14 @@ public class BulkScrollerComputation extends AbstractComputation {
     // @since 2021.15 threshold to trace Big Bulk Command (BBC)
     public static final long BIG_BULK_COMMAND_THRESHOLD = 50_000;
 
+    /**
+     * Minimum interval between two abort checks performed during a scroll. Keeps the load on the KV store bounded
+     * regardless of the scroll batch size, at the cost of a small latency before an abort is observed.
+     *
+     * @since 2025.24
+     */
+    protected static final long ABORT_CHECK_INTERVAL_NANOS = Duration.ofSeconds(5).toNanos();
+
     protected final int scrollBatchSize;
 
     protected final int scrollKeepAliveSeconds;
@@ -187,11 +195,18 @@ public class BulkScrollerComputation extends AbstractComputation {
             boolean bigBulkCommand = false;
             String action = command.getAction();
             scrollLoop: try (Scroll scroll = buildScroll(command)) {
+                // Throttle the abort check to bound KV store lookups on long scrolls.
+                // Force a check on the first iteration by starting far enough in the past.
+                long lastAbortCheckNanos = System.nanoTime() - ABORT_CHECK_INTERVAL_NANOS;
                 while (scroll.hasNext()) {
-                    if (isAbortedCommand(commandId)) {
-                        log.warn("Stop scrolling aborted command: {}", command);
-                        context.askForCheckpoint();
-                        return;
+                    long nowNanos = System.nanoTime();
+                    if (nowNanos - lastAbortCheckNanos >= ABORT_CHECK_INTERVAL_NANOS) {
+                        lastAbortCheckNanos = nowNanos;
+                        if (isAbortedCommand(commandId)) {
+                            log.warn("Stop scrolling aborted command: {}", command);
+                            context.askForCheckpoint();
+                            return;
+                        }
                     }
                     List<String> docIds = scroll.next();
                     log.debug("docIds: {}", docIds);
