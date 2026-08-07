@@ -248,7 +248,7 @@ s.close()
               sh 'mv target/gatling/* ${REPORT_PATH}'
               // build stats
               sh 'java ${JAVA_MODULES_ARGLINE} -jar ${GAT_REPORT_ARTIFACT_DIR}/${GAT_REPORT_ARTIFACT} -f -o ${REPORT_PATH} -n data.yml -t ${MUSTACHE_TEMPLATE} ' +
-                  '-m import,move,bulk,mbulk,exportcsv,create,createasync,nav,search,update,updateasync,bench,crud,crudasync,reindex,cleanup,fullgc ' +
+                  '-m import,move,bulk,mbulk,exportcsv,create,createasync,setpref,nav,search,update,updateasync,bench,crud,crudasync,reindex,cleanup,fullgc ' +
                   '${REPORT_PATH}/sim10massstreamimport/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim15move/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim15bulkupdatedocuments/detail/simulation.log.gz ' +
@@ -256,6 +256,7 @@ s.close()
                   '${REPORT_PATH}/sim20csvexport/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim20createdocuments/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim25waitforasync/detail/simulation.log.gz ' +
+                  '${REPORT_PATH}/sim27setpreferences/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim30navigation/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim30search/detail/simulation.log.gz ' +
                   '${REPORT_PATH}/sim30updatedocuments/detail/simulation.log.gz ' +
