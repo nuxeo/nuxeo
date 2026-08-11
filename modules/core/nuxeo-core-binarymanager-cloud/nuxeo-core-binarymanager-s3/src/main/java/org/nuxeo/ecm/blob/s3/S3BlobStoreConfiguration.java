@@ -86,8 +86,11 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.StorageClass;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.utils.ThreadFactoryBuilder;
+import software.amazon.encryption.s3.CommitmentPolicy;
 import software.amazon.encryption.s3.S3AsyncEncryptionClient;
 import software.amazon.encryption.s3.S3EncryptionClient;
+import software.amazon.encryption.s3.algorithms.AlgorithmSuite;
+import software.amazon.encryption.s3.internal.InstructionFileConfig;
 import software.amazon.encryption.s3.materials.KmsKeyring;
 
 /**
@@ -629,15 +632,24 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         useClientSideEncryption = useKeyStoreClientSideEncryption || useKMSClientSideEncryption;
         if (useClientSideEncryption) {
             var allowByteRange = getBooleanProperty(ALLOW_BYTE_RANGE);
-            S3EncryptionClient.Builder syncb = S3EncryptionClient.builder() // NOSONAR
+            S3EncryptionClient.Builder syncb = S3EncryptionClient.builderV4() // NOSONAR
                                                                  .wrappedClient(amazonS3)
                                                                  .wrappedAsyncClient(amazonS3Async)
                                                                  // to download more than 64MB object
                                                                  .enableDelayedAuthenticationMode(true);
-            S3AsyncEncryptionClient.Builder asyncb = S3AsyncEncryptionClient.builder()
+            S3AsyncEncryptionClient.Builder asyncb = S3AsyncEncryptionClient.builderV4()
                                                                             .wrappedClient(amazonS3Async)
                                                                             // to download more than 64MB object
                                                                             .enableDelayedAuthenticationMode(true);
+            // we never write instruction files, and refuse them on read too - NXP-33694
+            var instructionFileConfig = InstructionFileConfig.builder().disableInstructionFile(true).build();
+            // don't remove: builderV4() defaults to key commitment, unreadable by clients older than 3.6.0
+            syncb.instructionFileConfig(instructionFileConfig)
+                 .commitmentPolicy(CommitmentPolicy.FORBID_ENCRYPT_ALLOW_DECRYPT)
+                 .encryptionAlgorithm(AlgorithmSuite.ALG_AES_256_GCM_IV12_TAG16_NO_KDF);
+            asyncb.instructionFileConfig(instructionFileConfig)
+                  .commitmentPolicy(CommitmentPolicy.FORBID_ENCRYPT_ALLOW_DECRYPT)
+                  .encryptionAlgorithm(AlgorithmSuite.ALG_AES_256_GCM_IV12_TAG16_NO_KDF);
             if (useKeyStoreClientSideEncryption) {
                 var legacyMode = getBooleanProperty(KEYSTORE_LEGACY_MODE_PROPERTY);
                 log.info("Client-side encryption enabled with local key store, legacy mode enabled: {}", legacyMode);

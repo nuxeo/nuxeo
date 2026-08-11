@@ -69,6 +69,22 @@ mandatory once you specify a keystore) :
 - nuxeo.s3storage.crypt.key.alias = the key alias
 - nuxeo.s3storage.crypt.key.password = the key password
 
+### Client-side Encryption Object Format
+
+Client-side encryption relies on the [Amazon S3 Encryption Client](https://github.com/aws/amazon-s3-encryption-client-java),
+which offers a few storage choices. Nuxeo uses the following ones:
+
+- The encrypted data key is always stored in the **S3 object metadata**. Instruction files (a sibling
+  `<key>.instruction` object holding the encryption metadata) are neither written nor read.
+
+  Reading an object which holds no encryption metadata therefore fails, where it used to be reported as a missing
+  blob. Objects written by another client with the instruction file storage mode, which Nuxeo never used, cannot be
+  read.
+
+- Objects are written **without key commitment** (commitment policy `FORBID_ENCRYPT_ALLOW_DECRYPT`), so that a blob
+  written by Nuxeo stays readable by any 3.x or 4.x version of the encryption client. Objects encrypted with key
+  commitment are still readable.
+
 ## Server-side Encryption
 
 S3 allows you to use server-side encryption to encrypt data at rest with keys managed

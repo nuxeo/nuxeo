@@ -19,10 +19,14 @@
 package org.nuxeo.ecm.blob.s3;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static software.amazon.encryption.s3.S3EncryptionClientUtilities.DEFAULT_INSTRUCTION_FILE_SUFFIX;
 
 import java.io.IOException;
+import java.util.Objects;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobStore;
@@ -30,6 +34,10 @@ import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 import org.nuxeo.ecm.core.blob.TestAbstractBlobStore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RandomBug;
+
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.encryption.s3.S3EncryptionClientException;
 
 /**
  * @since 2025.0
@@ -52,6 +60,36 @@ public abstract class TestAbstractS3BlobStoreClientEncryption extends TestAbstra
         BlobProvider srcProvider = blobManager.getBlobProvider("other");
         BlobStore srcStore = ((BlobStoreBlobProvider) srcProvider).store; // no need for unwrap
         assertFalse(bs.copyBlobIsOptimized(srcStore));
+    }
+
+    /**
+     * Checks that an instruction file is not honoured on read - NXP-33694.
+     *
+     * @since 2025.24
+     */
+    @Test
+    public void testInstructionFileIsRejected() {
+        var config = ((S3BlobProvider) bp).config;
+        String key = "instructionFileIsRejected";
+        String bucketKey = config.bucketKey(key);
+        // not config.createSyncClient(), whose http client the SDK never closes
+        try (S3Client plainClient = S3Client.builder()
+                                            .region(config.region)
+                                            .credentialsProvider(config.awsCredentialsProvider)
+                                            .endpointOverride(config.endpointOverride)
+                                            .build()) {
+            plainClient.putObject(b -> b.bucket(config.bucketName).key(bucketKey),
+                    RequestBody.fromString("not an encrypted content"));
+            plainClient.putObject(b -> b.bucket(config.bucketName).key(bucketKey + DEFAULT_INSTRUCTION_FILE_SUFFIX),
+                    RequestBody.fromString("{}"));
+        }
+        var e = assertThrows(S3EncryptionClientException.class, () -> bs.readBlob(key, tmpFile));
+        assertTrue(ExceptionUtils.getStackTrace(e),
+                ExceptionUtils.getThrowableList(e)
+                              .stream()
+                              .map(Throwable::getMessage)
+                              .filter(Objects::nonNull)
+                              .anyMatch(m -> m.contains("Instruction File has been disabled")));
     }
 
     @Test
