@@ -4257,6 +4257,12 @@
         <classifier>test</classifier>
         <scope>test</scope>
       </dependency>
+      <!-- transitive dependency of org.apache.kafka:kafka-clients to upgrade -->
+      <dependency>
+        <groupId>at.yawk.lz4</groupId>
+        <artifactId>lz4-java</artifactId>
+        <version>1.11.2</version>
+      </dependency>
 
       <!-- Confluent -->
       <dependency>
