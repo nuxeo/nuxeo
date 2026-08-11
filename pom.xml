@@ -4074,7 +4074,7 @@
       <dependency>
         <groupId>com.azure</groupId>
         <artifactId>azure-storage-blob</artifactId>
-        <version>12.30.1</version>
+        <version>12.35.0</version>
         <exclusions>
           <exclusion>
             <!-- use com.sun.activation:javax.activation-api instead -->
