@@ -37,6 +37,14 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="INFO" />
+    <!-- Hide the expected warning emitted when a consumer is closed immediately (0ms timeout) during a group
+         rebalance, while keeping other ConsumerCoordinator warnings (offset commit failures, poll timeout...) -->
+    <Logger name="org.apache.kafka.clients.consumer.internals.ConsumerCoordinator" level="WARN">
+      <Filters>
+        <!-- WARN  [ConsumerCoordinator] Close timed out with 1 pending requests to coordinator, terminating client connections -->
+        <RegexFilter regex=".*Close timed out with .* pending requests to coordinator.*" onMatch="DENY" onMismatch="NEUTRAL" />
+      </Filters>
+    </Logger>
     <Root level="WARN">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
