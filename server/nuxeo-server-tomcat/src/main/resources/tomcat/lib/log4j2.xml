@@ -235,6 +235,14 @@
     <Logger name="org.apache.kafka" level="warn" />
     <!-- Hide warning from KAFKA-17141 to be removed once fixed (Kafka 3.9.0) -->
     <Logger name="org.apache.kafka.clients.admin.KafkaAdminClient" level="error" />
+    <!-- Hide the expected warning emitted when a consumer is closed immediately (0ms timeout) during a group
+         rebalance, while keeping other ConsumerCoordinator warnings (offset commit failures, poll timeout...) -->
+    <Logger name="org.apache.kafka.clients.consumer.internals.ConsumerCoordinator" level="warn">
+      <Filters>
+        <!-- WARN  [ConsumerCoordinator] Close timed out with 1 pending requests to coordinator, terminating client connections -->
+        <RegexFilter regex=".*Close timed out with .* pending requests to coordinator.*" onMatch="DENY" onMismatch="NEUTRAL" />
+      </Filters>
+    </Logger>
 
     <!-- Hide error from freemarker to not log inline template rendering issues -->
     <Logger name="freemarker.runtime" level="fatal" />
