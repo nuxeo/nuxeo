@@ -352,220 +352,227 @@ pipeline {
       }
     }
 
-    stage('Build Docker image') {
-      options {
-        timeout(time: 45, unit: 'MINUTES')
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'docker/build', message: 'Build Docker images') {
-            script {
-              echo """
-              ----------------------------------------
-              Build Docker image
-              ----------------------------------------
-              Image tag: ${VERSION}
-              """
-
-              dir('docker/nuxeo') {
-                echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
-                sh "mvn ${MAVEN_CLI_ARGS} -T4C process-resources"
-
-                echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-                sh 'skaffold build -f skaffold.yaml'
-              }
-              echo "Build needed packages for the benchmark image"
-              // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
-              sh """
-                benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
-                mvn ${MAVEN_CLI_ARGS} -Pdistrib -pl :nuxeo-packages,\${benchmark_packages} install
-              """
-
-              dir('docker/nuxeo-benchmark') {
-                echo 'Fetch locally built Nuxeo Packages with Maven'
-                sh "mvn ${MAVEN_CLI_ARGS} -T4C process-resources"
-
-                echo "Build and push Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
-                sh 'skaffold build -f skaffold.yaml'
-              }
-
-              if (!nxUtils.isPullRequest()) {
-                dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
-                dockerPushFixedVersion("${NUXEO_BENCHMARK_IMAGE_NAME}")
-              }
-            }
-          }
-        }
-      }
-    }
-
-    stage('Verify Docker image') {
+    stage('Docker and unit tests') {
       parallel {
-        stage('Run upgrade test') {
-          when {
-            expression { nxUtils.getMinorVersion().toInteger() > 0 }
-          }
-          steps {
-            container('maven') {
-              script {
-                nxWithGitHubStatus(context: "docker/upgrade", message: "Run minor version upgrade test") {
-                  try {
-                    def helmEnv = "upgradeTest"
-                    // first deploy previous version
-                    withEnv([
-                      "DOCKER_REGISTRY=${PRIVATE_DOCKER_REGISTRY}",
-                      "VERSION=${nxUtils.getPreviousMajorDotMinorVersion()}"
-                    ]) {
-                      nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
-                      auditNuxeo(TEST_UPGRADE_NAMESPACE)
-                    }
-                    // then upgrade to actual version
-                    nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
-                    auditNuxeo(TEST_UPGRADE_NAMESPACE)
-                  } finally {
-                    // clean up
-                    nxK8s.deleteNamespace(TEST_UPGRADE_NAMESPACE)
-                  }
-                }
+        stage('Docker') {
+          stages {
+            stage('Build Docker image') {
+              options {
+                timeout(time: 1, unit: 'HOURS')
               }
-            }
-          }
-        }
-
-        stage('Test Docker image') {
-          steps {
-            container('maven') {
-              nxWithGitHubStatus(context: 'docker/test', message: 'Test Docker image') {
-                echo """
-                ----------------------------------------
-                Test Docker image
-                ----------------------------------------
-                """
-                script {
-                  image = "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_IMAGE_NAME}:${VERSION}"
-                  echo "Test ${image}"
-                  dockerPull(image)
-                  echo 'Run image as root (0)'
-                  dockerRun(image, 'nuxeoctl start')
-                  echo 'Run image as an arbitrary user (800)'
-                  dockerRun(image, 'nuxeoctl start', '800')
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    stage('Trigger Benchmark tests') {
-      when {
-        expression {
-          nxUtils.isPullRequest() && (pullRequest.labels.contains('benchmark') || pullRequest.labels.contains('benchmark-versitygw') || pullRequest.labels.contains('benchmark-aws-s3'))
-        }
-      }
-      steps {
-        container('maven') {
-          script {
-            // Versity S3 gateway is used by default, opt-out with the 'benchmark-aws-s3' label
-            def useVersityGW = !pullRequest.labels.contains('benchmark-aws-s3')
-            def parameters = [
-              string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
-              string(name: 'NUXEO_DOCKER_IMAGE', value: "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_BENCHMARK_IMAGE_NAME}:${VERSION}"),
-              booleanParam(name: 'INSTALL_NEEDED_PACKAGES', value: false),
-              booleanParam(name: 'USE_VERSITYGW', value: useVersityGW),
-            ]
-            echo """
-            -----------------------------------------------------------
-            Trigger benchmark tests with parameters: ${parameters}
-            -----------------------------------------------------------
-            """
-            nxUtils.buildWrapped(
-                job: "nuxeo/lts/nuxeo-benchmark",
-                parameters: parameters,
-                wait: false
-            )
-          }
-        }
-      }
-    }
-
-    stage('Run runtime unit tests') {
-      environment {
-        MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
-        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'utests/runtime', message: 'Unit tests - runtime') {
-            script {
-              echo """
-                ----------------------------------------
-                Run runtime unit tests
-                ----------------------------------------"""
-              echo 'runtime unit tests: install external services'
-              nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE_PREFIX}-runtime", environment: 'runtimeUnitTests') {
-                try {
-                  echo 'runtime unit tests: run Maven'
-                  echo "MAVEN_OPTS=$MAVEN_OPTS"
-                  sh "envsubst < ci/mvn/nuxeo-test-runtime.properties > ${HOME}/nuxeo-test-runtime.properties"
-                  dir('modules/runtime') {
-                    retry(2) {
-                      sh """
-                        mvn ${MAVEN_CLI_ARGS} \
-                          -Dcustom.environment=runtime \
-                          install
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: 'docker/build', message: 'Build Docker images') {
+                    script {
+                      echo """
+                      ----------------------------------------
+                      Build Docker image
+                      ----------------------------------------
+                      Image tag: ${VERSION}
                       """
+
+                      dir('docker/nuxeo') {
+                        echo 'Fetch locally built Nuxeo Tomcat Server with Maven'
+                        sh "mvn ${MAVEN_CLI_ARGS} -T4C process-resources"
+
+                        echo "Build and push Nuxeo Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+                        sh 'skaffold build -f skaffold.yaml'
+                      }
+                      echo "Build needed packages for the benchmark image"
+                      // build packages defined in the pom and nuxeo-packages as it is needed when processing resources
+                      sh """
+                        benchmark_packages=\$(sed -n '/<dependency>/,/<\\/dependency>/{//b;p}' docker/nuxeo-benchmark/pom.xml | grep artifactId | sed -E 's/\\s*<artifactId>(.*)<\\/artifactId>/:\\1/' |  tr '\\n' ','  | head -c -1);
+                        mvn ${MAVEN_CLI_ARGS} -Pdistrib -pl :nuxeo-packages,\${benchmark_packages} install
+                      """
+
+                      dir('docker/nuxeo-benchmark') {
+                        echo 'Fetch locally built Nuxeo Packages with Maven'
+                        sh "mvn ${MAVEN_CLI_ARGS} -T4C process-resources"
+
+                        echo "Build and push Benchmark Docker image to internal Docker registry ${DOCKER_REGISTRY}"
+                        sh 'skaffold build -f skaffold.yaml'
+                      }
+
+                      if (!nxUtils.isPullRequest()) {
+                        dockerPushFixedVersion("${NUXEO_IMAGE_NAME}")
+                        dockerPushFixedVersion("${NUXEO_BENCHMARK_IMAGE_NAME}")
+                      }
                     }
                   }
-                } finally {
-                  junit testResults: '**/target-runtime/surefire-reports/*.xml'
+                }
+              }
+            }
+
+            stage('Verify Docker image') {
+              steps {
+                script {
+                  // run upgrade test and Docker image test in parallel
+                  def verifyStages = [:]
+                  if (nxUtils.getMinorVersion().toInteger() > 0) {
+                    verifyStages['Run upgrade test'] = {
+                      container('maven') {
+                        nxWithGitHubStatus(context: "docker/upgrade", message: "Run minor version upgrade test") {
+                          try {
+                            def helmEnv = "upgradeTest"
+                            // first deploy previous version
+                            withEnv([
+                              "DOCKER_REGISTRY=${PRIVATE_DOCKER_REGISTRY}",
+                              "VERSION=${nxUtils.getPreviousMajorDotMinorVersion()}"
+                            ]) {
+                              nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
+                              auditNuxeo(TEST_UPGRADE_NAMESPACE)
+                            }
+                            // then upgrade to actual version
+                            nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
+                            auditNuxeo(TEST_UPGRADE_NAMESPACE)
+                          } finally {
+                            // clean up
+                            nxK8s.deleteNamespace(TEST_UPGRADE_NAMESPACE)
+                          }
+                        }
+                      }
+                    }
+                  }
+                  verifyStages['Test Docker image'] = {
+                    container('maven') {
+                      nxWithGitHubStatus(context: 'docker/test', message: 'Test Docker image') {
+                        echo """
+                        ----------------------------------------
+                        Test Docker image
+                        ----------------------------------------
+                        """
+                        def image = "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_IMAGE_NAME}:${VERSION}"
+                        echo "Test ${image}"
+                        dockerPull(image)
+                        echo 'Run image as root (0)'
+                        dockerRun(image, 'nuxeoctl start')
+                        echo 'Run image as an arbitrary user (800)'
+                        dockerRun(image, 'nuxeoctl start', '800')
+                      }
+                    }
+                  }
+                  parallel verifyStages
+                }
+              }
+            }
+
+            stage('Trigger Benchmark tests') {
+              when {
+                expression {
+                  nxUtils.isPullRequest() && (pullRequest.labels.contains('benchmark') || pullRequest.labels.contains('benchmark-versitygw') || pullRequest.labels.contains('benchmark-aws-s3'))
+                }
+              }
+              steps {
+                container('maven') {
+                  script {
+                    // Versity S3 gateway is used by default, opt-out with the 'benchmark-aws-s3' label
+                    def useVersityGW = !pullRequest.labels.contains('benchmark-aws-s3')
+                    def parameters = [
+                      string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
+                      string(name: 'NUXEO_DOCKER_IMAGE', value: "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_BENCHMARK_IMAGE_NAME}:${VERSION}"),
+                      booleanParam(name: 'INSTALL_NEEDED_PACKAGES', value: false),
+                      booleanParam(name: 'USE_VERSITYGW', value: useVersityGW),
+                    ]
+                    echo """
+                    -----------------------------------------------------------
+                    Trigger benchmark tests with parameters: ${parameters}
+                    -----------------------------------------------------------
+                    """
+                    nxUtils.buildWrapped(
+                        job: "nuxeo/lts/nuxeo-benchmark",
+                        parameters: parameters,
+                        wait: false
+                    )
+                  }
                 }
               }
             }
           }
         }
-      }
-    }
 
-    stage('Run unit tests') {
-      environment {
-        MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
-        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
-      }
-      steps {
-        script {
-          def stages = [:]
-          for (env in testEnvironments) {
-            stages["Run ${env} unit tests"] = buildUnitTestStage(env)
-          }
-          parallel stages
-        }
-      }
-    }
+        stage('Unit tests') {
+          stages {
+            stage('Run runtime unit tests') {
+              environment {
+                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+              }
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: 'utests/runtime', message: 'Unit tests - runtime') {
+                    script {
+                      echo """
+                        ----------------------------------------
+                        Run runtime unit tests
+                        ----------------------------------------"""
+                      echo 'runtime unit tests: install external services'
+                      nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE_PREFIX}-runtime", environment: 'runtimeUnitTests') {
+                        try {
+                          echo 'runtime unit tests: run Maven'
+                          echo "MAVEN_OPTS=$MAVEN_OPTS"
+                          sh "envsubst < ci/mvn/nuxeo-test-runtime.properties > ${HOME}/nuxeo-test-runtime.properties"
+                          dir('modules/runtime') {
+                            retry(2) {
+                              sh """
+                                mvn ${MAVEN_CLI_ARGS} \
+                                  -Dcustom.environment=runtime \
+                                  install
+                              """
+                            }
+                          }
+                        } finally {
+                          junit testResults: '**/target-runtime/surefire-reports/*.xml'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
 
-    stage('Run server unit tests') {
-      environment {
-        MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
-        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'utests/server', message: 'Unit tests - server') {
-            echo """
-            ----------------------------------------
-            Run server unit tests
-            ----------------------------------------"""
-            // run server tests
-            dir('server') {
-              echo "MAVEN_OPTS=$MAVEN_OPTS"
-              sh "mvn ${MAVEN_CLI_ARGS} test"
+            stage('Run unit tests') {
+              environment {
+                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+              }
+              steps {
+                script {
+                  def stages = [:]
+                  for (env in testEnvironments) {
+                    stages["Run ${env} unit tests"] = buildUnitTestStage(env)
+                  }
+                  parallel stages
+                }
+              }
+            }
+
+            stage('Run server unit tests') {
+              environment {
+                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+              }
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: 'utests/server', message: 'Unit tests - server') {
+                    echo """
+                    ----------------------------------------
+                    Run server unit tests
+                    ----------------------------------------"""
+                    // run server tests
+                    dir('server') {
+                      echo "MAVEN_OPTS=$MAVEN_OPTS"
+                      sh "mvn ${MAVEN_CLI_ARGS} test"
+                    }
+                  }
+                }
+              }
+              post {
+                always {
+                  junit testResults: 'server/**/target/surefire-reports/*.xml'
+                }
+              }
             }
           }
-        }
-      }
-      post {
-        always {
-          junit testResults: 'server/**/target/surefire-reports/*.xml'
         }
       }
     }
