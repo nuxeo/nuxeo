@@ -421,19 +421,19 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     @SuppressWarnings("squid:S1181")
     @Override
     public void close() {
-        if (consumer != null) {
+        // Read the field once: close() can run concurrently on the consumer thread and the
+        // LogManager thread, and the losing thread nulls the field. Operating on a local avoids
+        // a check-then-act race that would NPE on wakeup().
+        KafkaConsumer<String, Bytes> localConsumer = consumer;
+        if (localConsumer != null) {
             log.debug("Closing tailer: {}", id);
             try {
                 // calling wakeup enable to terminate consumer blocking on poll call
-                consumer.close(Duration.ofMillis(0));
+                localConsumer.close(Duration.ofMillis(0));
             } catch (ConcurrentModificationException e) {
-                // closing from another thread raises this exception
-                // it is possible that the consumer is already closed
-                if (consumer != null) {
-                    // if not try to wakeup the owner
-                    log.info("Closing tailer from another thread, send wakeup");
-                    consumer.wakeup();
-                }
+                // closing from another thread raises this exception, wakeup the owner
+                log.info("Closing tailer from another thread, send wakeup");
+                localConsumer.wakeup();
                 return;
             } catch (InterruptException | IllegalStateException e) {
                 // this happens if the consumer has already been closed or if it is closed from another
