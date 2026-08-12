@@ -184,6 +184,18 @@ public interface DocumentBlobManager {
     void notifySetLegalHold(Document doc, boolean hold);
 
     /**
+     * Notifies the blob manager that the document's mixin types (facets) have changed.
+     * <p>
+     * This triggers re-evaluation of blob placement when dispatch rules are based on {@code ecm:mixinType}.
+     *
+     * @param doc the document
+     * @since 2025.24
+     */
+    default void notifyMixinTypeChange(Document doc) {
+        // do nothing, for forward compatibility of non-default implementations
+    }
+
+    /**
      * Garbage collect the unused binaries.
      *
      * @param delete if {@code false} don't actually delete the garbage collected binaries (but still return statistics

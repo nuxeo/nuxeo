@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.test-blob-dispatcher-mixin-type" version="1.0.0">
+  <!-- Register the Archive facet (no schema, instance facet only) -->
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="Archive" />
+  </extension>
+  <!--
+    Models a multi-tier storage scenario:
+      - "tiered"  stores the main content of regular documents
+      - "archive" stores the main content of Archive-faceted documents
+      - "test"    stores everything else (attachments, thumbnails, …)
+
+    Dispatch rules (evaluated top to bottom, first match wins):
+      1. blob:xpath=content AND Archive facet  → archive
+      2. blob:xpath=content (any document)     → tiered
+      3. default                               → test
+  -->
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="tiered">
+      <class>org.nuxeo.ecm.core.blob.LocalBlobProvider</class>
+      <property name="path">tiered</property>
+    </blobprovider>
+    <blobprovider name="archive">
+      <class>org.nuxeo.ecm.core.blob.LocalBlobProvider</class>
+      <property name="path">archive</property>
+    </blobprovider>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
+    <blobdispatcher>
+      <!-- AND clause: main content of Archive-faceted documents → archive storage -->
+      <property name="blob:xpath=content,ecm:mixinType=Archive">archive</property>
+      <!-- main content of all other documents → tiered storage -->
+      <property name="blob:xpath=content">tiered</property>
+      <!-- attachments, thumbnails, and everything else → default storage -->
+      <property name="default">test</property>
+    </blobdispatcher>
+  </extension>
+</component>

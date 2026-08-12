@@ -123,4 +123,16 @@ public interface BlobDispatcher {
         // do nothing, for forward compatibility of non-default implementations
     }
 
+    /**
+     * Notifies the blob dispatcher that the document's mixin types (facets) have changed.
+     * <p>
+     * This allows the dispatcher to re-evaluate blob placement when dispatch rules are based on {@code ecm:mixinType}.
+     *
+     * @param doc the document
+     * @since 2025.24
+     */
+    default void notifyMixinTypeChange(Document doc) {
+        // do nothing, for forward compatibility of non-default implementations
+    }
+
 }

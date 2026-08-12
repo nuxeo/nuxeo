@@ -334,6 +334,11 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     }
 
     @Override
+    public void notifyMixinTypeChange(Document doc) {
+        getBlobDispatcher().notifyMixinTypeChange(doc);
+    }
+
+    @Override
     public void notifySetRetainUntil(Document doc, Calendar retainUntil) {
         updateRetainedBlobs(doc, context -> context.withUpdateRetainUntil(retainUntil));
     }

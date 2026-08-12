@@ -88,9 +88,8 @@ import org.nuxeo.runtime.api.Framework;
  * first-matching-rule-wins evaluation order.
  * <p>
  * Note that re-dispatch is only triggered by blob/property writes and a few explicitly-wired events (lifecycle state /
- * policy changes, {@code makeRecord}, copy). It is <em>not</em> triggered by changes to {@code ecm:path} (document
- * moves) or to {@code ecm:mixinType} (facets added/removed): for those, blobs are re-evaluated only on the next blob
- * write on the document.
+ * policy changes, {@code makeRecord}, copy, and mixin type changes). It is <em>not</em> triggered by changes to
+ * {@code ecm:path} (document moves): for those, blobs are re-evaluated only on the next blob write on the document.
  * <p>
  * For example, to dispatch to the "first" provider if dc:format is "video", to the "second" provider if the blob's MIME
  * type is "video/mp4", to the "third" provider if the blob is stored as a secondary attached file, to the "fourth"
@@ -565,6 +564,11 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     @Override
     public void notifyAfterCopy(Document doc) {
         notifyChanges(doc, Collections.singleton(IS_RECORD));
+    }
+
+    @Override
+    public void notifyMixinTypeChange(Document doc) {
+        notifyChanges(doc, Collections.singleton(MIXIN_TYPE));
     }
 
     // TODO move this to caller

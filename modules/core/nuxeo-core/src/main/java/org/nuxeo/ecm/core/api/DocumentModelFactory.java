@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -245,6 +246,11 @@ public class DocumentModelFactory {
         }
         // write the blobs last, so that blob providers have access to the new doc state
         writeContext.flush(doc);
+
+        // if facets changed, re-evaluate blob placement for ecm:mixinType-based dispatch rules
+        if (!addedFacets.isEmpty() || !removedFacets.isEmpty()) {
+            Framework.getService(DocumentBlobManager.class).notifyMixinTypeChange(doc);
+        }
 
         if (!changed) {
             return docModel;
