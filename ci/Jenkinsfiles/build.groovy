@@ -108,7 +108,7 @@ def buildUnitTestStage(env) {
   def environment = "${env}UnitTests"
   def containerName = isDev ? 'maven' : "maven-${env}"
   return {
-    stage("Run ${env} unit tests") {
+    stage("${env}") {
       container("${containerName}") {
         nxWithGitHubStatus(context: "utests/${env}", message: "Unit tests - ${env} environment") {
           echo """
@@ -241,65 +241,62 @@ pipeline {
   }
 
   stages {
-    stage('Set labels') {
+    stage('Initialize') {
       steps {
         container('maven') {
           script {
+            echo """
+            ----------------------------------------
+            Set Kubernetes labels
+            ----------------------------------------
+            """
             nxK8s.setPodLabels()
+
+            echo """
+            ----------------------------------------
+            Update version
+            ----------------------------------------
+            New version: ${VERSION}
+            """
+            sh """
+              # root POM
+              mvn ${MAVEN_CLI_ARGS} -Pdistrib,docker,parent versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
+              perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
+              perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
+
+              # nuxeo-promote-packages POM
+              # only replace the first <version> occurence
+              perl -i -pe '!\$x && s|<version>.*?</version>|<version>${VERSION}</version>| && (\$x=1)' ci/release/pom.xml
+            """
+
+            if (nxUtils.isNotPullRequestAndNotDryRun()) {
+              echo """
+              ----------------------------------------
+              Git commit
+              ----------------------------------------
+              """
+              sh """
+                git commit -a -m "Release ${VERSION}"
+              """
+            }
           }
         }
       }
     }
 
-    stage('Update version') {
-      steps {
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Update version
-          ----------------------------------------
-          New version: ${VERSION}
-          """
-          sh """
-            # root POM
-            mvn ${MAVEN_CLI_ARGS} -Pdistrib,docker,parent versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
-            perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
-            perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
-
-            # nuxeo-promote-packages POM
-            # only replace the first <version> occurence
-            perl -i -pe '!\$x && s|<version>.*?</version>|<version>${VERSION}</version>| && (\$x=1)' ci/release/pom.xml
-          """
-        }
-      }
-    }
-
-    stage('Git commit') {
-      when {
-        expression { nxUtils.isNotPullRequestAndNotDryRun() }
-      }
-      steps {
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Git commit
-          ----------------------------------------
-          """
-          sh """
-            git commit -a -m "Release ${VERSION}"
-          """
-        }
-      }
-    }
-
-    stage('Hotfix Protection') {
+    stage('Hotfix protection') {
       steps {
         container('maven') {
           script {
+            echo """
+            ----------------------------------------
+            Hotfix protection
+            ----------------------------------------
+            """
             nxGit.cloneRepository(name: 'nuxeo-hf-protection', branch: env.REFERENCE_BRANCH, relativePath: 'nuxeo-patches')
-          }
-          dir('nuxeo-patches') {
-            sh './prepare-patches'
+            dir('nuxeo-patches') {
+              sh './prepare-patches'
+            }
           }
         }
       }
@@ -326,7 +323,7 @@ pipeline {
             }
           }
         }
-        stage('Formatting check') {
+        stage('Lint') {
           when {
             // if current version is higher than default branch (aka: version in maintenance) run formatting check
             expression { nxGitHub.getDefaultBranch().toInteger() < env.REFERENCE_BRANCH.toInteger() }
@@ -352,11 +349,150 @@ pipeline {
       }
     }
 
-    stage('Docker and unit tests') {
+    stage(' ') { // whitespace name: umbrella stage intentionally unlabeled (avoids Jenkins blank-name error)
       parallel {
+        stage('Unit tests') {
+          stages {
+            stage('Runtime') {
+              environment {
+                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+              }
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: 'utests/runtime', message: 'Unit tests - runtime') {
+                    script {
+                      echo """
+                        ----------------------------------------
+                        Run runtime unit tests
+                        ----------------------------------------"""
+                      echo 'runtime unit tests: install external services'
+                      nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE_PREFIX}-runtime", environment: 'runtimeUnitTests') {
+                        try {
+                          echo 'runtime unit tests: run Maven'
+                          echo "MAVEN_OPTS=$MAVEN_OPTS"
+                          sh "envsubst < ci/mvn/nuxeo-test-runtime.properties > ${HOME}/nuxeo-test-runtime.properties"
+                          dir('modules/runtime') {
+                            retry(2) {
+                              sh """
+                                mvn ${MAVEN_CLI_ARGS} \
+                                  -Dcustom.environment=runtime \
+                                  install
+                              """
+                            }
+                          }
+                        } finally {
+                          junit testResults: '**/target-runtime/surefire-reports/*.xml'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            stage('Core') {
+              environment {
+                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+              }
+              steps {
+                script {
+                  def stages = [:]
+                  for (env in testEnvironments) {
+                    stages["${env}"] = buildUnitTestStage(env)
+                  }
+                  parallel stages
+                }
+              }
+            }
+
+            stage('Server') {
+              environment {
+                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
+                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+              }
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: 'utests/server', message: 'Unit tests - server') {
+                    script {
+                      echo """
+                      ----------------------------------------
+                      Run server unit tests
+                      ----------------------------------------"""
+                      // run server tests
+                      dir('server') {
+                        echo "MAVEN_OPTS=$MAVEN_OPTS"
+                        sh "mvn ${MAVEN_CLI_ARGS} test"
+                      }
+                    }
+                  }
+                }
+              }
+              post {
+                always {
+                  junit testResults: 'server/**/target/surefire-reports/*.xml'
+                }
+              }
+            }
+
+          }
+        }
+
+        stage('Packages / ftests') {
+          stages {
+            stage('Build packages') {
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: 'packages/build', message: 'Build packages') {
+                    echo """
+                    ----------------------------------------
+                    Packages
+                    ----------------------------------------"""
+                    sh "mvn ${MAVEN_CLI_ARGS} -Dnuxeo.skip.enforcer=false -f packages/pom.xml -DskipTests install"
+                  }
+                }
+              }
+            }
+
+            stage('Dev functional tests') {
+              environment {
+                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms2g -Xmx2g\""
+                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
+                NX_JAVA_OPTS = "\$JAVA_OPTS -Xms2g -Xmx2g"
+              }
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: 'ftests/dev', message: 'Functional tests - dev environment') {
+                    echo """
+                    ----------------------------------------
+                    Run "dev" functional tests
+                    ----------------------------------------"""
+                    withCredentials([string(credentialsId: 'instance-clid', variable: 'INSTANCE_CLID')]) {
+                      sh(script: '''#!/bin/bash +x
+                        echo -e "$INSTANCE_CLID" >| /tmp/instance.clid
+                      ''')
+                      withEnv(["TEST_CLID_PATH=/tmp/instance.clid"]) {
+                        runFunctionalTests('ftests', 'nuxeo.ftests.tier5')
+                        runFunctionalTests('ftests', 'nuxeo.ftests.tier6')
+                        runFunctionalTests('ftests', 'nuxeo.ftests.tier7')
+                      }
+                    }
+                  }
+                }
+              }
+              post {
+                always {
+                  junit testResults: '**/target/failsafe-reports/*.xml'
+                }
+              }
+            }
+          }
+        }
+
         stage('Docker') {
           stages {
-            stage('Build Docker image') {
+            stage('Build image') {
               options {
                 timeout(time: 1, unit: 'HOURS')
               }
@@ -403,55 +539,76 @@ pipeline {
               }
             }
 
-            stage('Verify Docker image') {
+            stage('Test image') {
               steps {
-                script {
-                  // run upgrade test and Docker image test in parallel
-                  def verifyStages = [:]
-                  if (nxUtils.getMinorVersion().toInteger() > 0) {
-                    verifyStages['Run upgrade test'] = {
-                      container('maven') {
-                        nxWithGitHubStatus(context: "docker/upgrade", message: "Run minor version upgrade test") {
-                          try {
-                            def helmEnv = "upgradeTest"
-                            // first deploy previous version
-                            withEnv([
-                              "DOCKER_REGISTRY=${PRIVATE_DOCKER_REGISTRY}",
-                              "VERSION=${nxUtils.getPreviousMajorDotMinorVersion()}"
-                            ]) {
-                              nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
-                              auditNuxeo(TEST_UPGRADE_NAMESPACE)
-                            }
-                            // then upgrade to actual version
-                            nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
-                            auditNuxeo(TEST_UPGRADE_NAMESPACE)
-                          } finally {
-                            // clean up
-                            nxK8s.deleteNamespace(TEST_UPGRADE_NAMESPACE)
-                          }
+                container('maven') {
+                  nxWithGitHubStatus(context: 'docker/test', message: 'Test Docker image') {
+                    script {
+                      echo """
+                      ----------------------------------------
+                      Test Docker image
+                      ----------------------------------------
+                      """
+                      def image = "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_IMAGE_NAME}:${VERSION}"
+                      echo "Test ${image}"
+                      dockerPull(image)
+                      echo 'Run image as root (0)'
+                      dockerRun(image, 'nuxeoctl start')
+                      echo 'Run image as an arbitrary user (800)'
+                      dockerRun(image, 'nuxeoctl start', '800')
+                    }
+                  }
+                }
+              }
+            }
+
+            stage('Test upgrade') {
+              when {
+                expression { nxUtils.getMinorVersion().toInteger() > 0 }
+              }
+              steps {
+                container('maven') {
+                  nxWithGitHubStatus(context: "docker/upgrade", message: "Run minor version upgrade test") {
+                    script {
+                      try {
+                        def helmEnv = "upgradeTest"
+                        // first deploy previous version
+                        withEnv([
+                          "DOCKER_REGISTRY=${PRIVATE_DOCKER_REGISTRY}",
+                          "VERSION=${nxUtils.getPreviousMajorDotMinorVersion()}"
+                        ]) {
+                          nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
+                          auditNuxeo(TEST_UPGRADE_NAMESPACE)
                         }
+                        // then upgrade to actual version
+                        nxHelmfile.deploy(namespace: TEST_UPGRADE_NAMESPACE, environment: helmEnv)
+                        auditNuxeo(TEST_UPGRADE_NAMESPACE)
+                      } finally {
+                        // clean up
+                        nxK8s.deleteNamespace(TEST_UPGRADE_NAMESPACE)
                       }
                     }
                   }
-                  verifyStages['Test Docker image'] = {
-                    container('maven') {
-                      nxWithGitHubStatus(context: 'docker/test', message: 'Test Docker image') {
-                        echo """
-                        ----------------------------------------
-                        Test Docker image
-                        ----------------------------------------
-                        """
-                        def image = "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_IMAGE_NAME}:${VERSION}"
-                        echo "Test ${image}"
-                        dockerPull(image)
-                        echo 'Run image as root (0)'
-                        dockerRun(image, 'nuxeoctl start')
-                        echo 'Run image as an arbitrary user (800)'
-                        dockerRun(image, 'nuxeoctl start', '800')
-                      }
-                    }
-                  }
-                  parallel verifyStages
+                }
+              }
+            }
+
+            stage('Trigger REST API tests') {
+              steps {
+                echo """
+                ----------------------------------------
+                Trigger REST API tests
+                ----------------------------------------
+                """
+                script {
+                  def parameters = [
+                    string(name: 'NUXEO_VERSION', value: "${VERSION}"),
+                  ]
+                  nxUtils.buildWrapped(
+                    job: 'nuxeo/rest-api-compatibility-tests/master',
+                    parameters: parameters,
+                    wait: false
+                  )
                 }
               }
             }
@@ -489,158 +646,6 @@ pipeline {
             }
           }
         }
-
-        stage('Unit tests') {
-          stages {
-            stage('Run runtime unit tests') {
-              environment {
-                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
-                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
-              }
-              steps {
-                container('maven') {
-                  nxWithGitHubStatus(context: 'utests/runtime', message: 'Unit tests - runtime') {
-                    script {
-                      echo """
-                        ----------------------------------------
-                        Run runtime unit tests
-                        ----------------------------------------"""
-                      echo 'runtime unit tests: install external services'
-                      nxWithHelmfileDeployment(namespace: "${TEST_NAMESPACE_PREFIX}-runtime", environment: 'runtimeUnitTests') {
-                        try {
-                          echo 'runtime unit tests: run Maven'
-                          echo "MAVEN_OPTS=$MAVEN_OPTS"
-                          sh "envsubst < ci/mvn/nuxeo-test-runtime.properties > ${HOME}/nuxeo-test-runtime.properties"
-                          dir('modules/runtime') {
-                            retry(2) {
-                              sh """
-                                mvn ${MAVEN_CLI_ARGS} \
-                                  -Dcustom.environment=runtime \
-                                  install
-                              """
-                            }
-                          }
-                        } finally {
-                          junit testResults: '**/target-runtime/surefire-reports/*.xml'
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            stage('Run unit tests') {
-              environment {
-                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
-                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
-              }
-              steps {
-                script {
-                  def stages = [:]
-                  for (env in testEnvironments) {
-                    stages["Run ${env} unit tests"] = buildUnitTestStage(env)
-                  }
-                  parallel stages
-                }
-              }
-            }
-
-            stage('Run server unit tests') {
-              environment {
-                MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms4g -Xmx4g\""
-                MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
-              }
-              steps {
-                container('maven') {
-                  nxWithGitHubStatus(context: 'utests/server', message: 'Unit tests - server') {
-                    echo """
-                    ----------------------------------------
-                    Run server unit tests
-                    ----------------------------------------"""
-                    // run server tests
-                    dir('server') {
-                      echo "MAVEN_OPTS=$MAVEN_OPTS"
-                      sh "mvn ${MAVEN_CLI_ARGS} test"
-                    }
-                  }
-                }
-              }
-              post {
-                always {
-                  junit testResults: 'server/**/target/surefire-reports/*.xml'
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    stage('Build Nuxeo Packages') {
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'packages/build', message: 'Build Nuxeo packages') {
-            echo """
-            ----------------------------------------
-            Package
-            ----------------------------------------"""
-            sh "mvn ${MAVEN_CLI_ARGS} -Dnuxeo.skip.enforcer=false -f packages/pom.xml -DskipTests install"
-          }
-        }
-      }
-    }
-
-    stage('Run "dev" functional tests') {
-      environment {
-        MAVEN_CLI_ARGS = "${MAVEN_CLI_ARGS} ${MAVEN_FAIL_ARGS} -Dit.memory.argLine=\"-Xms2g -Xmx2g\""
-        MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx2g"
-        NX_JAVA_OPTS = "\$JAVA_OPTS -Xms2g -Xmx2g"
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'ftests/dev', message: 'Functional tests - dev environment') {
-            echo """
-            ----------------------------------------
-            Run "dev" functional tests
-            ----------------------------------------"""
-            withCredentials([string(credentialsId: 'instance-clid', variable: 'INSTANCE_CLID')]) {
-              sh(script: '''#!/bin/bash +x
-                echo -e "$INSTANCE_CLID" >| /tmp/instance.clid
-              ''')
-              withEnv(["TEST_CLID_PATH=/tmp/instance.clid"]) {
-                runFunctionalTests('ftests', 'nuxeo.ftests.tier5')
-                runFunctionalTests('ftests', 'nuxeo.ftests.tier6')
-                runFunctionalTests('ftests', 'nuxeo.ftests.tier7')
-              }
-            }
-          }
-        }
-      }
-      post {
-        always {
-          junit testResults: '**/target/failsafe-reports/*.xml'
-        }
-      }
-    }
-
-    stage('Trigger REST API tests') {
-      steps {
-        echo """
-        ----------------------------------------
-        Trigger REST API tests
-        ----------------------------------------
-        """
-        script {
-          def parameters = [
-            string(name: 'NUXEO_VERSION', value: "${VERSION}"),
-          ]
-          nxUtils.buildWrapped(
-            job: 'nuxeo/rest-api-compatibility-tests/master',
-            parameters: parameters,
-            wait: false
-          )
-        }
       }
     }
 
@@ -662,50 +667,75 @@ pipeline {
       }
     }
 
-    stage('Deploy Maven artifacts') {
-      when {
-        expression { nxUtils.isNotPullRequestAndNotDryRun() }
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'maven/deploy', message: 'Deploy Maven artifacts') {
-            echo """
-            ----------------------------------------
-            Deploy Maven artifacts
-            ----------------------------------------"""
-            // apply Hotfix protection again since the code was unpatched and recompiled in the intermediate steps
-            // otherwise, the JAR would be rebuilt from the unpatched classes in the package phase
-            dir('nuxeo-patches') {
-              sh './prepare-patches'
-            }
-            sh """
-              mvn ${MAVEN_CLI_ARGS} -Pdistrib,parent -DskipTests deploy
+    stage('Deploy artifacts') {
+      parallel {
+        stage('Maven') {
+          when {
+            expression { nxUtils.isNotPullRequestAndNotDryRun() }
+          }
+          steps {
+            container('maven') {
+              nxWithGitHubStatus(context: 'maven/deploy', message: 'Deploy Maven artifacts') {
+                echo """
+                ----------------------------------------
+                Deploy Maven artifacts
+                ----------------------------------------"""
+                // apply Hotfix protection again since the code was unpatched and recompiled in the intermediate steps
+                // otherwise, the JAR would be rebuilt from the unpatched classes in the package phase
+                dir('nuxeo-patches') {
+                  sh './prepare-patches'
+                }
+                sh """
+                  mvn ${MAVEN_CLI_ARGS} -Pdistrib,parent -DskipTests deploy
 
-              # update back nuxeo-parent version to CURRENT_VERSION version
-              mvn ${MAVEN_CLI_ARGS} -f parent/pom.xml versions:set -DnewVersion=${CURRENT_VERSION} -DgenerateBackupPoms=false
-              mvn ${MAVEN_CLI_ARGS} -f parent/pom.xml deploy
-            """
+                  # update back nuxeo-parent version to CURRENT_VERSION version
+                  mvn ${MAVEN_CLI_ARGS} -f parent/pom.xml versions:set -DnewVersion=${CURRENT_VERSION} -DgenerateBackupPoms=false
+                  mvn ${MAVEN_CLI_ARGS} -f parent/pom.xml deploy
+                """
+              }
+            }
           }
         }
-      }
-    }
 
-    stage('Deploy Nuxeo Packages') {
-      when {
-        expression { !nxUtils.isPullRequest() }
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'packages/deploy', message: 'Deploy Nuxeo Packages') {
-            echo """
-            ----------------------------------------
-            Upload Nuxeo Packages to ${CONNECT_PREPROD_SITE_URL}
-            ----------------------------------------"""
-            script {
-              def nxPackages = findFiles(glob: 'packages/nuxeo-*-package/target/nuxeo-*-package-*.zip')
-              for (nxPackage in nxPackages) {
-                nxUtils.postForm(credentialsId: 'connect-preprod', url: "${CONNECT_PREPROD_SITE_URL}marketplace/upload?batch=true",
-                    form: ["package=@${nxPackage.path}"])
+        stage('Packages') {
+          when {
+            expression { !nxUtils.isPullRequest() }
+          }
+          steps {
+            container('maven') {
+              nxWithGitHubStatus(context: 'packages/deploy', message: 'Deploy Packages') {
+                echo """
+                ----------------------------------------
+                Upload Nuxeo Packages to ${CONNECT_PREPROD_SITE_URL}
+                ----------------------------------------"""
+                script {
+                  def nxPackages = findFiles(glob: 'packages/nuxeo-*-package/target/nuxeo-*-package-*.zip')
+                  for (nxPackage in nxPackages) {
+                    nxUtils.postForm(credentialsId: 'connect-preprod', url: "${CONNECT_PREPROD_SITE_URL}marketplace/upload?batch=true",
+                        form: ["package=@${nxPackage.path}"])
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        stage('Docker image') {
+          when {
+            expression { nxUtils.isNotPullRequestAndNotDryRun() }
+          }
+          steps {
+            container('maven') {
+              nxWithGitHubStatus(context: 'docker/deploy', message: 'Deploy Docker image') {
+                echo """
+                ----------------------------------------
+                Deploy Docker image
+                ----------------------------------------
+                Image tag: ${VERSION}
+                """
+                echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
+                dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
+                dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_BENCHMARK_IMAGE_NAME}")
               }
             }
           }
@@ -713,28 +743,7 @@ pipeline {
       }
     }
 
-    stage('Deploy Docker image') {
-      when {
-        expression { nxUtils.isNotPullRequestAndNotDryRun() }
-      }
-      steps {
-        container('maven') {
-          nxWithGitHubStatus(context: 'docker/deploy', message: 'Deploy Docker image') {
-            echo """
-            ----------------------------------------
-            Deploy Docker image
-            ----------------------------------------
-            Image tag: ${VERSION}
-            """
-            echo "Push Docker images to Docker registry ${PRIVATE_DOCKER_REGISTRY}"
-            dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_IMAGE_NAME}")
-            dockerDeploy("${PRIVATE_DOCKER_REGISTRY}", "${NUXEO_BENCHMARK_IMAGE_NAME}")
-          }
-        }
-      }
-    }
-
-    stage('Scan for vulnerabilities') {
+    stage('Security scan') {
       when {
         expression {
           !nxUtils.isPullRequest()
