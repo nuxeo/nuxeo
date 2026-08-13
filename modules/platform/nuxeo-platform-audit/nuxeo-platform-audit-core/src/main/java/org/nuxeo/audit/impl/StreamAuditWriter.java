@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,8 +83,19 @@ public class StreamAuditWriter implements StreamProcessorTopology {
             } catch (ConcurrentUpdateException e) {
                 // Records were already inserted by a previous attempt; treat as a no-op
                 // so the batch is checkpointed and not retried indefinitely.
-                log.warn("Ignoring duplicate audit log entries on replay, count: {}", e.getInfos().size());
-                log.debug("Duplicate audit entries: {}", e.getMessage(), e);
+                // Kept at WARN with enough context (rather than DEBUG) because this path is rarely hit and,
+                // when it is, the extra detail is needed to diagnose whether it is a legitimate replay or
+                // masks a genuine id-generation issue.
+                log.warn(
+                        "Ignoring duplicate audit log entries on replay, batch size: {}, duplicate count: {}, "
+                                + "duplicates: {}, entries: {}",
+                        logEntries::size, () -> e.getInfos().size(), e::getInfos,
+                        () -> logEntries.stream()
+                                        .map(entry -> "{id=%s,eventId=%s,docPath=%s,eventDate=%s}".formatted(
+                                                entry.getId(), entry.getEventId(), entry.getDocPath(),
+                                                entry.getEventDate()))
+                                        .collect(Collectors.joining(", ", "[", "]")));
+                log.debug("Duplicate audit entries exception: {}", e.getMessage(), e);
             }
         }
 

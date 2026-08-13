@@ -27,12 +27,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.nuxeo.audit.api.AuditQueryBuilder;
+import org.nuxeo.audit.api.LogEntry;
+import org.nuxeo.audit.api.LogEntryConstants;
+import org.nuxeo.audit.impl.StreamAuditWriter;
+import org.nuxeo.audit.listener.StreamAuditEventListener;
+import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
@@ -50,11 +62,15 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -67,6 +83,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
 public abstract class AbstractChangeFinderTestCase {
+
+    private static final Logger log = LogManager.getLogger(AbstractChangeFinderTestCase.class);
 
     protected static final String COLLECTION_FOLDER = "collectionFolder";
 
@@ -139,6 +157,45 @@ public abstract class AbstractChangeFinderTestCase {
     protected DocumentModel folder3;
 
     protected CoreSession user1Session;
+
+    // Dump the raw audit trail on failure to help diagnose flaky change-finder assertions, since the
+    // audit entries are written asynchronously (stream computation) and may not be visible yet when a test fails.
+    @Rule
+    public TestWatcher auditDumpOnFailure = new TestWatcher() {
+        @Override
+        protected void failed(Throwable e, Description description) {
+            dumpAuditTrailForDiagnostic(description);
+        }
+    };
+
+    protected void dumpAuditTrailForDiagnostic(Description description) {
+        try {
+            var builder = new AuditQueryBuilder().predicate(
+                    Predicates.eq(LogEntryConstants.LOG_REPOSITORY_ID, TEST_REPOSITORY))
+                                                 .order(OrderByExprs.desc(LogEntryConstants.LOG_ID))
+                                                 .limit(50);
+            List<LogEntry> entries = Framework.getService(AuditBackend.class).queryLogs(builder);
+            // dump the audit stream's Kafka lag too: distinguishes "writer hasn't caught up yet" (lag > 0) from
+            // "writer is caught up but entries are still missing from the backend" (lag == 0, entries missing)
+            var logManager = Framework.getService(StreamService.class).getLogManager();
+            var streamName = Name.ofUrn(StreamAuditEventListener.STREAM_NAME);
+            var computationName = Name.ofUrn(StreamAuditWriter.COMPUTATION_NAME);
+            var lagPerPartition = logManager.getLagPerPartition(streamName, computationName);
+            log.error(
+                    "Diagnostic dump for failed test {}: lastEventLogId={}, lastSyncActiveRootDefinitions={}, "
+                            + "audit stream lag per partition: {}, last {} audit entries (most recent first): {}",
+                    description::getDisplayName, () -> lastEventLogId, () -> lastSyncActiveRootDefinitions,
+                    () -> lagPerPartition, entries::size,
+                    () -> entries.stream()
+                                 .map(entry -> "{id=%s,eventId=%s,category=%s,docUUID=%s,docPath=%s,eventDate=%s,logDate=%s}".formatted(
+                                         entry.getId(), entry.getEventId(), entry.getCategory(), entry.getDocUUID(),
+                                         entry.getDocPath(), entry.getEventDate(), entry.getLogDate()))
+                                 .collect(Collectors.joining(", ", "[", "]")));
+        } catch (RuntimeException dumpFailure) {
+            log.error("Diagnostic dump for failed test {} could not be performed", description.getDisplayName(),
+                    dumpFailure);
+        }
+    }
 
     @Before
     public void init() {
