@@ -460,14 +460,14 @@ pipeline {
     stage('Trigger Benchmark tests') {
       when {
         expression {
-          nxUtils.isPullRequest() && (pullRequest.labels.contains('benchmark') || pullRequest.labels.contains('benchmark-versitygw'))
+          nxUtils.isPullRequest() && (pullRequest.labels.contains('benchmark') || pullRequest.labels.contains('benchmark-versitygw') || pullRequest.labels.contains('benchmark-aws-s3'))
         }
       }
       steps {
         container('maven') {
           script {
-            // 'benchmark-versitygw' takes precedence over 'benchmark'
-            def useVersityGW = pullRequest.labels.contains('benchmark-versitygw')
+            // Versity S3 gateway is used by default, opt-out with the 'benchmark-aws-s3' label
+            def useVersityGW = !pullRequest.labels.contains('benchmark-aws-s3')
             def parameters = [
               string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
               string(name: 'NUXEO_DOCKER_IMAGE', value: "${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${NUXEO_BENCHMARK_IMAGE_NAME}:${VERSION}"),

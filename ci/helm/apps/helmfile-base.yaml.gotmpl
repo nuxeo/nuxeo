@@ -25,7 +25,7 @@ releases:
   {{- if .Values.kafka.enabled }}
   - kafka
   {{- end }}
-  {{- if and (eq .Environment.Name "benchmark") (eq (env "USE_VERSITYGW" | default "false") "true") }}
+  {{- if and (eq .Environment.Name "benchmark") (eq (env "USE_VERSITYGW" | default "true") "true") }}
   - versitygw
   {{- end }}
   {{- end }}
@@ -97,7 +97,7 @@ releases:
   {{- if eq .Environment.Name "benchmark" }}
   - base/values/benchmark/values-kafka.yaml.gotmpl
   {{- end }}
-{{- if and (eq .Environment.Name "benchmark") (eq (env "USE_VERSITYGW" | default "false") "true") }}
+{{- if and (eq .Environment.Name "benchmark") (eq (env "USE_VERSITYGW" | default "true") "true") }}
 # versitygw-init provisions the PVC and pre-creates the S3 bucket directory
 # before VersityGW starts. The upstream versitygw chart reuses the PVC it
 # creates (persistence.create=false) so the bucket is guaranteed to exist

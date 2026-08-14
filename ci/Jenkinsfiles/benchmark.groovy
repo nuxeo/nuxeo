@@ -76,8 +76,8 @@ pipeline {
     BRANCH_NAME = "${params.NUXEO_BRANCH.replaceAll('/', '-')}"
     NUXEO_DOCKER_IMAGE_WITH_VERSION = resolveDockerImageVersion("${params.NUXEO_DOCKER_IMAGE}")
     INSTALL_NEEDED_PACKAGES = "${params.INSTALL_NEEDED_PACKAGES}"
-    USE_VERSITYGW = "${params.USE_VERSITYGW ?: false}"
-    BENCHMARK_STATUS_CONTEXT = "${params.USE_VERSITYGW?.toBoolean() ? 'benchmark/versitygw-tests' : 'benchmark/tests'}"
+    USE_VERSITYGW = "${params.USE_VERSITYGW == null ? true : params.USE_VERSITYGW}"
+    BENCHMARK_STATUS_CONTEXT = "${USE_VERSITYGW.toBoolean() ? 'benchmark/versitygw-tests' : 'benchmark/tests'}"
     NX_REPLICA_COUNT = "${params.NUXEO_NB_APP_NODE.toInteger()}"
     NX_WORKER_COUNT = "${params.NUXEO_NB_WORKER_NODE.toInteger()}"
 
@@ -198,7 +198,7 @@ s.close()
                 nxK8s.describePod(namespace: "${CURRENT_NAMESPACE}", pod: "${JENKINS_AGENT_NAME}")
                 nxK8s.getPodLogs(namespace: "${CURRENT_NAMESPACE}", pod: "${JENKINS_AGENT_NAME} -c redis", file: "${namespace}_redis.log")
                 // VersityGW S3 gateway runs in the benchmark namespace
-                if (params.USE_VERSITYGW?.toBoolean()) {
+                if (env.USE_VERSITYGW.toBoolean()) {
                   nxK8s.describePod(namespace: "${BENCHMARK_NAMESPACE}", pod: 'versitygw')
                   nxK8s.getPodLogs(namespace: "${BENCHMARK_NAMESPACE}", selector: 'app.kubernetes.io/instance=versitygw', file: "${namespace}_versitygw.log")
                 }
@@ -288,7 +288,7 @@ s.close()
               sh "echo 'bench_suite: \"${BENCHMARK_BENCH_SUITE}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo \"nuxeonodes: \$(( \${NX_REPLICA_COUNT} + \${NX_WORKER_COUNT} ))\" >> ${REPORT_PATH}/data.yml"
               sh "echo 'esnodes: 1' >> ${REPORT_PATH}/data.yml"
-              sh "echo 'classifier: \"${params.USE_VERSITYGW?.toBoolean() ? 'versitygw' : 'aws-s3'}\"' >> ${REPORT_PATH}/data.yml"
+              sh "echo 'classifier: \"${env.USE_VERSITYGW.toBoolean() ? 'versitygw' : 'aws-s3'}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'distribution: \"${VERSION}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'default_category: \"${BENCHMARK_CATEGORY}\"' >> ${REPORT_PATH}/data.yml"
               sh "echo 'kafka: true' >> ${REPORT_PATH}/data.yml"
