@@ -614,6 +614,11 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend
             return;
         }
 
+        // The max aggregation below must see every entry already indexed, otherwise the sequence could be primed below
+        // an existing id and later hand out ids that collide with surviving entries (create-only conflict, dropped
+        // entry). OpenSearch is near-real-time, so force a refresh to make recently indexed entries searchable first.
+        esClient.refresh(indexName);
+
         // Get max log entry id
         SearchRequest request = new SearchRequest(indexName).searchType(SearchType.DFS_QUERY_THEN_FETCH);
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery())

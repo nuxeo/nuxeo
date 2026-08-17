@@ -55,9 +55,12 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnore;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
@@ -81,6 +84,9 @@ public class TestAuditBackend {
 
     @Inject
     protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     @Test
     @SuppressWarnings("removal")
@@ -131,6 +137,44 @@ public class TestAuditBackend {
         // assert new entries have been inserted
         transactionalFeature.nextTransaction();
         assertEquals(4, backend.queryLogs(queryBuilder).size());
+    }
+
+    /**
+     * On the OpenSearch-family backends the index survives a runtime restart while the in-memory UID sequence is reset,
+     * so on restart the backend must re-prime the sequence above the surviving entries; otherwise the next writes reuse
+     * existing ids and are silently dropped on the create-only conflict. This simulates that reset and checks the
+     * second generation of entries is not lost, asserting on content (event id) rather than ids, which legitimately
+     * differ per backend.
+     * <p>
+     * The re-prime reads the max id from the index at backend start, so this reproduces the failure only when that read
+     * misses the just-written entries (OpenSearch is near-real-time). Like the original flake it therefore passes most
+     * of the time without the fix. To reproduce deterministically on OpenSearch, set the audit index
+     * {@code refresh_interval} to {@code -1} before generating genA (e.g. {@code PUT /audit/_settings
+     * {"index":{"refresh_interval":"-1"}}}): genA then stays non-searchable until the fix's explicit refresh runs, so
+     * without the fix the sequence is primed to 0 and genB is dropped ({@code expected:<3> but was:<0>}).
+     */
+    @Test
+    @ConditionalIgnore(condition = IgnoreIfNotOpenSearchAuditBackend.class)
+    public void testWritesAfterSequenceResetAreNotLost() throws Exception {
+        // Sequence name is AuditComponent.SEQUENCE_NAME (kept package-private in production)
+        String auditSequence = "audit";
+
+        // A first generation populates the surviving index with low ids
+        auditFeature.generateLogEntries("resetDoc", "genA", "genA", 3);
+        assertEquals(3,
+                backend.queryLogs(new AuditQueryBuilder().predicate(in(LOG_EVENT_ID, "genA0", "genA1", "genA2")))
+                       .size());
+
+        // Simulate the loss of the in-memory UID sequence on a runtime restart, then restart the components so the
+        // backend is reconstructed and re-primes its sequence from the surviving index (as it does on a real restart)
+        Framework.getService(UIDGeneratorService.class).getSequencer().initSequence(auditSequence, 0);
+        hotDeployer.restart();
+
+        // A second generation must be re-primed above the surviving entries and indexed without loss
+        auditFeature.generateLogEntries("resetDoc", "genB", "genB", 3);
+        assertEquals("genB entries must not be lost to id-reuse create conflicts after a sequence reset", 3,
+                backend.queryLogs(new AuditQueryBuilder().predicate(in(LOG_EVENT_ID, "genB0", "genB1", "genB2")))
+                       .size());
     }
 
     @Test
