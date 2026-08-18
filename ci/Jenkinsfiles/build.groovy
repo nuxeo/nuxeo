@@ -338,7 +338,12 @@ pipeline {
                     Check formatting
                     ----------------------------------------"""
                     sh "git fetch origin 2025:origin/2025"
-                    def profiles = 'distrib,docker,ftestsTier5,ftestsTier6,ftestsTier7'
+                    // Do not activate the 'docker' profile for the Spotless check.
+                    // Since spotless-maven-plugin 3.6.0, spotless:check unconditionally resolves project dependencies;
+                    // the docker/nuxeo module depends on nuxeo-server-tomcat:zip, so linting would fetch that ZIP from
+                    // the maven-upstream proxy repository before this build's later stage deploys it, poisoning the
+                    // Nexus negative cache (404) and breaking subsequent hotfix builds.
+                    def profiles = 'distrib,ftestsTier5,ftestsTier6,ftestsTier7'
                     sh "mvn ${MAVEN_CLI_ARGS} -V -T4C -P${profiles} -Dcustom.environment=spotless spotless:check"
                   }
                 }
