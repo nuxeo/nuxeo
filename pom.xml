@@ -154,7 +154,7 @@
     <kafka.version>3.9.2</kafka.version>
     <confluent.version>6.2.15</confluent.version>
     <metrics.version>5.0.0-rc3</metrics.version>
-    <amqp.client.version>5.25.0</amqp.client.version>
+    <amqp.client.version>5.33.1</amqp.client.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.31.1</opencensus.version>
     <prometheus.client.version>0.11.0</prometheus.client.version>
