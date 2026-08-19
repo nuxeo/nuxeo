@@ -18,6 +18,8 @@
  */
 package org.nuxeo.audit.opensearch1.pageprovider;
 
+import static org.nuxeo.audit.opensearch1.OpenSearchAuditBackend.ensureEntityType;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +112,8 @@ public class OpenSearchAuditPageProvider extends AbstractPageProvider<LogEntry> 
         setResultsCount(hits.getTotalHits().value);
         for (SearchHit hit : hits) {
             try {
-                entries.add(MarshallerHelper.jsonToObject(LogEntry.class, hit.getSourceAsString(),
+                entries.add(MarshallerHelper.jsonToObject(LogEntry.class,
+                        ensureEntityType(hit.getSourceAsMap(), hit.getSourceAsString()),
                         RenderingContext.CtxBuilder.get()));
             } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);

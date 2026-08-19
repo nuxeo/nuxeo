@@ -24,7 +24,9 @@ import static org.nuxeo.audit.api.LogEntryConstants.LOG_EVENT_DATE;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_EVENT_ID;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_ID;
 import static org.nuxeo.audit.api.LogEntryConstants.LOG_REPOSITORY_ID;
+import static org.nuxeo.audit.io.LogEntryJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.audit.io.LogEntryJsonWriter.EXTENDED_INFO_JSON_STRING_AS_JSON;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
 import static org.opensearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
 import static org.opensearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -50,6 +52,7 @@ import org.json.JSONObject;
 import org.nuxeo.audit.api.AuditQueryBuilder;
 import org.nuxeo.audit.api.LogEntry;
 import org.nuxeo.audit.api.LogEntryList;
+import org.nuxeo.audit.io.LogEntryJsonWriter;
 import org.nuxeo.audit.service.AbstractAuditBackend;
 import org.nuxeo.audit.service.AuditBackend;
 import org.nuxeo.common.utils.TextTemplate;
@@ -110,6 +113,9 @@ import org.opensearch.search.aggregations.metrics.Max;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.search.sort.SortOrder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 /**
  * Implementation of the {@link AuditBackend} interface using OpenSearch persistence
  *
@@ -121,6 +127,8 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend
     private static final Logger log = LogManager.getLogger(OpenSearchAuditBackend.class);
 
     public static final String SEQ_NAME = "audit";
+
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     // @since 2021.21
     protected static final String AUDIT_LATEST_LOG_ID_AFTER_DATE_PROP = "nuxeo.audit.opensearch1.latestLogId.afterDate";
@@ -305,7 +313,8 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend
         List<LogEntry> entries = new ArrayList<>(hits.getHits().length);
         for (SearchHit hit : hits) {
             try {
-                entries.add(MarshallerHelper.jsonToObject(LogEntry.class, hit.getSourceAsString(),
+                entries.add(MarshallerHelper.jsonToObject(LogEntry.class,
+                        ensureEntityType(hit.getSourceAsMap(), hit.getSourceAsString()),
                         RenderingContext.CtxBuilder.get()));
             } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
@@ -325,8 +334,8 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend
             return null;
         }
         try {
-            return MarshallerHelper.jsonToObject(LogEntry.class, ret.getSourceAsString(),
-                    RenderingContext.CtxBuilder.get());
+            return MarshallerHelper.jsonToObject(LogEntry.class,
+                    ensureEntityType(ret.getSourceAsMap(), ret.getSourceAsString()), RenderingContext.CtxBuilder.get());
         } catch (IOException e) {
             throw new NuxeoException("Unable to read Entry for id " + id, e);
         }
@@ -812,5 +821,37 @@ public class OpenSearchAuditBackend extends AbstractAuditBackend
     @Override
     public CursorService<Iterator<SearchHit>, SearchHit, String> getCursorService() {
         return cursorService;
+    }
+
+    /**
+     * Ensures the JSON source of a stored audit document has {@code entity-type} set to
+     * {@value LogEntryJsonWriter#ENTITY_TYPE}.
+     * <p>
+     * Some old code paths persist audit entries using raw Jackson serialization, which may emit
+     * {@code "entity-type": null} or omit the field entirely. When absent or {@code null}, the field is injected
+     * transparently so that the marshaller ({@code EntityJsonReader}) can deserialize the entry without throwing
+     * {@code MarshallingException}. A non-{@code null} but incorrect value is left unchanged so that the reader can
+     * reject it with an appropriate error.
+     *
+     * @param sourceMap the pre-parsed source document as a map (used for the fast-path check)
+     * @param sourceJson the raw JSON string of the stored document
+     * @return {@code sourceJson} unchanged when entity-type is already correct or has a non-{@code null} wrong value;
+     *         otherwise a patched copy with {@code "entity-type": "logEntry"} injected
+     * @since 2025.24
+     */
+    public static String ensureEntityType(Map<String, Object> sourceMap, String sourceJson) throws IOException {
+        var entityType = sourceMap.get(ENTITY_FIELD_NAME);
+        if (ENTITY_TYPE.equals(entityType)) {
+            return sourceJson; // correct value: fast path, no patch needed
+        }
+        if (entityType != null) {
+            return sourceJson; // non-null wrong value: let the reader reject it
+        }
+        // absent or null: patch
+        if (!(MAPPER.readTree(sourceJson) instanceof ObjectNode node)) {
+            return sourceJson;
+        }
+        node.put(ENTITY_FIELD_NAME, ENTITY_TYPE);
+        return MAPPER.writeValueAsString(node);
     }
 }
