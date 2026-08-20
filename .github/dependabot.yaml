@@ -52,6 +52,10 @@ updates:
       - dependency-name: "commons-httpclient:commons-httpclient"
         versions: [ ">3.1" ] # no update to 3.1-jenkins-x
 
+      # NXP-33895: Avro patch update breaking tests
+      - dependency-name: "org.apache.avro:avro"
+        versions: [">1.12.1"]
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -140,6 +144,10 @@ updates:
       - dependency-name: "io.confluent:*"
         versions: ["7.9.6", "7.9.7"]
 
+      # NXP-33895: Avro patch update breaking tests
+      - dependency-name: "org.apache.avro:avro"
+        versions: [">1.12.1"]
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     target-branch: "2025"
@@ -207,6 +215,10 @@ updates:
       # Prometheus simpleclient 0.12 contains breaking change
       - dependency-name: "io.prometheus:simpleclient*"
         versions: [">0.11"]
+
+      # NXP-33895: Avro patch update breaking tests
+      - dependency-name: "org.apache.avro:avro"
+        versions: [">1.12.1"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
