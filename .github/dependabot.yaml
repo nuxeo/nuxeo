@@ -148,6 +148,10 @@ updates:
       - dependency-name: "org.apache.avro:avro"
         versions: [">1.12.1"]
 
+      # NXP-33901: PDFBox patch update breaking tests
+      - dependency-name: "org.apache.pdfbox:*"
+        versions: [">3.0.7"]
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     target-branch: "2025"
@@ -219,6 +223,10 @@ updates:
       # NXP-33895: Avro patch update breaking tests
       - dependency-name: "org.apache.avro:avro"
         versions: [">1.12.1"]
+
+      # NXP-33901: PDFBox patch update breaking tests
+      - dependency-name: "org.apache.pdfbox:*"
+        versions: [">3.0.7"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
