@@ -80,6 +80,7 @@
     <apache.httpcore.version>4.4.16</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.14</apache.httpcomponents.version>
     <apache.httpcomponents.core5.version>5.4.3</apache.httpcomponents.core5.version>
+    <apache.httpcomponents.client5.version>5.6.3</apache.httpcomponents.client5.version>
     <apache.poi.version>5.5.1</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>3.1.0</jxls.version>
@@ -4221,6 +4222,11 @@
         <groupId>org.apache.httpcomponents.core5</groupId>
         <artifactId>httpcore5-h2</artifactId>
         <version>${apache.httpcomponents.core5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${apache.httpcomponents.client5.version}</version>
       </dependency>
       <!-- transitive dependency of opencensus-exporter-trace-datadog to upgrade -->
       <dependency>
