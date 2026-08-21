@@ -152,6 +152,10 @@ updates:
       - dependency-name: "org.apache.pdfbox:*"
         versions: [">3.0.7"]
 
+      # NXP-33896: Keycloak minor update breaking compilation
+      - dependency-name: "org.keycloak:*"
+        versions: [">26.6.2"]
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     target-branch: "2025"
@@ -227,6 +231,10 @@ updates:
       # NXP-33901: PDFBox patch update breaking tests
       - dependency-name: "org.apache.pdfbox:*"
         versions: [">3.0.7"]
+
+      # NXP-33896: Keycloak minor update breaking compilation
+      - dependency-name: "org.keycloak:*"
+        versions: [">26.6.2"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
