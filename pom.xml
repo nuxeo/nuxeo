@@ -78,6 +78,7 @@
     <chemistry.opencmis.version>1.1.1-NX01</chemistry.opencmis.version>
     <apache.httpcore.version>4.4.16</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.14</apache.httpcomponents.version>
+    <apache.httpcomponents.core5.version>5.4.3</apache.httpcomponents.core5.version>
     <apache.poi.version>5.4.1</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX02</jxls.version>
@@ -4415,6 +4416,11 @@
             <artifactId>jakarta.servlet-api</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${apache.httpcomponents.core5.version}</version>
       </dependency>
       <!-- transitive dependency of opencensus-exporter-trace-datadog to upgrade -->
       <dependency>
