@@ -152,9 +152,9 @@ updates:
       - dependency-name: "org.apache.pdfbox:*"
         versions: [">3.0.7"]
 
-      # NXP-33896: Keycloak minor update breaking compilation
-      - dependency-name: "org.keycloak:*"
-        versions: [">26.6.2"]
+      # NXP-33902: Tomcat patch update breaking compilation
+      - dependency-name: "org.apache.tomcat:*"
+        versions: [">10.1.57"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -232,9 +232,9 @@ updates:
       - dependency-name: "org.apache.pdfbox:*"
         versions: [">3.0.7"]
 
-      # NXP-33896: Keycloak minor update breaking compilation
-      - dependency-name: "org.keycloak:*"
-        versions: [">26.6.2"]
+      # NXP-33902: Tomcat patch update breaking compilation
+      - dependency-name: "org.apache.tomcat:*"
+        versions: [">11.0.24"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
