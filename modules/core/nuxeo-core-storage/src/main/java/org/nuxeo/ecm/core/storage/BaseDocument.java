@@ -43,6 +43,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -92,6 +94,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 public abstract class BaseDocument<T extends StateAccessor> implements Document {
+
+    private static final Logger log = LogManager.getLogger(BaseDocument.class);
 
     protected static final Pattern LIST_INDEX_PATTERN = Pattern.compile("/\\d+$");
 
@@ -706,8 +710,24 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
         BlobInfo blobInfo = new BlobInfo();
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+        long gcpBlobFilesize = 0;
         try {
             blobInfo.key = blobManager.writeBlob(blob, this, xpath);
+            if (blob.getFilename().startsWith("tiff2pdf_"))
+            {
+                // TODO I need to get the blob's actual file size in the GCP bucket, how can I do?
+                //if blob.getLength() is different from blob's actual file size, set gcpBlobFilesize
+            }
+        } catch (FileSizeMismatchException e) {
+            // save file size
+            gcpBlobFilesize = e.getLength();
+            // retry writeBlob
+            log.debug("<setValueBlob> {} filesize: {} GCP filesize: {} . Retrying incomplete writeBlob", blob.getFilename(), blob.getLength(), gcpBlobFilesize);
+            try {
+                blobInfo.key = blobManager.writeBlob(blob, this, xpath);
+            } catch (IOException e1) {
+                throw new PropertyException("Cannot get blob info for: " + blob, e1);
+            }
         } catch (IOException e) {
             throw new PropertyException("Cannot get blob info for: " + blob, e);
         }
@@ -716,7 +736,10 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             blobInfo.mimeType = blob.getMimeType();
             blobInfo.encoding = blob.getEncoding();
             blobInfo.digest = blob.getDigest();
-            blobInfo.length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
+            blobInfo.length = gcpBlobFilesize > 0 ? gcpBlobFilesize : blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
+        }
+        if (blobInfo.filename.startsWith("tiff2pdf_") && gcpBlobFilesize != blobInfo.length) {
+            log.debug("<setValueBlob> {} filesize: {} GCP filesize: {} digest: {}", blobInfo.filename, blobInfo.length, gcpBlobFilesize, blobInfo.digest);
         }
         setBlobInfo(state, blobInfo);
     }

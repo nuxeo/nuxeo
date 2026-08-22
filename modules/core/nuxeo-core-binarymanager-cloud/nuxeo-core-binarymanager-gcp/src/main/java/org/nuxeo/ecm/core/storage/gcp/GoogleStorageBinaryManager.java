@@ -43,6 +43,7 @@ import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
+import org.nuxeo.ecm.core.storage.FileSizeMismatchException;
 
 import com.google.api.gax.paging.Page;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -197,22 +198,28 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
         @Override
         public void storeFile(String digest, File file) {
             long t0 = System.currentTimeMillis();
-            log.debug("Storing blob with digest: {} to GCS", digest);
+            log.debug("Storing blob with digest: {} size: {} to GCS", digest, file.length());
             String key = bucketPrefix + digest;
             // try to get the blob's metadata to check if it exists
             if (bucket.get(key) == null) {
+                long totalLength = 0;
                 try (var is = new BufferedInputStream(new FileInputStream(file));
                         var writer = storage.writer(BlobInfo.newBuilder(bucketName, key).build())) {
                     int bufferLength;
                     byte[] buffer = new byte[chunkSize];
                     writer.setChunkSize(chunkSize);
                     while ((bufferLength = IOUtils.read(is, buffer)) > 0) {
-                        writer.write(ByteBuffer.wrap(buffer, 0, bufferLength));
+                        totalLength += writer.write(ByteBuffer.wrap(buffer, 0, bufferLength));
                     }
                 } catch (IOException e) {
                     throw new NuxeoException(e);
                 }
-                log.debug("Stored blob with digest: {} to GCS in {}ms", digest, System.currentTimeMillis() - t0);
+                log.debug("Stored blob {} with digest: {} filesize:{} total bytes written: {} to GCS in {}ms", file.getName(), digest, file.length(), totalLength, System.currentTimeMillis() - t0);
+                if (file.length() > 0 && totalLength != file.length()) {
+                    log.debug("File size mismatch");
+                    throw new FileSizeMismatchException(totalLength);
+                }
+                log.trace("stack trace:", new Exception("trace"));
             } else {
                 log.debug("Blob with digest: {} is already in GCS", digest);
             }
