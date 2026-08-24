@@ -11,9 +11,6 @@ resources:
   limits:
     cpu: "12"
     memory: "48Gi"
-podAnnotations:
-  ad.datadoghq.com/nuxeo.logs: '[{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}]'
-  ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 amazonS3:
   enabled: true
   auth:
@@ -35,10 +32,6 @@ customEnvs:
     secretKeyRef:
       name: instance-clid
       key: instance.clid
-- name: DD_AGENT_HOST
-  valueFrom:
-    fieldRef:
-      fieldPath: status.hostIP
 customProperties:
   benchmark: |
     launcher.log4j2.file=/etc/nuxeo/log4j2-launcher.xml
@@ -51,12 +44,6 @@ customProperties:
     metrics.enabled=true
     metrics.cloudwatch.scale.enabled=false
     metrics.cloudwatch.scale.tag=ci-benchmark
-    metrics.datadog.enabled=true
-    metrics.datadog.pollInterval=60
-    metrics.datadog.tags=branch:{{ env "BRANCH_NAME" | default "local" }},pod_name:${env:POD_NAME},project:jenkins-{{ env "CURRENT_NAMESPACE" | default "local" }},repository=nuxeo-lts,source:nuxeo,service:benchmark-{{ env "BUILD_NUMBER" | default "local" }},team:platform,usage:benchmark
-    metrics.datadog.udp=true
-    metrics.datadog.host=${env:DD_AGENT_HOST}
-    metrics.datadog.port=8125
 {{- if eq (env "USE_VERSITYGW" | default "true") "true" }}
   versitygw: |
     nuxeo.s3storage.endpoint=http://versitygw:7070

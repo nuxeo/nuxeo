@@ -5,8 +5,6 @@ resources:
   limits:
     cpu: "4"
     memory: "8Gi"
-podAnnotations:
-  ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 affinity:
   # VersityGW (4 CPUs) cannot share a node with Nuxeo+Kafka (12+3=15 CPUs)
   # since benchmark nodes have 16 CPUs. Keep it away from all other benchmark
