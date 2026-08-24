@@ -8,8 +8,6 @@ resources:
   limits:
     cpu: "15"
     memory: "56Gi"
-podAnnotations:
-  ad.datadoghq.com/tags: '{"service":"{{ env "SERVICE_TAG" | default "benchmark-local" }}"}'
 affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
