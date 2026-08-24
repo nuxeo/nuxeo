@@ -80,7 +80,7 @@
     <apache.httpcore.version>4.4.16</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.14</apache.httpcomponents.version>
     <apache.httpcomponents.core5.version>5.4.3</apache.httpcomponents.core5.version>
-    <apache.httpcomponents.client5.version>5.6.3</apache.httpcomponents.client5.version>
+    <apache.httpcomponents.client5.version>5.6.4</apache.httpcomponents.client5.version>
     <apache.poi.version>5.5.1</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>3.2.0</jxls.version>
@@ -153,7 +153,7 @@
     <opencensus.version>0.31.1</opencensus.version>
     <prometheus.client.version>0.11.0</prometheus.client.version>
     <protobuf.java.version>4.36.0</protobuf.java.version>
-    <opensaml.version>5.2.2</opensaml.version>
+    <opensaml.version>5.2.3</opensaml.version>
     <quartz.version>2.5.2</quartz.version>
     <mockito.version>5.23.0</mockito.version>
     <byte-buddy.version>1.18.12</byte-buddy.version>
