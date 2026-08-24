@@ -156,6 +156,10 @@ updates:
       - dependency-name: "org.apache.tomcat:*"
         versions: [">10.1.57"]
 
+      # NXP-33905: Google Cloud Storage minor update breaking tests
+      - dependency-name: "com.google.cloud:google-cloud-storage"
+        versions: [">2.68.0"]
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     target-branch: "2025"
