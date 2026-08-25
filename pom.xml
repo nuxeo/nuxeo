@@ -3824,7 +3824,7 @@
       <dependency>
         <groupId>software.amazon.encryption.s3</groupId>
         <artifactId>amazon-s3-encryption-client-java</artifactId>
-        <version>4.0.1</version>
+        <version>4.0.2</version>
       </dependency>
       <dependency>
         <groupId>software.amazon.awssdk.crt</groupId>
@@ -3929,7 +3929,7 @@
       <dependency>
         <groupId>io.github.classgraph</groupId>
         <artifactId>classgraph</artifactId>
-        <version>4.8.193</version>
+        <version>4.8.194</version>
       </dependency>
 
       <!-- dmk adaptor -->
