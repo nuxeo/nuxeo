@@ -2811,7 +2811,7 @@
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
-        <version>2.3.34</version>
+        <version>2.3.35</version>
       </dependency>
       <dependency>
         <groupId>concurrent</groupId>
@@ -4656,7 +4656,7 @@
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>
-          <version>3.10.0</version>
+          <version>3.10.1</version>
           <dependencies>
             <dependency>
               <groupId>org.nuxeo</groupId>
