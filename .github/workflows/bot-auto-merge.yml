@@ -8,4 +8,4 @@ permissions:
 
 jobs:
   auto-merge:
-    uses: nuxeo/gh-build-tools/.github/workflows/bot-auto-merge.yml@b69f8529e843a9525310d704d1f7a8fe1f5d103b # v0.15.1
+    uses: nuxeo/gh-build-tools/.github/workflows/bot-auto-merge.yml@66f60322038b778a5d1fb3bc2bd822b29ecb8e21 # v0.17.0
