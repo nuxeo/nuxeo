@@ -592,7 +592,18 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             // empty is true for an unavailable lazy rendition
             boolean empty = contentType != null && contentType.contains("empty=true");
 
-            long length = blob.getLength();
+            long length = blob != null ? blob.getLength(): 0;
+            boolean checkBlobLength = true;
+            if (filename == null || (filename != null && !filename.startsWith("tiff2pdf_"))) {
+                checkBlobLength = false;
+            }
+            if (!empty && checkBlobLength) {
+                long lengthInDoc = length;
+                length = correctBlobLength(blob, length);
+                if (length != lengthInDoc) {
+                    log.warn("'tiff2pdf' picture view's file size needs to be fixed in document id: {} path: {} stored size: {}B actual size: {}B", doc.getId(), doc.getPathAsString(), lengthInDoc, length);
+                }
+            }
             ByteRange byteRange = getByteRange(request, length);
 
             String digest = blob.getDigest();
@@ -736,6 +747,35 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         } catch (IOException ioe) {
             DownloadHelper.handleClientDisconnect(ioe);
         }
+    }
+
+    /**
+     * Checks the actual file-backed size of the blob against its stored length and returns the corrected value.
+     * <p>
+     * For file-backed blobs (e.g., GCS-backed), {@link Blob#getFile()} fetches and caches the content. If the stored
+     * metadata length differs from the actual file size, the actual size is returned and a warning is logged. This
+     * prevents sending a wrong {@code Content-Length} header when stored metadata is inconsistent with actual content.
+     *
+     * @param blob the blob to check
+     * @param storedLength the length as stored in the document metadata
+     * @return the corrected length (actual file size if available and different, otherwise {@code storedLength})
+     * @since 2021.41
+     */
+    protected static long correctBlobLength(Blob blob, long storedLength) {
+        log.debug("<correctBlobLength> {} key: {}", blob.getFilename(),blob.getDigest());
+        File blobFile = blob.getFile();
+        if (blobFile == null || storedLength == -1) {
+            return storedLength;
+        }
+        long actualLength = blobFile.length();
+        if (actualLength != storedLength) {
+            log.warn(
+                    "Blob Content-Length mismatch for key: {} - stored length: {}B, actual size: {}B;"
+                            + " using actual size",
+                    blob.getDigest(), storedLength, actualLength);
+            return actualLength;
+        }
+        return storedLength;
     }
 
     protected ByteRange getByteRange(HttpServletRequest request, long length) {
