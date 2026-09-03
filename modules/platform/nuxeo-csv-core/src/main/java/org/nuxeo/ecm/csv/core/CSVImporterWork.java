@@ -70,6 +70,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -106,7 +107,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CSVImporterWork extends TransientStoreWork {
 
-    public static final String NUXEO_CSV_MAIL_TO = "nuxeo.csv.mail.to";
+    public static final String NUXEO_CSV_MAIL_TO = "nuxeo.csv.import.mail.to";
+
+    public static final String NUXEO_GROUP_MAIL_ADMINS = "nuxeo.csv.import.mail.group";
 
     public static final String LABEL_CSV_IMPORTER_NOT_EXISTING_FIELD = "label.csv.importer.notExistingField";
 
@@ -228,19 +231,31 @@ public class CSVImporterWork extends TransientStoreWork {
                                                .withEscape(options.getEscapeCharacter())
                                                .withCommentMarker(options.getCommentMarker())
                                                .withIgnoreSurroundingSpaces();
+        Boolean importValidity = true;
         try (Reader in = newReader(getBlob()); CSVParser parser = csvFormat.parse(in)) {
             doImport(parser);
         } catch (IOException e) {
             logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
+            importValidity = false;
             log.debug(e, e);
         } catch (IllegalArgumentException e) {
             logError(0, "Invalid CSV file: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
+            importValidity = false;
             log.debug(e, e);
         }
         store.putParameter(id, "logs", importLogs);
+        for (CSVImportLog log : importLogs){
+            if (log.getStatus() == ERROR){
+                importValidity = false;
+                break;
+            }
+        }
+        if (!importValidity) {
+            sendMailToAdminGroup();
+        }
         if (options.sendEmail()) {
             setStatus("Sending email");
-            sendMail();
+            sendMail(username);
         }
         setStatus(null);
     }
@@ -303,7 +318,6 @@ public class CSVImporterWork extends TransientStoreWork {
             return;
         }
         hasTypeColumn = header.containsKey(CSV_TYPE_COL);
-
         try {
             int batchSize = options.getBatchSize();
             Iterable<CSVRecord> it = parser;
@@ -676,18 +690,29 @@ public class CSVImporterWork extends TransientStoreWork {
                 new CSVImportStatus(CSVImportStatus.State.ERROR, docsCreatedCount, docsCreatedCount));
     }
 
-    protected void sendMail() {
+    protected void sendMailToAdminGroup(){
+        String adminGroup = Framework.getProperty(NUXEO_GROUP_MAIL_ADMINS);
+        if (adminGroup != null) {
+            //sending mail to each admin member
+            UserManager userManager = Framework.getService(UserManager.class);
+            NuxeoGroup grp = userManager.getGroup(adminGroup);
+            for (String member : grp.getMemberUsers()) {
+                sendMail(member);
+            }
+        }
+    }
+
+    protected void sendMail(String userName) {
         UserManager userManager = Framework.getService(UserManager.class);
-        NuxeoPrincipal principal = userManager.getPrincipal(username);
+        NuxeoPrincipal principal = userManager.getPrincipal(userName);
         String email = principal.getEmail();
         if (email == null) {
-            log.info("Not sending import result email to '{}', no email configured", username);
+            log.info("Not sending import result email to '{}', no email configured", userName);
             return;
         }
 
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(session.getRootDocument());
-
             CSVImporter csvImporter = Framework.getService(CSVImporter.class);
             List<CSVImportLog> importerLogs = csvImporter.getImportLogs(getId());
             CSVImportResult importResult = CSVImportResult.fromImportLogs(importerLogs);
@@ -698,7 +723,6 @@ public class CSVImporterWork extends TransientStoreWork {
             ctx.put("csvFilename", getBlob().getFilename());
             ctx.put("startDate", DateFormat.getInstance().format(startDate));
             ctx.put("username", username);
-
             DocumentModel importFolder = session.getDocument(new PathRef(parentPath));
             String importFolderUrl = getDocumentUrl(importFolder);
             ctx.put("importFolderTitle", importFolder.getTitle());
@@ -720,7 +744,7 @@ public class CSVImporterWork extends TransientStoreWork {
             Framework.getService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);
-            log.error("Unable to notify user '{}' for import result of '{}': {}", () -> username,
+            log.error("Unable to notify user '{}' for import result of '{}': {}", () -> userName,
                     () -> getBlob().getFilename(), e::getMessage);
             log.debug(e, e);
             throw ExceptionUtils.runtimeException(e);

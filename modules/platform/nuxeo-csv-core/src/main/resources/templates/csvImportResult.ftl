@@ -75,7 +75,7 @@
                   <tr>
                     <td style="background-color:#f7f7f7;border-top:1px dashed #e9ecef;text-align:center;padding:8px 20px;">
                       <div style="font-size:12px;color:#bbb;">
-                      You received this notification because you ran a CSV import.</div>
+                      You received this notification because ${username} ran a CSV import.</div>
                     </td>
                   </tr>
                 </tbody>
