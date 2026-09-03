@@ -1489,7 +1489,7 @@ public class TestUserManager extends UserManagerTestCase {
     protected String getQueryForPattern(String pattern) {
         UserManagerImpl um = (UserManagerImpl) userManager;
         QueryBuilder queryBuilder = um.getQueryForPattern(pattern, um.getUserDirectoryName(), um.userSearchFields,
-                um.getUserOrderBy());
+                um.getUserOrderBy(), null, null);
         return queryBuilder.predicate().toString();
     }
 

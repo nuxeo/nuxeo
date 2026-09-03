@@ -1023,8 +1023,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
     }
 
-    protected QueryBuilder getQueryForPattern(String pattern, String dirName, Map<String, MatchType> searchFields,
-            OrderByExpr orderBy) {
+    public QueryBuilder getQueryForPattern(String pattern, String dirName, Map<String, MatchType> searchFields,
+            OrderByExpr orderBy, Long limit, Long offset) {
         QueryBuilder queryBuilder = new QueryBuilder();
         if (!StringUtils.isBlank(pattern)) {
             // build query
@@ -1069,6 +1069,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             queryBuilder.filter(new MultiExpression(Operator.OR, predicates));
         }
         queryBuilder.order(orderBy);
+        if (limit != null) {
+            queryBuilder.limit(limit);
+        }
+        if (offset != null) {
+            queryBuilder.offset(offset);
+        }
         return queryBuilder;
     }
 
@@ -1181,7 +1187,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public DocumentModelList searchUsers(String pattern, DocumentModel context) {
-        QueryBuilder queryBuilder = getQueryForPattern(pattern, userDirectoryName, userSearchFields, getUserOrderBy());
+        QueryBuilder queryBuilder = getQueryForPattern(pattern, userDirectoryName, userSearchFields, getUserOrderBy(), null, null);
         return searchUsers(queryBuilder, context);
     }
 
@@ -1385,7 +1391,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public DocumentModelList searchGroups(String pattern, DocumentModel context) {
         QueryBuilder queryBuilder = getQueryForPattern(pattern, groupDirectoryName, groupSearchFields,
-                getGroupOrderBy());
+                getGroupOrderBy(), null, null);
         return searchGroups(queryBuilder, context);
     }
 
