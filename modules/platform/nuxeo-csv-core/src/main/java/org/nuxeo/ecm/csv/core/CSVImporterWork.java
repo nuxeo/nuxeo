@@ -158,6 +158,8 @@ public class CSVImporterWork extends TransientStoreWork {
 
     public static final String CONTENT_FILED_TYPE_NAME = "content";
 
+    public static final String UNWANTED_HEADERS = "nuxeo.import.unwanted.header";
+
     /**
      * CSV headers that won't be checked if the field exists on the document type.
      *
@@ -303,7 +305,12 @@ public class CSVImporterWork extends TransientStoreWork {
             return;
         }
         hasTypeColumn = header.containsKey(CSV_TYPE_COL);
-
+        String[] unwantedHeaders =  (Framework.getProperty(UNWANTED_HEADERS)!= null ? Framework.getProperty(UNWANTED_HEADERS).split(";") : null);
+        if (unwantedHeaders != null) {
+            for (String headerToRemove : unwantedHeaders) {
+                header.remove(headerToRemove);
+            }
+        }
         try {
             int batchSize = options.getBatchSize();
             Iterable<CSVRecord> it = parser;
