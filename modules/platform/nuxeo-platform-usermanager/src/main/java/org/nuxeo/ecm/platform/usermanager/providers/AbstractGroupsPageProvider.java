@@ -29,10 +29,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import java.util.stream.Collectors;
 
 /**
  * Abstract Page provider listing groups.
@@ -67,36 +76,43 @@ public abstract class AbstractGroupsPageProvider<T> extends AbstractPageProvider
             errorMessage = null;
             pageGroups = new ArrayList<>();
 
-            List<DocumentModel> groups = new ArrayList<>();
             try {
+                UserManager userManager = Framework.getService(UserManager.class);
                 String groupListingMode = getGroupListingMode();
-                if (ALL_MODE.equals(groupListingMode)) {
-                    groups = searchAllGroups();
-                } else if (SEARCH_ONLY_MODE.equals(groupListingMode)) {
-                    groups = searchGroups();
+                String searchString = getFirstParameter();
+                if (ALL_MODE.equals(groupListingMode) || "*".equals(searchString)) {
+                    searchString = null;
+                } else if (StringUtils.isEmpty(searchString)) {
+                    setResultsCount(0);
+                    return pageGroups;
                 }
+                long pageSize = getMinMaxPageSize();
+                long offset = getCurrentPageOffset();
+                OrderByExpr order = OrderByExprs.asc(
+                        StringUtils.defaultString(userManager.getGroupSortField(), userManager.getGroupIdField()));
+                QueryBuilder qb = new QueryBuilder();
+                if (StringUtils.isNotBlank(searchString)) {
+                    String pattern = searchString.trim().toLowerCase() + '%';
+                    List<Predicate> predicates = userManager.getGroupSearchFields()
+                                                             .stream()
+                                                             .map(f -> Predicates.ilike(f, pattern))
+                                                             .collect(Collectors.toList());
+                    qb.filter(new MultiExpression(Operator.OR, predicates));
+                }
+                qb.order(order).countTotal(true);
+                if (pageSize > 0) {
+                    qb.limit(pageSize);
+                }
+                if (offset > 0) {
+                    qb.offset(offset);
+                }
+                DocumentModelList groups = userManager.searchGroups(qb);
+                setResultsCount(groups.totalSize());
+                pageGroups.addAll(groups);
             } catch (SizeLimitExceededException slee) {
                 error = slee;
                 errorMessage = SEARCH_OVERFLOW_ERROR_MESSAGE;
                 log.warn(slee.getMessage(), slee);
-            }
-
-            if (!hasError()) {
-                long resultsCount = groups.size();
-                setResultsCount(resultsCount);
-                // post-filter the results "by hand" to handle pagination
-                long pageSize = getMinMaxPageSize();
-                if (pageSize == 0) {
-                    pageGroups.addAll(groups);
-                } else {
-                    // handle offset
-                    long offset = getCurrentPageOffset();
-                    if (offset <= resultsCount) {
-                        for (int i = (int) offset; i < resultsCount && i < offset + pageSize; i++) {
-                            pageGroups.add(groups.get(i));
-                        }
-                    }
-                }
             }
         }
         return pageGroups;
